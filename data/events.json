@@ -1,0 +1,706 @@
+[
+  {
+    "id": "shadow_breach",
+    "name": "Shadow Breach",
+    "faction": "varyn",
+    "durationMinutes": 30,
+    "description": "Void portals flicker open across Orbis. Defeat the shades pouring out to protect nearby settlements.",
+    "participation": "Fight any shadow-aligned enemy and run `!hy participate shadow_breach` to claim your bounty.",
+    "successMessage": "Thanks for driving back the void energies!",
+    "reward": {
+      "xp": 200,
+      "coins": 160,
+      "reputation": {
+        "skysong": 10
+      },
+      "items": [
+        {
+          "item": "void_essence",
+          "quantity": 1
+        },
+        {
+          "item": "mana_potion",
+          "quantity": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "aurora_bloom",
+    "name": "Aurora Bloom",
+    "faction": "skysong",
+    "durationMinutes": 45,
+    "description": "A brilliant aurora bathes the Gale Cliffs. Assist Skysong archivists in capturing resonance strands.",
+    "participation": "Gather luminite or visit Skysong territory, then use `!hy participate aurora_bloom`.",
+    "successMessage": "The Skysong thank you for reinforcing their archives!",
+    "reward": {
+      "xp": 240,
+      "coins": 190,
+      "reputation": {
+        "skysong": 15
+      },
+      "items": [
+        {
+          "item": "aurora_fragment",
+          "quantity": 2
+        },
+        {
+          "item": "diamond_sword",
+          "quantity": 1
+        },
+        {
+          "item": "luminite_core",
+          "quantity": 1
+        },
+        {
+          "item": "celestial_tea",
+          "quantity": 2
+        }
+      ]
+    }
+  },
+  {
+    "id": "ember_surge",
+    "name": "Ember Surge",
+    "faction": "ancient",
+    "durationMinutes": 30,
+    "description": "The Emberforge roars back to life. Extract molten cores before they cool and empower the forges.",
+    "participation": "Brave the Emberforge Crater and run `!hy participate ember_surge` with molten loot in tow.",
+    "successMessage": "Your efforts helped stabilize the ancient forge!",
+    "reward": {
+      "xp": 260,
+      "coins": 210,
+      "reputation": {
+        "ancient": 15
+      },
+      "items": [
+        {
+          "item": "ember_resin",
+          "quantity": 2
+        },
+        {
+          "item": "ember_crystal_cluster",
+          "quantity": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "stormfront",
+    "name": "Stormfront Rally",
+    "faction": "human",
+    "durationMinutes": 40,
+    "description": "A blizzard siege targets Stormguard Keep. Stand with the defenders and repel the assault.",
+    "participation": "Join Stormguard patrols or defeat frost threats, then use `!hy participate stormfront`.",
+    "successMessage": "Stormguard supplies have been replenished thanks to you!",
+    "reward": {
+      "xp": 270,
+      "coins": 220,
+      "reputation": {
+        "human": 20
+      },
+      "items": [
+        {
+          "item": "stormbrew_tonic",
+          "quantity": 1
+        },
+        {
+          "item": "iron_sword",
+          "quantity": 1
+        },
+        {
+          "item": "iron_armor",
+          "quantity": 1
+        },
+        {
+          "item": "tempest_capacitor",
+          "quantity": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "tidecall",
+    "name": "Tidecall Echo",
+    "faction": "ocean",
+    "durationMinutes": 35,
+    "description": "The Tidecaller choirs summon a protective tide. Help synchronize the hymn to keep the depths safe.",
+    "participation": "Patrol ocean sanctums or defeat abyssal beasts, then run `!hy participate tidecall`.",
+    "successMessage": "The Tidecallers bestow blessings upon their allies!",
+    "reward": {
+      "xp": 230,
+      "coins": 185,
+      "reputation": {
+        "ocean": 15
+      },
+      "items": [
+        {
+          "item": "tidecaller_shell",
+          "quantity": 1
+        },
+        {
+          "item": "sunken_pearl",
+          "quantity": 1
+        },
+        {
+          "item": "delta_stew",
+          "quantity": 2
+        }
+      ]
+    }
+  },
+  {
+    "id": "desert_caravan",
+    "name": "Caravan Convoy",
+    "faction": "nomad",
+    "durationMinutes": 30,
+    "description": "Nomad caravans need escorts through sandstorm-struck dunes. Safeguard their journey to earn their trust.",
+    "participation": "Protect caravans in the Howling Sands and run `!hy participate desert_caravan`.",
+    "successMessage": "The caravans reach their destination thanks to your vigilance!",
+    "reward": {
+      "xp": 210,
+      "coins": 170,
+      "reputation": {
+        "nomad": 12
+      },
+      "items": [
+        {
+          "item": "sandroot_stew",
+          "quantity": 2
+        },
+        {
+          "item": "leather_armor",
+          "quantity": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "sunforge_resurgence",
+    "name": "Sunforge Resurgence",
+    "faction": "ancient",
+    "durationMinutes": 45,
+    "description": "The furnaces in the Sunforge badlands roar as ancient bellows awaken. Assist smiths in taming the surge.",
+    "participation": "Gather emberglass shards or defeat lava-born foes, then run `!hy participate sunforge_resurgence`.",
+    "successMessage": "Sunforge smiths stabilize the forges with your help!",
+    "reward": {
+      "xp": 260,
+      "coins": 220,
+      "reputation": {
+        "ancient": 18
+      },
+      "items": [
+        {
+          "item": "sunforge_ingot",
+          "quantity": 2
+        }
+      ]
+    }
+  },
+  {
+    "id": "azure_regatta",
+    "name": "Azure Regatta",
+    "faction": "ocean",
+    "durationMinutes": 35,
+    "description": "Coral barges race across Azure Cove to renew tide wards. Keep the route clear and resupply sailors.",
+    "participation": "Escort coral runners or bring tideglass pearls, then run `!hy participate azure_regatta`.",
+    "successMessage": "The regatta finishes safely under your watch!",
+    "reward": {
+      "xp": 230,
+      "coins": 190,
+      "reputation": {
+        "ocean": 18
+      },
+      "items": [
+        {
+          "item": "bluehaven_pearl",
+          "quantity": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "wildvine_bloom",
+    "name": "Wildvine Bloom",
+    "faction": "kweebec",
+    "durationMinutes": 30,
+    "description": "Wildvine glades erupt with rapid growth. Help Kweebec tenders harvest safely before the vines overrun nearby settlements.",
+    "participation": "Collect wildvine blooms or defeat invading pests, then use `!hy participate wildvine_bloom`.",
+    "successMessage": "The harvest is stored and the glade is balanced once more!",
+    "reward": {
+      "xp": 210,
+      "coins": 170,
+      "reputation": {
+        "kweebec": 14
+      },
+      "items": [
+        {
+          "item": "wildvine_bloom",
+          "quantity": 3
+        }
+      ]
+    }
+  },
+  {
+    "id": "mistspire_flux",
+    "name": "Mistspire Flux",
+    "faction": "skysong",
+    "durationMinutes": 50,
+    "description": "Constellation flux ripples through Mistspire observatories. Stabilize resonance towers before they shatter.",
+    "participation": "Calibrate resonance pylons or defeat void callers near Mistspire, then run `!hy participate mistspire_flux`.",
+    "successMessage": "The Mistspire wardens salute your precision!",
+    "reward": {
+      "xp": 280,
+      "coins": 230,
+      "reputation": {
+        "skysong": 20
+      },
+      "items": [
+        {
+          "item": "mistspire_dust",
+          "quantity": 2
+        }
+      ]
+    }
+  },
+  {
+    "id": "stormbreak_raids",
+    "name": "Stormbreak Raids",
+    "faction": "stormguard",
+    "durationMinutes": 40,
+    "description": "Privateer captains rally at Stormbreak Beacon to repel abyssal raiders. Assist in reinforcing the wards.",
+    "participation": "Hunt raiders or repair beacon wards, then run `!hy participate stormbreak_raids`.",
+    "successMessage": "Stormbreak remains secure thanks to your vigilance!",
+    "reward": {
+      "xp": 250,
+      "coins": 210,
+      "reputation": {
+        "stormguard": 18
+      },
+      "items": [
+        {
+          "item": "stormbreak_shell",
+          "quantity": 2
+        }
+      ]
+    }
+  },
+  {
+    "id": "dawnwatch_vigil",
+    "name": "Dawnwatch Vigil",
+    "faction": "sunspire",
+    "durationMinutes": 35,
+    "description": "Dawnwatch eagles scout for marauders at first light. Join the vigil and deter any aerial threat.",
+    "participation": "Escort scouts or drive off sky raiders, then run `!hy participate dawnwatch_vigil`.",
+    "successMessage": "The cliffs remain safe beneath the Dawnwatch!",
+    "reward": {
+      "xp": 240,
+      "coins": 195,
+      "reputation": {
+        "sunspire": 16
+      },
+      "items": [
+        {
+          "item": "dawnwatch_feather",
+          "quantity": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "everfrost_herd",
+    "name": "Everfrost Herd Migration",
+    "faction": "polar",
+    "durationMinutes": 45,
+    "description": "Everfrost mammoths migrate across the tundra and need guidance past razorfrost predators.",
+    "participation": "Escort mammoths or repel predators, then run `!hy participate everfrost_herd`.",
+    "successMessage": "The herd reaches new pastures under your protection!",
+    "reward": {
+      "xp": 260,
+      "coins": 210,
+      "reputation": {
+        "polar": 18
+      },
+      "items": [
+        {
+          "item": "everfrost_codex",
+          "quantity": 1
+        },
+        {
+          "item": "borea_fur_cloak",
+          "quantity": 1
+        },
+        {
+          "item": "aurora_mail",
+          "quantity": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "auric_convergence",
+    "name": "Auric Convergence",
+    "faction": "nomad",
+    "durationMinutes": 30,
+    "description": "Auric veins pulse beneath the dunes, drawing prospectors and raiders alike. Secure the sands for the caravan guilds.",
+    "participation": "Deliver auric powder or defeat dune marauders, then run `!hy participate auric_convergence`.",
+    "successMessage": "The guild ledger swells with auric riches!",
+    "reward": {
+      "xp": 220,
+      "coins": 185,
+      "reputation": {
+        "nomad": 15
+      },
+      "items": [
+        {
+          "item": "auric_powder",
+          "quantity": 2
+        },
+        {
+          "item": "health_potion",
+          "quantity": 1
+        },
+        {
+          "item": "mana_potion",
+          "quantity": 1
+        },
+        {
+          "item": "sunshadow_resin",
+          "quantity": 2
+        }
+      ]
+    }
+  },
+  {
+    "id": "voidscar_reckoning",
+    "name": "Voidscar Reckoning",
+    "faction": "varyn",
+    "durationMinutes": 55,
+    "description": "The Voidscar abyss churns with unstable rifts. Assist arcaneers in sequencing wards to contain the surge.",
+    "participation": "Close rifts or defeat voidscar horrors near the chasm, then run `!hy participate voidscar_reckoning`.",
+    "successMessage": "The abyss quiets—for now—thanks to your efforts!",
+    "reward": {
+      "xp": 300,
+      "coins": 240,
+      "reputation": {
+        "varyn": 20
+      },
+      "items": [
+        {
+          "item": "voidscar_fragment",
+          "quantity": 2
+        },
+        {
+          "item": "voidglass_serum",
+          "quantity": 1
+        },
+        {
+          "item": "voidglass_dirk",
+          "quantity": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "moonshadow_festival",
+    "name": "Moonshadow Festival",
+    "faction": "fey",
+    "durationMinutes": 30,
+    "description": "Sprites host a festival in the Moonshadow thicket. Gather luminescent offerings to keep the revels safe.",
+    "participation": "Collect moonshadow caps or soothe spectral visitors, then run `!hy participate moonshadow_festival`.",
+    "successMessage": "The moonlit revelry continues in harmony!",
+    "reward": {
+      "xp": 210,
+      "coins": 170,
+      "reputation": {
+        "fey": 15
+      },
+      "items": [
+        {
+          "item": "moonshadow_cap",
+          "quantity": 3
+        }
+      ]
+    }
+  },
+  {
+    "id": "silverfin_ceremony",
+    "name": "Silverfin Ceremony",
+    "faction": "ocean",
+    "durationMinutes": 35,
+    "description": "Silverfin shoals perform a shimmering migration. Protect the ceremony from abyssal predators.",
+    "participation": "Defend the shoals or offer silverfin silk, then run `!hy participate silverfin_ceremony`.",
+    "successMessage": "The sea shimmers in gratitude for your guardianship!",
+    "reward": {
+      "xp": 240,
+      "coins": 190,
+      "reputation": {
+        "ocean": 18
+      },
+      "items": [
+        {
+          "item": "silverfin_silk",
+          "quantity": 2
+        }
+      ]
+    }
+  },
+  {
+    "id": "stormlash_muster",
+    "name": "Stormlash Muster",
+    "faction": "stormguard",
+    "durationMinutes": 45,
+    "description": "Stormlash commanders call for reinforcements against a spike in wyvern raids.",
+    "participation": "Hunt stormlash threats or deliver thunderite ore, then run `!hy participate stormlash_muster`.",
+    "successMessage": "Stormlash lines hold strong with your reinforcements!",
+    "reward": {
+      "xp": 270,
+      "coins": 220,
+      "reputation": {
+        "stormguard": 20
+      },
+      "items": [
+        {
+          "item": "thunderite_ore",
+          "quantity": 2
+        },
+        {
+          "item": "earthbreaker_hammer",
+          "quantity": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "skybreaker_bombardment",
+    "name": "Skybreaker Bombardment",
+    "faction": "stormguard",
+    "durationMinutes": 40,
+    "description": "Skybreaker Bastion prepares a lightning barrage to repel invading airships. Assist crews in priming pylons.",
+    "participation": "Stabilize storm pylons or defeat lightning saboteurs, then run !hy participate skybreaker_bombardment.",
+    "successMessage": "The bastion thundered with a flawless volley thanks to you!",
+    "reward": {
+      "xp": 280,
+      "coins": 230,
+      "reputation": {
+        "stormguard": 22
+      },
+      "items": [
+        {
+          "item": "skybreaker_core",
+          "quantity": 1
+        },
+        {
+          "item": "skybreaker_ration",
+          "quantity": 3
+        },
+        {
+          "item": "stormglass_fragment",
+          "quantity": 2
+        }
+      ]
+    }
+  },
+  {
+    "id": "emberlost_emergence",
+    "name": "Emberlost Emergence",
+    "faction": "ancient",
+    "durationMinutes": 42,
+    "description": "Spirits surge from the Emberlost foundry, seeking hosts. Contain the outbreak before it engulfs nearby camps.",
+    "participation": "Quell ember spirits or deliver emberlost ingots, then run !hy participate emberlost_emergence.",
+    "successMessage": "The foundry cools as the spirits are soothed and sealed.",
+    "reward": {
+      "xp": 290,
+      "coins": 240,
+      "reputation": {
+        "ancient": 20
+      },
+      "items": [
+        {
+          "item": "emberlost_ingot",
+          "quantity": 2
+        },
+        {
+          "item": "ember_rift_draught",
+          "quantity": 2
+        },
+        {
+          "item": "ember_rift_core",
+          "quantity": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "gilded_gala",
+    "name": "Gilded Gala",
+    "faction": "human",
+    "durationMinutes": 30,
+    "description": "The Gilded Courtyard hosts a radiant gala drawing nobles and artisans. Keep the festivities secure from jealous raiders.",
+    "participation": "Escort gala envoys or present gilded leaves, then run !hy participate gilded_gala.",
+    "successMessage": "The gala concludes in triumph, and the courtiers shower you with thanks!",
+    "reward": {
+      "xp": 240,
+      "coins": 210,
+      "reputation": {
+        "human": 18
+      },
+      "items": [
+        {
+          "item": "gilded_leaf",
+          "quantity": 3
+        },
+        {
+          "item": "gilded_filament",
+          "quantity": 2
+        }
+      ]
+    }
+  },
+  {
+    "id": "stormveil_cyclone",
+    "name": "Stormveil Cyclone",
+    "faction": "stormguard",
+    "durationMinutes": 38,
+    "description": "Cyclonic currents rip through Stormveil Ridge. Help ground the aeries and disperse the roiling winds.",
+    "participation": "Defeat stormveil tempests or reinforce ridge anchors, then run !hy participate stormveil_cyclone.",
+    "successMessage": "The cyclone breaks apart under your swift intervention!",
+    "reward": {
+      "xp": 265,
+      "coins": 215,
+      "reputation": {
+        "stormguard": 18
+      },
+      "items": [
+        {
+          "item": "stormveil_feather",
+          "quantity": 2
+        },
+        {
+          "item": "stormveil_potion",
+          "quantity": 2
+        },
+        {
+          "item": "stormveil_thread",
+          "quantity": 2
+        }
+      ]
+    }
+  },
+  {
+    "id": "abyssal_convergence",
+    "name": "Abyssal Convergence",
+    "faction": "ocean",
+    "durationMinutes": 50,
+    "description": "Void currents spiral through the Abyssal Gulf, luring leviathans. Ward the convergence before it breaches the shallows.",
+    "participation": "Drive back abyssal predators or bring abyssal gems, then run !hy participate abyssal_convergence.",
+    "successMessage": "The convergence wanes and the gulf calms under your watch!",
+    "reward": {
+      "xp": 310,
+      "coins": 250,
+      "reputation": {
+        "ocean": 24
+      },
+      "items": [
+        {
+          "item": "abyssal_gem",
+          "quantity": 1
+        },
+        {
+          "item": "abyssal_resin",
+          "quantity": 2
+        }
+      ]
+    }
+  },
+  {
+    "id": "tempest_convergence",
+    "name": "Tempest Convergence",
+    "faction": "stormguard",
+    "durationMinutes": 42,
+    "description": "The Howling Peaks crackle as rogue stormcores align. Stabilize the aeries before the tempest fractures the ridge.",
+    "participation": "Disperse storm sentries or collect stormvein ore, then run !hy participate tempest_convergence.",
+    "successMessage": "The stormguard salute your swift response as the convergence breaks apart!",
+    "reward": {
+      "xp": 300,
+      "coins": 240,
+      "reputation": {
+        "stormguard": 20
+      },
+      "items": [
+        {
+          "item": "tempest_core",
+          "quantity": 1
+        },
+        {
+          "item": "skyrazor_plume",
+          "quantity": 2
+        },
+        {
+          "item": "stormguard_plate",
+          "quantity": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "slagstorm_uprising",
+    "name": "Slagstorm Uprising",
+    "faction": "ancient",
+    "durationMinutes": 45,
+    "description": "Ashbound broods in the Ember Depths awaken in unison. Break their ritual sites before slag hydras flood the caverns.",
+    "participation": "Shatter magma wards or bring ember reagents, then run !hy participate slagstorm_uprising.",
+    "successMessage": "The uprising collapses as the vents cool and the titans fall silent.",
+    "reward": {
+      "xp": 320,
+      "coins": 260,
+      "reputation": {
+        "ancient": 22
+      },
+      "items": [
+        {
+          "item": "magma_pearl",
+          "quantity": 2
+        },
+        {
+          "item": "obsidian_heart",
+          "quantity": 1
+        },
+        {
+          "item": "cinder_resin",
+          "quantity": 3
+        }
+      ]
+    }
+  },
+  {
+    "id": "gloomwild_revel",
+    "name": "Gloomwild Revel",
+    "faction": "fey",
+    "durationMinutes": 40,
+    "description": "Twilight courts gather for a revel that risks spilling into nearby settlements. Broker the revel and keep the revelry contained.",
+    "participation": "Appease veilhorn spirits or collect nightpetal blooms, then run !hy participate gloomwild_revel.",
+    "successMessage": "The revel concludes in harmony and the fey courts grant their blessing.",
+    "reward": {
+      "xp": 280,
+      "coins": 230,
+      "reputation": {
+        "fey": 18
+      },
+      "items": [
+        {
+          "item": "nightpetal_blossom",
+          "quantity": 2
+        },
+        {
+          "item": "veilhorn_antler",
+          "quantity": 1
+        },
+        {
+          "item": "focus_elixir",
+          "quantity": 1
+        }
+      ]
+    }
+  }
+]

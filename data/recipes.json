@@ -1,0 +1,975 @@
+[
+  {
+    "id": "steel_upgrade",
+    "result": "steel_sword",
+    "name": "Forge Defender's Steel",
+    "level": 3,
+    "coins": 75,
+    "station": "forge",
+    "ingredients": {
+      "wooden_sword": 1,
+      "iron_ingot": 4,
+      "ancient_bark": 6
+    },
+    "description": "Upgrade a Kweebec blade into a forged defender's sword."
+  },
+  {
+    "id": "shadow_dagger",
+    "result": "shadow_dagger",
+    "name": "Weave a Shadowshiv",
+    "level": 4,
+    "coins": 90,
+    "station": "forge",
+    "ingredients": {
+      "iron_ingot": 2,
+      "void_essence": 2,
+      "sunstone_shard": 3
+    },
+    "description": "Blend void essence with refined iron for a lethal dagger."
+  },
+  {
+    "id": "arcane_staff",
+    "result": "arcane_staff",
+    "name": "Attune Arcane Staff",
+    "level": 5,
+    "coins": 140,
+    "station": "arcane_table",
+    "ingredients": {
+      "mana_potion": 2,
+      "focus_elixir": 1,
+      "orbis_crystal": 1,
+      "luminite_core": 1
+    },
+    "description": "Channel Skysong resonance into a staff that brims with magic."
+  },
+  {
+    "id": "guardian_armor",
+    "result": "guardian_armor",
+    "name": "Forge Guardian Bulwark",
+    "level": 6,
+    "coins": 200,
+    "station": "forge",
+    "ingredients": {
+      "iron_armor": 1,
+      "ancient_bark": 8,
+      "sunstone_shard": 5,
+      "void_essence": 2
+    },
+    "description": "Add void wards and sunstone plating to iron mail for unmatched defense."
+  },
+  {
+    "id": "greater_health_potion",
+    "result": "greater_health_potion",
+    "name": "Brew Grand Life Elixir",
+    "level": 2,
+    "coins": 35,
+    "station": "brewery",
+    "ingredients": {
+      "health_potion": 1,
+      "ancient_bark": 2,
+      "sunstone_shard": 1
+    },
+    "description": "Enrich a minor draught with radiant shards for greater healing."
+  },
+  {
+    "id": "focus_elixir",
+    "result": "focus_elixir",
+    "name": "Distill Focus Elixir",
+    "level": 2,
+    "coins": 30,
+    "station": "brewery",
+    "ingredients": {
+      "mana_potion": 1,
+      "void_essence": 1,
+      "ancient_bark": 1
+    },
+    "description": "Layer void vapors into mana dew to hone spellcasting."
+  },
+  {
+    "id": "ember_ale",
+    "result": "ember_ale",
+    "name": "Brew Ember Ale",
+    "level": 3,
+    "coins": 28,
+    "station": "brewery",
+    "ingredients": {
+      "ancient_bark": 1,
+      "sunstone_shard": 1,
+      "mana_potion": 1
+    },
+    "description": "Craft a soothing ale favored in the Howling Sands cantinas."
+  },
+  {
+    "id": "frostglow_ring",
+    "result": "frostglow_ring",
+    "name": "Craft Frostglow Ring",
+    "level": 4,
+    "coins": 150,
+    "station": "arcane_table",
+    "ingredients": {
+      "orbis_crystal": 1,
+      "mana_potion": 1,
+      "luminite_core": 1
+    },
+    "description": "Bind luminite chill into a ring to fortify mana reserves."
+  },
+  {
+    "id": "skyseer_talisman",
+    "result": "skyseer_talisman",
+    "name": "Craft Skyseer Talisman",
+    "level": 5,
+    "coins": 200,
+    "station": "arcane_table",
+    "ingredients": {
+      "focus_elixir": 1,
+      "luminite_core": 1,
+      "sunstone_shard": 2
+    },
+    "description": "Imbue talismans with Skysong runes for mana regeneration."
+  },
+  {
+    "id": "gale_blade",
+    "result": "gale_blade",
+    "name": "Forge Gale Blade",
+    "level": 5,
+    "coins": 170,
+    "station": "forge",
+    "ingredients": {
+      "steel_sword": 1,
+      "luminite_core": 1,
+      "sunstone_shard": 4
+    },
+    "description": "Infuse a steel blade with Gale Cliff winds for rapid strikes."
+  },
+  {
+    "id": "glitterwing_bow",
+    "result": "glitterwing_bow",
+    "name": "Carve Glitterwing Bow",
+    "level": 4,
+    "coins": 120,
+    "station": "workshop",
+    "ingredients": {
+      "sapling_staff": 1,
+      "gale_feather": 6,
+      "iron_ingot": 3
+    },
+    "description": "Shape a bow that dances with the currents of the Gale Cliffs."
+  },
+  {
+    "id": "emberstorm_bow",
+    "result": "emberstorm_bow",
+    "name": "Temper Emberstorm Bow",
+    "level": 6,
+    "coins": 210,
+    "station": "forge",
+    "ingredients": {
+      "glitterwing_bow": 1,
+      "ember_crystal_cluster": 2,
+      "stormcore_shard": 2
+    },
+    "description": "Fuse volcanic crystals and storm shards to empower a legendary bow."
+  },
+  {
+    "id": "frostbite_blade",
+    "result": "frostbite_blade",
+    "name": "Forge Frostbite Blade",
+    "level": 5,
+    "coins": 180,
+    "station": "forge",
+    "ingredients": {
+      "steel_sword": 1,
+      "frost_wisp": 3,
+      "luminite_core": 1
+    },
+    "description": "Imbue a steel blade with the biting chill of Borea."
+  },
+  {
+    "id": "deepsea_trident",
+    "result": "deepsea_trident",
+    "name": "Raise Deepsea Trident",
+    "level": 6,
+    "coins": 190,
+    "station": "forge",
+    "ingredients": {
+      "iron_ingot": 4,
+      "siren_scale": 3,
+      "sunken_pearl": 1
+    },
+    "description": "Forge a trident blessed by the currents of the Tidecallers."
+  },
+  {
+    "id": "stormguard_plate",
+    "result": "stormguard_plate",
+    "name": "Assemble Stormguard Plate",
+    "level": 6,
+    "coins": 230,
+    "station": "forge",
+    "ingredients": {
+      "iron_armor": 1,
+      "stormcore_shard": 2,
+      "luminite_core": 1,
+      "ember_resin": 2
+    },
+    "description": "Plate armor reinforced to withstand lightning-charged assaults."
+  },
+  {
+    "id": "voidveil_cloak",
+    "result": "voidveil_cloak",
+    "name": "Sew Voidveil Cloak",
+    "level": 6,
+    "coins": 210,
+    "station": "loom",
+    "ingredients": {
+      "voidthread": 6,
+      "shadowcap_mushroom": 3,
+      "aurora_fragment": 1
+    },
+    "description": "Weave a cloak that bends shadow and light in equal measure."
+  },
+  {
+    "id": "emberscale_mail",
+    "result": "emberscale_mail",
+    "name": "Scale Emberscale Mail",
+    "level": 5,
+    "coins": 190,
+    "station": "forge",
+    "ingredients": {
+      "ancient_bark": 4,
+      "ember_resin": 4,
+      "ember_crystal_cluster": 1
+    },
+    "description": "Layer drake scales into armor that shrugs off flame."
+  },
+  {
+    "id": "gale_runner_boots",
+    "result": "gale_runner_boots",
+    "name": "Stitch Gale Runner Boots",
+    "level": 4,
+    "coins": 110,
+    "station": "loom",
+    "ingredients": {
+      "leather_armor": 1,
+      "gale_feather": 5,
+      "stormcore_shard": 1
+    },
+    "description": "Craft boots that turn gale-force winds into swiftness."
+  },
+  {
+    "id": "sandstride_anklet",
+    "result": "sandstride_anklet",
+    "name": "String Sandstride Anklet",
+    "level": 3,
+    "coins": 70,
+    "station": "workshop",
+    "ingredients": {
+      "desert_spice": 3,
+      "emberglass_vial": 1,
+      "gale_feather": 1
+    },
+    "description": "Create anklets that grant sure footing atop shifting dunes."
+  },
+  {
+    "id": "tidecaller_shell",
+    "result": "tidecaller_shell",
+    "name": "Polish Tidecaller Shell",
+    "level": 5,
+    "coins": 150,
+    "station": "workshop",
+    "ingredients": {
+      "siren_scale": 4,
+      "sunken_pearl": 1,
+      "aurora_fragment": 1
+    },
+    "description": "Shape a resonant shell that channels the voice of the tides."
+  },
+  {
+    "id": "skyflare_pendant",
+    "result": "skyflare_pendant",
+    "name": "Forge Skyflare Pendant",
+    "level": 6,
+    "coins": 185,
+    "station": "arcane_table",
+    "ingredients": {
+      "aurora_fragment": 2,
+      "stormcore_shard": 1,
+      "luminite_core": 1
+    },
+    "description": "Bind aurora light into a pendant that fuels arcane focus."
+  },
+  {
+    "id": "stormbrew_tonic",
+    "result": "stormbrew_tonic",
+    "name": "Distill Stormbrew Tonic",
+    "level": 4,
+    "coins": 65,
+    "station": "brewery",
+    "ingredients": {
+      "stormcore_shard": 1,
+      "emberglass_vial": 1,
+      "mana_potion": 1
+    },
+    "description": "Infuse a mana tonic with bottled lightning for rapid focus."
+  },
+  {
+    "id": "sandroot_stew",
+    "result": "sandroot_stew",
+    "name": "Cook Sandroot Stew",
+    "level": 3,
+    "coins": 35,
+    "station": "campfire",
+    "ingredients": {
+      "desert_spice": 2,
+      "ancient_bark": 1,
+      "tundra_berries": 1
+    },
+    "description": "Slow-cook a desert stew that restores weary travelers."
+  },
+  {
+    "id": "wyrmroot_salve",
+    "result": "wyrmroot_salve",
+    "name": "Prepare Wyrmroot Salve",
+    "level": 4,
+    "coins": 70,
+    "station": "brewery",
+    "ingredients": {
+      "wyrmroot_seed": 2,
+      "ember_resin": 1,
+      "emberglass_vial": 1
+    },
+    "description": "Crush wyrmroot seeds into a potent regenerative salve."
+  },
+  {
+    "id": "siren_tear_elixir",
+    "result": "siren_tear_elixir",
+    "name": "Brew Siren Tear Elixir",
+    "level": 6,
+    "coins": 95,
+    "station": "brewery",
+    "ingredients": {
+      "siren_scale": 2,
+      "sunken_pearl": 1,
+      "focus_elixir": 1
+    },
+    "description": "Blend rare ocean relics into a mana-flooding elixir."
+  },
+  {
+    "id": "glowcap_soup",
+    "result": "glowcap_soup",
+    "name": "Simmer Glowcap Soup",
+    "level": 2,
+    "coins": 25,
+    "station": "campfire",
+    "ingredients": {
+      "shadowcap_mushroom": 2,
+      "desert_spice": 1,
+      "emberglass_vial": 1
+    },
+    "description": "Cook a luminous soup that radiates warmth underground."
+  },
+  {
+    "id": "obsidian_shield",
+    "result": "obsidian_shield",
+    "name": "Temper Obsidian Bulwark",
+    "level": 7,
+    "coins": 260,
+    "station": "forge",
+    "ingredients": {
+      "guardian_armor": 1,
+      "ember_crystal_cluster": 2,
+      "stormcore_shard": 1
+    },
+    "description": "Forge a shield that drinks in volcanic fury without splintering."
+  },
+  {
+    "id": "sunforged_blade",
+    "result": "sunforged_blade",
+    "name": "Forge Sunforged Blade",
+    "level": 7,
+    "coins": 280,
+    "station": "forge",
+    "ingredients": {
+      "steel_sword": 1,
+      "sunstone_shard": 4,
+      "luminite_core": 1,
+      "stormcore_shard": 1
+    },
+    "description": "Temper a blade in solar furnaces to unleash radiant strikes."
+  },
+  {
+    "id": "lumin_archivist_tome",
+    "result": "lumin_archivist_tome",
+    "name": "Compile Lumin Archivist Tome",
+    "level": 6,
+    "coins": 205,
+    "station": "arcane_table",
+    "ingredients": {
+      "aurora_fragment": 2,
+      "focus_elixir": 1,
+      "voidthread": 2
+    },
+    "description": "Bind aurora light and shadow thread into a potent spellbook."
+  },
+  {
+    "id": "trork_breaker",
+    "result": "trork_breaker",
+    "name": "Forge Trorkbreaker",
+    "level": 5,
+    "coins": 150,
+    "station": "forge",
+    "ingredients": {
+      "iron_ingot": 3,
+      "ancient_bark": 2,
+      "ember_resin": 1
+    },
+    "description": "Shape a brutal mace designed to crack Trork armor."
+  },
+  {
+    "id": "warden_pike",
+    "result": "warden_pike",
+    "name": "Forge Warden Pike",
+    "level": 5,
+    "coins": 155,
+    "station": "forge",
+    "ingredients": {
+      "iron_ingot": 3,
+      "gale_feather": 2,
+      "stormcore_shard": 1
+    },
+    "description": "Forge a longreach pike for Orbis wardens on patrol."
+  },
+  {
+    "id": "skysong_ward",
+    "result": "skysong_ward",
+    "name": "Tailor Skysong Ward",
+    "level": 6,
+    "coins": 200,
+    "station": "loom",
+    "ingredients": {
+      "voidthread": 2,
+      "aurora_fragment": 2,
+      "luminite_core": 1,
+      "focus_elixir": 1
+    },
+    "description": "Layer resonance sigils into robes that shield arcane casters."
+  },
+  {
+    "id": "nomad_wraps",
+    "result": "nomad_wraps",
+    "name": "Weave Nomad Wraps",
+    "level": 3,
+    "coins": 80,
+    "station": "loom",
+    "ingredients": {
+      "ancient_bark": 2,
+      "desert_spice": 3,
+      "voidthread": 1
+    },
+    "description": "Wrap desert fabrics to guard against scorching winds."
+  },
+  {
+    "id": "duskveil_band",
+    "result": "duskveil_band",
+    "name": "Set Duskveil Band",
+    "level": 5,
+    "coins": 130,
+    "station": "workshop",
+    "ingredients": {
+      "voidthread": 2,
+      "shadowcap_mushroom": 2,
+      "sunken_pearl": 1
+    },
+    "description": "Craft a ring that cloaks the wearer in twilight."
+  },
+  {
+    "id": "forge_skybreaker_halberd",
+    "result": "skybreaker_halberd",
+    "name": "Forge Skybreaker Halberd",
+    "level": 9,
+    "coins": 180,
+    "station": "forge",
+    "ingredients": {
+      "skybreaker_alloy": 2,
+      "stormglass_fragment": 2,
+      "stormveil_thread": 1,
+      "stormcore_shard": 2
+    },
+    "description": "Combine storm-hardened alloys into a halberd that channels lightning."
+  },
+  {
+    "id": "forge_ember_rift_blade",
+    "result": "ember_rift_blade",
+    "name": "Forge Ember Rift Blade",
+    "level": 9,
+    "coins": 175,
+    "station": "forge",
+    "ingredients": {
+      "ember_rift_core": 1,
+      "ember_rift_shard": 2,
+      "slag_ember": 3,
+      "cinder_plate": 1
+    },
+    "description": "Temper rift cores and slag embers into a molten blade."
+  },
+  {
+    "id": "forge_verdant_scythe",
+    "result": "verdant_scythe",
+    "name": "Grow Verdant Scythe",
+    "level": 8,
+    "coins": 150,
+    "station": "grovetable",
+    "ingredients": {
+      "verdant_spine": 2,
+      "moor_silk": 2,
+      "fen_root": 3,
+      "wildvine_fiber": 2
+    },
+    "description": "Shape moor-grown reagents into a rejuvenating scythe."
+  },
+  {
+    "id": "forge_delta_trident",
+    "result": "delta_trident",
+    "name": "Forge Delta Trident",
+    "level": 8,
+    "coins": 165,
+    "station": "forge",
+    "ingredients": {
+      "tidal_quartz": 2,
+      "delta_shell": 2,
+      "abyssal_fin": 1,
+      "silverfin_silk": 2
+    },
+    "description": "Craft a balanced trident attuned to tidal surges."
+  },
+  {
+    "id": "forge_celestial_longbow",
+    "result": "celestial_longbow",
+    "name": "String Celestial Longbow",
+    "level": 10,
+    "coins": 210,
+    "station": "arcane_table",
+    "ingredients": {
+      "celestial_thread": 2,
+      "celestial_leaf": 2,
+      "galeheart_lattice": 1,
+      "aurora_fragment": 2
+    },
+    "description": "Thread starlit components into a bow of comet light."
+  },
+  {
+    "id": "forge_runebound_grimoire",
+    "result": "runebound_grimoire",
+    "name": "Bind Runebound Grimoire",
+    "level": 9,
+    "coins": 190,
+    "station": "arcane_table",
+    "ingredients": {
+      "runic_ember": 2,
+      "glyph_powder": 2,
+      "runebound_dust": 2,
+      "voidscale_plate": 1
+    },
+    "description": "Bind self-weaving runes into a living spellbook."
+  },
+  {
+    "id": "forge_ashen_crusher",
+    "result": "ashen_crusher",
+    "name": "Forge Ashen Crusher",
+    "level": 8,
+    "coins": 160,
+    "station": "forge",
+    "ingredients": {
+      "obsidian_cog": 1,
+      "ember_rift_core": 1,
+      "slag_ember": 4,
+      "lava_core": 2
+    },
+    "description": "Assemble volcanic components into a slag-crushing maul."
+  },
+  {
+    "id": "forge_fenrunner_blades",
+    "result": "fenrunner_blades",
+    "name": "Shape Fenrunner Blades",
+    "level": 7,
+    "coins": 135,
+    "station": "grovetable",
+    "ingredients": {
+      "verdant_pollen": 3,
+      "fen_marrow": 2,
+      "shadowmoss_cap": 2,
+      "iron_ingot": 2
+    },
+    "description": "Temper swift blades with fenfire reagents for marsh scouts."
+  },
+  {
+    "id": "forge_stormveil_sabers",
+    "result": "stormveil_sabers",
+    "name": "Forge Stormveil Sabers",
+    "level": 9,
+    "coins": 185,
+    "station": "forge",
+    "ingredients": {
+      "stormveil_thread": 2,
+      "stormlash_ingot": 1,
+      "stormglass_fragment": 2,
+      "stormcore_shard": 1
+    },
+    "description": "Pair conductive metals into sabers that spark miniature tempests."
+  },
+  {
+    "id": "forge_abyssal_scepter",
+    "result": "abyssal_scepter",
+    "name": "Forge Abyssal Scepter",
+    "level": 10,
+    "coins": 215,
+    "station": "arcane_table",
+    "ingredients": {
+      "abyssal_core_fragment": 1,
+      "abyssal_resin": 2,
+      "voidscale_plate": 1,
+      "abyssal_gem": 1
+    },
+    "description": "Channel abyssal power into a void-humming scepter."
+  },
+  {
+    "id": "craft_skybreaker_plate",
+    "result": "skybreaker_plate",
+    "name": "Plate Skybreaker Harness",
+    "level": 9,
+    "coins": 220,
+    "station": "forge",
+    "ingredients": {
+      "skybreaker_alloy": 3,
+      "stormlash_ingot": 2,
+      "skybreaker_spool": 1,
+      "stormveil_thread": 2
+    },
+    "description": "Layer alloys and cables into storm-discharging warplate."
+  },
+  {
+    "id": "craft_emberweave_hauberk",
+    "result": "emberweave_hauberk",
+    "name": "Weave Ember Hauberk",
+    "level": 8,
+    "coins": 200,
+    "station": "forge",
+    "ingredients": {
+      "ember_rift_shard": 2,
+      "slag_ember": 3,
+      "ember_rift_core": 1,
+      "emberglass_shard": 2
+    },
+    "description": "Interlace ember threads with slag embers for radiant mail."
+  },
+  {
+    "id": "craft_celestial_raiment",
+    "result": "celestial_raiment",
+    "name": "Stitch Celestial Raiment",
+    "level": 10,
+    "coins": 210,
+    "station": "loom",
+    "ingredients": {
+      "celestial_thread": 3,
+      "celestial_leaf": 2,
+      "astro_ink": 2,
+      "aurora_fragment": 1
+    },
+    "description": "Sew cometlit threads into radiant raiment."
+  },
+  {
+    "id": "craft_runebound_barrier",
+    "result": "runebound_barrier",
+    "name": "Set Runebound Barrier",
+    "level": 9,
+    "coins": 205,
+    "station": "wardforge",
+    "ingredients": {
+      "runic_ember": 2,
+      "glyph_powder": 2,
+      "runebound_dust": 2,
+      "voidscale_plate": 1
+    },
+    "description": "Fuse wardstones into a barrier harness."
+  },
+  {
+    "id": "craft_abyssal_carapace",
+    "result": "abyssal_carapace",
+    "name": "Assemble Abyssal Carapace",
+    "level": 10,
+    "coins": 225,
+    "station": "forge",
+    "ingredients": {
+      "abyssal_core_fragment": 1,
+      "abyssal_resin": 2,
+      "voidscale_plate": 2,
+      "abyssal_fin": 2
+    },
+    "description": "Reinforce deepsea plating into an abyssal bulwark."
+  },
+  {
+    "id": "craft_skybreaker_torque",
+    "result": "skybreaker_torque",
+    "name": "Forge Skybreaker Torque",
+    "level": 7,
+    "coins": 130,
+    "station": "jeweler",
+    "ingredients": {
+      "skybreaker_spool": 1,
+      "stormglass_fragment": 1,
+      "thunder_amber": 2
+    },
+    "description": "Braid conductive cables into a lightning torque."
+  },
+  {
+    "id": "craft_celestial_orb",
+    "result": "celestial_orb",
+    "name": "Align Celestial Orb",
+    "level": 8,
+    "coins": 150,
+    "station": "arcane_table",
+    "ingredients": {
+      "celestial_thread": 1,
+      "astro_ink": 1,
+      "celestial_leaf": 1,
+      "aurora_crystal": 1
+    },
+    "description": "Focus starlight into an orb for astral casters."
+  },
+  {
+    "id": "craft_runebound_focus",
+    "result": "runebound_focus",
+    "name": "Carve Runebound Focus",
+    "level": 7,
+    "coins": 125,
+    "station": "wardforge",
+    "ingredients": {
+      "runebound_dust": 2,
+      "glyph_powder": 1,
+      "shadowmoss_cap": 1
+    },
+    "description": "Carve focused wards into a handheld channeler."
+  },
+  {
+    "id": "craft_abyssal_ring",
+    "result": "abyssal_ring",
+    "name": "Set Abyssal Ring",
+    "level": 8,
+    "coins": 140,
+    "station": "jeweler",
+    "ingredients": {
+      "abyssal_resin": 1,
+      "abyssal_gem": 1,
+      "abyssal_fin": 1
+    },
+    "description": "Seal abyssal gems into a pressure-tempered ring."
+  },
+  {
+    "id": "cook_skybreaker_ration",
+    "result": "skybreaker_ration",
+    "name": "Pack Skybreaker Rations",
+    "level": 5,
+    "coins": 60,
+    "station": "cookpot",
+    "ingredients": {
+      "skybreaker_alloy": 1,
+      "stormglass_fragment": 1,
+      "ancient_bark": 2
+    },
+    "description": "Prepare field rations fortified with stormglass crunch."
+  },
+  {
+    "id": "brew_ember_rift_draught",
+    "result": "ember_rift_draught",
+    "name": "Brew Ember Rift Draught",
+    "level": 7,
+    "coins": 85,
+    "station": "brewery",
+    "ingredients": {
+      "ember_rift_core": 1,
+      "slag_ember": 2,
+      "ember_resin": 1
+    },
+    "description": "Distill molten energy into a fiery draught."
+  },
+  {
+    "id": "brew_verdant_elixir",
+    "result": "verdant_elixir",
+    "name": "Steep Verdant Elixir",
+    "level": 6,
+    "coins": 75,
+    "station": "brewery",
+    "ingredients": {
+      "verdant_spine": 1,
+      "fen_root": 2,
+      "moor_silk": 1
+    },
+    "description": "Steep moor botanicals for lingering regeneration."
+  },
+  {
+    "id": "cook_delta_stew",
+    "result": "delta_stew",
+    "name": "Simmer Delta Stew",
+    "level": 6,
+    "coins": 65,
+    "station": "cookpot",
+    "ingredients": {
+      "delta_shell": 1,
+      "tidal_quartz": 1,
+      "delta_phosphor": 1
+    },
+    "description": "Simmer tidal ingredients into a protective stew."
+  },
+  {
+    "id": "brew_celestial_tea",
+    "result": "celestial_tea",
+    "name": "Infuse Celestial Tea",
+    "level": 7,
+    "coins": 90,
+    "station": "brewery",
+    "ingredients": {
+      "celestial_leaf": 2,
+      "astro_ink": 1,
+      "aurora_fragment": 1
+    },
+    "description": "Infuse comet petals into mind-sharpening tea."
+  },
+  {
+    "id": "brew_runebound_tonic",
+    "result": "runebound_tonic",
+    "name": "Distill Runebound Tonic",
+    "level": 7,
+    "coins": 85,
+    "station": "brewery",
+    "ingredients": {
+      "runic_ember": 1,
+      "glyph_powder": 1,
+      "runebound_dust": 1
+    },
+    "description": "Distill ward reagents into a protective tonic."
+  },
+  {
+    "id": "brew_ashen_brew",
+    "result": "ashen_brew",
+    "name": "Brew Ashen Brew",
+    "level": 5,
+    "coins": 55,
+    "station": "brewery",
+    "ingredients": {
+      "slag_ember": 1,
+      "ashen_fragment": 1,
+      "ember_resin": 1
+    },
+    "description": "Smoke-steep volcanic embers into a warming brew."
+  },
+  {
+    "id": "mix_fenfire_salve",
+    "result": "fenfire_salve",
+    "name": "Mix Fenfire Salve",
+    "level": 6,
+    "coins": 70,
+    "station": "apothecary",
+    "ingredients": {
+      "fen_marrow": 1,
+      "fen_root": 1,
+      "shadowmoss_cap": 1
+    },
+    "description": "Blend fenfire reagents into a toxin-cleansing salve."
+  },
+  {
+    "id": "brew_stormveil_potion",
+    "result": "stormveil_potion",
+    "name": "Brew Stormveil Potion",
+    "level": 7,
+    "coins": 90,
+    "station": "brewery",
+    "ingredients": {
+      "stormveil_thread": 1,
+      "stormglass_fragment": 1,
+      "stormcore_shard": 1
+    },
+    "description": "Bottle stormveils into a haste granting draught."
+  },
+  {
+    "id": "brew_abyssal_phial",
+    "result": "abyssal_phial",
+    "name": "Distill Abyssal Phial",
+    "level": 8,
+    "coins": 100,
+    "station": "brewery",
+    "ingredients": {
+      "abyssal_resin": 1,
+      "voidscale_plate": 1,
+      "abyssal_gem": 1
+    },
+    "description": "Distill abyssal essences into a potent phial."
+  },
+  {
+    "id": "brew_luminous_nectar",
+    "result": "luminous_nectar",
+    "name": "Brew Luminous Nectar",
+    "level": 7,
+    "coins": 85,
+    "station": "brewery",
+    "ingredients": {
+      "celestial_leaf": 1,
+      "luminous_script": 1,
+      "aurora_crystal": 1
+    },
+    "description": "Condense archive pollen into luminous nectar."
+  },
+  {
+    "id": "cook_gilded_truffle",
+    "result": "gilded_truffle",
+    "name": "Bake Gilded Truffle",
+    "level": 7,
+    "coins": 95,
+    "station": "cookpot",
+    "ingredients": {
+      "gilded_filament": 1,
+      "sunshadow_spice": 2,
+      "wildvine_bloom": 2
+    },
+    "description": "Bake decadent truffles infused with Sunspire spice."
+  },
+  {
+    "id": "brew_voidglass_serum",
+    "result": "voidglass_serum",
+    "name": "Distill Voidglass Serum",
+    "level": 9,
+    "coins": 110,
+    "station": "apothecary",
+    "ingredients": {
+      "voidscale_plate": 1,
+      "runebound_dust": 1,
+      "glyph_powder": 1
+    },
+    "description": "Distill voidglass slivers into a stealth serum."
+  },
+  {
+    "id": "freeze_aurora_sorbet",
+    "result": "aurora_sorbet",
+    "name": "Freeze Aurora Sorbet",
+    "level": 6,
+    "coins": 80,
+    "station": "cookpot",
+    "ingredients": {
+      "aurora_crystal": 1,
+      "aurora_ember": 1,
+      "wildvine_bloom": 2
+    },
+    "description": "Churn aurora crystals into a mana-rich sorbet."
+  },
+  {
+    "id": "craft_tempest_capacitor",
+    "result": "tempest_capacitor",
+    "name": "Charge Tempest Capacitor",
+    "level": 9,
+    "coins": 110,
+    "station": "workshop",
+    "ingredients": {
+      "stormlash_ingot": 1,
+      "skybreaker_spool": 1,
+      "stormcore_shard": 2
+    },
+    "description": "Charge a reusable capacitor with stormlash power."
+  }
+]

@@ -1,0 +1,121 @@
+[
+  {
+    "id": "skybreaker_regalia",
+    "name": "Skybreaker Regalia",
+    "description": "Stormguard elites forge this regalia to ride the heart of tempests.",
+    "pieces": ["skybreaker_halberd", "skybreaker_plate", "skybreaker_torque"],
+    "bonuses": {
+      "attributes": { "power": 6, "agility": 3 },
+      "damageBonus": 4,
+      "damageMultiplier": 0.12,
+      "critChance": 0.05,
+      "blockChance": 0.05,
+      "resistances": { "lightning": 0.12 }
+    },
+    "effects": [
+      "+6 Power, +3 Agility",
+      "+4 flat weapon damage & +5% crit chance",
+      "+12% lightning damage and resist, +5% block chance"
+    ],
+    "questline": 21
+  },
+  {
+    "id": "ember_rift_armory",
+    "name": "Ember Rift Armory",
+    "description": "Ashen Rift forgemasters temper this arsenal in living magma.",
+    "pieces": ["ember_rift_blade", "emberweave_hauberk", "ember_rift_talisman"],
+    "bonuses": {
+      "attributes": { "power": 5, "resilience": 4 },
+      "damageBonus": 5,
+      "damageMultiplier": 0.1,
+      "flatDamageReduction": 3,
+      "resistances": { "fire": 0.15 }
+    },
+    "effects": [
+      "+5 Power, +4 Resilience",
+      "+5 flat damage & +10% fire damage",
+      "+3 flat damage reduction, +15% fire resistance"
+    ],
+    "questline": 22
+  },
+  {
+    "id": "verdant_ward",
+    "name": "Verdant Ward",
+    "description": "Fenbound wardens weave this set to command the living moors.",
+    "pieces": ["verdant_scythe", "verdant_guard", "verdant_brooch"],
+    "bonuses": {
+      "attributes": { "resilience": 6, "focus": 3 },
+      "damageBonus": 3,
+      "damageMultiplier": 0.08,
+      "dodgeChance": 0.06,
+      "flatDamageReduction": 2,
+      "resistances": { "poison": 0.18, "nature": 0.15 }
+    },
+    "effects": [
+      "+6 Resilience, +3 Focus & +3 flat damage",
+      "+6% dodge chance, +2 flat damage reduction",
+      "+18% poison & +15% nature resistance"
+    ],
+    "questline": 23
+  },
+  {
+    "id": "celestial_convergence",
+    "name": "Celestial Convergence",
+    "description": "Astrolabe custodians align this lattice of starwoven gear.",
+    "pieces": ["celestial_longbow", "celestial_raiment", "celestial_orb"],
+    "bonuses": {
+      "attributes": { "agility": 5, "focus": 5 },
+      "damageMultiplier": 0.1,
+      "critChance": 0.07,
+      "critMultiplier": 0.15,
+      "accuracyBonus": 0.05,
+      "resistances": { "light": 0.1, "arcane": 0.1 }
+    },
+    "effects": [
+      "+5 Agility, +5 Focus",
+      "+10% damage & +7% crit chance, +0.15 crit multiplier",
+      "+5% accuracy, +10% light & arcane resistance"
+    ],
+    "questline": 24
+  },
+  {
+    "id": "abyssal_sovereign",
+    "name": "Abyssal Sovereign",
+    "description": "Tidecallers enthrone their champions in pressure-forged relics.",
+    "pieces": ["abyssal_scepter", "abyssal_carapace", "abyssal_ring"],
+    "bonuses": {
+      "attributes": { "power": 4, "focus": 6 },
+      "damageBonus": 5,
+      "damageMultiplier": 0.1,
+      "flatDamageReduction": 4,
+      "resistances": { "void": 0.15, "water": 0.12 }
+    },
+    "effects": [
+      "+4 Power, +6 Focus & +5 flat damage",
+      "+10% damage, +4 flat damage reduction",
+      "+15% void & +12% water resistance"
+    ],
+    "questline": 25
+  },
+  {
+    "id": "runebound_bulwark",
+    "name": "Runebound Bulwark",
+    "description": "Archivists channel sealed wardstones into this bastion of arcane force.",
+    "pieces": ["runebound_grimoire", "runebound_barrier", "runebound_focus"],
+    "bonuses": {
+      "attributes": { "focus": 6, "resilience": 4 },
+      "damageMultiplier": 0.08,
+      "damageBonus": 4,
+      "critChance": 0.04,
+      "blockChance": 0.06,
+      "flatDamageReduction": 4,
+      "resistances": { "arcane": 0.18 }
+    },
+    "effects": [
+      "+6 Focus, +4 Resilience & +4 flat damage",
+      "+8% damage, +4 flat damage reduction",
+      "+4% crit chance, +6% block chance, +18% arcane resistance"
+    ],
+    "questline": 26
+  }
+]

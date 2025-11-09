@@ -1,0 +1,1001 @@
+{
+  "thunder_signet": [
+    "exploration_event",
+    "exploration_scavenge",
+    "structure_reward"
+  ],
+  "glyph_powder": [
+    "enemy_drop",
+    "exploration_mine"
+  ],
+  "arcane_staff": [
+    "crafting_recipe"
+  ],
+  "ember_ale": [
+    "brew_recipe",
+    "crafting_recipe"
+  ],
+  "aurora_sorbet": [
+    "crafting_recipe",
+    "dungeon_completion_reward",
+    "settlement_production",
+    "structure_reward"
+  ],
+  "luminous_thread": [
+    "exploration_event",
+    "exploration_forage",
+    "exploration_mine",
+    "exploration_scavenge",
+    "structure_reward"
+  ],
+  "tempest_capacitor": [
+    "crafting_recipe",
+    "dungeon_completion_reward",
+    "structure_reward",
+    "world_event_reward"
+  ],
+  "stormveil_mantle": [
+    "dungeon_completion_reward",
+    "structure_reward"
+  ],
+  "fenfire_salve": [
+    "crafting_recipe",
+    "dungeon_completion_reward",
+    "structure_reward"
+  ],
+  "echo_crystal": [
+    "exploration_event",
+    "exploration_forage",
+    "exploration_mine",
+    "exploration_scavenge",
+    "structure_reward"
+  ],
+  "skyseer_talisman": [
+    "crafting_recipe",
+    "dungeon_completion_reward",
+    "dungeon_floor_loot",
+    "dungeon_floor_relic"
+  ],
+  "hollowroot_paste": [
+    "exploration_scavenge"
+  ],
+  "glowcap_spore": [
+    "exploration_event",
+    "exploration_forage",
+    "structure_reward"
+  ],
+  "fenrunner_blades": [
+    "crafting_recipe",
+    "structure_reward"
+  ],
+  "celestial_longbow": [
+    "crafting_recipe",
+    "dungeon_completion_reward",
+    "structure_reward"
+  ],
+  "stormveil_potion": [
+    "crafting_recipe",
+    "world_event_reward"
+  ],
+  "skybreaker_ration": [
+    "crafting_recipe",
+    "dungeon_completion_reward",
+    "settlement_production",
+    "world_event_reward"
+  ],
+  "steel_sword": [
+    "crafting_recipe"
+  ],
+  "ironroot_heartwood": [
+    "exploration_event",
+    "exploration_forage",
+    "exploration_scavenge",
+    "structure_reward"
+  ],
+  "luminite_core": [
+    "dungeon_floor_relic",
+    "world_event_reward"
+  ],
+  "molten_heart": [
+    "exploration_scavenge",
+    "structure_reward"
+  ],
+  "moorfiber_reed": [
+    "exploration_forage",
+    "structure_reward"
+  ],
+  "fenfire_globe": [
+    "exploration_event",
+    "exploration_scavenge"
+  ],
+  "voidglass_dirk": [
+    "dungeon_completion_reward",
+    "world_event_reward"
+  ],
+  "delta_compass": [
+    "dungeon_completion_reward",
+    "structure_reward"
+  ],
+  "fen_root": [
+    "exploration_forage",
+    "settlement_production"
+  ],
+  "ember_rift_draught": [
+    "crafting_recipe",
+    "world_event_reward"
+  ],
+  "galeheart_lattice": [
+    "exploration_mine"
+  ],
+  "ancient_bark": [
+    "dungeon_floor_loot",
+    "exploration_event",
+    "exploration_forage",
+    "exploration_mine"
+  ],
+  "greater_health_potion": [
+    "crafting_recipe"
+  ],
+  "runeetched_fragment": [
+    "exploration_event",
+    "exploration_forage",
+    "exploration_scavenge",
+    "structure_reward"
+  ],
+  "gilded_filament": [
+    "exploration_forage",
+    "world_event_reward"
+  ],
+  "stormlash_ingot": [
+    "exploration_mine",
+    "settlement_production"
+  ],
+  "kweebec_charm": [
+    "dungeon_completion_reward",
+    "dungeon_floor_loot",
+    "dungeon_floor_relic",
+    "exploration_forage",
+    "structure_reward"
+  ],
+  "opaline_seed": [
+    "exploration_event",
+    "exploration_forage",
+    "structure_reward"
+  ],
+  "ember_rift_talisman": [
+    "structure_reward"
+  ],
+  "abyssal_fin": [
+    "exploration_forage"
+  ],
+  "luminous_nectar": [
+    "crafting_recipe"
+  ],
+  "astro_ink": [
+    "enemy_drop",
+    "exploration_scavenge",
+    "settlement_production"
+  ],
+  "archivist_focus": [
+    "exploration_scavenge",
+    "structure_reward"
+  ],
+  "verdant_scythe": [
+    "crafting_recipe",
+    "dungeon_completion_reward",
+    "structure_reward"
+  ],
+  "wooden_sword": [
+    "structure_reward"
+  ],
+  "tempest_plume": [
+    "exploration_event",
+    "exploration_forage",
+    "exploration_scavenge",
+    "structure_reward"
+  ],
+  "frostbite_blade": [
+    "crafting_recipe",
+    "dungeon_completion_reward",
+    "dungeon_floor_loot",
+    "dungeon_floor_relic"
+  ],
+  "tempest_shotcaster": [
+    "dungeon_completion_reward"
+  ],
+  "ashen_crusher": [
+    "crafting_recipe",
+    "dungeon_completion_reward",
+    "structure_reward"
+  ],
+  "verdant_spine": [
+    "enemy_drop",
+    "exploration_forage"
+  ],
+  "gale_runner_boots": [
+    "crafting_recipe",
+    "dungeon_floor_loot"
+  ],
+  "celestial_ore": [
+    "exploration_mine"
+  ],
+  "starlit_resin": [
+    "exploration_scavenge",
+    "structure_reward"
+  ],
+  "emberfen_resin": [
+    "exploration_forage",
+    "exploration_mine",
+    "exploration_scavenge",
+    "structure_reward"
+  ],
+  "wildvine_bloom": [
+    "exploration_forage",
+    "settlement_production",
+    "structure_reward",
+    "world_event_reward"
+  ],
+  "emberstorm_bow": [
+    "crafting_recipe",
+    "dungeon_completion_reward",
+    "dungeon_floor_loot"
+  ],
+  "voidglass_band": [
+    "structure_reward"
+  ],
+  "wardstone_fragment": [
+    "exploration_event",
+    "exploration_mine",
+    "structure_reward"
+  ],
+  "ember_resin": [
+    "dungeon_completion_reward",
+    "dungeon_floor_loot",
+    "exploration_forage",
+    "structure_reward",
+    "world_event_reward"
+  ],
+  "guardian_armor": [
+    "crafting_recipe"
+  ],
+  "ashen_codex": [
+    "structure_reward"
+  ],
+  "ashen_fragment": [
+    "exploration_forage"
+  ],
+  "fenfire_charm": [
+    "dungeon_completion_reward",
+    "structure_reward"
+  ],
+  "luminous_script": [
+    "enemy_drop",
+    "exploration_event",
+    "exploration_forage",
+    "structure_reward"
+  ],
+  "gilded_estoc": [
+    "structure_reward"
+  ],
+  "celestial_orb": [
+    "crafting_recipe",
+    "dungeon_completion_reward",
+    "enemy_drop",
+    "structure_reward"
+  ],
+  "stormlash_crest": [
+    "exploration_event",
+    "exploration_forage",
+    "exploration_scavenge",
+    "structure_reward"
+  ],
+  "tempest_emblem": [
+    "structure_reward"
+  ],
+  "radiant_silt": [
+    "exploration_event",
+    "exploration_forage",
+    "structure_reward"
+  ],
+  "tempest_leaf": [
+    "exploration_scavenge"
+  ],
+  "earthbreaker_hammer": [
+    "world_event_reward"
+  ],
+  "delta_shell": [
+    "enemy_drop",
+    "exploration_scavenge"
+  ],
+  "mana_potion": [
+    "structure_reward",
+    "world_event_reward"
+  ],
+  "abyssal_scepter": [
+    "crafting_recipe",
+    "dungeon_completion_reward",
+    "structure_reward"
+  ],
+  "dreadroot_bark": [
+    "exploration_event",
+    "exploration_forage",
+    "exploration_mine",
+    "structure_reward"
+  ],
+  "runebound_tonic": [
+    "crafting_recipe",
+    "structure_reward"
+  ],
+  "bog_lotus": [
+    "exploration_event",
+    "exploration_forage",
+    "exploration_scavenge",
+    "structure_reward"
+  ],
+  "mistspire_dust": [
+    "exploration_event",
+    "exploration_forage",
+    "exploration_mine",
+    "exploration_scavenge",
+    "structure_reward",
+    "world_event_reward"
+  ],
+  "twilight_opal": [
+    "exploration_event",
+    "exploration_forage",
+    "structure_reward"
+  ],
+  "sunforge_ingot": [
+    "exploration_event",
+    "exploration_mine",
+    "exploration_scavenge",
+    "structure_reward",
+    "world_event_reward"
+  ],
+  "stonebark_chip": [
+    "exploration_event",
+    "exploration_forage",
+    "exploration_mine",
+    "structure_reward"
+  ],
+  "echoing_focus": [
+    "exploration_scavenge",
+    "structure_reward"
+  ],
+  "verdant_guard": [
+    "dungeon_completion_reward",
+    "structure_reward"
+  ],
+  "cinder_plate": [
+    "dungeon_completion_reward"
+  ],
+  "auric_powder": [
+    "exploration_event",
+    "exploration_forage",
+    "exploration_mine",
+    "exploration_scavenge",
+    "structure_reward",
+    "world_event_reward"
+  ],
+  "ember_rift_core": [
+    "dungeon_completion_reward",
+    "enemy_drop",
+    "exploration_mine",
+    "world_event_reward"
+  ],
+  "celestial_leaf": [
+    "enemy_drop",
+    "exploration_forage",
+    "settlement_production"
+  ],
+  "shattered_shard": [
+    "exploration_event",
+    "exploration_forage",
+    "exploration_mine",
+    "structure_reward"
+  ],
+  "voidveil_cloak": [
+    "crafting_recipe",
+    "dungeon_completion_reward",
+    "dungeon_floor_loot",
+    "dungeon_floor_relic"
+  ],
+  "wildvine_fiber": [
+    "exploration_event",
+    "exploration_forage",
+    "structure_reward"
+  ],
+  "fenwarden_shell": [
+    "structure_reward"
+  ],
+  "ashen_cloak": [
+    "structure_reward"
+  ],
+  "tempest_nav_chart": [
+    "exploration_event",
+    "exploration_forage",
+    "exploration_mine",
+    "structure_reward"
+  ],
+  "sunken_pearl": [
+    "dungeon_floor_loot",
+    "exploration_scavenge",
+    "world_event_reward"
+  ],
+  "bluehaven_pearl": [
+    "exploration_event",
+    "exploration_forage",
+    "structure_reward",
+    "world_event_reward"
+  ],
+  "crystal_bloom": [
+    "exploration_forage",
+    "exploration_mine",
+    "structure_reward"
+  ],
+  "dawnwatch_feather": [
+    "exploration_event",
+    "exploration_forage",
+    "structure_reward",
+    "world_event_reward"
+  ],
+  "glitterwing_bow": [
+    "crafting_recipe",
+    "dungeon_completion_reward",
+    "dungeon_floor_loot",
+    "dungeon_floor_relic"
+  ],
+  "verdant_brooch": [
+    "structure_reward"
+  ],
+  "tundra_berries": [
+    "exploration_forage"
+  ],
+  "silverfin_silk": [
+    "exploration_event",
+    "exploration_forage",
+    "exploration_scavenge",
+    "structure_reward",
+    "world_event_reward"
+  ],
+  "tidelight_resin": [
+    "exploration_event",
+    "exploration_scavenge",
+    "structure_reward"
+  ],
+  "sunshadow_resin": [
+    "exploration_forage",
+    "settlement_production",
+    "world_event_reward"
+  ],
+  "stormveil_thread": [
+    "exploration_forage",
+    "world_event_reward"
+  ],
+  "runic_core": [
+    "exploration_event",
+    "exploration_mine",
+    "exploration_scavenge",
+    "structure_reward"
+  ],
+  "skybreaker_alloy": [
+    "exploration_mine",
+    "settlement_production"
+  ],
+  "horizon_sunsteel": [
+    "exploration_event",
+    "exploration_forage",
+    "exploration_mine",
+    "exploration_scavenge",
+    "structure_reward"
+  ],
+  "sunspire_leaf": [
+    "exploration_event",
+    "exploration_forage",
+    "exploration_scavenge",
+    "structure_reward"
+  ],
+  "starshard_ore": [
+    "exploration_event",
+    "exploration_forage",
+    "exploration_mine",
+    "structure_reward"
+  ],
+  "moor_silk": [
+    "exploration_mine"
+  ],
+  "voidscar_fragment": [
+    "exploration_event",
+    "exploration_forage",
+    "exploration_mine",
+    "structure_reward",
+    "world_event_reward"
+  ],
+  "gilded_vestments": [
+    "structure_reward"
+  ],
+  "tideglass_pearl": [
+    "exploration_event",
+    "exploration_forage",
+    "exploration_mine",
+    "exploration_scavenge",
+    "structure_reward"
+  ],
+  "ashen_glass": [
+    "exploration_mine",
+    "structure_reward"
+  ],
+  "stormglass_fragment": [
+    "exploration_forage",
+    "world_event_reward"
+  ],
+  "emberscale_mail": [
+    "crafting_recipe"
+  ],
+  "stormveil_plume": [
+    "dungeon_completion_reward",
+    "structure_reward"
+  ],
+  "tidal_quartz": [
+    "enemy_drop",
+    "exploration_mine"
+  ],
+  "peatstone_chunk": [
+    "exploration_mine"
+  ],
+  "runebloom_petals": [
+    "exploration_forage"
+  ],
+  "voidglass_harness": [
+    "structure_reward"
+  ],
+  "prismvellum": [
+    "exploration_forage"
+  ],
+  "verdant_spore": [
+    "exploration_forage",
+    "structure_reward"
+  ],
+  "ironheart_sap": [
+    "exploration_event",
+    "exploration_forage",
+    "structure_reward"
+  ],
+  "lava_core": [
+    "exploration_event",
+    "exploration_forage",
+    "exploration_mine",
+    "exploration_scavenge",
+    "structure_reward"
+  ],
+  "obsidian_glass": [
+    "exploration_event",
+    "exploration_mine",
+    "structure_reward"
+  ],
+  "emberweave_hauberk": [
+    "crafting_recipe",
+    "dungeon_completion_reward",
+    "structure_reward"
+  ],
+  "skyflare_pendant": [
+    "crafting_recipe",
+    "dungeon_completion_reward",
+    "dungeon_floor_loot",
+    "exploration_forage",
+    "structure_reward"
+  ],
+  "aurora_crystal": [
+    "dungeon_completion_reward",
+    "enemy_drop",
+    "exploration_mine",
+    "settlement_production"
+  ],
+  "gloamshade_spore": [
+    "exploration_event",
+    "exploration_forage",
+    "exploration_mine",
+    "exploration_scavenge",
+    "structure_reward"
+  ],
+  "thunder_amber": [
+    "exploration_scavenge"
+  ],
+  "radiant_spireglass": [
+    "exploration_mine"
+  ],
+  "luminous_aegis": [
+    "structure_reward"
+  ],
+  "verdant_pollen": [
+    "exploration_scavenge",
+    "settlement_production"
+  ],
+  "voidglass_serum": [
+    "crafting_recipe",
+    "dungeon_completion_reward",
+    "world_event_reward"
+  ],
+  "slag_ember": [
+    "enemy_drop",
+    "exploration_scavenge"
+  ],
+  "sapling_staff": [
+    "dungeon_completion_reward",
+    "dungeon_floor_loot",
+    "structure_reward"
+  ],
+  "ashen_pearl": [
+    "exploration_scavenge"
+  ],
+  "glowcap_soup": [
+    "brew_recipe",
+    "crafting_recipe",
+    "dungeon_floor_loot"
+  ],
+  "health_potion": [
+    "structure_reward",
+    "world_event_reward"
+  ],
+  "ashen_brew": [
+    "crafting_recipe",
+    "structure_reward"
+  ],
+  "borea_fur_cloak": [
+    "dungeon_floor_loot",
+    "structure_reward",
+    "world_event_reward"
+  ],
+  "azure_coralline": [
+    "exploration_forage",
+    "exploration_mine",
+    "exploration_scavenge",
+    "structure_reward"
+  ],
+  "iron_sword": [
+    "structure_reward",
+    "world_event_reward"
+  ],
+  "stormcore_shard": [
+    "dungeon_floor_loot",
+    "exploration_mine",
+    "structure_reward"
+  ],
+  "sunstone_shard": [
+    "dungeon_floor_loot",
+    "exploration_mine"
+  ],
+  "leather_armor": [
+    "structure_reward",
+    "world_event_reward"
+  ],
+  "coral_branch": [
+    "exploration_forage",
+    "exploration_mine",
+    "structure_reward"
+  ],
+  "crimson_pitch": [
+    "exploration_forage",
+    "structure_reward"
+  ],
+  "delta_trident": [
+    "crafting_recipe",
+    "dungeon_completion_reward",
+    "structure_reward"
+  ],
+  "runebound_barrier": [
+    "crafting_recipe",
+    "dungeon_completion_reward",
+    "structure_reward"
+  ],
+  "abyssal_ring": [
+    "crafting_recipe",
+    "dungeon_completion_reward",
+    "structure_reward"
+  ],
+  "fen_marrow": [
+    "enemy_drop"
+  ],
+  "delta_stew": [
+    "crafting_recipe",
+    "world_event_reward"
+  ],
+  "scarlet_myrtle": [
+    "exploration_event",
+    "exploration_forage",
+    "exploration_scavenge",
+    "structure_reward"
+  ],
+  "thunderite_ore": [
+    "exploration_mine",
+    "exploration_scavenge",
+    "structure_reward",
+    "world_event_reward"
+  ],
+  "skybreaker_spool": [
+    "exploration_scavenge"
+  ],
+  "ashstone": [
+    "exploration_event",
+    "exploration_mine",
+    "structure_reward"
+  ],
+  "skybreaker_halberd": [
+    "crafting_recipe",
+    "dungeon_completion_reward",
+    "structure_reward"
+  ],
+  "diamond_sword": [
+    "world_event_reward"
+  ],
+  "aurora_mail": [
+    "dungeon_completion_reward",
+    "world_event_reward"
+  ],
+  "luminous_signet": [
+    "dungeon_completion_reward",
+    "structure_reward"
+  ],
+  "skybreaker_torque": [
+    "crafting_recipe",
+    "structure_reward"
+  ],
+  "tidecaller_shell": [
+    "crafting_recipe",
+    "dungeon_completion_reward",
+    "dungeon_floor_loot",
+    "dungeon_floor_relic",
+    "world_event_reward"
+  ],
+  "emberglow_slag": [
+    "exploration_event",
+    "exploration_forage",
+    "structure_reward"
+  ],
+  "iron_armor": [
+    "structure_reward",
+    "world_event_reward"
+  ],
+  "celestial_raiment": [
+    "crafting_recipe",
+    "dungeon_completion_reward",
+    "structure_reward"
+  ],
+  "frostglow_ring": [
+    "crafting_recipe"
+  ],
+  "emberglass_shard": [
+    "exploration_event",
+    "exploration_mine",
+    "exploration_scavenge",
+    "structure_reward"
+  ],
+  "aurora_ember": [
+    "exploration_event",
+    "exploration_forage",
+    "exploration_mine",
+    "settlement_production",
+    "structure_reward"
+  ],
+  "gilded_truffle": [
+    "crafting_recipe",
+    "settlement_production",
+    "structure_reward"
+  ],
+  "celestial_thread": [
+    "enemy_drop",
+    "exploration_forage",
+    "exploration_mine",
+    "settlement_production"
+  ],
+  "crystal_spire": [
+    "exploration_mine",
+    "exploration_scavenge"
+  ],
+  "sandstride_anklet": [
+    "crafting_recipe",
+    "dungeon_completion_reward",
+    "dungeon_floor_loot",
+    "dungeon_floor_relic"
+  ],
+  "whisperstone_chip": [
+    "exploration_mine"
+  ],
+  "ember_crystal_cluster": [
+    "dungeon_floor_loot",
+    "exploration_mine",
+    "world_event_reward"
+  ],
+  "obsidian_cog": [
+    "exploration_scavenge"
+  ],
+  "runebound_focus": [
+    "crafting_recipe",
+    "dungeon_completion_reward",
+    "structure_reward"
+  ],
+  "rifted_cinder": [
+    "exploration_event",
+    "exploration_forage"
+  ],
+  "verdant_elixir": [
+    "crafting_recipe",
+    "dungeon_completion_reward",
+    "enemy_drop",
+    "structure_reward"
+  ],
+  "deepsea_trident": [
+    "crafting_recipe",
+    "dungeon_completion_reward",
+    "dungeon_floor_loot"
+  ],
+  "veilroot_pod": [
+    "exploration_event",
+    "exploration_forage",
+    "structure_reward"
+  ],
+  "celestial_tea": [
+    "crafting_recipe",
+    "structure_reward",
+    "world_event_reward"
+  ],
+  "abyssal_resin": [
+    "exploration_scavenge",
+    "world_event_reward"
+  ],
+  "glimmerfen_bloom": [
+    "exploration_forage",
+    "structure_reward"
+  ],
+  "abyssal_phial": [
+    "crafting_recipe",
+    "structure_reward"
+  ],
+  "cosmic_lens": [
+    "exploration_scavenge",
+    "structure_reward"
+  ],
+  "runic_ember": [
+    "enemy_drop",
+    "exploration_forage"
+  ],
+  "skybreaker_plate": [
+    "crafting_recipe",
+    "dungeon_completion_reward",
+    "structure_reward"
+  ],
+  "duskfall_reed": [
+    "exploration_event",
+    "exploration_forage",
+    "structure_reward"
+  ],
+  "aurora_warhammer": [
+    "dungeon_completion_reward"
+  ],
+  "bog_amber": [
+    "exploration_forage"
+  ],
+  "stormguard_plate": [
+    "crafting_recipe",
+    "dungeon_completion_reward",
+    "dungeon_floor_loot",
+    "dungeon_floor_relic",
+    "exploration_event",
+    "exploration_mine",
+    "exploration_scavenge",
+    "structure_reward"
+  ],
+  "focus_elixir": [
+    "crafting_recipe",
+    "structure_reward"
+  ],
+  "aurora_buckle": [
+    "structure_reward"
+  ],
+  "everfrost_codex": [
+    "exploration_forage",
+    "structure_reward",
+    "world_event_reward"
+  ],
+  "delta_myr": [
+    "exploration_mine"
+  ],
+  "starseer_chart": [
+    "exploration_event",
+    "exploration_forage",
+    "structure_reward"
+  ],
+  "void_essence": [
+    "dungeon_floor_loot",
+    "world_event_reward"
+  ],
+  "abyssal_carapace": [
+    "crafting_recipe",
+    "dungeon_completion_reward",
+    "structure_reward"
+  ],
+  "voidscale_plate": [
+    "dungeon_completion_reward",
+    "exploration_mine"
+  ],
+  "runebound_dust": [
+    "enemy_drop",
+    "exploration_scavenge"
+  ],
+  "shadow_dagger": [
+    "crafting_recipe"
+  ],
+  "tideborn_scale": [
+    "exploration_forage",
+    "exploration_mine",
+    "exploration_scavenge",
+    "structure_reward"
+  ],
+  "ember_rift_blade": [
+    "crafting_recipe",
+    "dungeon_completion_reward",
+    "structure_reward"
+  ],
+  "gilded_choker": [
+    "structure_reward"
+  ],
+  "delta_scalecoat": [
+    "dungeon_completion_reward",
+    "structure_reward"
+  ],
+  "stormveil_sabers": [
+    "crafting_recipe",
+    "structure_reward"
+  ],
+  "ember_rift_shard": [
+    "enemy_drop",
+    "exploration_mine"
+  ],
+  "abyssal_core_fragment": [
+    "exploration_mine"
+  ],
+  "stormbreak_shell": [
+    "exploration_forage",
+    "exploration_scavenge",
+    "structure_reward",
+    "world_event_reward"
+  ],
+  "moonpetal_blossom": [
+    "exploration_event",
+    "exploration_forage",
+    "exploration_scavenge",
+    "structure_reward"
+  ],
+  "starward_essence": [
+    "exploration_forage",
+    "structure_reward"
+  ],
+  "gale_blade": [
+    "crafting_recipe"
+  ],
+  "runebound_grimoire": [
+    "crafting_recipe",
+    "dungeon_completion_reward",
+    "structure_reward"
+  ],
+  "luminous_lance": [
+    "dungeon_completion_reward",
+    "structure_reward"
+  ],
+  "delta_phosphor": [
+    "enemy_drop",
+    "exploration_forage",
+    "settlement_production"
+  ],
+  "shadowmoss_cap": [
+    "exploration_scavenge"
+  ],
+  "tempest_vanguard": [
+    "structure_reward"
+  ],
+  "iron_ingot": [
+    "exploration_mine",
+    "exploration_scavenge",
+    "structure_reward"
+  ]
+}

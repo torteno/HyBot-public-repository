@@ -1,0 +1,171 @@
+[
+  {
+    "id": "ember_ale",
+    "name": "Ember Ale",
+    "rarity": "uncommon",
+    "station": "brewery",
+    "ingredients": {
+      "ancient_bark": 1,
+      "sunstone_shard": 1,
+      "mana_potion": 1
+    },
+    "effects": {
+      "heal": 15,
+      "buff": "fire_resist"
+    },
+    "durationSeconds": 120,
+    "description": "A warming brew that mutes flame burns and restores vigor."
+  },
+  {
+    "id": "skysong_draught",
+    "name": "Skysong Draught",
+    "rarity": "rare",
+    "station": "brewery",
+    "ingredients": {
+      "focus_elixir": 1,
+      "luminite_core": 1,
+      "orbis_crystal": 1
+    },
+    "effects": {
+      "mana": 60,
+      "buff": "spell_power"
+    },
+    "durationSeconds": 150,
+    "description": "A luminous draught that swells mana pools and empowers spells."
+  },
+  {
+    "id": "grove_tonic",
+    "name": "Grove Tonic",
+    "rarity": "common",
+    "station": "brewery",
+    "ingredients": {
+      "ancient_bark": 2,
+      "health_potion": 1
+    },
+    "effects": {
+      "heal": 40,
+      "buff": "regen"
+    },
+    "durationSeconds": 90,
+    "description": "A tonic brewed by Kweebec healers to regenerate life over time."
+  },
+  {
+    "id": "stormbrew_tonic",
+    "name": "Stormbrew Tonic",
+    "rarity": "rare",
+    "station": "brewery",
+    "ingredients": {
+      "stormcore_shard": 1,
+      "emberglass_vial": 1,
+      "mana_potion": 1
+    },
+    "effects": {
+      "mana": 35,
+      "buff": "haste"
+    },
+    "durationSeconds": 120,
+    "description": "Crackling energy surges through this tonic, sharpening reactions."
+  },
+  {
+    "id": "wyrmroot_salve",
+    "name": "Wyrmroot Salve",
+    "rarity": "rare",
+    "station": "brewery",
+    "ingredients": {
+      "wyrmroot_seed": 2,
+      "ember_resin": 1,
+      "emberglass_vial": 1
+    },
+    "effects": {
+      "heal": 55,
+      "buff": "regen"
+    },
+    "durationSeconds": 180,
+    "description": "Thick salve that knits wounds with draconic vitality."
+  },
+  {
+    "id": "siren_tear_elixir",
+    "name": "Siren Tear Elixir",
+    "rarity": "epic",
+    "station": "brewery",
+    "ingredients": {
+      "siren_scale": 2,
+      "sunken_pearl": 1,
+      "focus_elixir": 1
+    },
+    "effects": {
+      "mana": 60,
+      "buff": "water_affinity"
+    },
+    "durationSeconds": 180,
+    "description": "An oceanic elixir that heightens tidal casting and watery grace."
+  },
+  {
+    "id": "sandroot_stew",
+    "name": "Sandroot Stew",
+    "rarity": "uncommon",
+    "station": "campfire",
+    "ingredients": {
+      "desert_spice": 2,
+      "ancient_bark": 1,
+      "tundra_berries": 1
+    },
+    "effects": {
+      "heal": 40,
+      "buff": "heat_resist"
+    },
+    "durationSeconds": 240,
+    "description": "A hearty stew that shields travelers against desert scorch."
+  },
+  {
+    "id": "glowcap_soup",
+    "name": "Glowcap Soup",
+    "rarity": "common",
+    "station": "campfire",
+    "ingredients": {
+      "shadowcap_mushroom": 2,
+      "desert_spice": 1,
+      "emberglass_vial": 1
+    },
+    "effects": {
+      "heal": 25,
+      "buff": "luminescence"
+    },
+    "durationSeconds": 150,
+    "description": "A softly glowing soup that lights the way through caverns."
+  },
+  {
+    "id": "aurora_tea",
+    "name": "Aurora Tea",
+    "rarity": "rare",
+    "station": "brewery",
+    "ingredients": {
+      "aurora_fragment": 1,
+      "mana_potion": 1,
+      "gale_feather": 1
+    },
+    "effects": {
+      "mana": 25,
+      "buff": "clarity"
+    },
+    "durationSeconds": 120,
+    "description": "Tea steeped in aurora light that clears the mind for spellwork."
+  },
+  {
+    "id": "ember_resin_draught",
+    "name": "Ember Resin Draught",
+    "rarity": "rare",
+    "station": "brewery",
+    "ingredients": {
+      "ember_resin": 2,
+      "ember_crystal_cluster": 1,
+      "mana_potion": 1
+    },
+    "effects": {
+      "heal": 20,
+      "buff": "fire_power"
+    },
+    "durationSeconds": 150,
+    "description": "Molten draught that ignites melee strikes with volcanic fury."
+  }
+]

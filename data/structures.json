@@ -1,0 +1,3577 @@
+[
+  {
+    "id": "kweebec_cache",
+    "name": "Kweebec Cache",
+    "biome": "emerald_grove",
+    "puzzle": {
+      "type": "sequence",
+      "difficulty": 1,
+      "successReward": {
+        "coins": 80,
+        "items": [
+          {
+            "item": "kweebec_charm",
+            "quantity": 1
+          },
+          {
+            "item": "wooden_sword",
+            "quantity": 1
+          },
+          {
+            "item": "health_potion",
+            "quantity": 1
+          }
+        ]
+      },
+      "failureConsequence": {
+        "damagePercent": 0.1
+      }
+    }
+  },
+  {
+    "id": "whispering_hollow",
+    "name": "Whispering Hollow",
+    "biome": "emerald_grove",
+    "puzzle": {
+      "type": "memory",
+      "difficulty": 2,
+      "successReward": {
+        "xp": 140,
+        "items": [
+          {
+            "item": "grove_tonic",
+            "quantity": 2
+          },
+          {
+            "item": "sapling_staff",
+            "quantity": 1
+          }
+        ]
+      },
+      "failureConsequence": {
+        "spawnEnemy": "shadow_crawler"
+      }
+    }
+  },
+  {
+    "id": "skysong_shrine",
+    "name": "Skysong Resonance Shrine",
+    "biome": "gale_cliffs",
+    "puzzle": {
+      "type": "matching",
+      "difficulty": 2,
+      "successReward": {
+        "items": [
+          {
+            "item": "skyflare_pendant",
+            "quantity": 1
+          }
+        ],
+        "reputation": {
+          "skysong": 8
+        }
+      },
+      "failureConsequence": {
+        "spawnEnemy": "void_knight"
+      }
+    }
+  },
+  {
+    "id": "resonance_conduit",
+    "name": "Resonance Conduit",
+    "biome": "gale_cliffs",
+    "puzzle": {
+      "type": "timed_input",
+      "difficulty": 3,
+      "successReward": {
+        "coins": 150,
+        "items": [
+          {
+            "item": "focus_elixir",
+            "quantity": 2
+          }
+        ]
+      },
+      "failureConsequence": {
+        "debuff": "clarity",
+        "durationSeconds": 420
+      }
+    }
+  },
+  {
+    "id": "stormguard_armory",
+    "name": "Stormguard Armory",
+    "biome": "stormguard_keep",
+    "puzzle": {
+      "type": "lockpick",
+      "difficulty": 4,
+      "successReward": {
+        "items": [
+          {
+            "item": "stormguard_plate",
+            "quantity": 1
+          },
+          {
+            "item": "stormcore_shard",
+            "quantity": 2
+          },
+          {
+            "item": "iron_sword",
+            "quantity": 1
+          },
+          {
+            "item": "iron_armor",
+            "quantity": 1
+          },
+          {
+            "item": "mana_potion",
+            "quantity": 1
+          },
+          {
+            "item": "tempest_vanguard",
+            "quantity": 1
+          }
+        ]
+      },
+      "failureConsequence": {
+        "spawnEnemy": "varyn_warlord"
+      }
+    }
+  },
+  {
+    "id": "buried_vault",
+    "name": "Buried Vault",
+    "biome": "sunset_dunes",
+    "puzzle": {
+      "type": "riddle",
+      "difficulty": 3,
+      "successReward": {
+        "coins": 210,
+        "items": [
+          {
+            "item": "amber_glass",
+            "quantity": 3
+          }
+        ]
+      },
+      "failureConsequence": {
+        "damagePercent": 0.2
+      }
+    }
+  },
+  {
+    "id": "void_shard_chamber",
+    "name": "Void Shard Chamber",
+    "biome": "shadow_depths",
+    "puzzle": {
+      "type": "sequence",
+      "difficulty": 4,
+      "successReward": {
+        "items": [
+          {
+            "item": "abyssal_relic",
+            "quantity": 1
+          }
+        ],
+        "xp": 220
+      },
+      "failureConsequence": {
+        "spawnEnemy": "abyssal_mimic"
+      }
+    }
+  },
+  {
+    "id": "aurora_chapel",
+    "name": "Aurora Chapel",
+    "biome": "frostblossom_glacier",
+    "puzzle": {
+      "type": "pattern",
+      "difficulty": 3,
+      "successReward": {
+        "items": [
+          {
+            "item": "aurora_lantern",
+            "quantity": 1
+          }
+        ],
+        "reputation": {
+          "skysong": 5
+        }
+      },
+      "failureConsequence": {
+        "damagePercent": 0.15
+      }
+    }
+  },
+  {
+    "id": "sandstorm_ruins",
+    "name": "Sandstorm Ruins",
+    "biome": "sunset_dunes",
+    "puzzle": {
+      "type": "sequence",
+      "difficulty": 3,
+      "successReward": {
+        "coins": 170,
+        "items": [
+          {
+            "item": "twilight_opal",
+            "quantity": 1
+          },
+          {
+            "item": "leather_armor",
+            "quantity": 1
+          }
+        ]
+      },
+      "failureConsequence": {
+        "damagePercent": 0.18
+      }
+    }
+  },
+  {
+    "id": "frostbloom_archive",
+    "name": "Frostbloom Archive",
+    "biome": "frostblossom_glacier",
+    "puzzle": {
+      "type": "memory",
+      "difficulty": 4,
+      "successReward": {
+        "xp": 260,
+        "items": [
+          {
+            "item": "frostblossom_petals",
+            "quantity": 3
+          }
+        ]
+      },
+      "failureConsequence": {
+        "spawnEnemy": "icebound_sentinel"
+      }
+    }
+  },
+  {
+    "id": "coral_lantern_ritual",
+    "name": "Coral Lantern Ritual",
+    "biome": "azure_cove",
+    "puzzle": {
+      "type": "timed_input",
+      "difficulty": 3,
+      "successReward": {
+        "items": [
+          {
+            "item": "tideglass_pearl",
+            "quantity": 1
+          }
+        ],
+        "coins": 120
+      },
+      "failureConsequence": {
+        "debuff": "soaked",
+        "durationSeconds": 360
+      }
+    }
+  },
+  {
+    "id": "tidal_treasury",
+    "name": "Tidal Treasury",
+    "biome": "tidal_reach",
+    "puzzle": {
+      "type": "lockpick",
+      "difficulty": 2,
+      "successReward": {
+        "coins": 150,
+        "items": [
+          {
+            "item": "tidal_shell",
+            "quantity": 2
+          }
+        ]
+      },
+      "failureConsequence": {
+        "spawnEnemy": "deep_ocean_siren"
+      }
+    }
+  },
+  {
+    "id": "tidewatcher_challenge",
+    "name": "Tidewatcher Challenge",
+    "biome": "tidal_reach",
+    "puzzle": {
+      "type": "pattern",
+      "difficulty": 3,
+      "successReward": {
+        "xp": 200,
+        "items": [
+          {
+            "item": "tideborn_scale",
+            "quantity": 1
+          }
+        ]
+      },
+      "failureConsequence": {
+        "debuff": "drenched",
+        "durationSeconds": 300
+      }
+    }
+  },
+  {
+    "id": "reef_wayfinder",
+    "name": "Reef Wayfinder",
+    "biome": "coral_gardens",
+    "puzzle": {
+      "type": "sequence",
+      "difficulty": 3,
+      "successReward": {
+        "coins": 160,
+        "items": [
+          {
+            "item": "coral_branch",
+            "quantity": 2
+          }
+        ]
+      },
+      "failureConsequence": {
+        "spawnEnemy": "coral_guardian"
+      }
+    }
+  },
+  {
+    "id": "obsidian_spire",
+    "name": "Obsidian Spire",
+    "biome": "obsidian_wastes",
+    "puzzle": {
+      "type": "timed_input",
+      "difficulty": 4,
+      "successReward": {
+        "items": [
+          {
+            "item": "obsidian_glass",
+            "quantity": 3
+          }
+        ],
+        "xp": 260
+      },
+      "failureConsequence": {
+        "spawnEnemy": "emberdrake"
+      }
+    }
+  },
+  {
+    "id": "molten_archive",
+    "name": "Molten Archive",
+    "biome": "obsidian_wastes",
+    "puzzle": {
+      "type": "memory",
+      "difficulty": 4,
+      "successReward": {
+        "coins": 210,
+        "items": [
+          {
+            "item": "lava_core",
+            "quantity": 1
+          }
+        ]
+      },
+      "failureConsequence": {
+        "damagePercent": 0.22
+      }
+    }
+  },
+  {
+    "id": "emberfen_cauldron",
+    "name": "Emberfen Cauldron",
+    "biome": "emberfen_bog",
+    "puzzle": {
+      "type": "alchemy",
+      "difficulty": 2,
+      "successReward": {
+        "items": [
+          {
+            "item": "emberfen_resin",
+            "quantity": 2
+          }
+        ],
+        "xp": 150
+      },
+      "failureConsequence": {
+        "damagePercent": 0.12
+      }
+    }
+  },
+  {
+    "id": "ember_spirit_vigil",
+    "name": "Ember Spirit Vigil",
+    "biome": "emberfen_bog",
+    "puzzle": {
+      "type": "ritual",
+      "difficulty": 3,
+      "successReward": {
+        "items": [
+          {
+            "item": "bog_lotus",
+            "quantity": 2
+          }
+        ],
+        "reputation": {
+          "kweebec": 4
+        }
+      },
+      "failureConsequence": {
+        "spawnEnemy": "scarlet_fiend"
+      }
+    }
+  },
+  {
+    "id": "crystal_bloom_grove",
+    "name": "Crystal Bloom Grove",
+    "biome": "crystal_meadows",
+    "puzzle": {
+      "type": "pattern",
+      "difficulty": 2,
+      "successReward": {
+        "items": [
+          {
+            "item": "crystal_bloom",
+            "quantity": 3
+          }
+        ],
+        "xp": 160
+      },
+      "failureConsequence": {
+        "spawnEnemy": "crystal_construct"
+      }
+    }
+  },
+  {
+    "id": "prismward_trial",
+    "name": "Prismward Trial",
+    "biome": "crystal_meadows",
+    "puzzle": {
+      "type": "light_reflection",
+      "difficulty": 4,
+      "successReward": {
+        "items": [
+          {
+            "item": "luminous_thread",
+            "quantity": 2
+          }
+        ],
+        "xp": 240
+      },
+      "failureConsequence": {
+        "debuff": "blinded",
+        "durationSeconds": 420
+      }
+    }
+  },
+  {
+    "id": "thunder_totem",
+    "name": "Thunder Totem",
+    "biome": "thunder_peaks",
+    "puzzle": {
+      "type": "timed_input",
+      "difficulty": 4,
+      "successReward": {
+        "items": [
+          {
+            "item": "thunder_signet",
+            "quantity": 1
+          }
+        ],
+        "xp": 260
+      },
+      "failureConsequence": {
+        "damagePercent": 0.2
+      }
+    }
+  },
+  {
+    "id": "skywatch_ritual",
+    "name": "Skywatch Ritual",
+    "biome": "thunder_peaks",
+    "puzzle": {
+      "type": "ritual",
+      "difficulty": 3,
+      "successReward": {
+        "reputation": {
+          "skysong": 6
+        },
+        "items": [
+          {
+            "item": "stormlash_crest",
+            "quantity": 1
+          }
+        ]
+      },
+      "failureConsequence": {
+        "spawnEnemy": "thunder_wraith"
+      }
+    }
+  },
+  {
+    "id": "stormlash_watch",
+    "name": "Stormlash Watch",
+    "biome": "stormlash_ridge",
+    "puzzle": {
+      "type": "sequence",
+      "difficulty": 3,
+      "successReward": {
+        "coins": 190,
+        "items": [
+          {
+            "item": "stormlash_crest",
+            "quantity": 1
+          }
+        ]
+      },
+      "failureConsequence": {
+        "spawnEnemy": "stormguard_wyvern"
+      }
+    }
+  },
+  {
+    "id": "tempest_trial",
+    "name": "Tempest Trial",
+    "biome": "stormlash_ridge",
+    "puzzle": {
+      "type": "timed_input",
+      "difficulty": 4,
+      "successReward": {
+        "xp": 250,
+        "items": [
+          {
+            "item": "thunderite_ore",
+            "quantity": 1
+          }
+        ]
+      },
+      "failureConsequence": {
+        "damagePercent": 0.22
+      }
+    }
+  },
+  {
+    "id": "veilwood_sanctum",
+    "name": "Veilwood Sanctum",
+    "biome": "veilwood_marsh",
+    "puzzle": {
+      "type": "memory",
+      "difficulty": 3,
+      "successReward": {
+        "items": [
+          {
+            "item": "veilroot_pod",
+            "quantity": 3
+          }
+        ],
+        "xp": 200
+      },
+      "failureConsequence": {
+        "spawnEnemy": "gloam_stalker"
+      }
+    }
+  },
+  {
+    "id": "spectral_bridge",
+    "name": "Spectral Bridge",
+    "biome": "veilwood_marsh",
+    "puzzle": {
+      "type": "sequence",
+      "difficulty": 4,
+      "successReward": {
+        "reputation": {
+          "varyn": 4
+        },
+        "items": [
+          {
+            "item": "moonpetal_blossom",
+            "quantity": 1
+          }
+        ]
+      },
+      "failureConsequence": {
+        "debuff": "haunted",
+        "durationSeconds": 420
+      }
+    }
+  },
+  {
+    "id": "gloamroot_catacomb",
+    "name": "Gloamroot Catacomb",
+    "biome": "gloamroot_hollow",
+    "puzzle": {
+      "type": "maze",
+      "difficulty": 4,
+      "successReward": {
+        "items": [
+          {
+            "item": "gloamshade_spore",
+            "quantity": 3
+          }
+        ],
+        "xp": 240
+      },
+      "failureConsequence": {
+        "spawnEnemy": "echo_specter"
+      }
+    }
+  },
+  {
+    "id": "mycelium_trial",
+    "name": "Mycelium Trial",
+    "biome": "gloamroot_hollow",
+    "puzzle": {
+      "type": "ritual",
+      "difficulty": 3,
+      "successReward": {
+        "coins": 160,
+        "items": [
+          {
+            "item": "echo_crystal",
+            "quantity": 1
+          }
+        ]
+      },
+      "failureConsequence": {
+        "debuff": "poisoned",
+        "durationSeconds": 360
+      }
+    }
+  },
+  {
+    "id": "moonlit_shrine",
+    "name": "Moonlit Shrine",
+    "biome": "moonlit_grove",
+    "puzzle": {
+      "type": "pattern",
+      "difficulty": 2,
+      "successReward": {
+        "reputation": {
+          "skysong": 5
+        },
+        "items": [
+          {
+            "item": "moonpetal_blossom",
+            "quantity": 2
+          }
+        ]
+      },
+      "failureConsequence": {
+        "spawnEnemy": "gloam_stalker"
+      }
+    }
+  },
+  {
+    "id": "lunar_echo",
+    "name": "Lunar Echo",
+    "biome": "moonlit_grove",
+    "puzzle": {
+      "type": "timed_input",
+      "difficulty": 3,
+      "successReward": {
+        "xp": 210,
+        "items": [
+          {
+            "item": "luminous_thread",
+            "quantity": 1
+          }
+        ]
+      },
+      "failureConsequence": {
+        "debuff": "stunned",
+        "durationSeconds": 300
+      }
+    }
+  },
+  {
+    "id": "mistspire_observatory",
+    "name": "Mistspire Observatory",
+    "biome": "mistspire_vale",
+    "puzzle": {
+      "type": "sequence",
+      "difficulty": 4,
+      "successReward": {
+        "items": [
+          {
+            "item": "mistspire_dust",
+            "quantity": 2
+          }
+        ],
+        "xp": 260
+      },
+      "failureConsequence": {
+        "spawnEnemy": "voidcaller"
+      }
+    }
+  },
+  {
+    "id": "starpath_ritual",
+    "name": "Starpath Ritual",
+    "biome": "mistspire_vale",
+    "puzzle": {
+      "type": "ritual",
+      "difficulty": 5,
+      "successReward": {
+        "reputation": {
+          "skysong": 8
+        },
+        "items": [
+          {
+            "item": "starlit_resin",
+            "quantity": 1
+          }
+        ]
+      },
+      "failureConsequence": {
+        "debuff": "dazed",
+        "durationSeconds": 420
+      }
+    }
+  },
+  {
+    "id": "runic_vault",
+    "name": "Runic Vault",
+    "biome": "runic_highlands",
+    "puzzle": {
+      "type": "lockpick",
+      "difficulty": 4,
+      "successReward": {
+        "items": [
+          {
+            "item": "runeetched_fragment",
+            "quantity": 3
+          }
+        ],
+        "xp": 250
+      },
+      "failureConsequence": {
+        "spawnEnemy": "runic_guardian"
+      }
+    }
+  },
+  {
+    "id": "wardstone_sequence",
+    "name": "Wardstone Sequence",
+    "biome": "runic_highlands",
+    "puzzle": {
+      "type": "sequence",
+      "difficulty": 5,
+      "successReward": {
+        "items": [
+          {
+            "item": "runic_core",
+            "quantity": 1
+          }
+        ],
+        "xp": 280
+      },
+      "failureConsequence": {
+        "damagePercent": 0.24
+      }
+    }
+  },
+  {
+    "id": "starfall_altar",
+    "name": "Starfall Altar",
+    "biome": "starfall_fields",
+    "puzzle": {
+      "type": "ritual",
+      "difficulty": 4,
+      "successReward": {
+        "items": [
+          {
+            "item": "starshard_ore",
+            "quantity": 2
+          }
+        ],
+        "xp": 260
+      },
+      "failureConsequence": {
+        "spawnEnemy": "stormguard_wyvern"
+      }
+    }
+  },
+  {
+    "id": "aurora_alignment",
+    "name": "Aurora Alignment",
+    "biome": "starfall_fields",
+    "puzzle": {
+      "type": "pattern",
+      "difficulty": 5,
+      "successReward": {
+        "items": [
+          {
+            "item": "aurora_ember",
+            "quantity": 2
+          }
+        ],
+        "xp": 280
+      },
+      "failureConsequence": {
+        "debuff": "frozen",
+        "durationSeconds": 360
+      }
+    }
+  },
+  {
+    "id": "aurora_beacon",
+    "name": "Aurora Beacon",
+    "biome": "aurora_steppe",
+    "puzzle": {
+      "type": "sequence",
+      "difficulty": 4,
+      "successReward": {
+        "reputation": {
+          "skysong": 6
+        },
+        "items": [
+          {
+            "item": "aurora_ember",
+            "quantity": 1
+          }
+        ]
+      },
+      "failureConsequence": {
+        "spawnEnemy": "icebound_sentinel"
+      }
+    }
+  },
+  {
+    "id": "glacial_resonance",
+    "name": "Glacial Resonance",
+    "biome": "aurora_steppe",
+    "puzzle": {
+      "type": "timed_input",
+      "difficulty": 4,
+      "successReward": {
+        "coins": 210,
+        "items": [
+          {
+            "item": "glacial_quartz",
+            "quantity": 2
+          }
+        ]
+      },
+      "failureConsequence": {
+        "damagePercent": 0.18
+      }
+    }
+  },
+  {
+    "id": "tempest_forge",
+    "name": "Tempest Forge",
+    "biome": "tempest_fjords",
+    "puzzle": {
+      "type": "crafting",
+      "difficulty": 4,
+      "successReward": {
+        "items": [
+          {
+            "item": "tempest_plume",
+            "quantity": 2
+          }
+        ],
+        "xp": 260
+      },
+      "failureConsequence": {
+        "damagePercent": 0.2
+      }
+    }
+  },
+  {
+    "id": "stormcliff_shrine",
+    "name": "Stormcliff Shrine",
+    "biome": "tempest_fjords",
+    "puzzle": {
+      "type": "ritual",
+      "difficulty": 3,
+      "successReward": {
+        "reputation": {
+          "stormguard": 5
+        },
+        "coins": 180
+      },
+      "failureConsequence": {
+        "spawnEnemy": "thunder_wraith"
+      }
+    }
+  },
+  {
+    "id": "ironroot_vault",
+    "name": "Ironroot Vault",
+    "biome": "ironroot_range",
+    "puzzle": {
+      "type": "lockpick",
+      "difficulty": 3,
+      "successReward": {
+        "items": [
+          {
+            "item": "ironroot_heartwood",
+            "quantity": 3
+          }
+        ],
+        "coins": 170
+      },
+      "failureConsequence": {
+        "spawnEnemy": "ironbark_colossus"
+      }
+    }
+  },
+  {
+    "id": "timberward_puzzle",
+    "name": "Timberward Puzzle",
+    "biome": "ironroot_range",
+    "puzzle": {
+      "type": "pattern",
+      "difficulty": 2,
+      "successReward": {
+        "items": [
+          {
+            "item": "iron_ingot",
+            "quantity": 2
+          }
+        ],
+        "xp": 160
+      },
+      "failureConsequence": {
+        "damagePercent": 0.12
+      }
+    }
+  },
+  {
+    "id": "echoing_monolith",
+    "name": "Echoing Monolith",
+    "biome": "echoing_chasm",
+    "puzzle": {
+      "type": "sound_match",
+      "difficulty": 4,
+      "successReward": {
+        "items": [
+          {
+            "item": "echo_crystal",
+            "quantity": 2
+          }
+        ],
+        "xp": 250
+      },
+      "failureConsequence": {
+        "debuff": "silenced",
+        "durationSeconds": 420
+      }
+    }
+  },
+  {
+    "id": "reflection_riddle",
+    "name": "Reflection Riddle",
+    "biome": "echoing_chasm",
+    "puzzle": {
+      "type": "riddle",
+      "difficulty": 3,
+      "successReward": {
+        "coins": 180,
+        "items": [
+          {
+            "item": "echo_crystal",
+            "quantity": 1
+          }
+        ]
+      },
+      "failureConsequence": {
+        "spawnEnemy": "echo_specter"
+      }
+    }
+  },
+  {
+    "id": "scarlet_greenhouse",
+    "name": "Scarlet Greenhouse",
+    "biome": "scarlet_bog",
+    "puzzle": {
+      "type": "gardening",
+      "difficulty": 2,
+      "successReward": {
+        "items": [
+          {
+            "item": "scarlet_myrtle",
+            "quantity": 3
+          }
+        ],
+        "xp": 150
+      },
+      "failureConsequence": {
+        "debuff": "poisoned",
+        "durationSeconds": 300
+      }
+    }
+  },
+  {
+    "id": "bogflare_ritual",
+    "name": "Bogflare Ritual",
+    "biome": "scarlet_bog",
+    "puzzle": {
+      "type": "ritual",
+      "difficulty": 3,
+      "successReward": {
+        "coins": 170,
+        "items": [
+          {
+            "item": "emberfen_resin",
+            "quantity": 1
+          }
+        ]
+      },
+      "failureConsequence": {
+        "spawnEnemy": "scarlet_fiend"
+      }
+    }
+  },
+  {
+    "id": "ashen_forgewheel",
+    "name": "Ashen Forgewheel",
+    "biome": "ashen_desolation",
+    "puzzle": {
+      "type": "crafting",
+      "difficulty": 4,
+      "successReward": {
+        "items": [
+          {
+            "item": "ashstone",
+            "quantity": 3
+          }
+        ],
+        "xp": 250
+      },
+      "failureConsequence": {
+        "damagePercent": 0.24
+      }
+    }
+  },
+  {
+    "id": "charred_tome",
+    "name": "Charred Tome",
+    "biome": "ashen_desolation",
+    "puzzle": {
+      "type": "riddle",
+      "difficulty": 4,
+      "successReward": {
+        "items": [
+          {
+            "item": "lava_core",
+            "quantity": 1
+          }
+        ],
+        "xp": 240
+      },
+      "failureConsequence": {
+        "spawnEnemy": "ashbound_colossus"
+      }
+    }
+  },
+  {
+    "id": "twilight_waygate",
+    "name": "Twilight Waygate",
+    "biome": "twilight_sands",
+    "puzzle": {
+      "type": "sequence",
+      "difficulty": 3,
+      "successReward": {
+        "items": [
+          {
+            "item": "twilight_opal",
+            "quantity": 1
+          }
+        ],
+        "xp": 200
+      },
+      "failureConsequence": {
+        "debuff": "dazzled",
+        "durationSeconds": 360
+      }
+    }
+  },
+  {
+    "id": "starglass_puzzle",
+    "name": "Starglass Puzzle",
+    "biome": "twilight_sands",
+    "puzzle": {
+      "type": "pattern",
+      "difficulty": 4,
+      "successReward": {
+        "coins": 200,
+        "items": [
+          {
+            "item": "twilight_opal",
+            "quantity": 1
+          }
+        ]
+      },
+      "failureConsequence": {
+        "spawnEnemy": "sandstalker"
+      }
+    }
+  },
+  {
+    "id": "duskfall_pylon",
+    "name": "Duskfall Pylon",
+    "biome": "duskfall_wetlands",
+    "puzzle": {
+      "type": "sequence",
+      "difficulty": 3,
+      "successReward": {
+        "items": [
+          {
+            "item": "duskfall_reed",
+            "quantity": 3
+          }
+        ],
+        "xp": 160
+      },
+      "failureConsequence": {
+        "debuff": "slowed",
+        "durationSeconds": 300
+      }
+    }
+  },
+  {
+    "id": "glow_eel_challenge",
+    "name": "Glow Eel Challenge",
+    "biome": "duskfall_wetlands",
+    "puzzle": {
+      "type": "timed_input",
+      "difficulty": 4,
+      "successReward": {
+        "coins": 190,
+        "items": [
+          {
+            "item": "tideglass_pearl",
+            "quantity": 1
+          }
+        ]
+      },
+      "failureConsequence": {
+        "spawnEnemy": "deep_ocean_siren"
+      }
+    }
+  },
+  {
+    "id": "glowreef_archive",
+    "name": "Glowreef Archive",
+    "biome": "coral_glow_shoal",
+    "puzzle": {
+      "type": "memory",
+      "difficulty": 3,
+      "successReward": {
+        "items": [
+          {
+            "item": "glowcap_spore",
+            "quantity": 3
+          }
+        ],
+        "xp": 190
+      },
+      "failureConsequence": {
+        "spawnEnemy": "coral_guardian"
+      }
+    }
+  },
+  {
+    "id": "tidelight_ritual",
+    "name": "Tidelight Ritual",
+    "biome": "coral_glow_shoal",
+    "puzzle": {
+      "type": "ritual",
+      "difficulty": 4,
+      "successReward": {
+        "reputation": {
+          "skysong": 4
+        },
+        "items": [
+          {
+            "item": "azure_coralline",
+            "quantity": 2
+          }
+        ]
+      },
+      "failureConsequence": {
+        "debuff": "drenched",
+        "durationSeconds": 360
+      }
+    }
+  },
+  {
+    "id": "shiverwind_reliquary",
+    "name": "Shiverwind Reliquary",
+    "biome": "shiverwind_coast",
+    "puzzle": {
+      "type": "lockpick",
+      "difficulty": 4,
+      "successReward": {
+        "items": [
+          {
+            "item": "frostblossom_petals",
+            "quantity": 2
+          }
+        ],
+        "coins": 190
+      },
+      "failureConsequence": {
+        "spawnEnemy": "icebound_sentinel"
+      }
+    }
+  },
+  {
+    "id": "iceflow_path",
+    "name": "Iceflow Path",
+    "biome": "shiverwind_coast",
+    "puzzle": {
+      "type": "pattern",
+      "difficulty": 3,
+      "successReward": {
+        "items": [
+          {
+            "item": "glacial_quartz",
+            "quantity": 2
+          }
+        ],
+        "xp": 200
+      },
+      "failureConsequence": {
+        "damagePercent": 0.16
+      }
+    }
+  },
+  {
+    "id": "molten_crucible",
+    "name": "Molten Crucible",
+    "biome": "basalt_barrens",
+    "puzzle": {
+      "type": "crafting",
+      "difficulty": 3,
+      "successReward": {
+        "items": [
+          {
+            "item": "obsidian_glass",
+            "quantity": 2
+          }
+        ],
+        "xp": 210
+      },
+      "failureConsequence": {
+        "damagePercent": 0.2
+      }
+    }
+  },
+  {
+    "id": "slagstone_trial",
+    "name": "Slagstone Trial",
+    "biome": "basalt_barrens",
+    "puzzle": {
+      "type": "timed_input",
+      "difficulty": 4,
+      "successReward": {
+        "items": [
+          {
+            "item": "lava_core",
+            "quantity": 1
+          }
+        ],
+        "xp": 240
+      },
+      "failureConsequence": {
+        "spawnEnemy": "lavaborn_colossus"
+      }
+    }
+  },
+  {
+    "id": "sunforge_anvil",
+    "name": "Sunforge Anvil",
+    "biome": "sunforge_badlands",
+    "puzzle": {
+      "type": "crafting",
+      "difficulty": 4,
+      "successReward": {
+        "items": [
+          {
+            "item": "sunforge_ingot",
+            "quantity": 2
+          }
+        ],
+        "xp": 260
+      },
+      "failureConsequence": {
+        "damagePercent": 0.24
+      }
+    }
+  },
+  {
+    "id": "sunforge_sigil",
+    "name": "Sunforge Sigil",
+    "biome": "sunforge_badlands",
+    "puzzle": {
+      "type": "pattern",
+      "difficulty": 4,
+      "successReward": {
+        "coins": 220,
+        "items": [
+          {
+            "item": "emberglass_shard",
+            "quantity": 2
+          }
+        ]
+      },
+      "failureConsequence": {
+        "spawnEnemy": "sunforge_golem"
+      }
+    }
+  },
+  {
+    "id": "emberpeak_crucible",
+    "name": "Emberpeak Crucible",
+    "biome": "emberpeak_crater",
+    "puzzle": {
+      "type": "alchemy",
+      "difficulty": 4,
+      "successReward": {
+        "items": [
+          {
+            "item": "emberglow_slag",
+            "quantity": 2
+          }
+        ],
+        "xp": 240
+      },
+      "failureConsequence": {
+        "spawnEnemy": "emberglass_spider"
+      }
+    }
+  },
+  {
+    "id": "emberpeak_ritual",
+    "name": "Emberpeak Ritual",
+    "biome": "emberpeak_crater",
+    "puzzle": {
+      "type": "ritual",
+      "difficulty": 4,
+      "successReward": {
+        "reputation": {
+          "human": 5
+        },
+        "items": [
+          {
+            "item": "emberglass_shard",
+            "quantity": 2
+          }
+        ]
+      },
+      "failureConsequence": {
+        "damagePercent": 0.22
+      }
+    }
+  },
+  {
+    "id": "tempest_chart_room",
+    "name": "Tempest Chart Room",
+    "biome": "tempest_harbor",
+    "puzzle": {
+      "type": "sequence",
+      "difficulty": 3,
+      "successReward": {
+        "items": [
+          {
+            "item": "tempest_nav_chart",
+            "quantity": 1
+          }
+        ],
+        "coins": 210
+      },
+      "failureConsequence": {
+        "spawnEnemy": "tempest_privateer"
+      }
+    }
+  },
+  {
+    "id": "stormchain_puzzle",
+    "name": "Stormchain Puzzle",
+    "biome": "tempest_harbor",
+    "puzzle": {
+      "type": "timed_input",
+      "difficulty": 3,
+      "successReward": {
+        "xp": 220,
+        "items": [
+          {
+            "item": "stormbreak_shell",
+            "quantity": 1
+          }
+        ]
+      },
+      "failureConsequence": {
+        "debuff": "shocked",
+        "durationSeconds": 360
+      }
+    }
+  },
+  {
+    "id": "ironheart_sanctum",
+    "name": "Ironheart Sanctum",
+    "biome": "ironroot_heart",
+    "puzzle": {
+      "type": "pattern",
+      "difficulty": 3,
+      "successReward": {
+        "items": [
+          {
+            "item": "ironheart_sap",
+            "quantity": 2
+          }
+        ],
+        "xp": 210
+      },
+      "failureConsequence": {
+        "spawnEnemy": "ironheart_treant"
+      }
+    }
+  },
+  {
+    "id": "barkweave_puzzle",
+    "name": "Barkweave Puzzle",
+    "biome": "ironroot_heart",
+    "puzzle": {
+      "type": "weaving",
+      "difficulty": 2,
+      "successReward": {
+        "coins": 160,
+        "items": [
+          {
+            "item": "stonebark_chip",
+            "quantity": 2
+          }
+        ]
+      },
+      "failureConsequence": {
+        "debuff": "rooted",
+        "durationSeconds": 300
+      }
+    }
+  },
+  {
+    "id": "wildrun_lattice",
+    "name": "Wildrun Lattice",
+    "biome": "runic_wilds",
+    "puzzle": {
+      "type": "sequence",
+      "difficulty": 4,
+      "successReward": {
+        "items": [
+          {
+            "item": "runeetched_fragment",
+            "quantity": 3
+          }
+        ],
+        "xp": 250
+      },
+      "failureConsequence": {
+        "spawnEnemy": "runic_guardian"
+      }
+    }
+  },
+  {
+    "id": "runebond_trial",
+    "name": "Runebond Trial",
+    "biome": "runic_wilds",
+    "puzzle": {
+      "type": "ritual",
+      "difficulty": 4,
+      "successReward": {
+        "reputation": {
+          "skysong": 5
+        },
+        "items": [
+          {
+            "item": "runic_core",
+            "quantity": 1
+          }
+        ]
+      },
+      "failureConsequence": {
+        "debuff": "hexed",
+        "durationSeconds": 420
+      }
+    }
+  },
+  {
+    "id": "mistspire_keep",
+    "name": "Mistspire Keep",
+    "biome": "mistspire_citadel",
+    "puzzle": {
+      "type": "lockpick",
+      "difficulty": 4,
+      "successReward": {
+        "items": [
+          {
+            "item": "mistspire_dust",
+            "quantity": 2
+          }
+        ],
+        "coins": 220
+      },
+      "failureConsequence": {
+        "spawnEnemy": "mistspire_sentinel"
+      }
+    }
+  },
+  {
+    "id": "skyward_enigma",
+    "name": "Skyward Enigma",
+    "biome": "mistspire_citadel",
+    "puzzle": {
+      "type": "sequence",
+      "difficulty": 5,
+      "successReward": {
+        "xp": 280,
+        "items": [
+          {
+            "item": "skysong_plume",
+            "quantity": 1
+          }
+        ]
+      },
+      "failureConsequence": {
+        "debuff": "dizzy",
+        "durationSeconds": 360
+      }
+    }
+  },
+  {
+    "id": "moonshadow_shrine",
+    "name": "Moonshadow Shrine",
+    "biome": "moonshadow_thicket",
+    "puzzle": {
+      "type": "ritual",
+      "difficulty": 3,
+      "successReward": {
+        "reputation": {
+          "fey": 4
+        },
+        "items": [
+          {
+            "item": "moonshadow_cap",
+            "quantity": 2
+          }
+        ]
+      },
+      "failureConsequence": {
+        "spawnEnemy": "moonshadow_wisp"
+      }
+    }
+  },
+  {
+    "id": "shadowveil_puzzle",
+    "name": "Shadowveil Puzzle",
+    "biome": "moonshadow_thicket",
+    "puzzle": {
+      "type": "memory",
+      "difficulty": 3,
+      "successReward": {
+        "coins": 170,
+        "items": [
+          {
+            "item": "starlit_resin",
+            "quantity": 1
+          }
+        ]
+      },
+      "failureConsequence": {
+        "debuff": "blinded",
+        "durationSeconds": 300
+      }
+    }
+  },
+  {
+    "id": "sunglade_orchard",
+    "name": "Sunglade Orchard",
+    "biome": "sunglade_terrace",
+    "puzzle": {
+      "type": "gardening",
+      "difficulty": 2,
+      "successReward": {
+        "coins": 160,
+        "items": [
+          {
+            "item": "sunglade_amber",
+            "quantity": 3
+          }
+        ]
+      },
+      "failureConsequence": {
+        "spawnEnemy": "sunglade_keeper"
+      }
+    }
+  },
+  {
+    "id": "sunpetal_alignment",
+    "name": "Sunpetal Alignment",
+    "biome": "sunglade_terrace",
+    "puzzle": {
+      "type": "pattern",
+      "difficulty": 3,
+      "successReward": {
+        "xp": 210,
+        "items": [
+          {
+            "item": "sunspire_leaf",
+            "quantity": 2
+          }
+        ]
+      },
+      "failureConsequence": {
+        "debuff": "dazzled",
+        "durationSeconds": 300
+      }
+    }
+  },
+  {
+    "id": "wildvine_lattice",
+    "name": "Wildvine Lattice",
+    "biome": "wildvine_glade",
+    "puzzle": {
+      "type": "pattern",
+      "difficulty": 2,
+      "successReward": {
+        "items": [
+          {
+            "item": "wildvine_fiber",
+            "quantity": 2
+          }
+        ],
+        "xp": 160
+      },
+      "failureConsequence": {
+        "spawnEnemy": "wildvine_beast"
+      }
+    }
+  },
+  {
+    "id": "canopy_path",
+    "name": "Canopy Path",
+    "biome": "wildvine_glade",
+    "puzzle": {
+      "type": "timed_input",
+      "difficulty": 3,
+      "successReward": {
+        "coins": 170,
+        "items": [
+          {
+            "item": "wildvine_bloom",
+            "quantity": 2
+          }
+        ]
+      },
+      "failureConsequence": {
+        "debuff": "entangled",
+        "durationSeconds": 300
+      }
+    }
+  },
+  {
+    "id": "silkwood_loft",
+    "name": "Silkwood Loft",
+    "biome": "silkwood_vale",
+    "puzzle": {
+      "type": "weaving",
+      "difficulty": 3,
+      "successReward": {
+        "items": [
+          {
+            "item": "silkwood_thread",
+            "quantity": 3
+          }
+        ],
+        "xp": 190
+      },
+      "failureConsequence": {
+        "spawnEnemy": "silkwood_silkspinner"
+      }
+    }
+  },
+  {
+    "id": "silkensnare_puzzle",
+    "name": "Silkensnare Puzzle",
+    "biome": "silkwood_vale",
+    "puzzle": {
+      "type": "sequence",
+      "difficulty": 3,
+      "successReward": {
+        "coins": 160,
+        "items": [
+          {
+            "item": "luminous_thread",
+            "quantity": 1
+          }
+        ]
+      },
+      "failureConsequence": {
+        "debuff": "rooted",
+        "durationSeconds": 300
+      }
+    }
+  },
+  {
+    "id": "everfrost_cache",
+    "name": "Everfrost Cache",
+    "biome": "everfrost_tundra",
+    "puzzle": {
+      "type": "lockpick",
+      "difficulty": 4,
+      "successReward": {
+        "items": [
+          {
+            "item": "everfrost_codex",
+            "quantity": 1
+          },
+          {
+            "item": "borea_fur_cloak",
+            "quantity": 1
+          }
+        ],
+        "coins": 210
+      },
+      "failureConsequence": {
+        "spawnEnemy": "everfrost_mammoth"
+      }
+    }
+  },
+  {
+    "id": "frostsigil_trial",
+    "name": "Frostsigil Trial",
+    "biome": "everfrost_tundra",
+    "puzzle": {
+      "type": "pattern",
+      "difficulty": 4,
+      "successReward": {
+        "xp": 260,
+        "items": [
+          {
+            "item": "aurora_ember",
+            "quantity": 2
+          }
+        ]
+      },
+      "failureConsequence": {
+        "debuff": "frozen",
+        "durationSeconds": 360
+      }
+    }
+  },
+  {
+    "id": "glimmering_relay",
+    "name": "Glimmering Relay",
+    "biome": "glimmering_wastes",
+    "puzzle": {
+      "type": "light_reflection",
+      "difficulty": 4,
+      "successReward": {
+        "items": [
+          {
+            "item": "glimmer_powder",
+            "quantity": 3
+          }
+        ],
+        "xp": 260
+      },
+      "failureConsequence": {
+        "debuff": "blinded",
+        "durationSeconds": 360
+      }
+    }
+  },
+  {
+    "id": "prismfall_puzzle",
+    "name": "Prismfall Puzzle",
+    "biome": "glimmering_wastes",
+    "puzzle": {
+      "type": "sequence",
+      "difficulty": 4,
+      "successReward": {
+        "coins": 200,
+        "items": [
+          {
+            "item": "shattered_shard",
+            "quantity": 2
+          }
+        ]
+      },
+      "failureConsequence": {
+        "spawnEnemy": "glimmering_phantom"
+      }
+    }
+  },
+  {
+    "id": "horizon_obelisk",
+    "name": "Horizon Obelisk",
+    "biome": "horizon_steppe",
+    "puzzle": {
+      "type": "pattern",
+      "difficulty": 3,
+      "successReward": {
+        "items": [
+          {
+            "item": "horizon_sunsteel",
+            "quantity": 1
+          }
+        ],
+        "coins": 190
+      },
+      "failureConsequence": {
+        "spawnEnemy": "horizon_rider"
+      }
+    }
+  },
+  {
+    "id": "suntrail_puzzle",
+    "name": "Suntrail Puzzle",
+    "biome": "horizon_steppe",
+    "puzzle": {
+      "type": "timed_input",
+      "difficulty": 3,
+      "successReward": {
+        "xp": 210,
+        "items": [
+          {
+            "item": "sunspire_leaf",
+            "quantity": 2
+          }
+        ]
+      },
+      "failureConsequence": {
+        "debuff": "exhausted",
+        "durationSeconds": 300
+      }
+    }
+  },
+  {
+    "id": "skysong_spire_core",
+    "name": "Skysong Spire Core",
+    "biome": "skysong_spires",
+    "puzzle": {
+      "type": "sequence",
+      "difficulty": 4,
+      "successReward": {
+        "coins": 210,
+        "items": [
+          {
+            "item": "skysong_plume",
+            "quantity": 2
+          }
+        ]
+      },
+      "failureConsequence": {
+        "spawnEnemy": "skysong_sentinel"
+      }
+    }
+  },
+  {
+    "id": "resonant_equation",
+    "name": "Resonant Equation",
+    "biome": "skysong_spires",
+    "puzzle": {
+      "type": "logic",
+      "difficulty": 5,
+      "successReward": {
+        "xp": 280,
+        "items": [
+          {
+            "item": "luminous_thread",
+            "quantity": 2
+          }
+        ]
+      },
+      "failureConsequence": {
+        "debuff": "silenced",
+        "durationSeconds": 420
+      }
+    }
+  },
+  {
+    "id": "ashen_relicary",
+    "name": "Ashen Relicary",
+    "biome": "ashen_reach",
+    "puzzle": {
+      "type": "lockpick",
+      "difficulty": 3,
+      "successReward": {
+        "items": [
+          {
+            "item": "ashen_charcoal",
+            "quantity": 3
+          }
+        ],
+        "coins": 190
+      },
+      "failureConsequence": {
+        "spawnEnemy": "ashbound_colossus"
+      }
+    }
+  },
+  {
+    "id": "volcanic_tide_puzzle",
+    "name": "Volcanic Tide Puzzle",
+    "biome": "ashen_reach",
+    "puzzle": {
+      "type": "timed_input",
+      "difficulty": 4,
+      "successReward": {
+        "items": [
+          {
+            "item": "stormbreak_shell",
+            "quantity": 1
+          }
+        ],
+        "xp": 240
+      },
+      "failureConsequence": {
+        "damagePercent": 0.22
+      }
+    }
+  },
+  {
+    "id": "emberglow_vault",
+    "name": "Emberglow Vault",
+    "biome": "emberglow_cavern",
+    "puzzle": {
+      "type": "lockpick",
+      "difficulty": 4,
+      "successReward": {
+        "items": [
+          {
+            "item": "emberglow_slag",
+            "quantity": 2
+          }
+        ],
+        "coins": 210
+      },
+      "failureConsequence": {
+        "spawnEnemy": "emberglow_stalker"
+      }
+    }
+  },
+  {
+    "id": "emberglow_puzzle",
+    "name": "Emberglow Puzzle",
+    "biome": "emberglow_cavern",
+    "puzzle": {
+      "type": "sequence",
+      "difficulty": 3,
+      "successReward": {
+        "xp": 220,
+        "items": [
+          {
+            "item": "emberglass_shard",
+            "quantity": 2
+          }
+        ]
+      },
+      "failureConsequence": {
+        "debuff": "burning",
+        "durationSeconds": 300
+      }
+    }
+  },
+  {
+    "id": "voidscar_observatory",
+    "name": "Voidscar Observatory",
+    "biome": "voidscar_abyss",
+    "puzzle": {
+      "type": "sequence",
+      "difficulty": 5,
+      "successReward": {
+        "items": [
+          {
+            "item": "voidscar_fragment",
+            "quantity": 2
+          }
+        ],
+        "xp": 280
+      },
+      "failureConsequence": {
+        "spawnEnemy": "voidscar_lich"
+      }
+    }
+  },
+  {
+    "id": "voidsigil_puzzle",
+    "name": "Voidsigil Puzzle",
+    "biome": "voidscar_abyss",
+    "puzzle": {
+      "type": "logic",
+      "difficulty": 4,
+      "successReward": {
+        "coins": 230,
+        "items": [
+          {
+            "item": "echo_crystal",
+            "quantity": 2
+          }
+        ]
+      },
+      "failureConsequence": {
+        "debuff": "voidtouched",
+        "durationSeconds": 420
+      }
+    }
+  },
+  {
+    "id": "radiant_cascade",
+    "name": "Radiant Cascade",
+    "biome": "radiant_basin",
+    "puzzle": {
+      "type": "timed_input",
+      "difficulty": 3,
+      "successReward": {
+        "items": [
+          {
+            "item": "radiant_silt",
+            "quantity": 3
+          }
+        ],
+        "xp": 220
+      },
+      "failureConsequence": {
+        "spawnEnemy": "radiant_golem"
+      }
+    }
+  },
+  {
+    "id": "prismflow_puzzle",
+    "name": "Prismflow Puzzle",
+    "biome": "radiant_basin",
+    "puzzle": {
+      "type": "pattern",
+      "difficulty": 3,
+      "successReward": {
+        "coins": 200,
+        "items": [
+          {
+            "item": "tempest_plume",
+            "quantity": 1
+          }
+        ]
+      },
+      "failureConsequence": {
+        "debuff": "blinded",
+        "durationSeconds": 300
+      }
+    }
+  },
+  {
+    "id": "dreadroot_cauldron",
+    "name": "Dreadroot Cauldron",
+    "biome": "dreadroot_swamp",
+    "puzzle": {
+      "type": "alchemy",
+      "difficulty": 3,
+      "successReward": {
+        "items": [
+          {
+            "item": "dreadroot_bark",
+            "quantity": 2
+          }
+        ],
+        "xp": 210
+      },
+      "failureConsequence": {
+        "spawnEnemy": "dreadroot_hag"
+      }
+    }
+  },
+  {
+    "id": "fetid_bog_puzzle",
+    "name": "Fetid Bog Puzzle",
+    "biome": "dreadroot_swamp",
+    "puzzle": {
+      "type": "logic",
+      "difficulty": 3,
+      "successReward": {
+        "coins": 170,
+        "items": [
+          {
+            "item": "scarlet_myrtle",
+            "quantity": 2
+          }
+        ]
+      },
+      "failureConsequence": {
+        "debuff": "poisoned",
+        "durationSeconds": 300
+      }
+    }
+  },
+  {
+    "id": "silverfin_grotto",
+    "name": "Silverfin Grotto",
+    "biome": "silverfin_depths",
+    "puzzle": {
+      "type": "lockpick",
+      "difficulty": 4,
+      "successReward": {
+        "items": [
+          {
+            "item": "silverfin_silk",
+            "quantity": 2
+          }
+        ],
+        "coins": 200
+      },
+      "failureConsequence": {
+        "spawnEnemy": "silverfin_serpent"
+      }
+    }
+  },
+  {
+    "id": "tideline_puzzle",
+    "name": "Tideline Puzzle",
+    "biome": "silverfin_depths",
+    "puzzle": {
+      "type": "pattern",
+      "difficulty": 3,
+      "successReward": {
+        "xp": 200,
+        "items": [
+          {
+            "item": "tideborn_scale",
+            "quantity": 2
+          }
+        ]
+      },
+      "failureConsequence": {
+        "debuff": "drenched",
+        "durationSeconds": 300
+      }
+    }
+  },
+  {
+    "id": "bluehaven_vault",
+    "name": "Bluehaven Vault",
+    "biome": "bluehaven_lagoon",
+    "puzzle": {
+      "type": "lockpick",
+      "difficulty": 4,
+      "successReward": {
+        "items": [
+          {
+            "item": "bluehaven_pearl",
+            "quantity": 1
+          }
+        ],
+        "coins": 220
+      },
+      "failureConsequence": {
+        "spawnEnemy": "bluehaven_corsair"
+      }
+    }
+  },
+  {
+    "id": "tidal_lock_puzzle",
+    "name": "Tidal Lock Puzzle",
+    "biome": "bluehaven_lagoon",
+    "puzzle": {
+      "type": "timed_input",
+      "difficulty": 3,
+      "successReward": {
+        "items": [
+          {
+            "item": "tempest_nav_chart",
+            "quantity": 1
+          }
+        ],
+        "xp": 210
+      },
+      "failureConsequence": {
+        "debuff": "drenched",
+        "durationSeconds": 300
+      }
+    }
+  },
+  {
+    "id": "sunspire_bastion",
+    "name": "Sunspire Bastion",
+    "biome": "sunspire_savanna",
+    "puzzle": {
+      "type": "sequence",
+      "difficulty": 3,
+      "successReward": {
+        "coins": 190,
+        "items": [
+          {
+            "item": "sunspire_leaf",
+            "quantity": 3
+          }
+        ]
+      },
+      "failureConsequence": {
+        "spawnEnemy": "sunspire_guard"
+      }
+    }
+  },
+  {
+    "id": "solar_orb_puzzle",
+    "name": "Solar Orb Puzzle",
+    "biome": "sunspire_savanna",
+    "puzzle": {
+      "type": "pattern",
+      "difficulty": 3,
+      "successReward": {
+        "xp": 210,
+        "items": [
+          {
+            "item": "auric_powder",
+            "quantity": 2
+          }
+        ]
+      },
+      "failureConsequence": {
+        "debuff": "sunburned",
+        "durationSeconds": 300
+      }
+    }
+  },
+  {
+    "id": "stormbreak_beacon",
+    "name": "Stormbreak Beacon",
+    "biome": "stormbreak_isles",
+    "puzzle": {
+      "type": "timed_input",
+      "difficulty": 3,
+      "successReward": {
+        "reputation": {
+          "stormguard": 4
+        },
+        "items": [
+          {
+            "item": "stormbreak_shell",
+            "quantity": 2
+          }
+        ]
+      },
+      "failureConsequence": {
+        "spawnEnemy": "stormbreak_raider"
+      }
+    }
+  },
+  {
+    "id": "tideward_puzzle",
+    "name": "Tideward Puzzle",
+    "biome": "stormbreak_isles",
+    "puzzle": {
+      "type": "sequence",
+      "difficulty": 4,
+      "successReward": {
+        "coins": 200,
+        "items": [
+          {
+            "item": "tempest_plume",
+            "quantity": 2
+          }
+        ]
+      },
+      "failureConsequence": {
+        "debuff": "shocked",
+        "durationSeconds": 360
+      }
+    }
+  },
+  {
+    "id": "crimson_altar",
+    "name": "Crimson Altar",
+    "biome": "crimson_mire",
+    "puzzle": {
+      "type": "ritual",
+      "difficulty": 3,
+      "successReward": {
+        "items": [
+          {
+            "item": "crimson_pitch",
+            "quantity": 2
+          }
+        ],
+        "coins": 180
+      },
+      "failureConsequence": {
+        "spawnEnemy": "crimson_mireling"
+      }
+    }
+  },
+  {
+    "id": "bloodroot_puzzle",
+    "name": "Bloodroot Puzzle",
+    "biome": "crimson_mire",
+    "puzzle": {
+      "type": "pattern",
+      "difficulty": 3,
+      "successReward": {
+        "xp": 200,
+        "items": [
+          {
+            "item": "scarlet_myrtle",
+            "quantity": 2
+          }
+        ]
+      },
+      "failureConsequence": {
+        "debuff": "poisoned",
+        "durationSeconds": 300
+      }
+    }
+  },
+  {
+    "id": "stonebark_keep",
+    "name": "Stonebark Keep",
+    "biome": "stonebark_highlands",
+    "puzzle": {
+      "type": "lockpick",
+      "difficulty": 3,
+      "successReward": {
+        "items": [
+          {
+            "item": "stonebark_chip",
+            "quantity": 2
+          }
+        ],
+        "coins": 190
+      },
+      "failureConsequence": {
+        "spawnEnemy": "stonebark_sentinel"
+      }
+    }
+  },
+  {
+    "id": "rockring_puzzle",
+    "name": "Rockring Puzzle",
+    "biome": "stonebark_highlands",
+    "puzzle": {
+      "type": "sequence",
+      "difficulty": 3,
+      "successReward": {
+        "xp": 210,
+        "items": [
+          {
+            "item": "iron_ingot",
+            "quantity": 2
+          }
+        ]
+      },
+      "failureConsequence": {
+        "damagePercent": 0.18
+      }
+    }
+  },
+  {
+    "id": "auric_temple",
+    "name": "Auric Temple",
+    "biome": "auric_dunes",
+    "puzzle": {
+      "type": "ritual",
+      "difficulty": 4,
+      "successReward": {
+        "items": [
+          {
+            "item": "auric_powder",
+            "quantity": 3
+          }
+        ],
+        "xp": 260
+      },
+      "failureConsequence": {
+        "spawnEnemy": "auric_lion"
+      }
+    }
+  },
+  {
+    "id": "sunmirror_puzzle",
+    "name": "Sunmirror Puzzle",
+    "biome": "auric_dunes",
+    "puzzle": {
+      "type": "light_reflection",
+      "difficulty": 3,
+      "successReward": {
+        "coins": 190,
+        "items": [
+          {
+            "item": "sunforge_ingot",
+            "quantity": 1
+          }
+        ]
+      },
+      "failureConsequence": {
+        "debuff": "dazzled",
+        "durationSeconds": 360
+      }
+    }
+  },
+  {
+    "id": "shattered_gate",
+    "name": "Shattered Gate",
+    "biome": "shattered_moors",
+    "puzzle": {
+      "type": "sequence",
+      "difficulty": 4,
+      "successReward": {
+        "items": [
+          {
+            "item": "shattered_shard",
+            "quantity": 2
+          }
+        ],
+        "xp": 240
+      },
+      "failureConsequence": {
+        "spawnEnemy": "shattered_wight"
+      }
+    }
+  },
+  {
+    "id": "fragment_trial",
+    "name": "Fragment Trial",
+    "biome": "shattered_moors",
+    "puzzle": {
+      "type": "logic",
+      "difficulty": 4,
+      "successReward": {
+        "items": [
+          {
+            "item": "glimmer_powder",
+            "quantity": 2
+          }
+        ],
+        "xp": 250
+      },
+      "failureConsequence": {
+        "spawnEnemy": "glimmering_phantom"
+      }
+    }
+  },
+  {
+    "id": "opaline_reservoir",
+    "name": "Opaline Reservoir",
+    "biome": "opaline_fields",
+    "puzzle": {
+      "type": "ritual",
+      "difficulty": 3,
+      "successReward": {
+        "items": [
+          {
+            "item": "opaline_seed",
+            "quantity": 3
+          }
+        ],
+        "xp": 200
+      },
+      "failureConsequence": {
+        "spawnEnemy": "opaline_sprite"
+      }
+    }
+  },
+  {
+    "id": "petalglass_puzzle",
+    "name": "Petalglass Puzzle",
+    "biome": "opaline_fields",
+    "puzzle": {
+      "type": "pattern",
+      "difficulty": 3,
+      "successReward": {
+        "coins": 180,
+        "items": [
+          {
+            "item": "luminous_thread",
+            "quantity": 1
+          }
+        ]
+      },
+      "failureConsequence": {
+        "debuff": "blinded",
+        "durationSeconds": 300
+      }
+    }
+  },
+  {
+    "id": "dawnwatch_aerie",
+    "name": "Dawnwatch Aerie",
+    "biome": "dawnwatch_cliffs",
+    "puzzle": {
+      "type": "lockpick",
+      "difficulty": 4,
+      "successReward": {
+        "items": [
+          {
+            "item": "dawnwatch_feather",
+            "quantity": 2
+          }
+        ],
+        "coins": 220
+      },
+      "failureConsequence": {
+        "spawnEnemy": "dawnwatch_eagle"
+      }
+    }
+  },
+  {
+    "id": "sunrise_alignment",
+    "name": "Sunrise Alignment",
+    "biome": "dawnwatch_cliffs",
+    "puzzle": {
+      "type": "timed_input",
+      "difficulty": 3,
+      "successReward": {
+        "xp": 220,
+        "items": [
+          {
+            "item": "skysong_plume",
+            "quantity": 1
+          }
+        ]
+      },
+      "failureConsequence": {
+        "debuff": "dazzled",
+        "durationSeconds": 300
+      }
+    }
+  },
+  {
+    "id": "starward_lens",
+    "name": "Starward Lens",
+    "biome": "starward_valley",
+    "puzzle": {
+      "type": "sequence",
+      "difficulty": 4,
+      "successReward": {
+        "items": [
+          {
+            "item": "starward_essence",
+            "quantity": 2
+          }
+        ],
+        "xp": 280
+      },
+      "failureConsequence": {
+        "spawnEnemy": "starward_colossus"
+      }
+    }
+  },
+  {
+    "id": "astral_chorography",
+    "name": "Astral Chorography",
+    "biome": "starward_valley",
+    "puzzle": {
+      "type": "logic",
+      "difficulty": 5,
+      "successReward": {
+        "coins": 240,
+        "items": [
+          {
+            "item": "starshard_ore",
+            "quantity": 2
+          }
+        ]
+      },
+      "failureConsequence": {
+        "debuff": "stunned",
+        "durationSeconds": 420
+      }
+    }
+  },
+  {
+    "id": "skybreaker_armory",
+    "name": "Skybreaker Armory",
+    "biome": "skybreaker_bastion",
+    "puzzle": {
+      "type": "lockpick",
+      "difficulty": 4,
+      "successReward": {
+        "items": [
+          {
+            "item": "skybreaker_core",
+            "quantity": 2
+          },
+          {
+            "item": "skybreaker_halberd",
+            "quantity": 1
+          },
+          {
+            "item": "skybreaker_plate",
+            "quantity": 1
+          },
+          {
+            "item": "skybreaker_torque",
+            "quantity": 1
+          }
+        ],
+        "coins": 220
+      },
+      "failureConsequence": {
+        "spawnEnemy": "skybreaker_guardian"
+      }
+    }
+  },
+  {
+    "id": "skyforge_resonance",
+    "name": "Skyforge Resonance",
+    "biome": "skybreaker_bastion",
+    "puzzle": {
+      "type": "timed_input",
+      "difficulty": 4,
+      "successReward": {
+        "xp": 260,
+        "items": [
+          {
+            "item": "thunderite_ore",
+            "quantity": 2
+          }
+        ]
+      },
+      "failureConsequence": {
+        "debuff": "shocked",
+        "durationSeconds": 360
+      }
+    }
+  },
+  {
+    "id": "emberlost_forge",
+    "name": "Emberlost Forge",
+    "biome": "emberlost_foundry",
+    "puzzle": {
+      "type": "crafting",
+      "difficulty": 4,
+      "successReward": {
+        "items": [
+          {
+            "item": "emberlost_ingot",
+            "quantity": 2
+          },
+          {
+            "item": "ashen_crusher",
+            "quantity": 1
+          }
+        ],
+        "xp": 250
+      },
+      "failureConsequence": {
+        "spawnEnemy": "emberlost_forgemaster"
+      }
+    }
+  },
+  {
+    "id": "slagriver_puzzle",
+    "name": "Slagriver Puzzle",
+    "biome": "emberlost_foundry",
+    "puzzle": {
+      "type": "sequence",
+      "difficulty": 3,
+      "successReward": {
+        "coins": 190,
+        "items": [
+          {
+            "item": "ember_resin",
+            "quantity": 2
+          }
+        ]
+      },
+      "failureConsequence": {
+        "debuff": "burning",
+        "durationSeconds": 300
+      }
+    }
+  },
+  {
+    "id": "gilded_gallery",
+    "name": "Gilded Gallery",
+    "biome": "gilded_courtyard",
+    "puzzle": {
+      "type": "pattern",
+      "difficulty": 3,
+      "successReward": {
+        "coins": 200,
+        "items": [
+          {
+            "item": "gilded_leaf",
+            "quantity": 3
+          },
+          {
+            "item": "gilded_estoc",
+            "quantity": 1
+          },
+          {
+            "item": "gilded_vestments",
+            "quantity": 1
+          },
+          {
+            "item": "gilded_choker",
+            "quantity": 1
+          },
+          {
+            "item": "gilded_truffle",
+            "quantity": 2
+          }
+        ]
+      },
+      "failureConsequence": {
+        "spawnEnemy": "gilded_duelist"
+      }
+    }
+  },
+  {
+    "id": "sunlace_puzzle",
+    "name": "Sunlace Puzzle",
+    "biome": "gilded_courtyard",
+    "puzzle": {
+      "type": "weaving",
+      "difficulty": 3,
+      "successReward": {
+        "xp": 210,
+        "items": [
+          {
+            "item": "sunshadow_spice",
+            "quantity": 2
+          },
+          {
+            "item": "aurora_sorbet",
+            "quantity": 2
+          }
+        ]
+      },
+      "failureConsequence": {
+        "debuff": "dazzled",
+        "durationSeconds": 300
+      }
+    }
+  },
+  {
+    "id": "stormveil_aerie",
+    "name": "Stormveil Aerie",
+    "biome": "stormveil_ridge",
+    "puzzle": {
+      "type": "lockpick",
+      "difficulty": 3,
+      "successReward": {
+        "coins": 190,
+        "items": [
+          {
+            "item": "stormveil_feather",
+            "quantity": 2
+          },
+          {
+            "item": "stormveil_sabers",
+            "quantity": 1
+          },
+          {
+            "item": "stormveil_mantle",
+            "quantity": 1
+          },
+          {
+            "item": "stormveil_plume",
+            "quantity": 1
+          },
+          {
+            "item": "tempest_emblem",
+            "quantity": 1
+          }
+        ]
+      },
+      "failureConsequence": {
+        "spawnEnemy": "stormveil_tempest"
+      }
+    }
+  },
+  {
+    "id": "tempest_plume_trial",
+    "name": "Tempest Plume Trial",
+    "biome": "stormveil_ridge",
+    "puzzle": {
+      "type": "timed_input",
+      "difficulty": 4,
+      "successReward": {
+        "xp": 240,
+        "items": [
+          {
+            "item": "tempest_plume",
+            "quantity": 2
+          },
+          {
+            "item": "tempest_capacitor",
+            "quantity": 1
+          }
+        ]
+      },
+      "failureConsequence": {
+        "debuff": "shocked",
+        "durationSeconds": 360
+      }
+    }
+  },
+  {
+    "id": "hollowroot_vault",
+    "name": "Hollowroot Vault",
+    "biome": "hollowroot_cavern",
+    "puzzle": {
+      "type": "lockpick",
+      "difficulty": 3,
+      "successReward": {
+        "items": [
+          {
+            "item": "hollowroot_resin",
+            "quantity": 2
+          },
+          {
+            "item": "fenwarden_shell",
+            "quantity": 1
+          }
+        ],
+        "coins": 190
+      },
+      "failureConsequence": {
+        "spawnEnemy": "hollowroot_brute"
+      }
+    }
+  },
+  {
+    "id": "saplight_puzzle",
+    "name": "Saplight Puzzle",
+    "biome": "hollowroot_cavern",
+    "puzzle": {
+      "type": "pattern",
+      "difficulty": 3,
+      "successReward": {
+        "xp": 210,
+        "items": [
+          {
+            "item": "echo_crystal",
+            "quantity": 1
+          },
+          {
+            "item": "fenfire_salve",
+            "quantity": 2
+          }
+        ]
+      },
+      "failureConsequence": {
+        "debuff": "rooted",
+        "durationSeconds": 300
+      }
+    }
+  },
+  {
+    "id": "sablemarsh_shrine",
+    "name": "Sablemarsh Shrine",
+    "biome": "sablemarsh",
+    "puzzle": {
+      "type": "ritual",
+      "difficulty": 3,
+      "successReward": {
+        "coins": 180,
+        "items": [
+          {
+            "item": "sablemarsh_mud",
+            "quantity": 3
+          }
+        ]
+      },
+      "failureConsequence": {
+        "spawnEnemy": "sablemarsh_witch"
+      }
+    }
+  },
+  {
+    "id": "peatlight_puzzle",
+    "name": "Peatlight Puzzle",
+    "biome": "sablemarsh",
+    "puzzle": {
+      "type": "sequence",
+      "difficulty": 3,
+      "successReward": {
+        "xp": 200,
+        "items": [
+          {
+            "item": "scarlet_myrtle",
+            "quantity": 2
+          }
+        ]
+      },
+      "failureConsequence": {
+        "debuff": "drenched",
+        "durationSeconds": 300
+      }
+    }
+  },
+  {
+    "id": "sunshadow_waygate",
+    "name": "Sunshadow Waygate",
+    "biome": "sunshadow_steppe",
+    "puzzle": {
+      "type": "sequence",
+      "difficulty": 3,
+      "successReward": {
+        "coins": 190,
+        "items": [
+          {
+            "item": "sunshadow_spice",
+            "quantity": 2
+          }
+        ]
+      },
+      "failureConsequence": {
+        "spawnEnemy": "sunshadow_nomad"
+      }
+    }
+  },
+  {
+    "id": "sunshadow_riddle",
+    "name": "Sunshadow Riddle",
+    "biome": "sunshadow_steppe",
+    "puzzle": {
+      "type": "riddle",
+      "difficulty": 3,
+      "successReward": {
+        "xp": 210,
+        "items": [
+          {
+            "item": "auric_powder",
+            "quantity": 1
+          }
+        ]
+      },
+      "failureConsequence": {
+        "debuff": "dazzled",
+        "durationSeconds": 300
+      }
+    }
+  },
+  {
+    "id": "crystal_veil_spire",
+    "name": "Crystal Veil Spire",
+    "biome": "crystal_veil",
+    "puzzle": {
+      "type": "lockpick",
+      "difficulty": 4,
+      "successReward": {
+        "items": [
+          {
+            "item": "crystal_veil_shard",
+            "quantity": 2
+          }
+        ],
+        "coins": 220
+      },
+      "failureConsequence": {
+        "spawnEnemy": "crystal_veil_sentinel"
+      }
+    }
+  },
+  {
+    "id": "prismatic_slope",
+    "name": "Prismatic Slope",
+    "biome": "crystal_veil",
+    "puzzle": {
+      "type": "light_reflection",
+      "difficulty": 4,
+      "successReward": {
+        "xp": 250,
+        "items": [
+          {
+            "item": "aurora_ember",
+            "quantity": 2
+          }
+        ]
+      },
+      "failureConsequence": {
+        "debuff": "blinded",
+        "durationSeconds": 360
+      }
+    }
+  },
+  {
+    "id": "abyssal_gulf_gate",
+    "name": "Abyssal Gulf Gate",
+    "biome": "abyssal_gulf",
+    "puzzle": {
+      "type": "sequence",
+      "difficulty": 4,
+      "successReward": {
+        "items": [
+          {
+            "item": "abyssal_gem",
+            "quantity": 2
+          },
+          {
+            "item": "abyssal_scepter",
+            "quantity": 1
+          },
+          {
+            "item": "abyssal_carapace",
+            "quantity": 1
+          },
+          {
+            "item": "abyssal_ring",
+            "quantity": 1
+          },
+          {
+            "item": "aurora_buckle",
+            "quantity": 1
+          }
+        ],
+        "xp": 260
+      },
+      "failureConsequence": {
+        "spawnEnemy": "abyssal_goliath"
+      }
+    }
+  },
+  {
+    "id": "abyssal_depths_puzzle",
+    "name": "Abyssal Depths Puzzle",
+    "biome": "abyssal_gulf",
+    "puzzle": {
+      "type": "timed_input",
+      "difficulty": 4,
+      "successReward": {
+        "coins": 230,
+        "items": [
+          {
+            "item": "voidscar_fragment",
+            "quantity": 2
+          },
+          {
+            "item": "abyssal_phial",
+            "quantity": 2
+          }
+        ]
+      },
+      "failureConsequence": {
+        "debuff": "voidtouched",
+        "durationSeconds": 420
+      }
+    }
+  },
+  {
+    "id": "luminous_codex_chamber",
+    "name": "Luminous Codex Chamber",
+    "biome": "luminous_archives",
+    "puzzle": {
+      "type": "sequence",
+      "difficulty": 4,
+      "successReward": {
+        "xp": 280,
+        "items": [
+          {
+            "item": "luminous_script",
+            "quantity": 2
+          },
+          {
+            "item": "luminous_lance",
+            "quantity": 1
+          },
+          {
+            "item": "luminous_signet",
+            "quantity": 1
+          },
+          {
+            "item": "luminous_aegis",
+            "quantity": 1
+          }
+        ]
+      },
+      "failureConsequence": {
+        "debuff": "blinded",
+        "durationSeconds": 360
+      }
+    }
+  },
+  {
+    "id": "archive_riddle",
+    "name": "Archive Riddle",
+    "biome": "luminous_archives",
+    "puzzle": {
+      "type": "riddle",
+      "difficulty": 4,
+      "successReward": {
+        "coins": 230,
+        "items": [
+          {
+            "item": "archivist_focus",
+            "quantity": 1
+          }
+        ]
+      },
+      "failureConsequence": {
+        "spawnEnemy": "archive_warder"
+      }
+    }
+  },
+  {
+    "id": "ashen_rift_forge",
+    "name": "Ashen Rift Forge",
+    "biome": "ashen_rift",
+    "puzzle": {
+      "type": "crafting",
+      "difficulty": 4,
+      "successReward": {
+        "xp": 270,
+        "items": [
+          {
+            "item": "ashen_glass",
+            "quantity": 2
+          },
+          {
+            "item": "ember_rift_blade",
+            "quantity": 1
+          },
+          {
+            "item": "emberweave_hauberk",
+            "quantity": 1
+          },
+          {
+            "item": "ashen_cloak",
+            "quantity": 1
+          },
+          {
+            "item": "ashen_codex",
+            "quantity": 1
+          },
+          {
+            "item": "ember_rift_talisman",
+            "quantity": 1
+          }
+        ]
+      },
+      "failureConsequence": {
+        "spawnEnemy": "ashen_riftwarden"
+      }
+    }
+  },
+  {
+    "id": "lavaflow_conflux",
+    "name": "Lavaflow Conflux",
+    "biome": "ashen_rift",
+    "puzzle": {
+      "type": "timed_input",
+      "difficulty": 4,
+      "successReward": {
+        "coins": 240,
+        "items": [
+          {
+            "item": "molten_heart",
+            "quantity": 1
+          },
+          {
+            "item": "ashen_brew",
+            "quantity": 2
+          }
+        ]
+      },
+      "failureConsequence": {
+        "debuff": "burning",
+        "durationSeconds": 360
+      }
+    }
+  },
+  {
+    "id": "verdant_waystone",
+    "name": "Verdant Waystone",
+    "biome": "verdant_moors",
+    "puzzle": {
+      "type": "ritual",
+      "difficulty": 3,
+      "successReward": {
+        "coins": 200,
+        "items": [
+          {
+            "item": "verdant_spore",
+            "quantity": 2
+          },
+          {
+            "item": "verdant_scythe",
+            "quantity": 1
+          },
+          {
+            "item": "verdant_guard",
+            "quantity": 1
+          },
+          {
+            "item": "verdant_brooch",
+            "quantity": 1
+          }
+        ]
+      },
+      "failureConsequence": {
+        "debuff": "rooted",
+        "durationSeconds": 300
+      }
+    }
+  },
+  {
+    "id": "moorweave_pattern",
+    "name": "Moorweave Pattern",
+    "biome": "verdant_moors",
+    "puzzle": {
+      "type": "pattern",
+      "difficulty": 3,
+      "successReward": {
+        "xp": 240,
+        "items": [
+          {
+            "item": "moorfiber_reed",
+            "quantity": 2
+          },
+          {
+            "item": "verdant_elixir",
+            "quantity": 2
+          }
+        ]
+      },
+      "failureConsequence": {
+        "debuff": "drenched",
+        "durationSeconds": 300
+      }
+    }
+  },
+  {
+    "id": "delta_barge_cache",
+    "name": "Delta Barge Cache",
+    "biome": "glimmerfen_delta",
+    "puzzle": {
+      "type": "lockpick",
+      "difficulty": 3,
+      "successReward": {
+        "coins": 210,
+        "items": [
+          {
+            "item": "glimmerfen_bloom",
+            "quantity": 2
+          },
+          {
+            "item": "delta_trident",
+            "quantity": 1
+          },
+          {
+            "item": "delta_scalecoat",
+            "quantity": 1
+          },
+          {
+            "item": "delta_compass",
+            "quantity": 1
+          }
+        ]
+      },
+      "failureConsequence": {
+        "spawnEnemy": "glimmerfen_myrmidon"
+      }
+    }
+  },
+  {
+    "id": "glimmerfen_current_puzzle",
+    "name": "Glimmerfen Current Puzzle",
+    "biome": "glimmerfen_delta",
+    "puzzle": {
+      "type": "logic",
+      "difficulty": 3,
+      "successReward": {
+        "xp": 230,
+        "items": [
+          {
+            "item": "tidelight_resin",
+            "quantity": 1
+          },
+          {
+            "item": "fenrunner_blades",
+            "quantity": 1
+          },
+          {
+            "item": "fenfire_charm",
+            "quantity": 1
+          }
+        ]
+      },
+      "failureConsequence": {
+        "debuff": "soaked",
+        "durationSeconds": 240
+      }
+    }
+  },
+  {
+    "id": "celestial_armillary",
+    "name": "Celestial Armillary",
+    "biome": "celestial_escarpment",
+    "puzzle": {
+      "type": "timed_input",
+      "difficulty": 5,
+      "successReward": {
+        "xp": 320,
+        "items": [
+          {
+            "item": "starseer_chart",
+            "quantity": 1
+          },
+          {
+            "item": "celestial_longbow",
+            "quantity": 1
+          },
+          {
+            "item": "celestial_raiment",
+            "quantity": 1
+          },
+          {
+            "item": "celestial_orb",
+            "quantity": 1
+          }
+        ]
+      },
+      "failureConsequence": {
+        "debuff": "stunned",
+        "durationSeconds": 360
+      }
+    }
+  },
+  {
+    "id": "astrolabe_sequence",
+    "name": "Astrolabe Sequence",
+    "biome": "celestial_escarpment",
+    "puzzle": {
+      "type": "sequence",
+      "difficulty": 5,
+      "successReward": {
+        "coins": 260,
+        "items": [
+          {
+            "item": "cosmic_lens",
+            "quantity": 1
+          },
+          {
+            "item": "celestial_tea",
+            "quantity": 2
+          }
+        ]
+      },
+      "failureConsequence": {
+        "spawnEnemy": "celestial_chanter"
+      }
+    }
+  },
+  {
+    "id": "runebound_cache",
+    "name": "Runebound Cache",
+    "biome": "runebound_hollows",
+    "puzzle": {
+      "type": "lockpick",
+      "difficulty": 4,
+      "successReward": {
+        "coins": 240,
+        "items": [
+          {
+            "item": "wardstone_fragment",
+            "quantity": 2
+          },
+          {
+            "item": "runebound_grimoire",
+            "quantity": 1
+          },
+          {
+            "item": "runebound_barrier",
+            "quantity": 1
+          },
+          {
+            "item": "runebound_focus",
+            "quantity": 1
+          },
+          {
+            "item": "voidglass_harness",
+            "quantity": 1
+          }
+        ]
+      },
+      "failureConsequence": {
+        "spawnEnemy": "runebound_guardian"
+      }
+    }
+  },
+  {
+    "id": "glyph_sequence_puzzle",
+    "name": "Glyph Sequence Puzzle",
+    "biome": "runebound_hollows",
+    "puzzle": {
+      "type": "logic",
+      "difficulty": 4,
+      "successReward": {
+        "xp": 280,
+        "items": [
+          {
+            "item": "echoing_focus",
+            "quantity": 1
+          },
+          {
+            "item": "runebound_tonic",
+            "quantity": 2
+          },
+          {
+            "item": "voidglass_band",
+            "quantity": 1
+          }
+        ]
+      },
+      "failureConsequence": {
+        "debuff": "silenced",
+        "durationSeconds": 300
+      }
+    }
+  },
+  {
+    "id": "skyforge_aerie",
+    "name": "Skyforge Aerie",
+    "biome": "howling_peaks",
+    "puzzle": {
+      "type": "timed_input",
+      "difficulty": 4,
+      "successReward": {
+        "items": [
+          {
+            "item": "tempest_core",
+            "quantity": 1
+          },
+          {
+            "item": "stormvein_ore",
+            "quantity": 2
+          }
+        ],
+        "reputation": {
+          "stormguard": 10
+        }
+      },
+      "failureConsequence": {
+        "spawnEnemy": "tempest_herald"
+      }
+    }
+  },
+  {
+    "id": "ember_heart_crucible",
+    "name": "Ember Heart Crucible",
+    "biome": "ember_depths",
+    "puzzle": {
+      "type": "sequence",
+      "difficulty": 4,
+      "successReward": {
+        "coins": 240,
+        "items": [
+          {
+            "item": "obsidian_heart",
+            "quantity": 1
+          },
+          {
+            "item": "magma_pearl",
+            "quantity": 2
+          }
+        ]
+      },
+      "failureConsequence": {
+        "damagePercent": 0.35
+      }
+    }
+  },
+  {
+    "id": "twilight_veil_grove",
+    "name": "Twilight Veil Grove",
+    "biome": "gloomwild_thicket",
+    "puzzle": {
+      "type": "memory",
+      "difficulty": 3,
+      "successReward": {
+        "xp": 260,
+        "items": [
+          {
+            "item": "nightpetal_blossom",
+            "quantity": 2
+          },
+          {
+            "item": "gloomdew_extract",
+            "quantity": 2
+          }
+        ]
+      },
+      "failureConsequence": {
+        "spawnEnemy": "gloomshade_prowler"
+      }
+    }
+  },
+  {
+    "id": "tempest_observatory",
+    "name": "Tempest Observatory",
+    "biome": "howling_peaks",
+    "puzzle": {
+      "type": "sequence",
+      "difficulty": 3,
+      "successReward": {
+        "xp": 240,
+        "items": [
+          {
+            "item": "skyrazor_plume",
+            "quantity": 1
+          },
+          {
+            "item": "focus_elixir",
+            "quantity": 1
+          }
+        ]
+      },
+      "failureConsequence": {
+        "debuff": "dazed",
+        "durationSeconds": 240
+      }
+    }
+  },
+  {
+    "id": "magma_listening_post",
+    "name": "Magma Listening Post",
+    "biome": "ember_depths",
+    "puzzle": {
+      "type": "timed_input",
+      "difficulty": 4,
+      "successReward": {
+        "coins": 220,
+        "items": [
+          {
+            "item": "ember_resin",
+            "quantity": 2
+          },
+          {
+            "item": "focus_elixir",
+            "quantity": 1
+          }
+        ]
+      },
+      "failureConsequence": {
+        "damagePercent": 0.25
+      }
+    }
+  },
+  {
+    "id": "gloomwild_waystone",
+    "name": "Gloomwild Waystone",
+    "biome": "gloomwild_thicket",
+    "puzzle": {
+      "type": "logic",
+      "difficulty": 3,
+      "successReward": {
+        "xp": 250,
+        "items": [
+          {
+            "item": "nightpetal_blossom",
+            "quantity": 1
+          },
+          {
+            "item": "focus_elixir",
+            "quantity": 1
+          }
+        ]
+      },
+      "failureConsequence": {
+        "debuff": "confused",
+        "durationSeconds": 240
+      }
+    }
+  }
+]

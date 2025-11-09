@@ -1,0 +1,3038 @@
+[
+  {
+    "id": "shadow_depths",
+    "name": "Shadow Depths",
+    "theme": "varyn",
+    "biome": "shadow",
+    "minLevel": 4,
+    "recommendedPower": 120,
+    "timeLimitSeconds": 900,
+    "environment": "Void mists sap mana regeneration while empowering shadow foes.",
+    "floors": [
+      {
+        "name": "Shadow Scout",
+        "emoji": "🦇",
+        "description": "A swift scout of the Varyn lurking in the upper halls.",
+        "baseHp": 90,
+        "hpPerLevel": 12,
+        "baseDamage": 10,
+        "damagePerLevel": 1.8,
+        "baseXp": 65,
+        "xpPerLevel": 10,
+        "baseCoins": 60,
+        "coinsPerLevel": 5,
+        "healPercent": 0.2,
+        "loot": [
+          {
+            "item": "voidthread",
+            "chance": 0.35,
+            "min": 1,
+            "max": 2
+          },
+          {
+            "item": "shadowcap_mushroom",
+            "chance": 0.3,
+            "min": 1,
+            "max": 2
+          }
+        ]
+      },
+      {
+        "name": "Crystal Sentinel",
+        "emoji": "🛕",
+        "description": "A construct empowered by Orbis crystals guarding the lower chambers.",
+        "relic": {
+          "item": "orbis_crystal",
+          "chance": 0.4,
+          "amount": 1
+        },
+        "baseHp": 140,
+        "hpPerLevel": 15,
+        "baseDamage": 14,
+        "damagePerLevel": 2.2,
+        "baseXp": 110,
+        "xpPerLevel": 12,
+        "baseCoins": 90,
+        "coinsPerLevel": 6,
+        "healPercent": 0.25,
+        "loot": [
+          {
+            "item": "aurora_fragment",
+            "chance": 0.25,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "item": "stormcore_shard",
+            "chance": 0.2,
+            "min": 1,
+            "max": 2
+          }
+        ]
+      },
+      {
+        "name": "Depth Tyrant",
+        "emoji": "🐉",
+        "description": "The ruler of the depths wielding ancient void magic.",
+        "boss": true,
+        "relic": {
+          "item": "luminite_core",
+          "chance": 0.6,
+          "amount": 1
+        },
+        "baseHp": 220,
+        "hpPerLevel": 20,
+        "baseDamage": 20,
+        "damagePerLevel": 2.8,
+        "baseXp": 200,
+        "xpPerLevel": 18,
+        "baseCoins": 200,
+        "coinsPerLevel": 10,
+        "healPercent": 1.0,
+        "loot": [
+          {
+            "item": "void_essence",
+            "chance": 0.45,
+            "min": 1,
+            "max": 2
+          },
+          {
+            "item": "siren_tear_elixir",
+            "chance": 0.2,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      }
+    ],
+    "completionReward": {
+      "coins": {
+        "base": 220,
+        "perLevel": 14
+      },
+      "xp": {
+        "base": 260,
+        "perLevel": 18
+      },
+      "items": [
+        {
+          "item": "voidveil_cloak",
+          "quantity": 1
+        },
+        {
+          "item": "voidglass_serum",
+          "quantity": 1
+        },
+        {
+          "item": "voidscale_plate",
+          "quantity": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "emerald_warren",
+    "name": "Emerald Warren",
+    "theme": "kweebec",
+    "biome": "forest",
+    "minLevel": 3,
+    "recommendedPower": 90,
+    "timeLimitSeconds": 840,
+    "environment": "Glowing spores heal allies but enrage invading predators.",
+    "floors": [
+      {
+        "name": "Root-Tangled Hollow",
+        "emoji": "🌿",
+        "description": "Twisting roots conceal guardians loyal to the grove.",
+        "baseHp": 80,
+        "hpPerLevel": 10,
+        "baseDamage": 9,
+        "damagePerLevel": 1.5,
+        "baseXp": 55,
+        "xpPerLevel": 8,
+        "baseCoins": 45,
+        "coinsPerLevel": 4,
+        "healPercent": 0.15,
+        "loot": [
+          {
+            "item": "ancient_bark",
+            "chance": 0.5,
+            "min": 2,
+            "max": 4
+          },
+          {
+            "item": "gale_feather",
+            "chance": 0.25,
+            "min": 1,
+            "max": 2
+          }
+        ]
+      },
+      {
+        "name": "Sapling Council",
+        "emoji": "🌱",
+        "description": "Kweebec wardens test outsiders with animated effigies.",
+        "baseHp": 120,
+        "hpPerLevel": 13,
+        "baseDamage": 12,
+        "damagePerLevel": 1.9,
+        "baseXp": 95,
+        "xpPerLevel": 11,
+        "baseCoins": 80,
+        "coinsPerLevel": 6,
+        "healPercent": 0.2,
+        "loot": [
+          {
+            "item": "kweebec_charm",
+            "chance": 0.35,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "item": "glowcap_soup",
+            "chance": 0.3,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      },
+      {
+        "name": "Wyrmroot Guardian",
+        "emoji": "🐉",
+        "description": "A colossal bark-skinned guardian awakens to defend the heartwood.",
+        "boss": true,
+        "relic": {
+          "item": "wyrmroot_seed",
+          "chance": 0.7,
+          "amount": 2
+        },
+        "baseHp": 200,
+        "hpPerLevel": 18,
+        "baseDamage": 19,
+        "damagePerLevel": 2.4,
+        "baseXp": 180,
+        "xpPerLevel": 16,
+        "baseCoins": 160,
+        "coinsPerLevel": 10,
+        "healPercent": 0.4,
+        "loot": [
+          {
+            "item": "wyrmroot_salve",
+            "chance": 0.4,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "item": "gale_runner_boots",
+            "chance": 0.15,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      }
+    ],
+    "completionReward": {
+      "coins": {
+        "base": 180,
+        "perLevel": 12
+      },
+      "xp": {
+        "base": 220,
+        "perLevel": 15
+      },
+      "items": [
+        {
+          "item": "sapling_staff",
+          "quantity": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "gale_spire",
+    "name": "Gale Spire",
+    "theme": "skysong",
+    "biome": "mountain",
+    "minLevel": 5,
+    "recommendedPower": 150,
+    "timeLimitSeconds": 960,
+    "environment": "Screaming winds knock back the unprepared but charge wind-crafted weapons.",
+    "floors": [
+      {
+        "name": "Cliffside Perch",
+        "emoji": "🪨",
+        "description": "Glitterwing archers snipe intruders from wind-carved ledges.",
+        "baseHp": 110,
+        "hpPerLevel": 12,
+        "baseDamage": 14,
+        "damagePerLevel": 2,
+        "baseXp": 90,
+        "xpPerLevel": 10,
+        "baseCoins": 85,
+        "coinsPerLevel": 6,
+        "healPercent": 0.15,
+        "loot": [
+          {
+            "item": "gale_feather",
+            "chance": 0.55,
+            "min": 2,
+            "max": 4
+          },
+          {
+            "item": "glitterwing_bow",
+            "chance": 0.12,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      },
+      {
+        "name": "Resonance Hall",
+        "emoji": "🎼",
+        "description": "Skysong choristers weave sonic shields and lightning arrays.",
+        "baseHp": 150,
+        "hpPerLevel": 16,
+        "baseDamage": 18,
+        "damagePerLevel": 2.3,
+        "baseXp": 140,
+        "xpPerLevel": 14,
+        "baseCoins": 120,
+        "coinsPerLevel": 8,
+        "healPercent": 0.25,
+        "loot": [
+          {
+            "item": "aurora_fragment",
+            "chance": 0.4,
+            "min": 1,
+            "max": 2
+          },
+          {
+            "item": "stormcore_shard",
+            "chance": 0.3,
+            "min": 1,
+            "max": 2
+          }
+        ]
+      },
+      {
+        "name": "Skyseer Council",
+        "emoji": "🌀",
+        "description": "Skysong sages wield aurora energy to test your resolve.",
+        "boss": true,
+        "relic": {
+          "item": "skyseer_talisman",
+          "chance": 0.6,
+          "amount": 1
+        },
+        "baseHp": 230,
+        "hpPerLevel": 20,
+        "baseDamage": 24,
+        "damagePerLevel": 3,
+        "baseXp": 220,
+        "xpPerLevel": 18,
+        "baseCoins": 200,
+        "coinsPerLevel": 12,
+        "healPercent": 0.5,
+        "loot": [
+          {
+            "item": "skyflare_pendant",
+            "chance": 0.2,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "item": "aurora_tea",
+            "chance": 0.35,
+            "min": 1,
+            "max": 2
+          }
+        ]
+      }
+    ],
+    "completionReward": {
+      "coins": {
+        "base": 240,
+        "perLevel": 16
+      },
+      "xp": {
+        "base": 300,
+        "perLevel": 20
+      },
+      "items": [
+        {
+          "item": "glitterwing_bow",
+          "quantity": 1
+        },
+        {
+          "item": "stormveil_plume",
+          "quantity": 1
+        },
+        {
+          "item": "stormveil_mantle",
+          "quantity": 1
+        },
+        {
+          "item": "tempest_capacitor",
+          "quantity": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "borea_stronghold",
+    "name": "Borea Stronghold",
+    "theme": "human",
+    "biome": "tundra",
+    "minLevel": 6,
+    "recommendedPower": 170,
+    "timeLimitSeconds": 1020,
+    "environment": "Blizzard gusts slow movement but weaken fire-based attacks.",
+    "floors": [
+      {
+        "name": "Icebreaker Gate",
+        "emoji": "❄️",
+        "description": "Stormguard sentries repel intruders with frost-speared ballistae.",
+        "baseHp": 130,
+        "hpPerLevel": 14,
+        "baseDamage": 16,
+        "damagePerLevel": 2.2,
+        "baseXp": 110,
+        "xpPerLevel": 12,
+        "baseCoins": 100,
+        "coinsPerLevel": 7,
+        "healPercent": 0.2,
+        "loot": [
+          {
+            "item": "frost_wisp",
+            "chance": 0.5,
+            "min": 1,
+            "max": 2
+          },
+          {
+            "item": "frostbite_blade",
+            "chance": 0.15,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      },
+      {
+        "name": "Stormguard Forge",
+        "emoji": "⚒️",
+        "description": "Templars wield stormforged weaponry amid roaring furnaces.",
+        "baseHp": 170,
+        "hpPerLevel": 18,
+        "baseDamage": 22,
+        "damagePerLevel": 2.8,
+        "baseXp": 170,
+        "xpPerLevel": 16,
+        "baseCoins": 150,
+        "coinsPerLevel": 10,
+        "healPercent": 0.3,
+        "loot": [
+          {
+            "item": "stormcore_shard",
+            "chance": 0.4,
+            "min": 1,
+            "max": 2
+          },
+          {
+            "item": "stormbrew_tonic",
+            "chance": 0.3,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      },
+      {
+        "name": "Frostfang General",
+        "emoji": "🛡️",
+        "description": "A frostclad commander duels with electrified halberds.",
+        "boss": true,
+        "relic": {
+          "item": "stormguard_plate",
+          "chance": 0.55,
+          "amount": 1
+        },
+        "baseHp": 250,
+        "hpPerLevel": 22,
+        "baseDamage": 28,
+        "damagePerLevel": 3.2,
+        "baseXp": 250,
+        "xpPerLevel": 20,
+        "baseCoins": 230,
+        "coinsPerLevel": 14,
+        "healPercent": 0.55,
+        "loot": [
+          {
+            "item": "borea_fur_cloak",
+            "chance": 0.25,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "item": "wyrmroot_seed",
+            "chance": 0.3,
+            "min": 1,
+            "max": 2
+          }
+        ]
+      }
+    ],
+    "completionReward": {
+      "coins": {
+        "base": 280,
+        "perLevel": 18
+      },
+      "xp": {
+        "base": 340,
+        "perLevel": 22
+      },
+      "items": [
+        {
+          "item": "stormguard_plate",
+          "quantity": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "sunken_cathedral",
+    "name": "Sunken Cathedral",
+    "theme": "ocean",
+    "biome": "ocean",
+    "minLevel": 7,
+    "recommendedPower": 190,
+    "timeLimitSeconds": 1080,
+    "environment": "Tidal surges periodically flood the arena, amplifying water spells.",
+    "floors": [
+      {
+        "name": "Tidewatch Choir",
+        "emoji": "🎵",
+        "description": "Siren chanters weave tides into razor hymns.",
+        "baseHp": 140,
+        "hpPerLevel": 15,
+        "baseDamage": 18,
+        "damagePerLevel": 2.4,
+        "baseXp": 130,
+        "xpPerLevel": 14,
+        "baseCoins": 120,
+        "coinsPerLevel": 9,
+        "healPercent": 0.22,
+        "loot": [
+          {
+            "item": "siren_scale",
+            "chance": 0.5,
+            "min": 1,
+            "max": 2
+          },
+          {
+            "item": "glowcap_soup",
+            "chance": 0.25,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      },
+      {
+        "name": "Coral Sentinel",
+        "emoji": "🪸",
+        "description": "Animated coral guardians lash out with living tendrils.",
+        "baseHp": 180,
+        "hpPerLevel": 19,
+        "baseDamage": 23,
+        "damagePerLevel": 2.9,
+        "baseXp": 180,
+        "xpPerLevel": 18,
+        "baseCoins": 170,
+        "coinsPerLevel": 12,
+        "healPercent": 0.3,
+        "loot": [
+          {
+            "item": "sunken_pearl",
+            "chance": 0.35,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "item": "tidecaller_shell",
+            "chance": 0.18,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      },
+      {
+        "name": "Siren Matriarch",
+        "emoji": "🧜",
+        "description": "The matriarch conducts the choir with tempestuous crescendos.",
+        "boss": true,
+        "relic": {
+          "item": "siren_tear_elixir",
+          "chance": 0.6,
+          "amount": 1
+        },
+        "baseHp": 260,
+        "hpPerLevel": 24,
+        "baseDamage": 30,
+        "damagePerLevel": 3.1,
+        "baseXp": 260,
+        "xpPerLevel": 22,
+        "baseCoins": 240,
+        "coinsPerLevel": 16,
+        "healPercent": 0.6,
+        "loot": [
+          {
+            "item": "tidecaller_shell",
+            "chance": 0.35,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "item": "deepsea_trident",
+            "chance": 0.2,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      }
+    ],
+    "completionReward": {
+      "coins": {
+        "base": 320,
+        "perLevel": 20
+      },
+      "xp": {
+        "base": 380,
+        "perLevel": 24
+      },
+      "items": [
+        {
+          "item": "deepsea_trident",
+          "quantity": 1
+        },
+        {
+          "item": "abyssal_scepter",
+          "quantity": 1
+        },
+        {
+          "item": "abyssal_carapace",
+          "quantity": 1
+        },
+        {
+          "item": "abyssal_ring",
+          "quantity": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "emberforge_crater",
+    "name": "Emberforge Crater",
+    "theme": "ancient",
+    "biome": "volcano",
+    "minLevel": 8,
+    "recommendedPower": 210,
+    "timeLimitSeconds": 1080,
+    "environment": "Molten geysers flare randomly, igniting ground tiles and empowering fire damage.",
+    "floors": [
+      {
+        "name": "Molten Approach",
+        "emoji": "🌋",
+        "description": "Lava imps pelt intruders with ember shards.",
+        "baseHp": 150,
+        "hpPerLevel": 17,
+        "baseDamage": 21,
+        "damagePerLevel": 2.6,
+        "baseXp": 150,
+        "xpPerLevel": 16,
+        "baseCoins": 140,
+        "coinsPerLevel": 10,
+        "healPercent": 0.18,
+        "loot": [
+          {
+            "item": "ember_resin",
+            "chance": 0.55,
+            "min": 2,
+            "max": 4
+          },
+          {
+            "item": "emberglass_vial",
+            "chance": 0.35,
+            "min": 1,
+            "max": 2
+          }
+        ]
+      },
+      {
+        "name": "Forge Antechamber",
+        "emoji": "⚙️",
+        "description": "Elementals hammer molten ingots into living armor.",
+        "baseHp": 195,
+        "hpPerLevel": 20,
+        "baseDamage": 26,
+        "damagePerLevel": 3,
+        "baseXp": 210,
+        "xpPerLevel": 18,
+        "baseCoins": 190,
+        "coinsPerLevel": 12,
+        "healPercent": 0.25,
+        "loot": [
+          {
+            "item": "ember_crystal_cluster",
+            "chance": 0.4,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "item": "emberstorm_bow",
+            "chance": 0.15,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      },
+      {
+        "name": "Ashen Colossus",
+        "emoji": "🗽",
+        "description": "A towering golem emerges from magma crucibles.",
+        "boss": true,
+        "relic": {
+          "item": "obsidian_shield",
+          "chance": 0.55,
+          "amount": 1
+        },
+        "baseHp": 290,
+        "hpPerLevel": 26,
+        "baseDamage": 34,
+        "damagePerLevel": 3.4,
+        "baseXp": 280,
+        "xpPerLevel": 24,
+        "baseCoins": 260,
+        "coinsPerLevel": 16,
+        "healPercent": 0.65,
+        "loot": [
+          {
+            "item": "emberstorm_bow",
+            "chance": 0.2,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "item": "obsidian_shield",
+            "chance": 0.18,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      }
+    ],
+    "completionReward": {
+      "coins": {
+        "base": 360,
+        "perLevel": 22
+      },
+      "xp": {
+        "base": 420,
+        "perLevel": 26
+      },
+      "items": [
+        {
+          "item": "emberstorm_bow",
+          "quantity": 1
+        },
+        {
+          "item": "ember_rift_blade",
+          "quantity": 1
+        },
+        {
+          "item": "emberweave_hauberk",
+          "quantity": 1
+        },
+        {
+          "item": "ember_rift_core",
+          "quantity": 2
+        }
+      ]
+    }
+  },
+  {
+    "id": "howling_sands_vault",
+    "name": "Howling Sands Vault",
+    "theme": "outlander",
+    "biome": "desert",
+    "minLevel": 5,
+    "recommendedPower": 140,
+    "timeLimitSeconds": 900,
+    "environment": "Sandstorms obscure vision while charging lightning traps.",
+    "floors": [
+      {
+        "name": "Dune Ambush",
+        "emoji": "🏜️",
+        "description": "Sandstalkers burst from dunes with serrated blades.",
+        "baseHp": 110,
+        "hpPerLevel": 12,
+        "baseDamage": 15,
+        "damagePerLevel": 2,
+        "baseXp": 85,
+        "xpPerLevel": 10,
+        "baseCoins": 80,
+        "coinsPerLevel": 6,
+        "healPercent": 0.15,
+        "loot": [
+          {
+            "item": "desert_spice",
+            "chance": 0.5,
+            "min": 2,
+            "max": 4
+          },
+          {
+            "item": "sandroot_stew",
+            "chance": 0.3,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      },
+      {
+        "name": "Nomad Cache",
+        "emoji": "🛖",
+        "description": "Outlander engineers deploy traps guarding ancestral relics.",
+        "baseHp": 150,
+        "hpPerLevel": 16,
+        "baseDamage": 19,
+        "damagePerLevel": 2.4,
+        "baseXp": 130,
+        "xpPerLevel": 14,
+        "baseCoins": 120,
+        "coinsPerLevel": 8,
+        "healPercent": 0.22,
+        "loot": [
+          {
+            "item": "sandstride_anklet",
+            "chance": 0.2,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "item": "nomad_wraps",
+            "chance": 0.25,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      },
+      {
+        "name": "Dune Colossus",
+        "emoji": "🗿",
+        "description": "An awakened obelisk stomps across the vault floor.",
+        "boss": true,
+        "relic": {
+          "item": "sandstride_anklet",
+          "chance": 0.4,
+          "amount": 1
+        },
+        "baseHp": 240,
+        "hpPerLevel": 22,
+        "baseDamage": 28,
+        "damagePerLevel": 3.1,
+        "baseXp": 220,
+        "xpPerLevel": 20,
+        "baseCoins": 200,
+        "coinsPerLevel": 14,
+        "healPercent": 0.5,
+        "loot": [
+          {
+            "item": "stormbrew_tonic",
+            "chance": 0.25,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "item": "sandroot_stew",
+            "chance": 0.35,
+            "min": 1,
+            "max": 2
+          }
+        ]
+      }
+    ],
+    "completionReward": {
+      "coins": {
+        "base": 260,
+        "perLevel": 15
+      },
+      "xp": {
+        "base": 300,
+        "perLevel": 18
+      },
+      "items": [
+        {
+          "item": "sandstride_anklet",
+          "quantity": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "crystal_sanctuary",
+    "name": "Crystal Sanctuary",
+    "theme": "ancient",
+    "biome": "crystal",
+    "minLevel": 6,
+    "recommendedPower": 160,
+    "timeLimitSeconds": 960,
+    "environment": "Refraction fields reflect projectiles but magnify magical output.",
+    "floors": [
+      {
+        "name": "Prismatic Vestibule",
+        "emoji": "🔶",
+        "description": "Crystalline sentries refract beams across mirrored halls.",
+        "baseHp": 125,
+        "hpPerLevel": 14,
+        "baseDamage": 16,
+        "damagePerLevel": 2.1,
+        "baseXp": 100,
+        "xpPerLevel": 11,
+        "baseCoins": 95,
+        "coinsPerLevel": 7,
+        "healPercent": 0.18,
+        "loot": [
+          {
+            "item": "orbis_crystal",
+            "chance": 0.4,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "item": "aurora_fragment",
+            "chance": 0.3,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      },
+      {
+        "name": "Lumin Scriptorium",
+        "emoji": "📜",
+        "description": "Archivist spirits cast lattice shields and barrier glyphs.",
+        "baseHp": 160,
+        "hpPerLevel": 17,
+        "baseDamage": 20,
+        "damagePerLevel": 2.6,
+        "baseXp": 150,
+        "xpPerLevel": 15,
+        "baseCoins": 130,
+        "coinsPerLevel": 9,
+        "healPercent": 0.22,
+        "loot": [
+          {
+            "item": "lumin_archivist_tome",
+            "chance": 0.18,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "item": "skyflare_pendant",
+            "chance": 0.2,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      },
+      {
+        "name": "Crystal Behemoth",
+        "emoji": "💎",
+        "description": "A radiant behemoth reshapes the arena with crystalline pillars.",
+        "boss": true,
+        "relic": {
+          "item": "luminite_core",
+          "chance": 0.6,
+          "amount": 1
+        },
+        "baseHp": 250,
+        "hpPerLevel": 23,
+        "baseDamage": 30,
+        "damagePerLevel": 3,
+        "baseXp": 230,
+        "xpPerLevel": 20,
+        "baseCoins": 210,
+        "coinsPerLevel": 14,
+        "healPercent": 0.45,
+        "loot": [
+          {
+            "item": "aurora_fragment",
+            "chance": 0.35,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "item": "skyseer_talisman",
+            "chance": 0.22,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      }
+    ],
+    "completionReward": {
+      "coins": {
+        "base": 300,
+        "perLevel": 18
+      },
+      "xp": {
+        "base": 340,
+        "perLevel": 21
+      },
+      "items": [
+        {
+          "item": "lumin_archivist_tome",
+          "quantity": 1
+        },
+        {
+          "item": "celestial_longbow",
+          "quantity": 1
+        },
+        {
+          "item": "celestial_raiment",
+          "quantity": 1
+        },
+        {
+          "item": "celestial_orb",
+          "quantity": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "voidheart_citadel",
+    "name": "Voidheart Citadel",
+    "theme": "varyn",
+    "biome": "shadow",
+    "minLevel": 9,
+    "recommendedPower": 230,
+    "timeLimitSeconds": 1200,
+    "environment": "Corruptive auras drain health steadily unless purified with light.",
+    "floors": [
+      {
+        "name": "Gloom Barracks",
+        "emoji": "🛏️",
+        "description": "Shadowreavers train with spectral blades in pitch-black halls.",
+        "baseHp": 180,
+        "hpPerLevel": 20,
+        "baseDamage": 24,
+        "damagePerLevel": 3,
+        "baseXp": 170,
+        "xpPerLevel": 18,
+        "baseCoins": 160,
+        "coinsPerLevel": 12,
+        "healPercent": 0.1,
+        "loot": [
+          {
+            "item": "void_essence",
+            "chance": 0.5,
+            "min": 2,
+            "max": 3
+          },
+          {
+            "item": "voidveil_cloak",
+            "chance": 0.12,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      },
+      {
+        "name": "Obsidian Arsenal",
+        "emoji": "⚔️",
+        "description": "Void titans imbue weapons with runic flames.",
+        "baseHp": 220,
+        "hpPerLevel": 24,
+        "baseDamage": 30,
+        "damagePerLevel": 3.4,
+        "baseXp": 220,
+        "xpPerLevel": 22,
+        "baseCoins": 210,
+        "coinsPerLevel": 14,
+        "healPercent": 0.18,
+        "loot": [
+          {
+            "item": "voidthread",
+            "chance": 0.4,
+            "min": 2,
+            "max": 3
+          },
+          {
+            "item": "siren_tear_elixir",
+            "chance": 0.25,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      },
+      {
+        "name": "Void Titan",
+        "emoji": "🕳️",
+        "description": "A colossal titan drenched in voidfire towers over the citadel heart.",
+        "boss": true,
+        "relic": {
+          "item": "voidveil_cloak",
+          "chance": 0.5,
+          "amount": 1
+        },
+        "baseHp": 340,
+        "hpPerLevel": 28,
+        "baseDamage": 40,
+        "damagePerLevel": 4,
+        "baseXp": 340,
+        "xpPerLevel": 26,
+        "baseCoins": 320,
+        "coinsPerLevel": 18,
+        "healPercent": 0.6,
+        "loot": [
+          {
+            "item": "sunforged_blade",
+            "chance": 0.18,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "item": "voidveil_cloak",
+            "chance": 0.25,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      }
+    ],
+    "completionReward": {
+      "coins": {
+        "base": 420,
+        "perLevel": 26
+      },
+      "xp": {
+        "base": 480,
+        "perLevel": 30
+      },
+      "items": [
+        {
+          "item": "voidveil_cloak",
+          "quantity": 1
+        },
+        {
+          "item": "stormbrew_tonic",
+          "quantity": 2
+        },
+        {
+          "item": "runebound_grimoire",
+          "quantity": 1
+        },
+        {
+          "item": "runebound_barrier",
+          "quantity": 1
+        },
+        {
+          "item": "runebound_focus",
+          "quantity": 1
+        },
+        {
+          "item": "voidglass_dirk",
+          "quantity": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "nomad_caravan_route",
+    "name": "Nomad Caravan Route",
+    "theme": "nomad",
+    "biome": "desert",
+    "minLevel": 4,
+    "recommendedPower": 110,
+    "timeLimitSeconds": 780,
+    "environment": "Rolling dunes shift the battlefield every few turns.",
+    "floors": [
+      {
+        "name": "Mirage Patrol",
+        "emoji": "🌫️",
+        "description": "Patrol captains ride sand gliders, confusing foes with mirages.",
+        "baseHp": 95,
+        "hpPerLevel": 11,
+        "baseDamage": 13,
+        "damagePerLevel": 1.8,
+        "baseXp": 70,
+        "xpPerLevel": 9,
+        "baseCoins": 65,
+        "coinsPerLevel": 5,
+        "healPercent": 0.15,
+        "loot": [
+          {
+            "item": "desert_spice",
+            "chance": 0.42,
+            "min": 1,
+            "max": 3
+          },
+          {
+            "item": "sandstride_anklet",
+            "chance": 0.12,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      },
+      {
+        "name": "Caravan Forge",
+        "emoji": "🔥",
+        "description": "Traveling smiths temper gear using portable furnaces.",
+        "baseHp": 130,
+        "hpPerLevel": 14,
+        "baseDamage": 18,
+        "damagePerLevel": 2.2,
+        "baseXp": 110,
+        "xpPerLevel": 11,
+        "baseCoins": 95,
+        "coinsPerLevel": 7,
+        "healPercent": 0.2,
+        "loot": [
+          {
+            "item": "gale_feather",
+            "chance": 0.3,
+            "min": 1,
+            "max": 2
+          },
+          {
+            "item": "stormbrew_tonic",
+            "chance": 0.22,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      },
+      {
+        "name": "Caravan Warchief",
+        "emoji": "🗡️",
+        "description": "A veteran warchief duels with twin flameblades.",
+        "boss": true,
+        "relic": {
+          "item": "sandstride_anklet",
+          "chance": 0.4,
+          "amount": 1
+        },
+        "baseHp": 200,
+        "hpPerLevel": 17,
+        "baseDamage": 24,
+        "damagePerLevel": 2.8,
+        "baseXp": 180,
+        "xpPerLevel": 16,
+        "baseCoins": 160,
+        "coinsPerLevel": 10,
+        "healPercent": 0.4,
+        "loot": [
+          {
+            "item": "ember_resin",
+            "chance": 0.3,
+            "min": 1,
+            "max": 2
+          },
+          {
+            "item": "trork_breaker",
+            "chance": 0.18,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      }
+    ],
+    "completionReward": {
+      "coins": {
+        "base": 210,
+        "perLevel": 13
+      },
+      "xp": {
+        "base": 250,
+        "perLevel": 16
+      },
+      "items": [
+        {
+          "item": "sandroot_stew",
+          "quantity": 2
+        }
+      ]
+    }
+  },
+  {
+    "id": "tidecaller_ruins",
+    "name": "Tidecaller Ruins",
+    "theme": "ocean",
+    "biome": "ocean",
+    "minLevel": 5,
+    "recommendedPower": 130,
+    "timeLimitSeconds": 840,
+    "environment": "Waterlogged chambers grant swimming speed but hinder heavy armor wearers.",
+    "floors": [
+      {
+        "name": "Flooded Arcade",
+        "emoji": "🌊",
+        "description": "Tidecaller myrmidons patrol the submerged hallways.",
+        "baseHp": 120,
+        "hpPerLevel": 13,
+        "baseDamage": 16,
+        "damagePerLevel": 2.1,
+        "baseXp": 95,
+        "xpPerLevel": 10,
+        "baseCoins": 85,
+        "coinsPerLevel": 6,
+        "healPercent": 0.18,
+        "loot": [
+          {
+            "item": "siren_scale",
+            "chance": 0.45,
+            "min": 1,
+            "max": 2
+          },
+          {
+            "item": "aurora_fragment",
+            "chance": 0.2,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      },
+      {
+        "name": "Echoing Vault",
+        "emoji": "🔔",
+        "description": "Resonance altars project sonic blasts across tidal waves.",
+        "baseHp": 150,
+        "hpPerLevel": 16,
+        "baseDamage": 20,
+        "damagePerLevel": 2.5,
+        "baseXp": 130,
+        "xpPerLevel": 13,
+        "baseCoins": 120,
+        "coinsPerLevel": 8,
+        "healPercent": 0.24,
+        "loot": [
+          {
+            "item": "tidecaller_shell",
+            "chance": 0.22,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "item": "siren_tear_elixir",
+            "chance": 0.18,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      },
+      {
+        "name": "Tidecaller Champion",
+        "emoji": "🛡️",
+        "description": "A champion channels tidal surges through coral blades.",
+        "boss": true,
+        "relic": {
+          "item": "tidecaller_shell",
+          "chance": 0.42,
+          "amount": 1
+        },
+        "baseHp": 210,
+        "hpPerLevel": 19,
+        "baseDamage": 26,
+        "damagePerLevel": 2.9,
+        "baseXp": 190,
+        "xpPerLevel": 17,
+        "baseCoins": 160,
+        "coinsPerLevel": 11,
+        "healPercent": 0.45,
+        "loot": [
+          {
+            "item": "deepsea_trident",
+            "chance": 0.18,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "item": "grove_tonic",
+            "chance": 0.3,
+            "min": 1,
+            "max": 2
+          }
+        ]
+      }
+    ],
+    "completionReward": {
+      "coins": {
+        "base": 260,
+        "perLevel": 15
+      },
+      "xp": {
+        "base": 280,
+        "perLevel": 18
+      },
+      "items": [
+        {
+          "item": "tidecaller_shell",
+          "quantity": 1
+        },
+        {
+          "item": "delta_trident",
+          "quantity": 1
+        },
+        {
+          "item": "delta_scalecoat",
+          "quantity": 1
+        },
+        {
+          "item": "delta_compass",
+          "quantity": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "wyrmroot_hollow",
+    "name": "Wyrmroot Hollow",
+    "theme": "beast",
+    "biome": "forest",
+    "minLevel": 7,
+    "recommendedPower": 180,
+    "timeLimitSeconds": 900,
+    "environment": "Poisonous spores fill the air, steadily draining health unless antidotes are used.",
+    "floors": [
+      {
+        "name": "Sporefall Grotto",
+        "emoji": "🍄",
+        "description": "Fungal beasts and shroom sages spew toxic clouds.",
+        "baseHp": 150,
+        "hpPerLevel": 16,
+        "baseDamage": 19,
+        "damagePerLevel": 2.4,
+        "baseXp": 140,
+        "xpPerLevel": 14,
+        "baseCoins": 130,
+        "coinsPerLevel": 9,
+        "healPercent": 0.15,
+        "loot": [
+          {
+            "item": "shadowcap_mushroom",
+            "chance": 0.45,
+            "min": 2,
+            "max": 4
+          },
+          {
+            "item": "glowcap_soup",
+            "chance": 0.35,
+            "min": 1,
+            "max": 2
+          }
+        ]
+      },
+      {
+        "name": "Canopy Breach",
+        "emoji": "🌳",
+        "description": "Vinebound titans lash out with living roots.",
+        "baseHp": 190,
+        "hpPerLevel": 19,
+        "baseDamage": 24,
+        "damagePerLevel": 2.9,
+        "baseXp": 190,
+        "xpPerLevel": 18,
+        "baseCoins": 170,
+        "coinsPerLevel": 11,
+        "healPercent": 0.25,
+        "loot": [
+          {
+            "item": "wyrmroot_seed",
+            "chance": 0.4,
+            "min": 1,
+            "max": 2
+          },
+          {
+            "item": "wyrmroot_salve",
+            "chance": 0.3,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      },
+      {
+        "name": "Vinebound Titan",
+        "emoji": "🌿",
+        "description": "Roots erupt as the hollow's guardian awakens.",
+        "boss": true,
+        "relic": {
+          "item": "wyrmroot_seed",
+          "chance": 0.6,
+          "amount": 2
+        },
+        "baseHp": 280,
+        "hpPerLevel": 24,
+        "baseDamage": 32,
+        "damagePerLevel": 3.4,
+        "baseXp": 260,
+        "xpPerLevel": 22,
+        "baseCoins": 240,
+        "coinsPerLevel": 15,
+        "healPercent": 0.5,
+        "loot": [
+          {
+            "item": "ember_resin",
+            "chance": 0.25,
+            "min": 1,
+            "max": 2
+          },
+          {
+            "item": "gale_runner_boots",
+            "chance": 0.18,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      }
+    ],
+    "completionReward": {
+      "coins": {
+        "base": 300,
+        "perLevel": 19
+      },
+      "xp": {
+        "base": 320,
+        "perLevel": 21
+      },
+      "items": [
+        {
+          "item": "wyrmroot_salve",
+          "quantity": 2
+        },
+        {
+          "item": "verdant_scythe",
+          "quantity": 1
+        },
+        {
+          "item": "verdant_guard",
+          "quantity": 1
+        },
+        {
+          "item": "verdant_elixir",
+          "quantity": 2
+        }
+      ]
+    }
+  },
+  {
+    "id": "aurora_watch",
+    "name": "Aurora Watch",
+    "theme": "skysong",
+    "biome": "mountain",
+    "minLevel": 8,
+    "recommendedPower": 200,
+    "timeLimitSeconds": 960,
+    "environment": "Aurora bursts periodically stun enemies but scramble minimaps.",
+    "floors": [
+      {
+        "name": "Glacial Causeway",
+        "emoji": "🧊",
+        "description": "Aurora watchers skate across luminous ice bridges.",
+        "baseHp": 160,
+        "hpPerLevel": 17,
+        "baseDamage": 21,
+        "damagePerLevel": 2.6,
+        "baseXp": 150,
+        "xpPerLevel": 15,
+        "baseCoins": 140,
+        "coinsPerLevel": 10,
+        "healPercent": 0.2,
+        "loot": [
+          {
+            "item": "aurora_fragment",
+            "chance": 0.5,
+            "min": 1,
+            "max": 2
+          },
+          {
+            "item": "aurora_tea",
+            "chance": 0.3,
+            "min": 1,
+            "max": 2
+          }
+        ]
+      },
+      {
+        "name": "Resonance Choir",
+        "emoji": "🎶",
+        "description": "Songweavers layer protective harmonies that reflect damage.",
+        "baseHp": 200,
+        "hpPerLevel": 20,
+        "baseDamage": 26,
+        "damagePerLevel": 3,
+        "baseXp": 200,
+        "xpPerLevel": 18,
+        "baseCoins": 190,
+        "coinsPerLevel": 12,
+        "healPercent": 0.28,
+        "loot": [
+          {
+            "item": "skyflare_pendant",
+            "chance": 0.22,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "item": "stormbrew_tonic",
+            "chance": 0.25,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      },
+      {
+        "name": "Aurora Avatar",
+        "emoji": "🌈",
+        "description": "A luminous avatar channels the aurora into devastating beams.",
+        "boss": true,
+        "relic": {
+          "item": "skyseer_talisman",
+          "chance": 0.45,
+          "amount": 1
+        },
+        "baseHp": 300,
+        "hpPerLevel": 26,
+        "baseDamage": 35,
+        "damagePerLevel": 3.6,
+        "baseXp": 280,
+        "xpPerLevel": 24,
+        "baseCoins": 260,
+        "coinsPerLevel": 16,
+        "healPercent": 0.55,
+        "loot": [
+          {
+            "item": "skyseer_talisman",
+            "chance": 0.2,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "item": "aurora_fragment",
+            "chance": 0.32,
+            "min": 1,
+            "max": 2
+          }
+        ]
+      }
+    ],
+    "completionReward": {
+      "coins": {
+        "base": 360,
+        "perLevel": 22
+      },
+      "xp": {
+        "base": 400,
+        "perLevel": 25
+      },
+      "items": [
+        {
+          "item": "skyflare_pendant",
+          "quantity": 1
+        },
+        {
+          "item": "aurora_warhammer",
+          "quantity": 1
+        },
+        {
+          "item": "aurora_mail",
+          "quantity": 1
+        },
+        {
+          "item": "aurora_sorbet",
+          "quantity": 2
+        }
+      ]
+    }
+  },
+  {
+    "id": "stormguard_keep",
+    "name": "Stormguard Keep",
+    "theme": "human",
+    "biome": "mountain",
+    "minLevel": 9,
+    "recommendedPower": 220,
+    "timeLimitSeconds": 1080,
+    "environment": "Magnetized floors pull metal-clad warriors into lightning strikes.",
+    "floors": [
+      {
+        "name": "Thunder Rampart",
+        "emoji": "⚡",
+        "description": "Storm aviators rain down bolts from arc towers.",
+        "baseHp": 180,
+        "hpPerLevel": 19,
+        "baseDamage": 24,
+        "damagePerLevel": 2.9,
+        "baseXp": 170,
+        "xpPerLevel": 17,
+        "baseCoins": 160,
+        "coinsPerLevel": 12,
+        "healPercent": 0.18,
+        "loot": [
+          {
+            "item": "stormcore_shard",
+            "chance": 0.5,
+            "min": 2,
+            "max": 3
+          },
+          {
+            "item": "stormbrew_tonic",
+            "chance": 0.28,
+            "min": 1,
+            "max": 2
+          }
+        ]
+      },
+      {
+        "name": "Arc Battery",
+        "emoji": "🔋",
+        "description": "Engineers overload capacitors to unleash chain lightning.",
+        "baseHp": 220,
+        "hpPerLevel": 22,
+        "baseDamage": 30,
+        "damagePerLevel": 3.4,
+        "baseXp": 220,
+        "xpPerLevel": 20,
+        "baseCoins": 210,
+        "coinsPerLevel": 14,
+        "healPercent": 0.24,
+        "loot": [
+          {
+            "item": "stormlens_scope",
+            "chance": 0.22,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "item": "stormguard_plate",
+            "chance": 0.16,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      },
+      {
+        "name": "Stormforged Construct",
+        "emoji": "🤖",
+        "description": "A colossal construct channels the keep's entire grid.",
+        "boss": true,
+        "relic": {
+          "item": "stormguard_plate",
+          "chance": 0.5,
+          "amount": 1
+        },
+        "baseHp": 340,
+        "hpPerLevel": 28,
+        "baseDamage": 40,
+        "damagePerLevel": 4,
+        "baseXp": 320,
+        "xpPerLevel": 26,
+        "baseCoins": 320,
+        "coinsPerLevel": 18,
+        "healPercent": 0.6,
+        "loot": [
+          {
+            "item": "stormlens_scope",
+            "chance": 0.2,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "item": "stormguard_plate",
+            "chance": 0.25,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      }
+    ],
+    "completionReward": {
+      "coins": {
+        "base": 420,
+        "perLevel": 26
+      },
+      "xp": {
+        "base": 460,
+        "perLevel": 28
+      },
+      "items": [
+        {
+          "item": "stormlens_scope",
+          "quantity": 1
+        },
+        {
+          "item": "skybreaker_halberd",
+          "quantity": 1
+        },
+        {
+          "item": "skybreaker_plate",
+          "quantity": 1
+        },
+        {
+          "item": "tempest_shotcaster",
+          "quantity": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "desert_obelisk",
+    "name": "Desert Obelisk",
+    "theme": "ancient",
+    "biome": "desert",
+    "minLevel": 5,
+    "recommendedPower": 135,
+    "timeLimitSeconds": 840,
+    "environment": "Solar flares charge the obelisk, unleashing bursts of radiant damage.",
+    "floors": [
+      {
+        "name": "Sunscorched Plaza",
+        "emoji": "☀️",
+        "description": "Sunforged statues animate in blistering heat.",
+        "baseHp": 120,
+        "hpPerLevel": 13,
+        "baseDamage": 17,
+        "damagePerLevel": 2.2,
+        "baseXp": 110,
+        "xpPerLevel": 12,
+        "baseCoins": 100,
+        "coinsPerLevel": 8,
+        "healPercent": 0.18,
+        "loot": [
+          {
+            "item": "sunstone_shard",
+            "chance": 0.45,
+            "min": 1,
+            "max": 2
+          },
+          {
+            "item": "sunforged_blade",
+            "chance": 0.12,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      },
+      {
+        "name": "Obelisk Heart",
+        "emoji": "💠",
+        "description": "Lightwardens rotate mirrors to focus solar beams.",
+        "baseHp": 150,
+        "hpPerLevel": 16,
+        "baseDamage": 22,
+        "damagePerLevel": 2.8,
+        "baseXp": 150,
+        "xpPerLevel": 15,
+        "baseCoins": 140,
+        "coinsPerLevel": 10,
+        "healPercent": 0.22,
+        "loot": [
+          {
+            "item": "aurora_fragment",
+            "chance": 0.3,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "item": "stormcore_shard",
+            "chance": 0.2,
+            "min": 1,
+            "max": 2
+          }
+        ]
+      },
+      {
+        "name": "Sunforged Avatar",
+        "emoji": "🌞",
+        "description": "A radiant avatar channels solar fire into sweeping blades.",
+        "boss": true,
+        "relic": {
+          "item": "sunforged_blade",
+          "chance": 0.45,
+          "amount": 1
+        },
+        "baseHp": 230,
+        "hpPerLevel": 20,
+        "baseDamage": 30,
+        "damagePerLevel": 3.2,
+        "baseXp": 230,
+        "xpPerLevel": 20,
+        "baseCoins": 200,
+        "coinsPerLevel": 14,
+        "healPercent": 0.5,
+        "loot": [
+          {
+            "item": "sunforged_blade",
+            "chance": 0.2,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "item": "aurora_fragment",
+            "chance": 0.28,
+            "min": 1,
+            "max": 2
+          }
+        ]
+      }
+    ],
+    "completionReward": {
+      "coins": {
+        "base": 280,
+        "perLevel": 16
+      },
+      "xp": {
+        "base": 320,
+        "perLevel": 19
+      },
+      "items": [
+        {
+          "item": "sunforged_blade",
+          "quantity": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "obsidian_pit",
+    "name": "Obsidian Pit",
+    "theme": "ancient",
+    "biome": "volcano",
+    "minLevel": 10,
+    "recommendedPower": 250,
+    "timeLimitSeconds": 1200,
+    "environment": "Volcanic tremors periodically stun all combatants.",
+    "floors": [
+      {
+        "name": "Magma Cataract",
+        "emoji": "🔥",
+        "description": "Molten streams flood the battlefield at timed intervals.",
+        "baseHp": 200,
+        "hpPerLevel": 22,
+        "baseDamage": 27,
+        "damagePerLevel": 3.2,
+        "baseXp": 200,
+        "xpPerLevel": 22,
+        "baseCoins": 180,
+        "coinsPerLevel": 14,
+        "healPercent": 0.15,
+        "loot": [
+          {
+            "item": "ember_resin",
+            "chance": 0.55,
+            "min": 2,
+            "max": 3
+          },
+          {
+            "item": "obsidian_shield",
+            "chance": 0.16,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      },
+      {
+        "name": "Obsidian Crucible",
+        "emoji": "🛠️",
+        "description": "Fire giants temper weapons in volcanic forges.",
+        "baseHp": 240,
+        "hpPerLevel": 26,
+        "baseDamage": 34,
+        "damagePerLevel": 3.6,
+        "baseXp": 260,
+        "xpPerLevel": 24,
+        "baseCoins": 230,
+        "coinsPerLevel": 16,
+        "healPercent": 0.22,
+        "loot": [
+          {
+            "item": "ember_crystal_cluster",
+            "chance": 0.35,
+            "min": 1,
+            "max": 2
+          },
+          {
+            "item": "emberstorm_bow",
+            "chance": 0.18,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      },
+      {
+        "name": "Obsidian Sentinel",
+        "emoji": "🗿",
+        "description": "The sentinel draws power from the pit's heartfire.",
+        "boss": true,
+        "relic": {
+          "item": "obsidian_shield",
+          "chance": 0.5,
+          "amount": 1
+        },
+        "baseHp": 360,
+        "hpPerLevel": 30,
+        "baseDamage": 42,
+        "damagePerLevel": 4.2,
+        "baseXp": 340,
+        "xpPerLevel": 28,
+        "baseCoins": 330,
+        "coinsPerLevel": 20,
+        "healPercent": 0.6,
+        "loot": [
+          {
+            "item": "obsidian_shield",
+            "chance": 0.22,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "item": "ember_resin",
+            "chance": 0.35,
+            "min": 2,
+            "max": 4
+          }
+        ]
+      }
+    ],
+    "completionReward": {
+      "coins": {
+        "base": 460,
+        "perLevel": 28
+      },
+      "xp": {
+        "base": 520,
+        "perLevel": 32
+      },
+      "items": [
+        {
+          "item": "obsidian_shield",
+          "quantity": 1
+        },
+        {
+          "item": "ember_resin",
+          "quantity": 3
+        },
+        {
+          "item": "ashen_crusher",
+          "quantity": 1
+        },
+        {
+          "item": "cinder_plate",
+          "quantity": 2
+        }
+      ]
+    }
+  },
+  {
+    "id": "gale_roost",
+    "name": "Gale Roost",
+    "theme": "beast",
+    "biome": "mountain",
+    "minLevel": 6,
+    "recommendedPower": 150,
+    "timeLimitSeconds": 840,
+    "environment": "Air currents periodically lift combatants into aerial skirmishes.",
+    "floors": [
+      {
+        "name": "Hatchling Skies",
+        "emoji": "🪺",
+        "description": "Glitterwing hatchlings swarm intruders with razor wings.",
+        "baseHp": 110,
+        "hpPerLevel": 12,
+        "baseDamage": 15,
+        "damagePerLevel": 2,
+        "baseXp": 95,
+        "xpPerLevel": 10,
+        "baseCoins": 85,
+        "coinsPerLevel": 6,
+        "healPercent": 0.18,
+        "loot": [
+          {
+            "item": "gale_feather",
+            "chance": 0.55,
+            "min": 2,
+            "max": 4
+          },
+          {
+            "item": "glitterwing_bow",
+            "chance": 0.12,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      },
+      {
+        "name": "Ridgewind Aeries",
+        "emoji": "🪂",
+        "description": "Harpy matriarchs shriek gusts that disarm invaders.",
+        "baseHp": 150,
+        "hpPerLevel": 16,
+        "baseDamage": 20,
+        "damagePerLevel": 2.5,
+        "baseXp": 140,
+        "xpPerLevel": 14,
+        "baseCoins": 130,
+        "coinsPerLevel": 9,
+        "healPercent": 0.24,
+        "loot": [
+          {
+            "item": "aurora_tea",
+            "chance": 0.25,
+            "min": 1,
+            "max": 2
+          },
+          {
+            "item": "gale_runner_boots",
+            "chance": 0.2,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      },
+      {
+        "name": "Gale Roc",
+        "emoji": "🦅",
+        "description": "The roost's monarch dives with storm-wreathed talons.",
+        "boss": true,
+        "relic": {
+          "item": "glitterwing_bow",
+          "chance": 0.4,
+          "amount": 1
+        },
+        "baseHp": 240,
+        "hpPerLevel": 21,
+        "baseDamage": 28,
+        "damagePerLevel": 3.2,
+        "baseXp": 220,
+        "xpPerLevel": 19,
+        "baseCoins": 200,
+        "coinsPerLevel": 13,
+        "healPercent": 0.5,
+        "loot": [
+          {
+            "item": "gale_feather",
+            "chance": 0.35,
+            "min": 2,
+            "max": 4
+          },
+          {
+            "item": "glitterwing_bow",
+            "chance": 0.22,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      }
+    ],
+    "completionReward": {
+      "coins": {
+        "base": 260,
+        "perLevel": 15
+      },
+      "xp": {
+        "base": 280,
+        "perLevel": 18
+      },
+      "items": [
+        {
+          "item": "glitterwing_bow",
+          "quantity": 1
+        },
+        {
+          "item": "skybreaker_ration",
+          "quantity": 3
+        }
+      ]
+    }
+  },
+  {
+    "id": "frostfang_glacier",
+    "name": "Frostfang Glacier",
+    "theme": "beast",
+    "biome": "tundra",
+    "minLevel": 8,
+    "recommendedPower": 190,
+    "timeLimitSeconds": 960,
+    "environment": "Extreme cold reduces healing but slows enemy attack speed.",
+    "floors": [
+      {
+        "name": "Glacial Crevasse",
+        "emoji": "🧊",
+        "description": "Frostclaw bears ambush from icy ledges.",
+        "baseHp": 160,
+        "hpPerLevel": 18,
+        "baseDamage": 23,
+        "damagePerLevel": 2.8,
+        "baseXp": 150,
+        "xpPerLevel": 15,
+        "baseCoins": 140,
+        "coinsPerLevel": 10,
+        "healPercent": 0.12,
+        "loot": [
+          {
+            "item": "frost_wisp",
+            "chance": 0.45,
+            "min": 1,
+            "max": 2
+          },
+          {
+            "item": "borea_fur_cloak",
+            "chance": 0.18,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      },
+      {
+        "name": "Icicle Cavern",
+        "emoji": "🕳️",
+        "description": "Ice elementals hurl jagged shards from vaulted ceilings.",
+        "baseHp": 200,
+        "hpPerLevel": 21,
+        "baseDamage": 28,
+        "damagePerLevel": 3.1,
+        "baseXp": 200,
+        "xpPerLevel": 18,
+        "baseCoins": 180,
+        "coinsPerLevel": 12,
+        "healPercent": 0.2,
+        "loot": [
+          {
+            "item": "aurora_fragment",
+            "chance": 0.3,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "item": "stormbrew_tonic",
+            "chance": 0.22,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      },
+      {
+        "name": "Frostfang Alpha",
+        "emoji": "🐺",
+        "description": "The alpha's howl summons blizzard squalls and ice-laden claws.",
+        "boss": true,
+        "relic": {
+          "item": "frostbite_blade",
+          "chance": 0.42,
+          "amount": 1
+        },
+        "baseHp": 280,
+        "hpPerLevel": 24,
+        "baseDamage": 35,
+        "damagePerLevel": 3.5,
+        "baseXp": 260,
+        "xpPerLevel": 22,
+        "baseCoins": 240,
+        "coinsPerLevel": 15,
+        "healPercent": 0.4,
+        "loot": [
+          {
+            "item": "frostbite_blade",
+            "chance": 0.2,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "item": "borea_fur_cloak",
+            "chance": 0.22,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      }
+    ],
+    "completionReward": {
+      "coins": {
+        "base": 320,
+        "perLevel": 19
+      },
+      "xp": {
+        "base": 360,
+        "perLevel": 22
+      },
+      "items": [
+        {
+          "item": "frostbite_blade",
+          "quantity": 1
+        },
+        {
+          "item": "aurora_mail",
+          "quantity": 1
+        },
+        {
+          "item": "aurora_crystal",
+          "quantity": 2
+        }
+      ]
+    }
+  },
+  {
+    "id": "luminite_temple",
+    "name": "Luminite Temple",
+    "theme": "ancient",
+    "biome": "crystal",
+    "minLevel": 10,
+    "recommendedPower": 240,
+    "timeLimitSeconds": 1140,
+    "environment": "Rotating beams of pure luminite force repositioning every few turns.",
+    "floors": [
+      {
+        "name": "Radiant Atrium",
+        "emoji": "✨",
+        "description": "Luminite guardians cast prism barriers.",
+        "baseHp": 200,
+        "hpPerLevel": 22,
+        "baseDamage": 28,
+        "damagePerLevel": 3.2,
+        "baseXp": 190,
+        "xpPerLevel": 20,
+        "baseCoins": 190,
+        "coinsPerLevel": 14,
+        "healPercent": 0.2,
+        "loot": [
+          {
+            "item": "orbis_crystal",
+            "chance": 0.5,
+            "min": 1,
+            "max": 2
+          },
+          {
+            "item": "aurora_fragment",
+            "chance": 0.32,
+            "min": 1,
+            "max": 2
+          }
+        ]
+      },
+      {
+        "name": "Luminous Reliquary",
+        "emoji": "📚",
+        "description": "Archivists conjure shields and radiant lances.",
+        "baseHp": 240,
+        "hpPerLevel": 25,
+        "baseDamage": 34,
+        "damagePerLevel": 3.6,
+        "baseXp": 240,
+        "xpPerLevel": 23,
+        "baseCoins": 230,
+        "coinsPerLevel": 16,
+        "healPercent": 0.26,
+        "loot": [
+          {
+            "item": "lumin_archivist_tome",
+            "chance": 0.22,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "item": "skyseer_talisman",
+            "chance": 0.2,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      },
+      {
+        "name": "Luminite Avatar",
+        "emoji": "🌟",
+        "description": "The avatar channels pure light into sweeping crescents.",
+        "boss": true,
+        "relic": {
+          "item": "skyseer_talisman",
+          "chance": 0.5,
+          "amount": 1
+        },
+        "baseHp": 360,
+        "hpPerLevel": 30,
+        "baseDamage": 42,
+        "damagePerLevel": 4.4,
+        "baseXp": 340,
+        "xpPerLevel": 28,
+        "baseCoins": 320,
+        "coinsPerLevel": 20,
+        "healPercent": 0.55,
+        "loot": [
+          {
+            "item": "lumin_archivist_tome",
+            "chance": 0.22,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "item": "aurora_fragment",
+            "chance": 0.28,
+            "min": 1,
+            "max": 2
+          }
+        ]
+      }
+    ],
+    "completionReward": {
+      "coins": {
+        "base": 460,
+        "perLevel": 28
+      },
+      "xp": {
+        "base": 500,
+        "perLevel": 31
+      },
+      "items": [
+        {
+          "item": "skyseer_talisman",
+          "quantity": 1
+        },
+        {
+          "item": "aurora_fragment",
+          "quantity": 2
+        },
+        {
+          "item": "luminous_lance",
+          "quantity": 1
+        },
+        {
+          "item": "luminous_signet",
+          "quantity": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "dune_sepulcher",
+    "name": "Dune Sepulcher",
+    "theme": "ancient",
+    "biome": "desert",
+    "minLevel": 7,
+    "recommendedPower": 170,
+    "timeLimitSeconds": 900,
+    "environment": "Cursed sands drain stamina unless purified relics are placed on altars.",
+    "floors": [
+      {
+        "name": "Silted Gallery",
+        "emoji": "🏺",
+        "description": "Buried statues animate to defend ancient treasures.",
+        "baseHp": 140,
+        "hpPerLevel": 15,
+        "baseDamage": 18,
+        "damagePerLevel": 2.4,
+        "baseXp": 120,
+        "xpPerLevel": 12,
+        "baseCoins": 110,
+        "coinsPerLevel": 8,
+        "healPercent": 0.16,
+        "loot": [
+          {
+            "item": "sunstone_shard",
+            "chance": 0.4,
+            "min": 1,
+            "max": 2
+          },
+          {
+            "item": "desert_spice",
+            "chance": 0.35,
+            "min": 2,
+            "max": 4
+          }
+        ]
+      },
+      {
+        "name": "Buried Vault",
+        "emoji": "💎",
+        "description": "Ancient wardens unleash sandstorms within sealed chambers.",
+        "baseHp": 180,
+        "hpPerLevel": 18,
+        "baseDamage": 24,
+        "damagePerLevel": 2.9,
+        "baseXp": 170,
+        "xpPerLevel": 16,
+        "baseCoins": 150,
+        "coinsPerLevel": 10,
+        "healPercent": 0.24,
+        "loot": [
+          {
+            "item": "sandstride_anklet",
+            "chance": 0.22,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "item": "sunforged_blade",
+            "chance": 0.18,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      },
+      {
+        "name": "Sandstone Gargoyle",
+        "emoji": "🪨",
+        "description": "A guardian stirs, grinding the chamber with crushing wings.",
+        "boss": true,
+        "relic": {
+          "item": "sunforged_blade",
+          "chance": 0.35,
+          "amount": 1
+        },
+        "baseHp": 250,
+        "hpPerLevel": 22,
+        "baseDamage": 30,
+        "damagePerLevel": 3.3,
+        "baseXp": 240,
+        "xpPerLevel": 20,
+        "baseCoins": 210,
+        "coinsPerLevel": 14,
+        "healPercent": 0.45,
+        "loot": [
+          {
+            "item": "ember_resin",
+            "chance": 0.25,
+            "min": 1,
+            "max": 2
+          },
+          {
+            "item": "sandroot_stew",
+            "chance": 0.35,
+            "min": 1,
+            "max": 2
+          }
+        ]
+      }
+    ],
+    "completionReward": {
+      "coins": {
+        "base": 300,
+        "perLevel": 18
+      },
+      "xp": {
+        "base": 320,
+        "perLevel": 20
+      },
+      "items": [
+        {
+          "item": "sunforged_blade",
+          "quantity": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "vinebound_vault",
+    "name": "Vinebound Vault",
+    "theme": "kweebec",
+    "biome": "forest",
+    "minLevel": 5,
+    "recommendedPower": 130,
+    "timeLimitSeconds": 780,
+    "environment": "Living vines entangle players who stand still for too long.",
+    "floors": [
+      {
+        "name": "Rootspun Corridor",
+        "emoji": "🌾",
+        "description": "Animated roots lash out while glowcaps light the way.",
+        "baseHp": 105,
+        "hpPerLevel": 12,
+        "baseDamage": 14,
+        "damagePerLevel": 1.9,
+        "baseXp": 90,
+        "xpPerLevel": 9,
+        "baseCoins": 80,
+        "coinsPerLevel": 6,
+        "healPercent": 0.18,
+        "loot": [
+          {
+            "item": "ancient_bark",
+            "chance": 0.5,
+            "min": 2,
+            "max": 4
+          },
+          {
+            "item": "glowcap_soup",
+            "chance": 0.3,
+            "min": 1,
+            "max": 2
+          }
+        ]
+      },
+      {
+        "name": "Bramble Reliquary",
+        "emoji": "🕸️",
+        "description": "Bramble spirits summon thorn walls and pollen clouds.",
+        "baseHp": 140,
+        "hpPerLevel": 15,
+        "baseDamage": 18,
+        "damagePerLevel": 2.3,
+        "baseXp": 120,
+        "xpPerLevel": 12,
+        "baseCoins": 110,
+        "coinsPerLevel": 8,
+        "healPercent": 0.22,
+        "loot": [
+          {
+            "item": "kweebec_charm",
+            "chance": 0.28,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "item": "wyrmroot_seed",
+            "chance": 0.25,
+            "min": 1,
+            "max": 2
+          }
+        ]
+      },
+      {
+        "name": "Groveheart Warden",
+        "emoji": "🌲",
+        "description": "The grove's guardian entwines foes with radiant vines.",
+        "boss": true,
+        "relic": {
+          "item": "kweebec_charm",
+          "chance": 0.4,
+          "amount": 1
+        },
+        "baseHp": 210,
+        "hpPerLevel": 19,
+        "baseDamage": 24,
+        "damagePerLevel": 2.9,
+        "baseXp": 190,
+        "xpPerLevel": 17,
+        "baseCoins": 170,
+        "coinsPerLevel": 11,
+        "healPercent": 0.4,
+        "loot": [
+          {
+            "item": "wyrmroot_salve",
+            "chance": 0.25,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "item": "sapling_staff",
+            "chance": 0.22,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      }
+    ],
+    "completionReward": {
+      "coins": {
+        "base": 240,
+        "perLevel": 14
+      },
+      "xp": {
+        "base": 260,
+        "perLevel": 17
+      },
+      "items": [
+        {
+          "item": "kweebec_charm",
+          "quantity": 1
+        },
+        {
+          "item": "fenfire_charm",
+          "quantity": 1
+        },
+        {
+          "item": "fenfire_salve",
+          "quantity": 2
+        }
+      ]
+    }
+  },
+  {
+    "id": "tempest_needle",
+    "name": "Tempest Needle",
+    "theme": "stormguard",
+    "biome": "howling_peaks",
+    "minLevel": 8,
+    "recommendedPower": 210,
+    "timeLimitSeconds": 900,
+    "environment": "Cyclonic updrafts hurl players between sky bridges while lightning disrupts casting.",
+    "floors": [
+      {
+        "name": "Gale Approach",
+        "emoji": "🌬️",
+        "description": "Tempest scouts dive from the gale walls while thunder shatters footing.",
+        "baseHp": 150,
+        "hpPerLevel": 16,
+        "baseDamage": 20,
+        "damagePerLevel": 2.4,
+        "baseXp": 140,
+        "xpPerLevel": 12,
+        "baseCoins": 120,
+        "coinsPerLevel": 8,
+        "healPercent": 0.18,
+        "loot": [
+          {
+            "item": "stormvein_ore",
+            "chance": 0.42,
+            "min": 1,
+            "max": 2
+          },
+          {
+            "item": "gale_feather",
+            "chance": 0.28,
+            "min": 1,
+            "max": 2
+          }
+        ]
+      },
+      {
+        "name": "Aerial Forge",
+        "emoji": "⚙️",
+        "description": "Stormsmiths ignite anvils with lightning to empower aerial constructs.",
+        "relic": {
+          "item": "tempest_core",
+          "chance": 0.3,
+          "amount": 1
+        },
+        "baseHp": 180,
+        "hpPerLevel": 18,
+        "baseDamage": 24,
+        "damagePerLevel": 2.8,
+        "baseXp": 180,
+        "xpPerLevel": 15,
+        "baseCoins": 150,
+        "coinsPerLevel": 10,
+        "healPercent": 0.24,
+        "loot": [
+          {
+            "item": "skyrazor_plume",
+            "chance": 0.38,
+            "min": 1,
+            "max": 2
+          },
+          {
+            "item": "tempest_core",
+            "chance": 0.24,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      },
+      {
+        "name": "Tempest Warden",
+        "emoji": "🌩️",
+        "description": "An armored sentinel channels the storm eye while summoning vortex spears.",
+        "boss": true,
+        "relic": {
+          "item": "stormguard_plate",
+          "chance": 0.32,
+          "amount": 1
+        },
+        "baseHp": 260,
+        "hpPerLevel": 22,
+        "baseDamage": 32,
+        "damagePerLevel": 3.2,
+        "baseXp": 260,
+        "xpPerLevel": 20,
+        "baseCoins": 220,
+        "coinsPerLevel": 14,
+        "healPercent": 0.5,
+        "loot": [
+          {
+            "item": "tempest_core",
+            "chance": 0.42,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "item": "skyrazor_plume",
+            "chance": 0.28,
+            "min": 1,
+            "max": 2
+          }
+        ]
+      }
+    ],
+    "completionReward": {
+      "coins": {
+        "base": 320,
+        "perLevel": 20
+      },
+      "xp": {
+        "base": 360,
+        "perLevel": 22
+      },
+      "items": [
+        {
+          "item": "stormguard_plate",
+          "quantity": 1
+        },
+        {
+          "item": "tempest_core",
+          "quantity": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "molten_maw",
+    "name": "Molten Maw",
+    "theme": "ancient",
+    "biome": "ember_depths",
+    "minLevel": 9,
+    "recommendedPower": 230,
+    "timeLimitSeconds": 960,
+    "environment": "Erupting vents flood chambers with lava waves unless geomantic seals are activated.",
+    "floors": [
+      {
+        "name": "Lava Run",
+        "emoji": "🔥",
+        "description": "Slag beasts burst from lavafalls while basalt plates crumble underfoot.",
+        "baseHp": 170,
+        "hpPerLevel": 18,
+        "baseDamage": 24,
+        "damagePerLevel": 2.9,
+        "baseXp": 170,
+        "xpPerLevel": 15,
+        "baseCoins": 150,
+        "coinsPerLevel": 10,
+        "healPercent": 0.2,
+        "loot": [
+          {
+            "item": "cinder_resin",
+            "chance": 0.46,
+            "min": 1,
+            "max": 3
+          },
+          {
+            "item": "magma_pearl",
+            "chance": 0.32,
+            "min": 1,
+            "max": 2
+          }
+        ]
+      },
+      {
+        "name": "Basalt Artery",
+        "emoji": "🪨",
+        "description": "Rushing magma pulses through obsidian arteries guarded by basilisk packs.",
+        "relic": {
+          "item": "obsidian_heart",
+          "chance": 0.28,
+          "amount": 1
+        },
+        "baseHp": 200,
+        "hpPerLevel": 20,
+        "baseDamage": 28,
+        "damagePerLevel": 3.1,
+        "baseXp": 210,
+        "xpPerLevel": 18,
+        "baseCoins": 180,
+        "coinsPerLevel": 12,
+        "healPercent": 0.28,
+        "loot": [
+          {
+            "item": "magma_pearl",
+            "chance": 0.4,
+            "min": 1,
+            "max": 2
+          },
+          {
+            "item": "obsidian_heart",
+            "chance": 0.22,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      },
+      {
+        "name": "Ashen Colossus",
+        "emoji": "🗿",
+        "description": "The cavern apex awakens as a titan channels rivers of fire.",
+        "boss": true,
+        "relic": {
+          "item": "obsidian_heart",
+          "chance": 0.38,
+          "amount": 1
+        },
+        "baseHp": 280,
+        "hpPerLevel": 24,
+        "baseDamage": 34,
+        "damagePerLevel": 3.4,
+        "baseXp": 300,
+        "xpPerLevel": 22,
+        "baseCoins": 250,
+        "coinsPerLevel": 16,
+        "healPercent": 0.55,
+        "loot": [
+          {
+            "item": "magma_pearl",
+            "chance": 0.42,
+            "min": 1,
+            "max": 2
+          },
+          {
+            "item": "obsidian_heart",
+            "chance": 0.28,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      }
+    ],
+    "completionReward": {
+      "coins": {
+        "base": 360,
+        "perLevel": 24
+      },
+      "xp": {
+        "base": 400,
+        "perLevel": 25
+      },
+      "items": [
+        {
+          "item": "obsidian_heart",
+          "quantity": 1
+        },
+        {
+          "item": "ember_resin",
+          "quantity": 2
+        }
+      ]
+    }
+  },
+  {
+    "id": "gloomwild_labyrinth",
+    "name": "Gloomwild Labyrinth",
+    "theme": "fey",
+    "biome": "gloomwild_thicket",
+    "minLevel": 7,
+    "recommendedPower": 200,
+    "timeLimitSeconds": 840,
+    "environment": "Illusory pathways shift in twilight; lingering in glades invites fey ambushes.",
+    "floors": [
+      {
+        "name": "Glittering Understory",
+        "emoji": "🌿",
+        "description": "Bioluminescent flora blinds trespassers while prowlers dart through the mist.",
+        "baseHp": 140,
+        "hpPerLevel": 15,
+        "baseDamage": 19,
+        "damagePerLevel": 2.3,
+        "baseXp": 140,
+        "xpPerLevel": 12,
+        "baseCoins": 120,
+        "coinsPerLevel": 8,
+        "healPercent": 0.2,
+        "loot": [
+          {
+            "item": "gloomdew_extract",
+            "chance": 0.45,
+            "min": 1,
+            "max": 2
+          },
+          {
+            "item": "nightpetal_blossom",
+            "chance": 0.28,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      },
+      {
+        "name": "Veil Market",
+        "emoji": "🛍️",
+        "description": "Fey traders barter mid-fight, offering boons while shadow dealers plot ambushes.",
+        "relic": {
+          "item": "veilhorn_antler",
+          "chance": 0.26,
+          "amount": 1
+        },
+        "baseHp": 170,
+        "hpPerLevel": 17,
+        "baseDamage": 22,
+        "damagePerLevel": 2.6,
+        "baseXp": 180,
+        "xpPerLevel": 15,
+        "baseCoins": 150,
+        "coinsPerLevel": 10,
+        "healPercent": 0.24,
+        "loot": [
+          {
+            "item": "nightpetal_blossom",
+            "chance": 0.36,
+            "min": 1,
+            "max": 2
+          },
+          {
+            "item": "focus_elixir",
+            "chance": 0.28,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      },
+      {
+        "name": "Twilight Matriarch",
+        "emoji": "🌘",
+        "description": "The matriarch bends the maze itself, cloaking the arena in dreamlight.",
+        "boss": true,
+        "relic": {
+          "item": "nightpetal_blossom",
+          "chance": 0.4,
+          "amount": 2
+        },
+        "baseHp": 240,
+        "hpPerLevel": 21,
+        "baseDamage": 30,
+        "damagePerLevel": 3.0,
+        "baseXp": 260,
+        "xpPerLevel": 20,
+        "baseCoins": 210,
+        "coinsPerLevel": 14,
+        "healPercent": 0.48,
+        "loot": [
+          {
+            "item": "veilhorn_antler",
+            "chance": 0.34,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "item": "nightpetal_blossom",
+            "chance": 0.38,
+            "min": 1,
+            "max": 2
+          }
+        ]
+      }
+    ],
+    "completionReward": {
+      "coins": {
+        "base": 300,
+        "perLevel": 18
+      },
+      "xp": {
+        "base": 340,
+        "perLevel": 20
+      },
+      "items": [
+        {
+          "item": "nightpetal_blossom",
+          "quantity": 2
+        },
+        {
+          "item": "veilhorn_antler",
+          "quantity": 1
+        },
+        {
+          "item": "focus_elixir",
+          "quantity": 1
+        }
+      ]
+    }
+  }
+]

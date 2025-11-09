@@ -1,0 +1,197 @@
+[
+  {
+    "id": "kweebec",
+    "name": "Kweebec Council",
+    "alignment": "friendly",
+    "description": "Tree-dwelling artisans who balance harmony and defense in the Emerald Grove.",
+    "homeBiome": "Emerald Grove",
+    "leaders": ["Elder Elmroot"],
+    "signatureItems": ["kweebec_charm", "grove_tonic"],
+    "allies": ["skysong"],
+    "rivals": ["trork"],
+    "notableLocations": ["Emerald Village"],
+    "tiers": {
+      "friendly": {
+        "vendor": [
+          { "item": "kweebec_charm", "price": 120 },
+          { "item": "grove_tonic", "price": 80 }
+        ],
+        "contracts": [
+          {
+            "id": "kweebec_daily_harvest",
+            "name": "Daily Harvest",
+            "type": "gather",
+            "item": "ancient_bark",
+            "quantity": 6,
+            "description": "Collect bark to help reinforce treetop dwellings.",
+            "reward": { "coins": 180, "reputation": 6 }
+          }
+        ]
+      },
+      "honored": {
+        "vendor": [
+          { "item": "ember_ale", "price": 150 },
+          { "item": "forestwarden_staff", "price": 520 }
+        ],
+        "contracts": [
+          {
+            "id": "kweebec_grove_guard",
+            "name": "Grove Guard",
+            "type": "defeat",
+            "enemy": "feral_trork",
+            "quantity": 8,
+            "description": "Defeat marauding Trorks before they torch the groves.",
+            "reward": { "coins": 260, "reputation": 10, "items": [{ "item": "ancient_bark", "quantity": 4 }] }
+          }
+        ]
+      },
+      "exalted": {
+        "vendor": [
+          { "item": "forest_guardian_helm", "price": 950 },
+          { "item": "wyrmroot_salve", "price": 240 }
+        ],
+        "contracts": [
+          {
+            "id": "kweebec_relic_patrol",
+            "name": "Relic Patrol",
+            "type": "dungeon",
+            "dungeon": "shadow_depths",
+            "quantity": 1,
+            "description": "Escort a relic team into the depths and return safely.",
+            "reward": { "coins": 420, "reputation": 18, "items": [{ "item": "forestwarden_staff", "quantity": 1 }] }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "skysong",
+    "name": "Skysong Circle",
+    "alignment": "mystic",
+    "description": "Scholars of wind and light who archive Orbis lore across the Gale Cliffs.",
+    "homeBiome": "Gale Cliffs",
+    "leaders": ["Archivist Liora"],
+    "signatureItems": ["focus_elixir", "skyflare_pendant"],
+    "allies": ["kweebec"],
+    "rivals": ["varyn"],
+    "notableLocations": ["Aurora Library"],
+    "tiers": {
+      "friendly": {
+        "vendor": [
+          { "item": "skysong_draught", "price": 200 },
+          { "item": "focus_elixir", "price": 160 }
+        ],
+        "contracts": [
+          {
+            "id": "skysong_resonance",
+            "name": "Aurora Resonance",
+            "type": "gather",
+            "item": "aurora_fragment",
+            "quantity": 3,
+            "description": "Collect aurora fragments for the archivists.",
+            "reward": { "coins": 240, "reputation": 8 }
+          }
+        ]
+      },
+      "honored": {
+        "vendor": [
+          { "item": "frostglow_ring", "price": 540 },
+          { "item": "aurora_tea", "price": 210 }
+        ],
+        "contracts": [
+          {
+            "id": "skysong_void_watch",
+            "name": "Void Watch",
+            "type": "defeat",
+            "enemy": "void_knight",
+            "quantity": 6,
+            "description": "Repel void incursions near the cliffs.",
+            "reward": { "coins": 320, "reputation": 12, "items": [{ "item": "focus_elixir", "quantity": 1 }] }
+          }
+        ]
+      },
+      "exalted": {
+        "vendor": [
+          { "item": "skyflare_pendant", "price": 980 },
+          { "item": "siren_tear_elixir", "price": 360 }
+        ],
+        "contracts": [
+          {
+            "id": "skysong_arcane_trial",
+            "name": "Arcane Trial",
+            "type": "pvp",
+            "result": "win",
+            "quantity": 1,
+            "description": "Prove your mastery in sanctioned duels.",
+            "reward": { "coins": 500, "reputation": 20, "items": [{ "item": "skyflare_pendant", "quantity": 1 }] }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "human",
+    "name": "Stormguard",
+    "alignment": "military",
+    "description": "Disciplined defenders of Stormguard Keep who harness lightning-forged arms.",
+    "homeBiome": "Stormguard Keep",
+    "leaders": ["Commander Risa"],
+    "signatureItems": ["stormguard_plate", "stormbreaker_hammer"],
+    "allies": ["skysong"],
+    "rivals": ["varyn"],
+    "notableLocations": ["Stormguard Keep"],
+    "tiers": {
+      "friendly": {
+        "vendor": [
+          { "item": "steel_sword", "price": 320 },
+          { "item": "stormbrew_tonic", "price": 190 }
+        ],
+        "contracts": [
+          {
+            "id": "stormguard_patrol",
+            "name": "Rampart Patrol",
+            "type": "defeat",
+            "enemy": "shadow_crawler",
+            "quantity": 5,
+            "description": "Patrol the outer ramparts for crawling threats.",
+            "reward": { "coins": 280, "reputation": 8 }
+          }
+        ]
+      },
+      "honored": {
+        "vendor": [
+          { "item": "iron_armor", "price": 480 },
+          { "item": "stormfront_blade", "price": 720 }
+        ],
+        "contracts": [
+          {
+            "id": "stormguard_emergency_supply",
+            "name": "Emergency Supply Run",
+            "type": "gather",
+            "item": "stormcore_shard",
+            "quantity": 4,
+            "description": "Gather stormcore shards to reinforce the keep.",
+            "reward": { "coins": 360, "reputation": 12, "items": [{ "item": "stormbrew_tonic", "quantity": 1 }] }
+          }
+        ]
+      },
+      "exalted": {
+        "vendor": [
+          { "item": "stormguard_plate", "price": 1100 },
+          { "item": "stormbreaker_hammer", "price": 1350 }
+        ],
+        "contracts": [
+          {
+            "id": "stormguard_champion",
+            "name": "Champion of the Keep",
+            "type": "dungeon",
+            "dungeon": "stormguard_keep",
+            "quantity": 1,
+            "description": "Lead a squad into the Stormguard Keep and return with trophies.",
+            "reward": { "coins": 520, "reputation": 22, "items": [{ "item": "stormguard_plate", "quantity": 1 }] }
+          }
+        ]
+      }
+    }
+  }
+]

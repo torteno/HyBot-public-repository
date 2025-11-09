@@ -1,0 +1,1539 @@
+{
+  "version": 1,
+  "notes": "Exploration action catalogue describing biome-specific timers, activity density, sudden combat escalations, and unique encounters.",
+  "globalDefaults": {
+    "actionDurations": {
+      "travel_minor": 5,
+      "travel_major": 11,
+      "forage": 4,
+      "mine": 5,
+      "scavenge": 6,
+      "camp_assault": 8,
+      "den_scavenge": 7,
+      "ritual": 9,
+      "harvest": 6,
+      "farming": 10,
+      "survey": 5,
+      "artifact_run": 12,
+      "boss_hunt": 18
+    },
+    "suddenCombat": {
+      "baseChance": 0.12,
+      "escalateAfterMinutes": 20,
+      "escalationBonus": 0.08,
+      "maximumChance": 0.45
+    },
+    "eventWeights": {
+      "structure": 0.24,
+      "puzzle": 0.2,
+      "story": 0.16,
+      "camp": 0.18,
+      "rare_unique": 0.05
+    },
+    "actionChains": [
+      {
+        "id": "pursue_camp",
+        "steps": [
+          {
+            "action": "scout",
+            "durationMinutes": 4
+          },
+          {
+            "action": "camp_assault",
+            "durationMinutes": 8
+          },
+          {
+            "action": "loot_cache",
+            "durationMinutes": 6
+          }
+        ],
+        "rewardTags": [
+          "camp_loot",
+          "faction_reputation"
+        ]
+      },
+      {
+        "id": "unstable_ritual",
+        "steps": [
+          {
+            "action": "survey",
+            "durationMinutes": 5
+          },
+          {
+            "action": "ritual",
+            "durationMinutes": 9
+          },
+          {
+            "action": "boss_hunt",
+            "durationMinutes": 18
+          }
+        ],
+        "rewardTags": [
+          "ritual_components",
+          "mythic_loot"
+        ]
+      }
+    ]
+  },
+  "biomes": [
+    {
+      "id": "emerald_grove",
+      "travelDifficulty": 1,
+      "actionDurations": {
+        "forage": 3,
+        "farming": 8,
+        "camp_assault": 7
+      },
+      "activities": [
+        {
+          "id": "grove_foraging",
+          "type": "forage",
+          "durationMinutes": 3,
+          "description": "Gather sap-rich bark, luminescent blooms, and grove tonics under Kweebec guidance.",
+          "rewards": [
+            "ancient_bark",
+            "grove_tonic",
+            "kweebec_charm"
+          ]
+        },
+        {
+          "id": "kweebec_farmhand",
+          "type": "farming",
+          "durationMinutes": 8,
+          "description": "Assist treetop planters to coax rapid harvests from enchanted soil beds.",
+          "rewards": [
+            "verdant_pollen",
+            "wildvine_bloom"
+          ],
+          "bonuses": {
+            "settlement": {
+              "happiness": 2
+            }
+          }
+        },
+        {
+          "id": "trork_camp_sweep",
+          "type": "camp_assault",
+          "durationMinutes": 7,
+          "description": "Root out feral Trork raiders before they torch the canopy.",
+          "rewards": [
+            "forestwarden_staff",
+            "camp_loot_common"
+          ],
+          "combatProfiles": [
+            "feral_trork",
+            "trork_brute"
+          ]
+        }
+      ],
+      "materials": {
+        "foraging": [
+          {
+            "item": "ancient_bark",
+            "tier": 1,
+            "rarity": "common"
+          },
+          {
+            "item": "wildvine_bloom",
+            "tier": 2,
+            "rarity": "uncommon"
+          },
+          {
+            "item": "grove_tonic",
+            "tier": 2,
+            "rarity": "uncommon"
+          }
+        ],
+        "farming": [
+          {
+            "item": "verdant_pollen",
+            "tier": 2,
+            "rarity": "uncommon"
+          },
+          {
+            "item": "fen_root",
+            "tier": 1,
+            "rarity": "common"
+          }
+        ],
+        "special": [
+          {
+            "item": "kweebec_charm",
+            "tier": 3,
+            "rarity": "rare"
+          }
+        ]
+      },
+      "enemyCamps": [
+        {
+          "faction": "trork",
+          "threatLevel": 2,
+          "encounters": [
+            "feral_trork",
+            "trork_flamecaller"
+          ],
+          "lootTags": [
+            "camp_loot_common",
+            "camp_loot_rare"
+          ]
+        },
+        {
+          "faction": "shadow",
+          "threatLevel": 3,
+          "encounters": [
+            "shadow_crawler",
+            "abyssal_mimic"
+          ],
+          "lootTags": [
+            "void_touched",
+            "ritual_components"
+          ]
+        }
+      ],
+      "uniqueStructures": [
+        {
+          "id": "whispering_hollow",
+          "category": "puzzle",
+          "cooldownHours": 12,
+          "rewardTags": [
+            "grove_artifact",
+            "focus_elixir"
+          ]
+        },
+        {
+          "id": "heartwood_spire",
+          "category": "rare_unique",
+          "cooldownHours": 48,
+          "rewardTags": [
+            "base_blueprint_sustain",
+            "mythic_loot"
+          ]
+        }
+      ],
+      "oneOffMoments": [
+        {
+          "id": "dawning_chant",
+          "description": "Join a dawn chorus to earn grove resonance and a temporary luck buff.",
+          "buff": {
+            "type": "luck",
+            "value": 0.1,
+            "durationMinutes": 30
+          }
+        }
+      ]
+    },
+    {
+      "id": "gale_cliffs",
+      "travelDifficulty": 1.3,
+      "actionDurations": {
+        "travel_major": 12,
+        "mine": 6,
+        "camp_assault": 9,
+        "artifact_run": 14
+      },
+      "activities": [
+        {
+          "id": "resonance_mapping",
+          "type": "survey",
+          "durationMinutes": 5,
+          "description": "Calibrate skysong instruments to reveal hidden wind shrines.",
+          "rewards": [
+            "aurora_fragment",
+            "survey_data"
+          ],
+          "bonuses": {
+            "base": {
+              "surveyBoost": 0.05
+            }
+          }
+        },
+        {
+          "id": "stormcore_excavation",
+          "type": "mine",
+          "durationMinutes": 6,
+          "description": "Chip stormcore veins before lightning flares collapse the ledge.",
+          "rewards": [
+            "stormcore_shard",
+            "stormglass_splinter"
+          ]
+        },
+        {
+          "id": "void_patrol",
+          "type": "camp_assault",
+          "durationMinutes": 9,
+          "description": "Suppress void knight patrols haunting the upper mesas.",
+          "rewards": [
+            "void_touched",
+            "camp_loot_rare"
+          ],
+          "combatProfiles": [
+            "void_knight",
+            "voidshade_magi"
+          ]
+        }
+      ],
+      "materials": {
+        "mining": [
+          {
+            "item": "stormcore_shard",
+            "tier": 3,
+            "rarity": "rare"
+          },
+          {
+            "item": "stormglass_splinter",
+            "tier": 2,
+            "rarity": "uncommon"
+          }
+        ],
+        "foraging": [
+          {
+            "item": "aurora_fragment",
+            "tier": 2,
+            "rarity": "uncommon"
+          },
+          {
+            "item": "skyflare_pendant",
+            "tier": 3,
+            "rarity": "rare"
+          }
+        ],
+        "special": [
+          {
+            "item": "resonance_thread",
+            "tier": 3,
+            "rarity": "rare"
+          }
+        ]
+      },
+      "enemyCamps": [
+        {
+          "faction": "void",
+          "threatLevel": 3,
+          "encounters": [
+            "void_knight",
+            "void_titan"
+          ],
+          "lootTags": [
+            "void_touched",
+            "artifact_keys"
+          ]
+        }
+      ],
+      "uniqueStructures": [
+        {
+          "id": "skysong_shrine",
+          "category": "structure",
+          "cooldownHours": 16,
+          "rewardTags": [
+            "focus_elixir",
+            "resonance_thread"
+          ]
+        },
+        {
+          "id": "tempest_forge",
+          "category": "rare_unique",
+          "cooldownHours": 72,
+          "rewardTags": [
+            "base_blueprint_mobility",
+            "stormguard_plate"
+          ]
+        }
+      ],
+      "oneOffMoments": [
+        {
+          "id": "static_supercell",
+          "description": "Ride a supercell updraft to unlock neighboring biomes and gain temporary travel reduction.",
+          "buff": {
+            "type": "travelModifier",
+            "value": 0.85,
+            "durationMinutes": 45
+          }
+        }
+      ]
+    },
+    {
+      "id": "sunset_dunes",
+      "travelDifficulty": 1.1,
+      "actionDurations": {
+        "travel_minor": 6,
+        "forage": 5,
+        "den_scavenge": 8,
+        "artifact_run": 15
+      },
+      "activities": [
+        {
+          "id": "sand_seer_foraging",
+          "type": "forage",
+          "durationMinutes": 5,
+          "description": "Trace mirage blooms and desert fungi before the heat scatters them.",
+          "rewards": [
+            "gilded_truffle",
+            "sunshadow_resin"
+          ]
+        },
+        {
+          "id": "scavenger_den_raid",
+          "type": "den_scavenge",
+          "durationMinutes": 8,
+          "description": "Tunnel through collapsed dens to recover stashed contraband.",
+          "rewards": [
+            "delta_phosphor",
+            "camp_loot_common",
+            "artifact_keys"
+          ]
+        },
+        {
+          "id": "nomad_trade",
+          "type": "harvest",
+          "durationMinutes": 6,
+          "description": "Barter with caravaners for spices and Rift-forged alloys.",
+          "rewards": [
+            "sunshadow_spice",
+            "trade_seals"
+          ],
+          "bonuses": {
+            "settlement": {
+              "wealth": 20
+            }
+          }
+        }
+      ],
+      "materials": {
+        "foraging": [
+          {
+            "item": "sunshadow_resin",
+            "tier": 2,
+            "rarity": "uncommon"
+          },
+          {
+            "item": "gilded_truffle",
+            "tier": 2,
+            "rarity": "uncommon"
+          }
+        ],
+        "mining": [
+          {
+            "item": "amber_glass",
+            "tier": 2,
+            "rarity": "uncommon"
+          },
+          {
+            "item": "emberglass_shard",
+            "tier": 3,
+            "rarity": "rare"
+          }
+        ],
+        "special": [
+          {
+            "item": "rune_sand",
+            "tier": 3,
+            "rarity": "rare"
+          }
+        ]
+      },
+      "enemyCamps": [
+        {
+          "faction": "scavenger",
+          "threatLevel": 2,
+          "encounters": [
+            "sandstrider_raider",
+            "scavenger_sapper"
+          ],
+          "lootTags": [
+            "camp_loot_common",
+            "trade_goods"
+          ]
+        },
+        {
+          "faction": "varyn",
+          "threatLevel": 4,
+          "encounters": [
+            "varyn_warlord",
+            "voidscar_abomination"
+          ],
+          "lootTags": [
+            "void_touched",
+            "mythic_loot"
+          ]
+        }
+      ],
+      "uniqueStructures": [
+        {
+          "id": "buried_vault",
+          "category": "puzzle",
+          "cooldownHours": 18,
+          "rewardTags": [
+            "artifact_keys",
+            "emberglass_shard"
+          ]
+        },
+        {
+          "id": "mirage_spire",
+          "category": "rare_unique",
+          "cooldownHours": 60,
+          "rewardTags": [
+            "base_blueprint_economy",
+            "legendary_gear"
+          ]
+        }
+      ],
+      "oneOffMoments": [
+        {
+          "id": "sandstorm_rescue",
+          "description": "Aid a stranded caravan during a sandstorm to earn reputation and a temporary scavenging buff.",
+          "buff": {
+            "type": "scavengeBonus",
+            "value": 0.15,
+            "durationMinutes": 60
+          }
+        }
+      ]
+    },
+    {
+      "id": "shadow_depths",
+      "travelDifficulty": 1.5,
+      "actionDurations": {
+        "travel_major": 15,
+        "mine": 7,
+        "scavenge": 8,
+        "ritual": 11,
+        "boss_hunt": 22
+      },
+      "activities": [
+        {
+          "id": "void_mining",
+          "type": "mine",
+          "durationMinutes": 7,
+          "description": "Harvest darksteel and abyssal resin while navigating hazardous void geysers.",
+          "rewards": [
+            "darksteel_ore",
+            "abyssal_resin"
+          ]
+        },
+        {
+          "id": "whisper_chase",
+          "type": "scavenge",
+          "durationMinutes": 8,
+          "description": "Track ghostly echoes to uncover stashed relics.",
+          "rewards": [
+            "voidglass_fragment",
+            "abyssal_relic"
+          ]
+        },
+        {
+          "id": "ritual_containment",
+          "type": "ritual",
+          "durationMinutes": 11,
+          "description": "Stabilise a void rift before it births an abyssal behemoth.",
+          "rewards": [
+            "ritual_components",
+            "void_touched"
+          ],
+          "escalation": {
+            "followUp": "boss_hunt"
+          }
+        }
+      ],
+      "materials": {
+        "mining": [
+          {
+            "item": "darksteel_ore",
+            "tier": 3,
+            "rarity": "rare"
+          },
+          {
+            "item": "voidglass_fragment",
+            "tier": 3,
+            "rarity": "rare"
+          }
+        ],
+        "special": [
+          {
+            "item": "abyssal_resin",
+            "tier": 4,
+            "rarity": "epic"
+          },
+          {
+            "item": "abyssal_relic",
+            "tier": 5,
+            "rarity": "legendary"
+          }
+        ]
+      },
+      "enemyCamps": [
+        {
+          "faction": "varyn",
+          "threatLevel": 4,
+          "encounters": [
+            "shadow_crawler",
+            "varyn_warlord",
+            "abyssal_mimic"
+          ],
+          "lootTags": [
+            "void_touched",
+            "mythic_loot",
+            "ritual_components"
+          ]
+        }
+      ],
+      "uniqueStructures": [
+        {
+          "id": "void_shard_chamber",
+          "category": "puzzle",
+          "cooldownHours": 24,
+          "rewardTags": [
+            "abyssal_relic",
+            "ritual_components"
+          ]
+        },
+        {
+          "id": "null_altar",
+          "category": "rare_unique",
+          "cooldownHours": 72,
+          "rewardTags": [
+            "base_blueprint_defense",
+            "legendary_gear"
+          ]
+        }
+      ],
+      "oneOffMoments": [
+        {
+          "id": "veiled_memory",
+          "description": "Glipse memories of a lost explorer; gain lore unlocks and a temporary resilience buff.",
+          "buff": {
+            "type": "resilience",
+            "value": 0.12,
+            "durationMinutes": 40
+          }
+        }
+      ]
+    },
+    {
+      "id": "emberfen_bog",
+      "travelDifficulty": 1.2,
+      "actionDurations": {
+        "forage": 4,
+        "farming": 9,
+        "harvest": 7,
+        "camp_assault": 9
+      },
+      "activities": [
+        {
+          "id": "fen_harvest",
+          "type": "harvest",
+          "durationMinutes": 7,
+          "description": "Extract volatile fen reagents from bubbling bog vents.",
+          "rewards": [
+            "ember_rift_core",
+            "fen_root"
+          ]
+        },
+        {
+          "id": "bog_foraging",
+          "type": "forage",
+          "durationMinutes": 4,
+          "description": "Gather luminous spores and twilight lilies among the mists.",
+          "rewards": [
+            "twilight_lily",
+            "ember_spore"
+          ]
+        },
+        {
+          "id": "swamp_camp_clear",
+          "type": "camp_assault",
+          "durationMinutes": 9,
+          "description": "Disrupt marsh cultists conducting flame rites.",
+          "rewards": [
+            "camp_loot_rare",
+            "ritual_components"
+          ],
+          "combatProfiles": [
+            "ember_acolyte",
+            "marsh_abomination"
+          ]
+        }
+      ],
+      "materials": {
+        "foraging": [
+          {
+            "item": "twilight_lily",
+            "tier": 2,
+            "rarity": "uncommon"
+          },
+          {
+            "item": "ember_spore",
+            "tier": 3,
+            "rarity": "rare"
+          }
+        ],
+        "special": [
+          {
+            "item": "ember_rift_core",
+            "tier": 4,
+            "rarity": "epic"
+          }
+        ]
+      },
+      "enemyCamps": [
+        {
+          "faction": "cultist",
+          "threatLevel": 3,
+          "encounters": [
+            "ember_acolyte",
+            "bog_pyromancer"
+          ],
+          "lootTags": [
+            "ritual_components",
+            "camp_loot_rare"
+          ]
+        }
+      ],
+      "uniqueStructures": [
+        {
+          "id": "emberfen_laboratory",
+          "category": "structure",
+          "cooldownHours": 20,
+          "rewardTags": [
+            "alchemical_recipe",
+            "ember_rift_core"
+          ]
+        }
+      ],
+      "oneOffMoments": [
+        {
+          "id": "willow_wisp_guidance",
+          "description": "Follow will-o'-wisps to uncover a hidden reagent cache.",
+          "buff": {
+            "type": "forageBonus",
+            "value": 0.2,
+            "durationMinutes": 30
+          }
+        }
+      ]
+    },
+    {
+      "id": "frostblossom_glacier",
+      "travelDifficulty": 1.4,
+      "actionDurations": {
+        "travel_major": 14,
+        "mine": 6,
+        "forage": 5,
+        "ritual": 10
+      },
+      "activities": [
+        {
+          "id": "glacial_mining",
+          "type": "mine",
+          "durationMinutes": 6,
+          "description": "Carve frost-veined mineral seams while weathering crystal squalls.",
+          "rewards": [
+            "aurora_crystal",
+            "glacier_quartz"
+          ]
+        },
+        {
+          "id": "blossom_harvest",
+          "type": "forage",
+          "durationMinutes": 5,
+          "description": "Gently preserve frostblossom petals to avoid shattering them.",
+          "rewards": [
+            "frostblossom_petals",
+            "aurora_lantern"
+          ]
+        },
+        {
+          "id": "aurora_ritual",
+          "type": "ritual",
+          "durationMinutes": 10,
+          "description": "Synchronise aurora hymns to unlock sealed vaults.",
+          "rewards": [
+            "ritual_components",
+            "aurora_astralite"
+          ],
+          "bonuses": {
+            "settlement": {
+              "knowledge": 8
+            }
+          }
+        }
+      ],
+      "materials": {
+        "mining": [
+          {
+            "item": "aurora_crystal",
+            "tier": 3,
+            "rarity": "rare"
+          },
+          {
+            "item": "glacier_quartz",
+            "tier": 2,
+            "rarity": "uncommon"
+          }
+        ],
+        "foraging": [
+          {
+            "item": "frostblossom_petals",
+            "tier": 2,
+            "rarity": "uncommon"
+          },
+          {
+            "item": "aurora_lantern",
+            "tier": 3,
+            "rarity": "rare"
+          }
+        ],
+        "special": [
+          {
+            "item": "aurora_astralite",
+            "tier": 4,
+            "rarity": "epic"
+          }
+        ]
+      },
+      "enemyCamps": [
+        {
+          "faction": "frostborn",
+          "threatLevel": 3,
+          "encounters": [
+            "frostbound_knight",
+            "glacier_titan"
+          ],
+          "lootTags": [
+            "camp_loot_rare",
+            "legendary_gear"
+          ]
+        }
+      ],
+      "uniqueStructures": [
+        {
+          "id": "aurora_chapel",
+          "category": "structure",
+          "cooldownHours": 24,
+          "rewardTags": [
+            "aurora_lantern",
+            "resonance_thread"
+          ]
+        },
+        {
+          "id": "icebound_archive",
+          "category": "rare_unique",
+          "cooldownHours": 72,
+          "rewardTags": [
+            "base_blueprint_knowledge",
+            "legendary_gear"
+          ]
+        }
+      ],
+      "oneOffMoments": [
+        {
+          "id": "aurora_convergence",
+          "description": "Witness a convergence to gain expedition success bonuses and open temporary portals.",
+          "buff": {
+            "type": "expeditionSuccess",
+            "value": 0.1,
+            "durationMinutes": 60
+          }
+        }
+      ]
+    },
+    {
+      "id": "azure_cove",
+      "travelDifficulty": 1.25,
+      "actionDurations": {
+        "travel_minor": 6,
+        "harvest": 6,
+        "scavenge": 6,
+        "artifact_run": 13
+      },
+      "activities": [
+        {
+          "id": "reef_scavenge",
+          "type": "scavenge",
+          "durationMinutes": 6,
+          "description": "Dive through coral caverns to recover tidecaller relics.",
+          "rewards": [
+            "tidecaller_shell",
+            "sunken_pearl"
+          ]
+        },
+        {
+          "id": "kelp_harvest",
+          "type": "harvest",
+          "durationMinutes": 6,
+          "description": "Collect luminous kelp strands for brewing and crafting.",
+          "rewards": [
+            "luminous_kelp",
+            "delta_shell"
+          ]
+        },
+        {
+          "id": "pirate_camp_assault",
+          "type": "camp_assault",
+          "durationMinutes": 8,
+          "description": "Board a corsair encampment to free captured Tidecallers.",
+          "rewards": [
+            "camp_loot_rare",
+            "ocean_reputation"
+          ],
+          "combatProfiles": [
+            "corsair_captain",
+            "reef_assassin"
+          ]
+        }
+      ],
+      "materials": {
+        "foraging": [
+          {
+            "item": "luminous_kelp",
+            "tier": 2,
+            "rarity": "uncommon"
+          },
+          {
+            "item": "delta_shell",
+            "tier": 2,
+            "rarity": "uncommon"
+          }
+        ],
+        "special": [
+          {
+            "item": "sunken_pearl",
+            "tier": 3,
+            "rarity": "rare"
+          },
+          {
+            "item": "tidecaller_shell",
+            "tier": 4,
+            "rarity": "epic"
+          }
+        ]
+      },
+      "enemyCamps": [
+        {
+          "faction": "corsair",
+          "threatLevel": 3,
+          "encounters": [
+            "corsair_captain",
+            "reef_assassin"
+          ],
+          "lootTags": [
+            "camp_loot_rare",
+            "trade_goods"
+          ]
+        }
+      ],
+      "uniqueStructures": [
+        {
+          "id": "tidal_observatory",
+          "category": "structure",
+          "cooldownHours": 20,
+          "rewardTags": [
+            "focus_elixir",
+            "tidal_quartz"
+          ]
+        },
+        {
+          "id": "abyssal_gate",
+          "category": "rare_unique",
+          "cooldownHours": 68,
+          "rewardTags": [
+            "base_blueprint_mobility",
+            "legendary_gear"
+          ]
+        }
+      ],
+      "oneOffMoments": [
+        {
+          "id": "chorus_resonance",
+          "description": "Join a Tidecaller chorus to gain portal access to two random coastal settlements.",
+          "buff": {
+            "type": "fast_travel",
+            "value": 0.5,
+            "durationMinutes": 30
+          }
+        }
+      ]
+    },
+    {
+      "id": "obsidian_wastes",
+      "travelDifficulty": 1.6,
+      "actionDurations": {
+        "travel_major": 16,
+        "mine": 8,
+        "camp_assault": 11,
+        "boss_hunt": 24
+      },
+      "activities": [
+        {
+          "id": "obsidian_quarry",
+          "type": "mine",
+          "durationMinutes": 8,
+          "description": "Extract volatile obsidian shards while dodging magma vents.",
+          "rewards": [
+            "obsidian_fragment",
+            "abyssal_resin"
+          ]
+        },
+        {
+          "id": "ruin_scour",
+          "type": "artifact_run",
+          "durationMinutes": 14,
+          "description": "Scour ancient ruins for lost titan schematics.",
+          "rewards": [
+            "ancient_schematic",
+            "mythic_loot"
+          ]
+        },
+        {
+          "id": "warlord_hunt",
+          "type": "boss_hunt",
+          "durationMinutes": 24,
+          "description": "Track and defeat a roaming Varyn warlord to stem corruption.",
+          "rewards": [
+            "legendary_gear",
+            "void_touched",
+            "base_blueprint_defense"
+          ],
+          "combatProfiles": [
+            "varyn_warlord_elite"
+          ]
+        }
+      ],
+      "materials": {
+        "mining": [
+          {
+            "item": "obsidian_fragment",
+            "tier": 3,
+            "rarity": "rare"
+          },
+          {
+            "item": "abyssal_resin",
+            "tier": 4,
+            "rarity": "epic"
+          }
+        ],
+        "special": [
+          {
+            "item": "ancient_schematic",
+            "tier": 5,
+            "rarity": "legendary"
+          },
+          {
+            "item": "stormveil_plume",
+            "tier": 4,
+            "rarity": "epic"
+          }
+        ]
+      },
+      "enemyCamps": [
+        {
+          "faction": "varyn",
+          "threatLevel": 5,
+          "encounters": [
+            "varyn_warlord",
+            "void_titan",
+            "abyssal_reaver"
+          ],
+          "lootTags": [
+            "mythic_loot",
+            "legendary_gear",
+            "ritual_components"
+          ]
+        }
+      ],
+      "uniqueStructures": [
+        {
+          "id": "obsidian_overlook",
+          "category": "puzzle",
+          "cooldownHours": 30,
+          "rewardTags": [
+            "obsidian_fragment",
+            "legendary_gear"
+          ]
+        },
+        {
+          "id": "ancient_foundry",
+          "category": "rare_unique",
+          "cooldownHours": 96,
+          "rewardTags": [
+            "base_blueprint_refinement",
+            "mythic_loot"
+          ]
+        }
+      ],
+      "oneOffMoments": [
+        {
+          "id": "ashen_eclipse",
+          "description": "Witness an ashen eclipse to temporarily halt sudden combat and improve boss hunt rewards.",
+          "buff": {
+            "type": "bossLootBonus",
+            "value": 0.25,
+            "durationMinutes": 45
+          }
+        }
+      ]
+    },
+    {
+      "id": "howling_peaks",
+      "travelDifficulty": 1.6,
+      "actionDurations": {
+        "travel_major": 13,
+        "survey": 6,
+        "mine": 7,
+        "camp_assault": 9,
+        "artifact_run": 15
+      },
+      "activities": [
+        {
+          "id": "tempest_glide_scout",
+          "name": "Tempest Glide Scout",
+          "type": "survey",
+          "durationMinutes": 6,
+          "description": "Ride thermal drafts to chart aerial shrines and leyline gusts.",
+          "rewards": [
+            "stormvein_ore",
+            "skyrazor_plume",
+            "survey_data"
+          ],
+          "bonuses": {
+            "base": {
+              "travelBonus": 0.05
+            }
+          }
+        },
+        {
+          "id": "stormvein_excavation",
+          "name": "Stormvein Excavation",
+          "type": "mine",
+          "durationMinutes": 7,
+          "description": "Anchor yourself to harvest ore veins exposed by lightning strikes.",
+          "rewards": [
+            "stormvein_ore",
+            "tempest_core"
+          ]
+        },
+        {
+          "id": "aerie_assault",
+          "name": "Aerie Assault",
+          "type": "camp_assault",
+          "durationMinutes": 9,
+          "description": "Break renegade skyband camps before they harness the storm eye.",
+          "rewards": [
+            "camp_loot_rare",
+            "tempest_core"
+          ],
+          "combatProfiles": [
+            "skyrazor_gryphon",
+            "tempest_herald"
+          ]
+        }
+      ],
+      "materials": {
+        "mining": [
+          {
+            "item": "stormvein_ore",
+            "tier": 3,
+            "rarity": "rare"
+          },
+          {
+            "item": "tempest_core",
+            "tier": 4,
+            "rarity": "epic"
+          }
+        ],
+        "foraging": [
+          {
+            "item": "skyrazor_plume",
+            "tier": 3,
+            "rarity": "rare"
+          },
+          {
+            "item": "aurora_fragment",
+            "tier": 2,
+            "rarity": "uncommon"
+          }
+        ],
+        "special": [
+          {
+            "item": "resonance_thread",
+            "tier": 3,
+            "rarity": "rare"
+          },
+          {
+            "item": "stormguard_plate",
+            "tier": 4,
+            "rarity": "epic"
+          }
+        ]
+      },
+      "enemyCamps": [
+        {
+          "faction": "stormguard",
+          "threatLevel": 3,
+          "encounters": [
+            "tempest_herald",
+            "skyrazor_gryphon"
+          ],
+          "lootTags": [
+            "camp_loot_rare",
+            "stormguard_cache"
+          ]
+        },
+        {
+          "faction": "varyn",
+          "threatLevel": 4,
+          "encounters": [
+            "voidcaller",
+            "voidscar_lich"
+          ],
+          "lootTags": [
+            "void_touched",
+            "artifact_keys"
+          ]
+        }
+      ],
+      "uniqueStructures": [
+        {
+          "id": "skyforge_aerie",
+          "category": "structure",
+          "cooldownHours": 16,
+          "rewardTags": [
+            "tempest_core",
+            "stormguard_cache"
+          ]
+        },
+        {
+          "id": "tempest_observatory",
+          "category": "puzzle",
+          "cooldownHours": 18,
+          "rewardTags": [
+            "focus_elixir",
+            "survey_data"
+          ]
+        }
+      ],
+      "oneOffMoments": [
+        {
+          "id": "storm_chorus",
+          "description": "Synchronize with Skysong chanters to gain an aerial maneuver buff.",
+          "buff": {
+            "type": "travel",
+            "value": 0.12,
+            "durationMinutes": 45
+          }
+        }
+      ]
+    },
+    {
+      "id": "ember_depths",
+      "travelDifficulty": 1.9,
+      "actionDurations": {
+        "travel_major": 14,
+        "mine": 8,
+        "scavenge": 7,
+        "camp_assault": 10,
+        "ritual": 11,
+        "boss_hunt": 20
+      },
+      "activities": [
+        {
+          "id": "slag_tunnel_mining",
+          "name": "Slag Tunnel Mining",
+          "type": "mine",
+          "durationMinutes": 8,
+          "description": "Brace against magma gusts to pry slag gemstones from the walls.",
+          "rewards": [
+            "magma_pearl",
+            "cinder_resin",
+            "obsidian_fragment"
+          ]
+        },
+        {
+          "id": "ember_channeling",
+          "name": "Ember Channeling",
+          "type": "ritual",
+          "durationMinutes": 11,
+          "description": "Stabilize ancient vents to siphon pure ember essence.",
+          "rewards": [
+            "obsidian_heart",
+            "ritual_components"
+          ],
+          "bonuses": {
+            "base": {
+              "craftingSpeed": 0.05
+            }
+          }
+        },
+        {
+          "id": "ashbound_sweep",
+          "name": "Ashbound Sweep",
+          "type": "camp_assault",
+          "durationMinutes": 10,
+          "description": "Disperse beastmaster warrens before they hatch slag hydras.",
+          "rewards": [
+            "camp_loot_rare",
+            "magma_pearl"
+          ],
+          "combatProfiles": [
+            "magma_basilisk",
+            "ashen_titan"
+          ]
+        }
+      ],
+      "materials": {
+        "mining": [
+          {
+            "item": "magma_pearl",
+            "tier": 3,
+            "rarity": "rare"
+          },
+          {
+            "item": "obsidian_heart",
+            "tier": 4,
+            "rarity": "epic"
+          },
+          {
+            "item": "cinder_resin",
+            "tier": 2,
+            "rarity": "uncommon"
+          }
+        ],
+        "foraging": [
+          {
+            "item": "ember_resin",
+            "tier": 2,
+            "rarity": "uncommon"
+          },
+          {
+            "item": "slag_glass",
+            "tier": 3,
+            "rarity": "rare"
+          }
+        ],
+        "special": [
+          {
+            "item": "ember_rift_core",
+            "tier": 4,
+            "rarity": "epic"
+          },
+          {
+            "item": "obsidian_heart",
+            "tier": 4,
+            "rarity": "epic"
+          }
+        ]
+      },
+      "enemyCamps": [
+        {
+          "faction": "ancient",
+          "threatLevel": 4,
+          "encounters": [
+            "ashen_titan",
+            "ashbound_colossus"
+          ],
+          "lootTags": [
+            "ritual_components",
+            "mythic_loot"
+          ]
+        },
+        {
+          "faction": "beast",
+          "threatLevel": 3,
+          "encounters": [
+            "magma_basilisk",
+            "slagstorm_hydra"
+          ],
+          "lootTags": [
+            "camp_loot_rare",
+            "ember_cache"
+          ]
+        }
+      ],
+      "uniqueStructures": [
+        {
+          "id": "ember_heart_crucible",
+          "category": "rare_unique",
+          "cooldownHours": 24,
+          "rewardTags": [
+            "obsidian_heart",
+            "mythic_loot"
+          ]
+        },
+        {
+          "id": "magma_listening_post",
+          "category": "structure",
+          "cooldownHours": 18,
+          "rewardTags": [
+            "ember_resin",
+            "focus_elixir"
+          ]
+        }
+      ],
+      "oneOffMoments": [
+        {
+          "id": "magma_surge",
+          "description": "Survive a surge to empower your next craft with ember efficiency.",
+          "buff": {
+            "type": "crafting",
+            "value": 0.1,
+            "durationMinutes": 60
+          }
+        }
+      ]
+    },
+    {
+      "id": "gloomwild_thicket",
+      "travelDifficulty": 1.45,
+      "actionDurations": {
+        "travel_major": 12,
+        "forage": 4,
+        "scavenge": 6,
+        "camp_assault": 8,
+        "story": 7
+      },
+      "activities": [
+        {
+          "id": "nightpetal_harvest",
+          "name": "Nightpetal Harvest",
+          "type": "forage",
+          "durationMinutes": 4,
+          "description": "Coax bioluminescent blooms from the shadowed canopy.",
+          "rewards": [
+            "nightpetal_blossom",
+            "gloomdew_extract"
+          ],
+          "bonuses": {
+            "settlement": {
+              "happiness": 3
+            }
+          }
+        },
+        {
+          "id": "veil_court_parley",
+          "name": "Veil Court Parley",
+          "type": "story",
+          "durationMinutes": 7,
+          "description": "Negotiate favor with hidden fey courts for rare reagents.",
+          "rewards": [
+            "veilhorn_antler",
+            "fey_favor"
+          ]
+        },
+        {
+          "id": "shadow_den_raid",
+          "name": "Shadow Den Raid",
+          "type": "camp_assault",
+          "durationMinutes": 8,
+          "description": "Ambush gloom prowlers before they spiral into nearby settlements.",
+          "rewards": [
+            "camp_loot_uncommon",
+            "nightpetal_blossom"
+          ],
+          "combatProfiles": [
+            "gloomshade_prowler",
+            "veilhorn_stag"
+          ]
+        }
+      ],
+      "materials": {
+        "foraging": [
+          {
+            "item": "nightpetal_blossom",
+            "tier": 3,
+            "rarity": "rare"
+          },
+          {
+            "item": "gloomdew_extract",
+            "tier": 2,
+            "rarity": "uncommon"
+          },
+          {
+            "item": "verdant_pollen",
+            "tier": 2,
+            "rarity": "uncommon"
+          }
+        ],
+        "harvesting": [
+          {
+            "item": "veilhorn_antler",
+            "tier": 3,
+            "rarity": "rare"
+          },
+          {
+            "item": "wildvine_bloom",
+            "tier": 2,
+            "rarity": "uncommon"
+          }
+        ],
+        "special": [
+          {
+            "item": "fey_silk",
+            "tier": 3,
+            "rarity": "rare"
+          },
+          {
+            "item": "focus_elixir",
+            "tier": 2,
+            "rarity": "uncommon"
+          }
+        ]
+      },
+      "enemyCamps": [
+        {
+          "faction": "fey",
+          "threatLevel": 2,
+          "encounters": [
+            "gloomshade_prowler",
+            "moonshadow_wisp"
+          ],
+          "lootTags": [
+            "fey_cache",
+            "alchemy_rare"
+          ]
+        },
+        {
+          "faction": "swamp",
+          "threatLevel": 3,
+          "encounters": [
+            "dreadroot_hag",
+            "verdant_devourer"
+          ],
+          "lootTags": [
+            "camp_loot_rare",
+            "ritual_components"
+          ]
+        }
+      ],
+      "uniqueStructures": [
+        {
+          "id": "twilight_veil_grove",
+          "category": "puzzle",
+          "cooldownHours": 16,
+          "rewardTags": [
+            "nightpetal_blossom",
+            "fey_favor"
+          ]
+        },
+        {
+          "id": "gloomwild_waystone",
+          "category": "structure",
+          "cooldownHours": 20,
+          "rewardTags": [
+            "travel_token",
+            "focus_elixir"
+          ]
+        }
+      ],
+      "oneOffMoments": [
+        {
+          "id": "willow_wisp_trail",
+          "description": "Follow wisp trails to gain a scouting bonus for the next expedition.",
+          "buff": {
+            "type": "exploration",
+            "value": 0.1,
+            "durationMinutes": 50
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,6913 @@
+[
+  {
+    "id": "emerald_grove",
+    "name": "Emerald Grove",
+    "description": "Luminous forest canopies where Kweebecs tend living woodcraft.",
+    "travel": {
+      "baseMinutes": 5,
+      "neighbors": [
+        "gale_cliffs",
+        "sunset_dunes",
+        "shadow_depths",
+        "azure_cove",
+        "emberfen_bog"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "ancient_bark",
+          "min": 1,
+          "max": 3,
+          "chance": 0.7
+        },
+        {
+          "item": "grove_tonic",
+          "min": 1,
+          "max": 1,
+          "chance": 0.25
+        },
+        {
+          "item": "kweebec_charm",
+          "min": 1,
+          "max": 1,
+          "chance": 0.08
+        }
+      ],
+      "mine": [
+        {
+          "item": "sunstone_shard",
+          "min": 1,
+          "max": 2,
+          "chance": 0.35
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "forestwarden_staff",
+          "min": 1,
+          "max": 1,
+          "chance": 0.05
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "feral_trork",
+          "chance": 0.35
+        },
+        {
+          "enemy": "shadow_crawler",
+          "chance": 0.18
+        }
+      ],
+      "events": [
+        {
+          "id": "kweebec_cache",
+          "type": "structure",
+          "structure": "kweebec_cache",
+          "chance": 0.15
+        },
+        {
+          "id": "whispering_hollow",
+          "type": "puzzle",
+          "structure": "whispering_hollow",
+          "chance": 0.12
+        },
+        {
+          "id": "grove_story_gift",
+          "type": "story",
+          "reward": {
+            "coins": 70,
+            "items": [
+              {
+                "item": "ancient_bark",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "gale_cliffs",
+    "name": "Gale Cliffs",
+    "description": "Wind-carved mesas that collect Skysong resonance and static storms.",
+    "travel": {
+      "baseMinutes": 8,
+      "neighbors": [
+        "emerald_grove",
+        "stormguard_keep",
+        "frostblossom_glacier",
+        "crystal_meadows",
+        "thunder_peaks"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "aurora_fragment",
+          "min": 1,
+          "max": 2,
+          "chance": 0.45
+        },
+        {
+          "item": "skyflare_pendant",
+          "min": 1,
+          "max": 1,
+          "chance": 0.08
+        }
+      ],
+      "mine": [
+        {
+          "item": "stormcore_shard",
+          "min": 1,
+          "max": 1,
+          "chance": 0.32
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "stormfront_blade",
+          "min": 1,
+          "max": 1,
+          "chance": 0.04
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "void_knight",
+          "chance": 0.28
+        },
+        {
+          "enemy": "skysong_mage",
+          "chance": 0.12
+        }
+      ],
+      "events": [
+        {
+          "id": "skysong_shrine",
+          "type": "structure",
+          "structure": "skysong_shrine",
+          "chance": 0.18
+        },
+        {
+          "id": "resonance_anomaly",
+          "type": "puzzle",
+          "structure": "resonance_conduit",
+          "chance": 0.12
+        },
+        {
+          "id": "cliffside_cartographer",
+          "type": "story",
+          "reward": {
+            "xp": 180,
+            "items": [
+              {
+                "item": "aurora_fragment",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "stormguard_keep",
+    "name": "Stormguard Keep",
+    "description": "The last bastion of humanity, battered by endless tempests.",
+    "travel": {
+      "baseMinutes": 12,
+      "neighbors": [
+        "gale_cliffs",
+        "shadow_depths",
+        "ashen_desolation",
+        "stormlash_ridge",
+        "obsidian_wastes"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "stormbrew_tonic",
+          "min": 1,
+          "max": 1,
+          "chance": 0.32
+        }
+      ],
+      "mine": [
+        {
+          "item": "stormguard_plate",
+          "min": 1,
+          "max": 1,
+          "chance": 0.04
+        },
+        {
+          "item": "stormlens_scope",
+          "min": 1,
+          "max": 1,
+          "chance": 0.05
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "stormbreaker_hammer",
+          "min": 1,
+          "max": 1,
+          "chance": 0.02
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "ancient_golem",
+          "chance": 0.26
+        },
+        {
+          "enemy": "varyn_warlord",
+          "chance": 0.1
+        }
+      ],
+      "events": [
+        {
+          "id": "stormguard_armory",
+          "type": "structure",
+          "structure": "stormguard_armory",
+          "chance": 0.2
+        },
+        {
+          "id": "war_council",
+          "type": "story",
+          "reward": {
+            "coins": 160,
+            "reputation": {
+              "human": 8
+            }
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "stormguard_dispatch",
+          "type": "story",
+          "reward": {
+            "xp": 220,
+            "items": [
+              {
+                "item": "stormguard_plate",
+                "quantity": 1
+              }
+            ]
+          },
+          "chance": 0.08
+        }
+      ]
+    }
+  },
+  {
+    "id": "sunset_dunes",
+    "name": "Sunset Dunes",
+    "description": "Searing dunes and hidden oases patrolled by Desert Scavenger caravans.",
+    "travel": {
+      "baseMinutes": 9,
+      "neighbors": [
+        "emerald_grove",
+        "ashen_desolation",
+        "twilight_sands",
+        "tidal_reach",
+        "obsidian_wastes"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "sunset_herbs",
+          "min": 1,
+          "max": 2,
+          "chance": 0.5
+        },
+        {
+          "item": "suncrown_seed",
+          "min": 1,
+          "max": 1,
+          "chance": 0.18
+        }
+      ],
+      "mine": [
+        {
+          "item": "amber_glass",
+          "min": 1,
+          "max": 2,
+          "chance": 0.28
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "sandstrider_spear",
+          "min": 1,
+          "max": 1,
+          "chance": 0.03
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "sandstalker",
+          "chance": 0.24
+        },
+        {
+          "enemy": "sunborn_raider",
+          "chance": 0.16
+        }
+      ],
+      "events": [
+        {
+          "id": "desert_oasis",
+          "type": "story",
+          "reward": {
+            "coins": 120,
+            "items": [
+              {
+                "item": "sunset_herbs",
+                "quantity": 3
+              }
+            ]
+          },
+          "chance": 0.14
+        },
+        {
+          "id": "buried_vault",
+          "type": "structure",
+          "structure": "buried_vault",
+          "chance": 0.1
+        },
+        {
+          "id": "sandstorm_ruins",
+          "type": "structure",
+          "structure": "sandstorm_ruins",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "shadow_depths",
+    "name": "Shadow Depths",
+    "description": "A cavernous underworld of corrupted flora and lurking horrors.",
+    "travel": {
+      "baseMinutes": 14,
+      "neighbors": [
+        "emerald_grove",
+        "stormguard_keep",
+        "ashen_desolation",
+        "gloamroot_hollow",
+        "echoing_chasm"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "shadow_spore",
+          "min": 1,
+          "max": 2,
+          "chance": 0.44
+        }
+      ],
+      "mine": [
+        {
+          "item": "darksteel_ore",
+          "min": 1,
+          "max": 2,
+          "chance": 0.33
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "abyssal_relic",
+          "min": 1,
+          "max": 1,
+          "chance": 0.02
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "shadow_crawler",
+          "chance": 0.32
+        },
+        {
+          "enemy": "abyssal_mimic",
+          "chance": 0.22
+        }
+      ],
+      "events": [
+        {
+          "id": "void_shard_chamber",
+          "type": "structure",
+          "structure": "void_shard_chamber",
+          "chance": 0.16
+        },
+        {
+          "id": "lost_delver",
+          "type": "story",
+          "reward": {
+            "xp": 180,
+            "items": [
+              {
+                "item": "shadow_spore",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "gloamroot_mystic",
+          "type": "story",
+          "reward": {
+            "coins": 140,
+            "items": [
+              {
+                "item": "gloamshade_spore",
+                "quantity": 1
+              }
+            ]
+          },
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "frostblossom_glacier",
+    "name": "Frostblossom Glacier",
+    "description": "A frozen expanse where crystalline flowers channel aurora energy.",
+    "travel": {
+      "baseMinutes": 11,
+      "neighbors": [
+        "gale_cliffs",
+        "ashen_desolation",
+        "frostfire_reach",
+        "shiverwind_coast",
+        "aurora_steppe"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "frostblossom_petals",
+          "min": 1,
+          "max": 3,
+          "chance": 0.48
+        }
+      ],
+      "mine": [
+        {
+          "item": "glacial_quartz",
+          "min": 1,
+          "max": 2,
+          "chance": 0.3
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "aurora_lantern",
+          "min": 1,
+          "max": 1,
+          "chance": 0.04
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "icebound_sentinel",
+          "chance": 0.2
+        },
+        {
+          "enemy": "borea_stormguard",
+          "chance": 0.1
+        }
+      ],
+      "events": [
+        {
+          "id": "glacier_sermon",
+          "type": "story",
+          "reward": {
+            "xp": 200,
+            "reputation": {
+              "skysong": 6
+            }
+          },
+          "chance": 0.1
+        },
+        {
+          "id": "aurora_chapel",
+          "type": "puzzle",
+          "structure": "aurora_chapel",
+          "chance": 0.12
+        },
+        {
+          "id": "frostbloom_archive",
+          "type": "structure",
+          "structure": "frostbloom_archive",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "azure_cove",
+    "name": "Azure Cove",
+    "description": "Shimmering tide pools where coral songs hum beneath the waves.",
+    "travel": {
+      "baseMinutes": 6,
+      "neighbors": [
+        "emerald_grove",
+        "tidal_reach",
+        "coral_gardens",
+        "shiverwind_coast",
+        "coral_glow_shoal"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "azure_coralline",
+          "min": 1,
+          "max": 3,
+          "chance": 0.55
+        },
+        {
+          "item": "tideglass_pearl",
+          "min": 1,
+          "max": 1,
+          "chance": 0.22
+        }
+      ],
+      "mine": [
+        {
+          "item": "coral_branch",
+          "min": 1,
+          "max": 2,
+          "chance": 0.28
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "tideborn_scale",
+          "min": 1,
+          "max": 1,
+          "chance": 0.12
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "deep_ocean_siren",
+          "chance": 0.22
+        },
+        {
+          "enemy": "sand_scrapper",
+          "chance": 0.12
+        }
+      ],
+      "events": [
+        {
+          "id": "azure_tide_cache",
+          "type": "structure",
+          "structure": "azure_tide_cache",
+          "chance": 0.15
+        },
+        {
+          "id": "driftwood_wanderer",
+          "type": "story",
+          "reward": {
+            "coins": 110,
+            "items": [
+              {
+                "item": "tideglass_pearl",
+                "quantity": 1
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "coral_lantern_ritual",
+          "type": "puzzle",
+          "structure": "coral_lantern_ritual",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "tidal_reach",
+    "name": "Tidal Reach",
+    "description": "Mangrove channels where the tide carves winding trade routes.",
+    "travel": {
+      "baseMinutes": 7,
+      "neighbors": [
+        "azure_cove",
+        "sunset_dunes",
+        "coral_gardens",
+        "shiverwind_coast",
+        "duskfall_wetlands"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "tidal_shell",
+          "min": 1,
+          "max": 2,
+          "chance": 0.5
+        },
+        {
+          "item": "duskfall_reed",
+          "min": 1,
+          "max": 3,
+          "chance": 0.32
+        }
+      ],
+      "mine": [
+        {
+          "item": "azure_coralline",
+          "min": 1,
+          "max": 2,
+          "chance": 0.25
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "tideborn_scale",
+          "min": 1,
+          "max": 1,
+          "chance": 0.14
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "deep_ocean_siren",
+          "chance": 0.18
+        },
+        {
+          "enemy": "howling_sands_nomad",
+          "chance": 0.14
+        }
+      ],
+      "events": [
+        {
+          "id": "tidal_treasury",
+          "type": "structure",
+          "structure": "tidal_treasury",
+          "chance": 0.14
+        },
+        {
+          "id": "mangrove_market",
+          "type": "story",
+          "reward": {
+            "coins": 140,
+            "items": [
+              {
+                "item": "tidal_shell",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.13
+        },
+        {
+          "id": "tidewatcher_challenge",
+          "type": "puzzle",
+          "structure": "tidewatcher_challenge",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "coral_gardens",
+    "name": "Coral Gardens",
+    "description": "Sunlit reefs where Skysong stewards study tidal harmonics.",
+    "travel": {
+      "baseMinutes": 7,
+      "neighbors": [
+        "azure_cove",
+        "tidal_reach",
+        "emberfen_bog",
+        "coral_glow_shoal",
+        "veilwood_marsh"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "coral_branch",
+          "min": 1,
+          "max": 3,
+          "chance": 0.52
+        },
+        {
+          "item": "glowcap_spore",
+          "min": 1,
+          "max": 2,
+          "chance": 0.28
+        }
+      ],
+      "mine": [
+        {
+          "item": "tideglass_pearl",
+          "min": 1,
+          "max": 1,
+          "chance": 0.2
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "azure_coralline",
+          "min": 1,
+          "max": 2,
+          "chance": 0.18
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "deep_ocean_siren",
+          "chance": 0.24
+        },
+        {
+          "enemy": "voidcaller",
+          "chance": 0.08
+        }
+      ],
+      "events": [
+        {
+          "id": "coral_garden_shrine",
+          "type": "structure",
+          "structure": "coral_garden_shrine",
+          "chance": 0.15
+        },
+        {
+          "id": "seaborne_researcher",
+          "type": "story",
+          "reward": {
+            "xp": 190,
+            "items": [
+              {
+                "item": "glowcap_spore",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.11
+        },
+        {
+          "id": "reef_wayfinder",
+          "type": "puzzle",
+          "structure": "reef_wayfinder",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "obsidian_wastes",
+    "name": "Obsidian Wastes",
+    "description": "Glass-scarred badlands where lava rivers cool into brittle blades.",
+    "travel": {
+      "baseMinutes": 13,
+      "neighbors": [
+        "stormguard_keep",
+        "sunset_dunes",
+        "ashen_desolation",
+        "basalt_barrens",
+        "emberpeak_crater"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "ashen_cinder",
+          "min": 1,
+          "max": 2,
+          "chance": 0.42
+        },
+        {
+          "item": "lava_core",
+          "min": 1,
+          "max": 1,
+          "chance": 0.18
+        }
+      ],
+      "mine": [
+        {
+          "item": "obsidian_glass",
+          "min": 1,
+          "max": 3,
+          "chance": 0.38
+        },
+        {
+          "item": "ashstone",
+          "min": 1,
+          "max": 2,
+          "chance": 0.2
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "stormlash_crest",
+          "min": 1,
+          "max": 1,
+          "chance": 0.1
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "emberdrake",
+          "chance": 0.24
+        },
+        {
+          "enemy": "crystal_construct",
+          "chance": 0.16
+        }
+      ],
+      "events": [
+        {
+          "id": "obsidian_spire",
+          "type": "structure",
+          "structure": "obsidian_spire",
+          "chance": 0.17
+        },
+        {
+          "id": "scorched_scout",
+          "type": "story",
+          "reward": {
+            "coins": 180,
+            "items": [
+              {
+                "item": "obsidian_glass",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "molten_archive",
+          "type": "puzzle",
+          "structure": "molten_archive",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "emberfen_bog",
+    "name": "Emberfen Bog",
+    "description": "Smoldering wetlands where fireflies and flame-kissed reeds mingle.",
+    "travel": {
+      "baseMinutes": 7,
+      "neighbors": [
+        "emerald_grove",
+        "coral_gardens",
+        "veilwood_marsh",
+        "gloamroot_hollow",
+        "scarlet_bog"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "emberfen_resin",
+          "min": 1,
+          "max": 3,
+          "chance": 0.48
+        },
+        {
+          "item": "bog_lotus",
+          "min": 1,
+          "max": 2,
+          "chance": 0.26
+        }
+      ],
+      "mine": [
+        {
+          "item": "ashstone",
+          "min": 1,
+          "max": 2,
+          "chance": 0.2
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "emberfen_resin",
+          "min": 1,
+          "max": 1,
+          "chance": 0.2
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "sand_scrapper",
+          "chance": 0.2
+        },
+        {
+          "enemy": "shadow_crawler",
+          "chance": 0.16
+        }
+      ],
+      "events": [
+        {
+          "id": "emberfen_cauldron",
+          "type": "structure",
+          "structure": "emberfen_cauldron",
+          "chance": 0.16
+        },
+        {
+          "id": "bog_shaman",
+          "type": "story",
+          "reward": {
+            "xp": 150,
+            "items": [
+              {
+                "item": "bog_lotus",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.13
+        },
+        {
+          "id": "ember_spirit_vigil",
+          "type": "puzzle",
+          "structure": "ember_spirit_vigil",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "crystal_meadows",
+    "name": "Crystal Meadows",
+    "description": "Rolling fields of prism grass that refract dusk into rainbows.",
+    "travel": {
+      "baseMinutes": 9,
+      "neighbors": [
+        "gale_cliffs",
+        "mistspire_vale",
+        "moonlit_grove",
+        "runic_highlands",
+        "starfall_fields"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "crystal_bloom",
+          "min": 1,
+          "max": 3,
+          "chance": 0.5
+        }
+      ],
+      "mine": [
+        {
+          "item": "crystal_spire",
+          "min": 1,
+          "max": 2,
+          "chance": 0.3
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "luminous_thread",
+          "min": 1,
+          "max": 2,
+          "chance": 0.18
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "crystal_construct",
+          "chance": 0.24
+        },
+        {
+          "enemy": "skysong_mage",
+          "chance": 0.14
+        }
+      ],
+      "events": [
+        {
+          "id": "crystal_bloom_grove",
+          "type": "structure",
+          "structure": "crystal_bloom_grove",
+          "chance": 0.17
+        },
+        {
+          "id": "meadow_chronicler",
+          "type": "story",
+          "reward": {
+            "xp": 190,
+            "items": [
+              {
+                "item": "luminous_thread",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.13
+        },
+        {
+          "id": "prismward_trial",
+          "type": "puzzle",
+          "structure": "prismward_trial",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "thunder_peaks",
+    "name": "Thunder Peaks",
+    "description": "High crags where storms coil around ancient lightning towers.",
+    "travel": {
+      "baseMinutes": 12,
+      "neighbors": [
+        "gale_cliffs",
+        "stormlash_ridge",
+        "runic_highlands",
+        "tempest_fjords"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "stormlash_crest",
+          "min": 1,
+          "max": 2,
+          "chance": 0.34
+        }
+      ],
+      "mine": [
+        {
+          "item": "thunderite_ore",
+          "min": 1,
+          "max": 2,
+          "chance": 0.28
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "thunder_signet",
+          "min": 1,
+          "max": 1,
+          "chance": 0.09
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "stormguard_wyvern",
+          "chance": 0.22
+        },
+        {
+          "enemy": "thunder_wraith",
+          "chance": 0.14
+        }
+      ],
+      "events": [
+        {
+          "id": "thunder_totem",
+          "type": "structure",
+          "structure": "thunder_totem",
+          "chance": 0.16
+        },
+        {
+          "id": "skywatch_ritual",
+          "type": "puzzle",
+          "structure": "skywatch_ritual",
+          "chance": 0.12
+        },
+        {
+          "id": "peak_herald",
+          "type": "story",
+          "reward": {
+            "xp": 220,
+            "items": [
+              {
+                "item": "thunder_signet",
+                "quantity": 1
+              }
+            ]
+          },
+          "chance": 0.11
+        }
+      ]
+    }
+  },
+  {
+    "id": "stormlash_ridge",
+    "name": "Stormlash Ridge",
+    "description": "Jagged ridgelines anchored by ancient storm beacons.",
+    "travel": {
+      "baseMinutes": 11,
+      "neighbors": [
+        "stormguard_keep",
+        "thunder_peaks",
+        "ashen_desolation",
+        "tempest_fjords"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "stormlash_crest",
+          "min": 1,
+          "max": 2,
+          "chance": 0.36
+        }
+      ],
+      "mine": [
+        {
+          "item": "stormcore_shard",
+          "min": 1,
+          "max": 2,
+          "chance": 0.32
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "stormguard_plate",
+          "min": 1,
+          "max": 1,
+          "chance": 0.04
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "stormguard_wyvern",
+          "chance": 0.24
+        },
+        {
+          "enemy": "thunder_wraith",
+          "chance": 0.18
+        }
+      ],
+      "events": [
+        {
+          "id": "stormlash_watch",
+          "type": "structure",
+          "structure": "stormlash_watch",
+          "chance": 0.16
+        },
+        {
+          "id": "tempest_trial",
+          "type": "puzzle",
+          "structure": "tempest_trial",
+          "chance": 0.12
+        },
+        {
+          "id": "ridge_watch_captain",
+          "type": "story",
+          "reward": {
+            "coins": 190,
+            "items": [
+              {
+                "item": "stormlash_crest",
+                "quantity": 1
+              }
+            ]
+          },
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "veilwood_marsh",
+    "name": "Veilwood Marsh",
+    "description": "Fog-draped groves where specters dance among lantern trees.",
+    "travel": {
+      "baseMinutes": 8,
+      "neighbors": [
+        "emberfen_bog",
+        "coral_gardens",
+        "gloamroot_hollow",
+        "moonlit_grove",
+        "scarlet_bog"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "veilroot_pod",
+          "min": 1,
+          "max": 3,
+          "chance": 0.46
+        },
+        {
+          "item": "moonpetal_blossom",
+          "min": 1,
+          "max": 1,
+          "chance": 0.22
+        }
+      ],
+      "mine": [
+        {
+          "item": "mistspire_dust",
+          "min": 1,
+          "max": 2,
+          "chance": 0.24
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "gloamshade_spore",
+          "min": 1,
+          "max": 1,
+          "chance": 0.16
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "shadow_crawler",
+          "chance": 0.22
+        },
+        {
+          "enemy": "gloam_stalker",
+          "chance": 0.14
+        }
+      ],
+      "events": [
+        {
+          "id": "veilwood_sanctum",
+          "type": "structure",
+          "structure": "veilwood_sanctum",
+          "chance": 0.16
+        },
+        {
+          "id": "lantern_wisp_blessing",
+          "type": "story",
+          "reward": {
+            "xp": 170,
+            "items": [
+              {
+                "item": "veilroot_pod",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "spectral_bridge",
+          "type": "puzzle",
+          "structure": "spectral_bridge",
+          "chance": 0.11
+        }
+      ]
+    }
+  },
+  {
+    "id": "gloamroot_hollow",
+    "name": "Gloamroot Hollow",
+    "description": "Sapped caverns where bioluminescent roots weave a twilight canopy.",
+    "travel": {
+      "baseMinutes": 10,
+      "neighbors": [
+        "shadow_depths",
+        "emberfen_bog",
+        "veilwood_marsh",
+        "echoing_chasm"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "gloamshade_spore",
+          "min": 1,
+          "max": 3,
+          "chance": 0.44
+        },
+        {
+          "item": "moonpetal_blossom",
+          "min": 1,
+          "max": 1,
+          "chance": 0.18
+        }
+      ],
+      "mine": [
+        {
+          "item": "shadow_spore",
+          "min": 1,
+          "max": 2,
+          "chance": 0.32
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "echo_crystal",
+          "min": 1,
+          "max": 1,
+          "chance": 0.12
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "abyssal_mimic",
+          "chance": 0.22
+        },
+        {
+          "enemy": "gloam_stalker",
+          "chance": 0.18
+        }
+      ],
+      "events": [
+        {
+          "id": "gloamroot_catacomb",
+          "type": "structure",
+          "structure": "gloamroot_catacomb",
+          "chance": 0.16
+        },
+        {
+          "id": "rootlight_oracle",
+          "type": "story",
+          "reward": {
+            "xp": 210,
+            "items": [
+              {
+                "item": "echo_crystal",
+                "quantity": 1
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "mycelium_trial",
+          "type": "puzzle",
+          "structure": "mycelium_trial",
+          "chance": 0.11
+        }
+      ]
+    }
+  },
+  {
+    "id": "moonlit_grove",
+    "name": "Moonlit Grove",
+    "description": "Silvered clearings where ancient sprites celebrate nightfall.",
+    "travel": {
+      "baseMinutes": 7,
+      "neighbors": [
+        "crystal_meadows",
+        "veilwood_marsh",
+        "mistspire_vale",
+        "starfall_fields",
+        "aurora_steppe"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "moonpetal_blossom",
+          "min": 1,
+          "max": 3,
+          "chance": 0.5
+        },
+        {
+          "item": "luminous_thread",
+          "min": 1,
+          "max": 2,
+          "chance": 0.28
+        }
+      ],
+      "mine": [
+        {
+          "item": "crystal_bloom",
+          "min": 1,
+          "max": 2,
+          "chance": 0.24
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "starlit_resin",
+          "min": 1,
+          "max": 1,
+          "chance": 0.16
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "skysong_mage",
+          "chance": 0.2
+        },
+        {
+          "enemy": "gloam_stalker",
+          "chance": 0.1
+        }
+      ],
+      "events": [
+        {
+          "id": "moonlit_shrine",
+          "type": "structure",
+          "structure": "moonlit_shrine",
+          "chance": 0.16
+        },
+        {
+          "id": "sprite_conclave",
+          "type": "story",
+          "reward": {
+            "coins": 150,
+            "items": [
+              {
+                "item": "moonpetal_blossom",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "lunar_echo",
+          "type": "puzzle",
+          "structure": "lunar_echo",
+          "chance": 0.11
+        }
+      ]
+    }
+  },
+  {
+    "id": "mistspire_vale",
+    "name": "Mistspire Vale",
+    "description": "Cloud-piercing towers where Skysong sages track constellations.",
+    "travel": {
+      "baseMinutes": 9,
+      "neighbors": [
+        "crystal_meadows",
+        "moonlit_grove",
+        "runic_highlands",
+        "aurora_steppe",
+        "mistspire_citadel"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "mistspire_dust",
+          "min": 1,
+          "max": 3,
+          "chance": 0.44
+        }
+      ],
+      "mine": [
+        {
+          "item": "aurora_lantern",
+          "min": 1,
+          "max": 1,
+          "chance": 0.22
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "starlit_resin",
+          "min": 1,
+          "max": 1,
+          "chance": 0.16
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "skysong_mage",
+          "chance": 0.22
+        },
+        {
+          "enemy": "voidcaller",
+          "chance": 0.12
+        }
+      ],
+      "events": [
+        {
+          "id": "mistspire_observatory",
+          "type": "structure",
+          "structure": "mistspire_observatory",
+          "chance": 0.16
+        },
+        {
+          "id": "starpath_ritual",
+          "type": "puzzle",
+          "structure": "starpath_ritual",
+          "chance": 0.12
+        },
+        {
+          "id": "sage_of_clouds",
+          "type": "story",
+          "reward": {
+            "xp": 230,
+            "items": [
+              {
+                "item": "mistspire_dust",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.11
+        }
+      ]
+    }
+  },
+  {
+    "id": "runic_highlands",
+    "name": "Runic Highlands",
+    "description": "Plateaus etched with ancient glyphs that hum with latent power.",
+    "travel": {
+      "baseMinutes": 10,
+      "neighbors": [
+        "crystal_meadows",
+        "mistspire_vale",
+        "thunder_peaks",
+        "starfall_fields",
+        "runic_wilds"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "runeetched_fragment",
+          "min": 1,
+          "max": 3,
+          "chance": 0.46
+        }
+      ],
+      "mine": [
+        {
+          "item": "crystal_spire",
+          "min": 1,
+          "max": 2,
+          "chance": 0.3
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "runic_core",
+          "min": 1,
+          "max": 1,
+          "chance": 0.14
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "crystal_construct",
+          "chance": 0.22
+        },
+        {
+          "enemy": "runic_guardian",
+          "chance": 0.14
+        }
+      ],
+      "events": [
+        {
+          "id": "runic_vault",
+          "type": "structure",
+          "structure": "runic_vault",
+          "chance": 0.16
+        },
+        {
+          "id": "glyph_engraver",
+          "type": "story",
+          "reward": {
+            "coins": 200,
+            "items": [
+              {
+                "item": "runeetched_fragment",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "wardstone_sequence",
+          "type": "puzzle",
+          "structure": "wardstone_sequence",
+          "chance": 0.11
+        }
+      ]
+    }
+  },
+  {
+    "id": "starfall_fields",
+    "name": "Starfall Fields",
+    "description": "Rolling tundra glittering with meteor shards and aurora snow.",
+    "travel": {
+      "baseMinutes": 10,
+      "neighbors": [
+        "crystal_meadows",
+        "moonlit_grove",
+        "runic_highlands",
+        "aurora_steppe",
+        "aurora_steppe"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "starshard_ore",
+          "min": 1,
+          "max": 3,
+          "chance": 0.42
+        }
+      ],
+      "mine": [
+        {
+          "item": "aurora_ember",
+          "min": 1,
+          "max": 2,
+          "chance": 0.24
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "starlit_resin",
+          "min": 1,
+          "max": 1,
+          "chance": 0.12
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "borea_stormguard",
+          "chance": 0.22
+        },
+        {
+          "enemy": "stormguard_wyvern",
+          "chance": 0.12
+        }
+      ],
+      "events": [
+        {
+          "id": "starfall_altar",
+          "type": "structure",
+          "structure": "starfall_altar",
+          "chance": 0.16
+        },
+        {
+          "id": "meteor_fragment",
+          "type": "story",
+          "reward": {
+            "xp": 210,
+            "items": [
+              {
+                "item": "starshard_ore",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "aurora_alignment",
+          "type": "puzzle",
+          "structure": "aurora_alignment",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "aurora_steppe",
+    "name": "Aurora Steppe",
+    "description": "Polar plains suffused with dancing lights and icy gusts.",
+    "travel": {
+      "baseMinutes": 11,
+      "neighbors": [
+        "frostblossom_glacier",
+        "moonlit_grove",
+        "mistspire_vale",
+        "starfall_fields",
+        "tempest_fjords"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "aurora_ember",
+          "min": 1,
+          "max": 3,
+          "chance": 0.44
+        }
+      ],
+      "mine": [
+        {
+          "item": "glacial_quartz",
+          "min": 1,
+          "max": 2,
+          "chance": 0.26
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "tempest_plume",
+          "min": 1,
+          "max": 1,
+          "chance": 0.18
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "icebound_sentinel",
+          "chance": 0.2
+        },
+        {
+          "enemy": "stormguard_wyvern",
+          "chance": 0.12
+        }
+      ],
+      "events": [
+        {
+          "id": "aurora_beacon",
+          "type": "structure",
+          "structure": "aurora_beacon",
+          "chance": 0.16
+        },
+        {
+          "id": "polar_explorer",
+          "type": "story",
+          "reward": {
+            "coins": 170,
+            "items": [
+              {
+                "item": "tempest_plume",
+                "quantity": 1
+              }
+            ]
+          },
+          "chance": 0.11
+        },
+        {
+          "id": "glacial_resonance",
+          "type": "puzzle",
+          "structure": "glacial_resonance",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "tempest_fjords",
+    "name": "Tempest Fjords",
+    "description": "Cliffside waterways where storms collide with ocean squalls.",
+    "travel": {
+      "baseMinutes": 12,
+      "neighbors": [
+        "thunder_peaks",
+        "stormlash_ridge",
+        "aurora_steppe",
+        "tempest_harbor"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "tempest_plume",
+          "min": 1,
+          "max": 2,
+          "chance": 0.32
+        }
+      ],
+      "mine": [
+        {
+          "item": "stormcore_shard",
+          "min": 1,
+          "max": 2,
+          "chance": 0.28
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "tideborn_scale",
+          "min": 1,
+          "max": 1,
+          "chance": 0.16
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "stormguard_wyvern",
+          "chance": 0.24
+        },
+        {
+          "enemy": "deep_ocean_siren",
+          "chance": 0.16
+        }
+      ],
+      "events": [
+        {
+          "id": "tempest_forge",
+          "type": "structure",
+          "structure": "tempest_forge",
+          "chance": 0.16
+        },
+        {
+          "id": "fjord_pathfinder",
+          "type": "story",
+          "reward": {
+            "coins": 200,
+            "items": [
+              {
+                "item": "tempest_plume",
+                "quantity": 1
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "stormcliff_shrine",
+          "type": "puzzle",
+          "structure": "stormcliff_shrine",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "ironroot_range",
+    "name": "Ironroot Range",
+    "description": "Ancient mountains where titanic trees punch through the stone.",
+    "travel": {
+      "baseMinutes": 11,
+      "neighbors": [
+        "emerald_grove",
+        "runic_highlands",
+        "ironroot_heart",
+        "scarlet_bog"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "ironroot_heartwood",
+          "min": 1,
+          "max": 3,
+          "chance": 0.46
+        },
+        {
+          "item": "ancient_bark",
+          "min": 1,
+          "max": 2,
+          "chance": 0.32
+        }
+      ],
+      "mine": [
+        {
+          "item": "iron_ingot",
+          "min": 1,
+          "max": 2,
+          "chance": 0.3
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "ironroot_heartwood",
+          "min": 1,
+          "max": 1,
+          "chance": 0.18
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "trork_beastmaster",
+          "chance": 0.2
+        },
+        {
+          "enemy": "ironbark_colossus",
+          "chance": 0.12
+        }
+      ],
+      "events": [
+        {
+          "id": "ironroot_vault",
+          "type": "structure",
+          "structure": "ironroot_vault",
+          "chance": 0.16
+        },
+        {
+          "id": "rootguard_patrol",
+          "type": "story",
+          "reward": {
+            "coins": 180,
+            "items": [
+              {
+                "item": "ironroot_heartwood",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "timberward_puzzle",
+          "type": "puzzle",
+          "structure": "timberward_puzzle",
+          "chance": 0.11
+        }
+      ]
+    }
+  },
+  {
+    "id": "echoing_chasm",
+    "name": "Echoing Chasm",
+    "description": "Hollow ravines where every sound births shimmering illusions.",
+    "travel": {
+      "baseMinutes": 12,
+      "neighbors": [
+        "shadow_depths",
+        "gloamroot_hollow",
+        "scarlet_bog",
+        "ashen_desolation"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "echo_crystal",
+          "min": 1,
+          "max": 3,
+          "chance": 0.4
+        }
+      ],
+      "mine": [
+        {
+          "item": "shadow_spore",
+          "min": 1,
+          "max": 2,
+          "chance": 0.28
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "luminous_thread",
+          "min": 1,
+          "max": 1,
+          "chance": 0.16
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "voidcaller",
+          "chance": 0.2
+        },
+        {
+          "enemy": "echo_specter",
+          "chance": 0.12
+        }
+      ],
+      "events": [
+        {
+          "id": "echoing_monolith",
+          "type": "structure",
+          "structure": "echoing_monolith",
+          "chance": 0.16
+        },
+        {
+          "id": "resonant_whisper",
+          "type": "story",
+          "reward": {
+            "xp": 240,
+            "items": [
+              {
+                "item": "echo_crystal",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "reflection_riddle",
+          "type": "puzzle",
+          "structure": "reflection_riddle",
+          "chance": 0.11
+        }
+      ]
+    }
+  },
+  {
+    "id": "scarlet_bog",
+    "name": "Scarlet Bog",
+    "description": "Crimson marshes where fungal blooms pulse with emberlight.",
+    "travel": {
+      "baseMinutes": 9,
+      "neighbors": [
+        "emberfen_bog",
+        "veilwood_marsh",
+        "ironroot_range",
+        "echoing_chasm",
+        "duskfall_wetlands"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "scarlet_myrtle",
+          "min": 1,
+          "max": 3,
+          "chance": 0.48
+        }
+      ],
+      "mine": [
+        {
+          "item": "emberfen_resin",
+          "min": 1,
+          "max": 2,
+          "chance": 0.26
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "bog_lotus",
+          "min": 1,
+          "max": 1,
+          "chance": 0.18
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "sand_scrapper",
+          "chance": 0.2
+        },
+        {
+          "enemy": "scarlet_fiend",
+          "chance": 0.14
+        }
+      ],
+      "events": [
+        {
+          "id": "scarlet_greenhouse",
+          "type": "structure",
+          "structure": "scarlet_greenhouse",
+          "chance": 0.16
+        },
+        {
+          "id": "bogflare_ritual",
+          "type": "puzzle",
+          "structure": "bogflare_ritual",
+          "chance": 0.12
+        },
+        {
+          "id": "scarlet_collective",
+          "type": "story",
+          "reward": {
+            "coins": 190,
+            "items": [
+              {
+                "item": "scarlet_myrtle",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.12
+        }
+      ]
+    }
+  },
+  {
+    "id": "ashen_desolation",
+    "name": "Ashen Desolation",
+    "description": "Charred plains smoldering under a sky of drifting soot.",
+    "travel": {
+      "baseMinutes": 12,
+      "neighbors": [
+        "stormguard_keep",
+        "sunset_dunes",
+        "shadow_depths",
+        "obsidian_wastes",
+        "echoing_chasm",
+        "stormlash_ridge"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "ashen_cinder",
+          "min": 1,
+          "max": 2,
+          "chance": 0.38
+        }
+      ],
+      "mine": [
+        {
+          "item": "ashstone",
+          "min": 1,
+          "max": 2,
+          "chance": 0.32
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "lava_core",
+          "min": 1,
+          "max": 1,
+          "chance": 0.14
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "emberdrake",
+          "chance": 0.26
+        },
+        {
+          "enemy": "ashbound_colossus",
+          "chance": 0.12
+        }
+      ],
+      "events": [
+        {
+          "id": "ashen_forgewheel",
+          "type": "structure",
+          "structure": "ashen_forgewheel",
+          "chance": 0.16
+        },
+        {
+          "id": "cinder_survey",
+          "type": "story",
+          "reward": {
+            "coins": 200,
+            "items": [
+              {
+                "item": "ashstone",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "charred_tome",
+          "type": "puzzle",
+          "structure": "charred_tome",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "twilight_sands",
+    "name": "Twilight Sands",
+    "description": "Dunes that glow at dusk, guiding caravans to hidden sanctums.",
+    "travel": {
+      "baseMinutes": 10,
+      "neighbors": [
+        "sunset_dunes",
+        "tidal_reach",
+        "duskfall_wetlands",
+        "obsidian_wastes"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "twilight_opal",
+          "min": 1,
+          "max": 2,
+          "chance": 0.36
+        }
+      ],
+      "mine": [
+        {
+          "item": "amber_glass",
+          "min": 1,
+          "max": 2,
+          "chance": 0.28
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "suncrown_seed",
+          "min": 1,
+          "max": 1,
+          "chance": 0.18
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "sunborn_raider",
+          "chance": 0.2
+        },
+        {
+          "enemy": "sandstalker",
+          "chance": 0.14
+        }
+      ],
+      "events": [
+        {
+          "id": "twilight_waygate",
+          "type": "structure",
+          "structure": "twilight_waygate",
+          "chance": 0.16
+        },
+        {
+          "id": "dune_nomad_parley",
+          "type": "story",
+          "reward": {
+            "coins": 160,
+            "items": [
+              {
+                "item": "twilight_opal",
+                "quantity": 1
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "starglass_puzzle",
+          "type": "puzzle",
+          "structure": "starglass_puzzle",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "duskfall_wetlands",
+    "name": "Duskfall Wetlands",
+    "description": "Tide-fed marshes where lantern eels weave through reeds.",
+    "travel": {
+      "baseMinutes": 9,
+      "neighbors": [
+        "tidal_reach",
+        "coral_glow_shoal",
+        "scarlet_bog",
+        "twilight_sands",
+        "veilwood_marsh"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "duskfall_reed",
+          "min": 1,
+          "max": 3,
+          "chance": 0.46
+        }
+      ],
+      "mine": [
+        {
+          "item": "azure_coralline",
+          "min": 1,
+          "max": 2,
+          "chance": 0.22
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "tideglass_pearl",
+          "min": 1,
+          "max": 1,
+          "chance": 0.16
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "deep_ocean_siren",
+          "chance": 0.18
+        },
+        {
+          "enemy": "sand_scrapper",
+          "chance": 0.14
+        }
+      ],
+      "events": [
+        {
+          "id": "duskfall_pylon",
+          "type": "structure",
+          "structure": "duskfall_pylon",
+          "chance": 0.16
+        },
+        {
+          "id": "reedwhisperer",
+          "type": "story",
+          "reward": {
+            "coins": 150,
+            "items": [
+              {
+                "item": "duskfall_reed",
+                "quantity": 3
+              }
+            ]
+          },
+          "chance": 0.13
+        },
+        {
+          "id": "glow_eel_challenge",
+          "type": "puzzle",
+          "structure": "glow_eel_challenge",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "coral_glow_shoal",
+    "name": "Coral Glow Shoal",
+    "description": "Bioluminescent shallows shimmering with reef magic.",
+    "travel": {
+      "baseMinutes": 6,
+      "neighbors": [
+        "azure_cove",
+        "coral_gardens",
+        "duskfall_wetlands",
+        "shiverwind_coast"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "glowcap_spore",
+          "min": 1,
+          "max": 3,
+          "chance": 0.5
+        },
+        {
+          "item": "tideborn_scale",
+          "min": 1,
+          "max": 2,
+          "chance": 0.2
+        }
+      ],
+      "mine": [
+        {
+          "item": "coral_branch",
+          "min": 1,
+          "max": 2,
+          "chance": 0.28
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "azure_coralline",
+          "min": 1,
+          "max": 2,
+          "chance": 0.18
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "deep_ocean_siren",
+          "chance": 0.22
+        },
+        {
+          "enemy": "coral_guardian",
+          "chance": 0.14
+        }
+      ],
+      "events": [
+        {
+          "id": "glowreef_archive",
+          "type": "structure",
+          "structure": "glowreef_archive",
+          "chance": 0.16
+        },
+        {
+          "id": "shoal_wayfinder",
+          "type": "story",
+          "reward": {
+            "xp": 210,
+            "items": [
+              {
+                "item": "glowcap_spore",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "tidelight_ritual",
+          "type": "puzzle",
+          "structure": "tidelight_ritual",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "shiverwind_coast",
+    "name": "Shiverwind Coast",
+    "description": "Icy shoreline battered by polar gales and drifting bergs.",
+    "travel": {
+      "baseMinutes": 10,
+      "neighbors": [
+        "frostblossom_glacier",
+        "azure_cove",
+        "tidal_reach",
+        "coral_glow_shoal",
+        "aurora_steppe"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "frostblossom_petals",
+          "min": 1,
+          "max": 2,
+          "chance": 0.4
+        }
+      ],
+      "mine": [
+        {
+          "item": "glacial_quartz",
+          "min": 1,
+          "max": 2,
+          "chance": 0.28
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "tidal_shell",
+          "min": 1,
+          "max": 1,
+          "chance": 0.18
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "icebound_sentinel",
+          "chance": 0.22
+        },
+        {
+          "enemy": "deep_ocean_siren",
+          "chance": 0.16
+        }
+      ],
+      "events": [
+        {
+          "id": "shiverwind_reliquary",
+          "type": "structure",
+          "structure": "shiverwind_reliquary",
+          "chance": 0.16
+        },
+        {
+          "id": "berg_harpooner",
+          "type": "story",
+          "reward": {
+            "coins": 180,
+            "items": [
+              {
+                "item": "tidal_shell",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "iceflow_path",
+          "type": "puzzle",
+          "structure": "iceflow_path",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "basalt_barrens",
+    "name": "Basalt Barrens",
+    "description": "Weathered volcanic flats criss-crossed by molten veins.",
+    "travel": {
+      "baseMinutes": 11,
+      "neighbors": [
+        "obsidian_wastes",
+        "emberpeak_crater",
+        "ashfall_canyon",
+        "ironroot_range"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "ashen_cinder",
+          "min": 1,
+          "max": 2,
+          "chance": 0.36
+        }
+      ],
+      "mine": [
+        {
+          "item": "obsidian_glass",
+          "min": 1,
+          "max": 3,
+          "chance": 0.32
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "lava_core",
+          "min": 1,
+          "max": 1,
+          "chance": 0.14
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "emberdrake",
+          "chance": 0.24
+        },
+        {
+          "enemy": "lavaborn_colossus",
+          "chance": 0.14
+        }
+      ],
+      "events": [
+        {
+          "id": "basalt_eruption",
+          "type": "story",
+          "reward": {
+            "xp": 220,
+            "items": [
+              {
+                "item": "lava_core",
+                "quantity": 1
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "molten_crucible",
+          "type": "structure",
+          "structure": "molten_crucible",
+          "chance": 0.16
+        },
+        {
+          "id": "slagstone_trial",
+          "type": "puzzle",
+          "structure": "slagstone_trial",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "sunforge_badlands",
+    "name": "Sunforge Badlands",
+    "description": "Scorched mesas where wandering smiths tame molten rivers.",
+    "travel": {
+      "baseMinutes": 12,
+      "neighbors": [
+        "basalt_barrens",
+        "obsidian_wastes",
+        "ashfall_canyon",
+        "emberpeak_crater",
+        "auric_dunes"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "ashen_cinder",
+          "min": 1,
+          "max": 2,
+          "chance": 0.38
+        }
+      ],
+      "mine": [
+        {
+          "item": "sunforge_ingot",
+          "min": 1,
+          "max": 2,
+          "chance": 0.3
+        },
+        {
+          "item": "lava_core",
+          "min": 1,
+          "max": 1,
+          "chance": 0.16
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "emberglass_shard",
+          "min": 1,
+          "max": 2,
+          "chance": 0.2
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "sunforge_golem",
+          "chance": 0.22
+        },
+        {
+          "enemy": "emberglass_spider",
+          "chance": 0.16
+        }
+      ],
+      "events": [
+        {
+          "id": "sunforge_anvil",
+          "type": "structure",
+          "structure": "sunforge_anvil",
+          "chance": 0.16
+        },
+        {
+          "id": "sunforge_smelter",
+          "type": "story",
+          "reward": {
+            "coins": 210,
+            "items": [
+              {
+                "item": "sunforge_ingot",
+                "quantity": 1
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "sunforge_sigil",
+          "type": "puzzle",
+          "structure": "sunforge_sigil",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "emberpeak_crater",
+    "name": "Emberpeak Crater",
+    "description": "A blazing caldera filled with emberglass spines and slag flows.",
+    "travel": {
+      "baseMinutes": 13,
+      "neighbors": [
+        "sunforge_badlands",
+        "basalt_barrens",
+        "emberglow_cavern",
+        "stormlash_ridge"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "emberglow_slag",
+          "min": 1,
+          "max": 2,
+          "chance": 0.4
+        }
+      ],
+      "mine": [
+        {
+          "item": "emberglass_shard",
+          "min": 1,
+          "max": 3,
+          "chance": 0.34
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "sunforge_ingot",
+          "min": 1,
+          "max": 1,
+          "chance": 0.12
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "emberglass_spider",
+          "chance": 0.24
+        },
+        {
+          "enemy": "emberglow_stalker",
+          "chance": 0.16
+        }
+      ],
+      "events": [
+        {
+          "id": "emberpeak_crucible",
+          "type": "structure",
+          "structure": "emberpeak_crucible",
+          "chance": 0.16
+        },
+        {
+          "id": "emberpeak_collector",
+          "type": "story",
+          "reward": {
+            "xp": 240,
+            "items": [
+              {
+                "item": "emberglass_shard",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "emberpeak_ritual",
+          "type": "puzzle",
+          "structure": "emberpeak_ritual",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "tempest_harbor",
+    "name": "Tempest Harbor",
+    "description": "A storm-lashed harbor watched by privateers and siren buoys.",
+    "travel": {
+      "baseMinutes": 9,
+      "neighbors": [
+        "tempest_fjords",
+        "stormbreak_isles",
+        "bluehaven_lagoon",
+        "tidal_reach",
+        "stormlash_ridge"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "tempest_nav_chart",
+          "min": 1,
+          "max": 1,
+          "chance": 0.26
+        },
+        {
+          "item": "tempest_plume",
+          "min": 1,
+          "max": 1,
+          "chance": 0.22
+        }
+      ],
+      "mine": [
+        {
+          "item": "tideborn_scale",
+          "min": 1,
+          "max": 2,
+          "chance": 0.24
+        },
+        {
+          "item": "stormlash_ingot",
+          "min": 1,
+          "max": 1,
+          "chance": 0.2
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "stormbreak_shell",
+          "min": 1,
+          "max": 1,
+          "chance": 0.16
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "tempest_privateer",
+          "chance": 0.22
+        },
+        {
+          "enemy": "stormbreak_raider",
+          "chance": 0.18
+        }
+      ],
+      "events": [
+        {
+          "id": "tempest_chart_room",
+          "type": "structure",
+          "structure": "tempest_chart_room",
+          "chance": 0.16
+        },
+        {
+          "id": "harbor_captain",
+          "type": "story",
+          "reward": {
+            "coins": 200,
+            "items": [
+              {
+                "item": "tempest_nav_chart",
+                "quantity": 1
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "stormchain_puzzle",
+          "type": "puzzle",
+          "structure": "stormchain_puzzle",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "ironroot_heart",
+    "name": "Ironroot Heart",
+    "description": "The ancient core of the Ironroot range where trees fuse with stone.",
+    "travel": {
+      "baseMinutes": 10,
+      "neighbors": [
+        "ironroot_range",
+        "stonebark_highlands",
+        "wildvine_glade",
+        "moonshadow_thicket"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "ironroot_heartwood",
+          "min": 1,
+          "max": 3,
+          "chance": 0.42
+        },
+        {
+          "item": "ironheart_sap",
+          "min": 1,
+          "max": 2,
+          "chance": 0.28
+        }
+      ],
+      "mine": [
+        {
+          "item": "stonebark_chip",
+          "min": 1,
+          "max": 2,
+          "chance": 0.24
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "iron_ingot",
+          "min": 1,
+          "max": 1,
+          "chance": 0.16
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "ironheart_treant",
+          "chance": 0.22
+        },
+        {
+          "enemy": "stonebark_sentinel",
+          "chance": 0.16
+        }
+      ],
+      "events": [
+        {
+          "id": "ironheart_sanctum",
+          "type": "structure",
+          "structure": "ironheart_sanctum",
+          "chance": 0.16
+        },
+        {
+          "id": "rootwarden_summons",
+          "type": "story",
+          "reward": {
+            "coins": 180,
+            "items": [
+              {
+                "item": "ironheart_sap",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "barkweave_puzzle",
+          "type": "puzzle",
+          "structure": "barkweave_puzzle",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "runic_wilds",
+    "name": "Runic Wilds",
+    "description": "Untamed plateaus pulsing with glyphlight and ancient energy.",
+    "travel": {
+      "baseMinutes": 11,
+      "neighbors": [
+        "runic_highlands",
+        "skysong_spires",
+        "shattered_moors",
+        "starward_valley"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "runeetched_fragment",
+          "min": 1,
+          "max": 3,
+          "chance": 0.44
+        }
+      ],
+      "mine": [
+        {
+          "item": "runic_core",
+          "min": 1,
+          "max": 1,
+          "chance": 0.2
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "glimmer_powder",
+          "min": 1,
+          "max": 1,
+          "chance": 0.18
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "runic_guardian",
+          "chance": 0.22
+        },
+        {
+          "enemy": "shattered_wight",
+          "chance": 0.14
+        }
+      ],
+      "events": [
+        {
+          "id": "wildrun_lattice",
+          "type": "structure",
+          "structure": "wildrun_lattice",
+          "chance": 0.16
+        },
+        {
+          "id": "glyphstorm",
+          "type": "story",
+          "reward": {
+            "xp": 230,
+            "items": [
+              {
+                "item": "runic_core",
+                "quantity": 1
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "runebond_trial",
+          "type": "puzzle",
+          "structure": "runebond_trial",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "mistspire_citadel",
+    "name": "Mistspire Citadel",
+    "description": "High towers above the clouds guarded by Skywatch sentinels.",
+    "travel": {
+      "baseMinutes": 12,
+      "neighbors": [
+        "mistspire_vale",
+        "skysong_spires",
+        "moonshadow_thicket",
+        "dawnwatch_cliffs"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "mistspire_dust",
+          "min": 1,
+          "max": 3,
+          "chance": 0.42
+        },
+        {
+          "item": "skysong_plume",
+          "min": 1,
+          "max": 1,
+          "chance": 0.2
+        }
+      ],
+      "mine": [
+        {
+          "item": "luminous_thread",
+          "min": 1,
+          "max": 2,
+          "chance": 0.22
+        },
+        {
+          "item": "galeheart_lattice",
+          "min": 1,
+          "max": 1,
+          "chance": 0.22
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "mistspire_dust",
+          "min": 1,
+          "max": 1,
+          "chance": 0.16
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "mistspire_sentinel",
+          "chance": 0.22
+        },
+        {
+          "enemy": "skysong_sentinel",
+          "chance": 0.14
+        }
+      ],
+      "events": [
+        {
+          "id": "mistspire_keep",
+          "type": "structure",
+          "structure": "mistspire_keep",
+          "chance": 0.16
+        },
+        {
+          "id": "cloudscribe",
+          "type": "story",
+          "reward": {
+            "xp": 250,
+            "items": [
+              {
+                "item": "skysong_plume",
+                "quantity": 1
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "skyward_enigma",
+          "type": "puzzle",
+          "structure": "skyward_enigma",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "moonshadow_thicket",
+    "name": "Moonshadow Thicket",
+    "description": "Dense understory alight with moonfire wisps and silent sprites.",
+    "travel": {
+      "baseMinutes": 9,
+      "neighbors": [
+        "moonlit_grove",
+        "ironroot_heart",
+        "wildvine_glade",
+        "mistspire_citadel",
+        "opaline_fields"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "moonshadow_cap",
+          "min": 1,
+          "max": 3,
+          "chance": 0.46
+        },
+        {
+          "item": "moonpetal_blossom",
+          "min": 1,
+          "max": 2,
+          "chance": 0.24
+        }
+      ],
+      "mine": [
+        {
+          "item": "luminous_thread",
+          "min": 1,
+          "max": 1,
+          "chance": 0.18
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "starlit_resin",
+          "min": 1,
+          "max": 1,
+          "chance": 0.14
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "moonshadow_wisp",
+          "chance": 0.22
+        },
+        {
+          "enemy": "gloam_stalker",
+          "chance": 0.14
+        }
+      ],
+      "events": [
+        {
+          "id": "moonshadow_shrine",
+          "type": "structure",
+          "structure": "moonshadow_shrine",
+          "chance": 0.16
+        },
+        {
+          "id": "wisp_conclave",
+          "type": "story",
+          "reward": {
+            "coins": 170,
+            "items": [
+              {
+                "item": "moonshadow_cap",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "shadowveil_puzzle",
+          "type": "puzzle",
+          "structure": "shadowveil_puzzle",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "sunglade_terrace",
+    "name": "Sunglade Terrace",
+    "description": "Terraced orchards where sunblossoms shimmer like gold.",
+    "travel": {
+      "baseMinutes": 8,
+      "neighbors": [
+        "emerald_grove",
+        "wildvine_glade",
+        "solar_orchard",
+        "sunspire_savanna",
+        "horizon_steppe"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "sunglade_amber",
+          "min": 1,
+          "max": 3,
+          "chance": 0.48
+        },
+        {
+          "item": "sunspire_leaf",
+          "min": 1,
+          "max": 2,
+          "chance": 0.24
+        }
+      ],
+      "mine": [
+        {
+          "item": "horizon_sunsteel",
+          "min": 1,
+          "max": 1,
+          "chance": 0.18
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "sunglade_amber",
+          "min": 1,
+          "max": 1,
+          "chance": 0.16
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "sunglade_keeper",
+          "chance": 0.2
+        },
+        {
+          "enemy": "sunspire_guard",
+          "chance": 0.16
+        }
+      ],
+      "events": [
+        {
+          "id": "sunglade_orchard",
+          "type": "structure",
+          "structure": "sunglade_orchard",
+          "chance": 0.16
+        },
+        {
+          "id": "sunblossom_festival",
+          "type": "story",
+          "reward": {
+            "coins": 160,
+            "items": [
+              {
+                "item": "sunglade_amber",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "sunpetal_alignment",
+          "type": "puzzle",
+          "structure": "sunpetal_alignment",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "wildvine_glade",
+    "name": "Wildvine Glade",
+    "description": "Verdant clearings tangled with fast-growing wildvines.",
+    "travel": {
+      "baseMinutes": 8,
+      "neighbors": [
+        "emerald_grove",
+        "ironroot_heart",
+        "sunglade_terrace",
+        "silkwood_vale",
+        "wildvine_springs"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "wildvine_bloom",
+          "min": 1,
+          "max": 3,
+          "chance": 0.48
+        },
+        {
+          "item": "wildvine_fiber",
+          "min": 1,
+          "max": 2,
+          "chance": 0.24
+        }
+      ],
+      "mine": [
+        {
+          "item": "ancient_bark",
+          "min": 1,
+          "max": 2,
+          "chance": 0.2
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "ironroot_heartwood",
+          "min": 1,
+          "max": 1,
+          "chance": 0.16
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "wildvine_beast",
+          "chance": 0.2
+        },
+        {
+          "enemy": "dreadroot_hag",
+          "chance": 0.14
+        }
+      ],
+      "events": [
+        {
+          "id": "wildvine_lattice",
+          "type": "structure",
+          "structure": "wildvine_lattice",
+          "chance": 0.16
+        },
+        {
+          "id": "vinewarden_story",
+          "type": "story",
+          "reward": {
+            "coins": 170,
+            "items": [
+              {
+                "item": "wildvine_fiber",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "canopy_path",
+          "type": "puzzle",
+          "structure": "canopy_path",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "silkwood_vale",
+    "name": "Silkwood Vale",
+    "description": "Soft-lit groves where silkspinners weave between towering birches.",
+    "travel": {
+      "baseMinutes": 8,
+      "neighbors": [
+        "wildvine_glade",
+        "moonshadow_thicket",
+        "silkwood_loft",
+        "opaline_fields"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "silkwood_thread",
+          "min": 1,
+          "max": 3,
+          "chance": 0.5
+        },
+        {
+          "item": "wildvine_fiber",
+          "min": 1,
+          "max": 2,
+          "chance": 0.22
+        }
+      ],
+      "mine": [
+        {
+          "item": "moonshadow_cap",
+          "min": 1,
+          "max": 1,
+          "chance": 0.18
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "luminous_thread",
+          "min": 1,
+          "max": 1,
+          "chance": 0.14
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "silkwood_silkspinner",
+          "chance": 0.22
+        },
+        {
+          "enemy": "wildvine_beast",
+          "chance": 0.14
+        }
+      ],
+      "events": [
+        {
+          "id": "silkwood_loft",
+          "type": "structure",
+          "structure": "silkwood_loft",
+          "chance": 0.16
+        },
+        {
+          "id": "silkspinner_parade",
+          "type": "story",
+          "reward": {
+            "coins": 160,
+            "items": [
+              {
+                "item": "silkwood_thread",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "silkensnare_puzzle",
+          "type": "puzzle",
+          "structure": "silkensnare_puzzle",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "everfrost_tundra",
+    "name": "Everfrost Tundra",
+    "description": "Endless ice fields dotted with aurora-pillars and mammoth herds.",
+    "travel": {
+      "baseMinutes": 12,
+      "neighbors": [
+        "aurora_steppe",
+        "starfall_fields",
+        "aurora_steppe",
+        "tempest_fjords",
+        "everfrost_tower"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "aurora_ember",
+          "min": 1,
+          "max": 3,
+          "chance": 0.44
+        },
+        {
+          "item": "everfrost_codex",
+          "min": 1,
+          "max": 1,
+          "chance": 0.18
+        },
+        {
+          "item": "tundra_berries",
+          "min": 1,
+          "max": 3,
+          "chance": 0.46
+        }
+      ],
+      "mine": [
+        {
+          "item": "glacial_quartz",
+          "min": 1,
+          "max": 2,
+          "chance": 0.24
+        },
+        {
+          "item": "aurora_crystal",
+          "min": 1,
+          "max": 1,
+          "chance": 0.22
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "tempest_plume",
+          "min": 1,
+          "max": 1,
+          "chance": 0.16
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "everfrost_mammoth",
+          "chance": 0.22
+        },
+        {
+          "enemy": "icebound_sentinel",
+          "chance": 0.16
+        }
+      ],
+      "events": [
+        {
+          "id": "everfrost_cache",
+          "type": "structure",
+          "structure": "everfrost_cache",
+          "chance": 0.16
+        },
+        {
+          "id": "aurora_herald",
+          "type": "story",
+          "reward": {
+            "xp": 250,
+            "items": [
+              {
+                "item": "aurora_ember",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "frostsigil_trial",
+          "type": "puzzle",
+          "structure": "frostsigil_trial",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "glimmering_wastes",
+    "name": "Glimmering Wastes",
+    "description": "Mirage-strewn flats where crystals erupt from shifting sands.",
+    "travel": {
+      "baseMinutes": 11,
+      "neighbors": [
+        "auric_dunes",
+        "sunforge_badlands",
+        "runic_wilds",
+        "shattered_moors"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "glimmer_powder",
+          "min": 1,
+          "max": 3,
+          "chance": 0.46
+        }
+      ],
+      "mine": [
+        {
+          "item": "shattered_shard",
+          "min": 1,
+          "max": 2,
+          "chance": 0.28
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "runeetched_fragment",
+          "min": 1,
+          "max": 1,
+          "chance": 0.16
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "glimmering_phantom",
+          "chance": 0.22
+        },
+        {
+          "enemy": "shattered_wight",
+          "chance": 0.16
+        }
+      ],
+      "events": [
+        {
+          "id": "glimmering_relay",
+          "type": "structure",
+          "structure": "glimmering_relay",
+          "chance": 0.16
+        },
+        {
+          "id": "mirage_march",
+          "type": "story",
+          "reward": {
+            "xp": 240,
+            "items": [
+              {
+                "item": "glimmer_powder",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "prismfall_puzzle",
+          "type": "puzzle",
+          "structure": "prismfall_puzzle",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "horizon_steppe",
+    "name": "Horizon Steppe",
+    "description": "Golden plains swept by warm winds and horizon-hunting riders.",
+    "travel": {
+      "baseMinutes": 9,
+      "neighbors": [
+        "sunglade_terrace",
+        "sunspire_savanna",
+        "auric_dunes",
+        "sunforge_badlands",
+        "dawnwatch_cliffs"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "sunspire_leaf",
+          "min": 1,
+          "max": 3,
+          "chance": 0.44
+        },
+        {
+          "item": "horizon_sunsteel",
+          "min": 1,
+          "max": 2,
+          "chance": 0.2
+        }
+      ],
+      "mine": [
+        {
+          "item": "auric_powder",
+          "min": 1,
+          "max": 2,
+          "chance": 0.22
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "sunforge_ingot",
+          "min": 1,
+          "max": 1,
+          "chance": 0.14
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "horizon_rider",
+          "chance": 0.22
+        },
+        {
+          "enemy": "auric_lion",
+          "chance": 0.14
+        }
+      ],
+      "events": [
+        {
+          "id": "horizon_obelisk",
+          "type": "structure",
+          "structure": "horizon_obelisk",
+          "chance": 0.16
+        },
+        {
+          "id": "sunsteel_caravan",
+          "type": "story",
+          "reward": {
+            "coins": 180,
+            "items": [
+              {
+                "item": "horizon_sunsteel",
+                "quantity": 1
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "suntrail_puzzle",
+          "type": "puzzle",
+          "structure": "suntrail_puzzle",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "skysong_spires",
+    "name": "Skysong Spires",
+    "description": "Floating towers humming with resonance and wardlight.",
+    "travel": {
+      "baseMinutes": 11,
+      "neighbors": [
+        "mistspire_vale",
+        "mistspire_citadel",
+        "runic_wilds",
+        "starward_valley"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "skysong_plume",
+          "min": 1,
+          "max": 2,
+          "chance": 0.36
+        }
+      ],
+      "mine": [
+        {
+          "item": "mistspire_dust",
+          "min": 1,
+          "max": 2,
+          "chance": 0.28
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "luminous_thread",
+          "min": 1,
+          "max": 1,
+          "chance": 0.16
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "skysong_sentinel",
+          "chance": 0.22
+        },
+        {
+          "enemy": "mistspire_sentinel",
+          "chance": 0.14
+        }
+      ],
+      "events": [
+        {
+          "id": "skysong_spire_core",
+          "type": "structure",
+          "structure": "skysong_spire_core",
+          "chance": 0.16
+        },
+        {
+          "id": "skycantor_story",
+          "type": "story",
+          "reward": {
+            "xp": 260,
+            "items": [
+              {
+                "item": "skysong_plume",
+                "quantity": 1
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "resonant_equation",
+          "type": "puzzle",
+          "structure": "resonant_equation",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "ashen_reach",
+    "name": "Ashen Reach",
+    "description": "Cinder-laden beachfront where lava meets churning sea.",
+    "travel": {
+      "baseMinutes": 10,
+      "neighbors": [
+        "ashen_desolation",
+        "obsidian_wastes",
+        "stormlash_ridge",
+        "tempest_harbor",
+        "stormbreak_isles"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "ashen_charcoal",
+          "min": 1,
+          "max": 3,
+          "chance": 0.42
+        }
+      ],
+      "mine": [
+        {
+          "item": "lava_core",
+          "min": 1,
+          "max": 1,
+          "chance": 0.2
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "stormbreak_shell",
+          "min": 1,
+          "max": 1,
+          "chance": 0.16
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "ashen_berserker",
+          "chance": 0.22
+        },
+        {
+          "enemy": "emberdrake",
+          "chance": 0.14
+        }
+      ],
+      "events": [
+        {
+          "id": "ashen_relicary",
+          "type": "structure",
+          "structure": "ashen_relicary",
+          "chance": 0.16
+        },
+        {
+          "id": "cinder_survey",
+          "type": "story",
+          "reward": {
+            "coins": 200,
+            "items": [
+              {
+                "item": "ashen_charcoal",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "volcanic_tide_puzzle",
+          "type": "puzzle",
+          "structure": "volcanic_tide_puzzle",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "emberglow_cavern",
+    "name": "Emberglow Cavern",
+    "description": "Subterranean chambers lit by emberglass veins and steam vents.",
+    "travel": {
+      "baseMinutes": 11,
+      "neighbors": [
+        "basalt_barrens",
+        "emberpeak_crater",
+        "sunforge_badlands",
+        "gloamroot_hollow",
+        "voidscar_abyss"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "emberglow_slag",
+          "min": 1,
+          "max": 3,
+          "chance": 0.44
+        }
+      ],
+      "mine": [
+        {
+          "item": "emberglass_shard",
+          "min": 1,
+          "max": 2,
+          "chance": 0.3
+        },
+        {
+          "item": "ember_crystal_cluster",
+          "min": 1,
+          "max": 2,
+          "chance": 0.22
+        },
+        {
+          "item": "ember_rift_shard",
+          "min": 1,
+          "max": 2,
+          "chance": 0.24
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "sunforge_ingot",
+          "min": 1,
+          "max": 1,
+          "chance": 0.14
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "emberglow_stalker",
+          "chance": 0.22
+        },
+        {
+          "enemy": "emberglass_spider",
+          "chance": 0.16
+        }
+      ],
+      "events": [
+        {
+          "id": "emberglow_vault",
+          "type": "structure",
+          "structure": "emberglow_vault",
+          "chance": 0.16
+        },
+        {
+          "id": "slagfall_story",
+          "type": "story",
+          "reward": {
+            "coins": 190,
+            "items": [
+              {
+                "item": "emberglow_slag",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "emberglow_puzzle",
+          "type": "puzzle",
+          "structure": "emberglow_puzzle",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "voidscar_abyss",
+    "name": "Voidscar Abyss",
+    "description": "A yawning rupture where void energy seeps into the world.",
+    "travel": {
+      "baseMinutes": 13,
+      "neighbors": [
+        "shadow_depths",
+        "emberglow_cavern",
+        "echoing_chasm",
+        "radiant_basin"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "voidscar_fragment",
+          "min": 1,
+          "max": 2,
+          "chance": 0.34
+        }
+      ],
+      "mine": [
+        {
+          "item": "echo_crystal",
+          "min": 1,
+          "max": 2,
+          "chance": 0.28
+        },
+        {
+          "item": "voidscale_plate",
+          "min": 1,
+          "max": 1,
+          "chance": 0.22
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "gloamshade_spore",
+          "min": 1,
+          "max": 1,
+          "chance": 0.16
+        },
+        {
+          "item": "shadowmoss_cap",
+          "min": 1,
+          "max": 2,
+          "chance": 0.26
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "voidscar_lich",
+          "chance": 0.22
+        },
+        {
+          "enemy": "echo_specter",
+          "chance": 0.16
+        }
+      ],
+      "events": [
+        {
+          "id": "voidscar_observatory",
+          "type": "structure",
+          "structure": "voidscar_observatory",
+          "chance": 0.16
+        },
+        {
+          "id": "abyssal_echo",
+          "type": "story",
+          "reward": {
+            "xp": 270,
+            "items": [
+              {
+                "item": "voidscar_fragment",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "voidsigil_puzzle",
+          "type": "puzzle",
+          "structure": "voidsigil_puzzle",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "radiant_basin",
+    "name": "Radiant Basin",
+    "description": "A luminous basin fed by crystal falls and stormlight streams.",
+    "travel": {
+      "baseMinutes": 11,
+      "neighbors": [
+        "voidscar_abyss",
+        "tempest_harbor",
+        "starward_valley",
+        "aurora_steppe"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "radiant_silt",
+          "min": 1,
+          "max": 2,
+          "chance": 0.36
+        }
+      ],
+      "mine": [
+        {
+          "item": "aurora_ember",
+          "min": 1,
+          "max": 2,
+          "chance": 0.26
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "tempest_plume",
+          "min": 1,
+          "max": 1,
+          "chance": 0.16
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "radiant_golem",
+          "chance": 0.22
+        },
+        {
+          "enemy": "stormguard_wyvern",
+          "chance": 0.16
+        }
+      ],
+      "events": [
+        {
+          "id": "radiant_cascade",
+          "type": "structure",
+          "structure": "radiant_cascade",
+          "chance": 0.16
+        },
+        {
+          "id": "glowfall_sentinel",
+          "type": "story",
+          "reward": {
+            "coins": 200,
+            "items": [
+              {
+                "item": "radiant_silt",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "prismflow_puzzle",
+          "type": "puzzle",
+          "structure": "prismflow_puzzle",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "dreadroot_swamp",
+    "name": "Dreadroot Swamp",
+    "description": "A fetid marsh where twisted roots whisper long-forgotten curses.",
+    "travel": {
+      "baseMinutes": 10,
+      "neighbors": [
+        "scarlet_bog",
+        "wildvine_glade",
+        "moonshadow_thicket",
+        "crimson_mire"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "dreadroot_bark",
+          "min": 1,
+          "max": 3,
+          "chance": 0.44
+        },
+        {
+          "item": "scarlet_myrtle",
+          "min": 1,
+          "max": 2,
+          "chance": 0.26
+        }
+      ],
+      "mine": [
+        {
+          "item": "gloamshade_spore",
+          "min": 1,
+          "max": 2,
+          "chance": 0.2
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "ironroot_heartwood",
+          "min": 1,
+          "max": 1,
+          "chance": 0.16
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "dreadroot_hag",
+          "chance": 0.22
+        },
+        {
+          "enemy": "scarlet_fiend",
+          "chance": 0.16
+        }
+      ],
+      "events": [
+        {
+          "id": "dreadroot_cauldron",
+          "type": "structure",
+          "structure": "dreadroot_cauldron",
+          "chance": 0.16
+        },
+        {
+          "id": "rotwarden",
+          "type": "story",
+          "reward": {
+            "coins": 170,
+            "items": [
+              {
+                "item": "dreadroot_bark",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "fetid_bog_puzzle",
+          "type": "puzzle",
+          "structure": "fetid_bog_puzzle",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "silverfin_depths",
+    "name": "Silverfin Depths",
+    "description": "Submerged caverns where bioluminescent fins weave shimmering trails.",
+    "travel": {
+      "baseMinutes": 9,
+      "neighbors": [
+        "bluehaven_lagoon",
+        "tidal_reach",
+        "coral_glow_shoal",
+        "tempest_harbor"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "silverfin_silk",
+          "min": 1,
+          "max": 3,
+          "chance": 0.48
+        }
+      ],
+      "mine": [
+        {
+          "item": "tideglass_pearl",
+          "min": 1,
+          "max": 1,
+          "chance": 0.24
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "azure_coralline",
+          "min": 1,
+          "max": 2,
+          "chance": 0.18
+        },
+        {
+          "item": "sunken_pearl",
+          "min": 1,
+          "max": 1,
+          "chance": 0.12
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "silverfin_serpent",
+          "chance": 0.24
+        },
+        {
+          "enemy": "deep_ocean_siren",
+          "chance": 0.16
+        }
+      ],
+      "events": [
+        {
+          "id": "silverfin_grotto",
+          "type": "structure",
+          "structure": "silverfin_grotto",
+          "chance": 0.16
+        },
+        {
+          "id": "silverfin_courier",
+          "type": "story",
+          "reward": {
+            "coins": 180,
+            "items": [
+              {
+                "item": "silverfin_silk",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "tideline_puzzle",
+          "type": "puzzle",
+          "structure": "tideline_puzzle",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "bluehaven_lagoon",
+    "name": "Bluehaven Lagoon",
+    "description": "Crystal-clear lagoon with tidal markets and coral vaults.",
+    "travel": {
+      "baseMinutes": 8,
+      "neighbors": [
+        "silverfin_depths",
+        "tempest_harbor",
+        "azure_cove",
+        "stormbreak_isles"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "bluehaven_pearl",
+          "min": 1,
+          "max": 2,
+          "chance": 0.32
+        }
+      ],
+      "mine": [
+        {
+          "item": "tideglass_pearl",
+          "min": 1,
+          "max": 2,
+          "chance": 0.24
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "azure_coralline",
+          "min": 1,
+          "max": 2,
+          "chance": 0.18
+        },
+        {
+          "item": "sunken_pearl",
+          "min": 1,
+          "max": 1,
+          "chance": 0.12
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "bluehaven_corsair",
+          "chance": 0.22
+        },
+        {
+          "enemy": "silverfin_serpent",
+          "chance": 0.16
+        }
+      ],
+      "events": [
+        {
+          "id": "bluehaven_vault",
+          "type": "structure",
+          "structure": "bluehaven_vault",
+          "chance": 0.16
+        },
+        {
+          "id": "lagoon_ledger",
+          "type": "story",
+          "reward": {
+            "coins": 210,
+            "items": [
+              {
+                "item": "bluehaven_pearl",
+                "quantity": 1
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "tidal_lock_puzzle",
+          "type": "puzzle",
+          "structure": "tidal_lock_puzzle",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "sunspire_savanna",
+    "name": "Sunspire Savanna",
+    "description": "Sun-baked savannas dotted with towering sunspire trees.",
+    "travel": {
+      "baseMinutes": 8,
+      "neighbors": [
+        "sunglade_terrace",
+        "horizon_steppe",
+        "auric_dunes",
+        "sunspire_basin"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "sunspire_leaf",
+          "min": 1,
+          "max": 3,
+          "chance": 0.46
+        },
+        {
+          "item": "auric_powder",
+          "min": 1,
+          "max": 2,
+          "chance": 0.24
+        }
+      ],
+      "mine": [
+        {
+          "item": "sunforge_ingot",
+          "min": 1,
+          "max": 2,
+          "chance": 0.2
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "sunspire_leaf",
+          "min": 1,
+          "max": 1,
+          "chance": 0.16
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "sunspire_guard",
+          "chance": 0.22
+        },
+        {
+          "enemy": "auric_lion",
+          "chance": 0.16
+        }
+      ],
+      "events": [
+        {
+          "id": "sunspire_bastion",
+          "type": "structure",
+          "structure": "sunspire_bastion",
+          "chance": 0.16
+        },
+        {
+          "id": "sunplume_parade",
+          "type": "story",
+          "reward": {
+            "coins": 180,
+            "items": [
+              {
+                "item": "sunspire_leaf",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "solar_orb_puzzle",
+          "type": "puzzle",
+          "structure": "solar_orb_puzzle",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "stormbreak_isles",
+    "name": "Stormbreak Isles",
+    "description": "Chain of isles defended by warded breakers and lightning harpoons.",
+    "travel": {
+      "baseMinutes": 9,
+      "neighbors": [
+        "tempest_harbor",
+        "bluehaven_lagoon",
+        "ashen_reach",
+        "stormbreak_beacon"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "stormbreak_shell",
+          "min": 1,
+          "max": 2,
+          "chance": 0.34
+        },
+        {
+          "item": "stormglass_fragment",
+          "min": 1,
+          "max": 1,
+          "chance": 0.2
+        }
+      ],
+      "mine": [
+        {
+          "item": "tempest_nav_chart",
+          "min": 1,
+          "max": 1,
+          "chance": 0.2
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "tempest_plume",
+          "min": 1,
+          "max": 1,
+          "chance": 0.18
+        },
+        {
+          "item": "sunken_pearl",
+          "min": 1,
+          "max": 1,
+          "chance": 0.12
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "stormbreak_raider",
+          "chance": 0.24
+        },
+        {
+          "enemy": "tempest_privateer",
+          "chance": 0.16
+        }
+      ],
+      "events": [
+        {
+          "id": "stormbreak_beacon",
+          "type": "structure",
+          "structure": "stormbreak_beacon",
+          "chance": 0.16
+        },
+        {
+          "id": "isle_privateer",
+          "type": "story",
+          "reward": {
+            "coins": 210,
+            "items": [
+              {
+                "item": "tempest_nav_chart",
+                "quantity": 1
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "tideward_puzzle",
+          "type": "puzzle",
+          "structure": "tideward_puzzle",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "crimson_mire",
+    "name": "Crimson Mire",
+    "description": "Blood-tinged bogs where fungal lanterns burn under scarlet fog.",
+    "travel": {
+      "baseMinutes": 9,
+      "neighbors": [
+        "scarlet_bog",
+        "dreadroot_swamp",
+        "wildvine_glade",
+        "crimson_grove"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "crimson_pitch",
+          "min": 1,
+          "max": 3,
+          "chance": 0.46
+        },
+        {
+          "item": "scarlet_myrtle",
+          "min": 1,
+          "max": 2,
+          "chance": 0.26
+        }
+      ],
+      "mine": [
+        {
+          "item": "dreadroot_bark",
+          "min": 1,
+          "max": 2,
+          "chance": 0.2
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "ironroot_heartwood",
+          "min": 1,
+          "max": 1,
+          "chance": 0.16
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "crimson_mireling",
+          "chance": 0.22
+        },
+        {
+          "enemy": "scarlet_fiend",
+          "chance": 0.16
+        }
+      ],
+      "events": [
+        {
+          "id": "crimson_altar",
+          "type": "structure",
+          "structure": "crimson_altar",
+          "chance": 0.16
+        },
+        {
+          "id": "bogflare_ritual",
+          "type": "puzzle",
+          "structure": "bogflare_ritual",
+          "chance": 0.12
+        },
+        {
+          "id": "bloodroot_puzzle",
+          "type": "puzzle",
+          "structure": "bloodroot_puzzle",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "stonebark_highlands",
+    "name": "Stonebark Highlands",
+    "description": "High ridges where mineral-rich bark is harvested by druids.",
+    "travel": {
+      "baseMinutes": 10,
+      "neighbors": [
+        "ironroot_heart",
+        "ironroot_range",
+        "runic_wilds",
+        "stonebark_keep",
+        "horizon_steppe"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "stonebark_chip",
+          "min": 1,
+          "max": 3,
+          "chance": 0.46
+        }
+      ],
+      "mine": [
+        {
+          "item": "iron_ingot",
+          "min": 1,
+          "max": 2,
+          "chance": 0.24
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "ironroot_heartwood",
+          "min": 1,
+          "max": 1,
+          "chance": 0.16
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "stonebark_sentinel",
+          "chance": 0.22
+        },
+        {
+          "enemy": "ironbark_colossus",
+          "chance": 0.16
+        }
+      ],
+      "events": [
+        {
+          "id": "stonebark_keep",
+          "type": "structure",
+          "structure": "stonebark_keep",
+          "chance": 0.16
+        },
+        {
+          "id": "highlandwarden",
+          "type": "story",
+          "reward": {
+            "coins": 190,
+            "items": [
+              {
+                "item": "stonebark_chip",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "rockring_puzzle",
+          "type": "puzzle",
+          "structure": "rockring_puzzle",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "auric_dunes",
+    "name": "Auric Dunes",
+    "description": "Sun-gilded dunes that hide auric veins beneath desert winds.",
+    "travel": {
+      "baseMinutes": 9,
+      "neighbors": [
+        "sunforge_badlands",
+        "horizon_steppe",
+        "sunspire_savanna",
+        "glimmering_wastes"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "auric_powder",
+          "min": 1,
+          "max": 3,
+          "chance": 0.46
+        }
+      ],
+      "mine": [
+        {
+          "item": "sunforge_ingot",
+          "min": 1,
+          "max": 2,
+          "chance": 0.26
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "sunspire_leaf",
+          "min": 1,
+          "max": 1,
+          "chance": 0.16
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "auric_lion",
+          "chance": 0.24
+        },
+        {
+          "enemy": "sunforge_golem",
+          "chance": 0.16
+        }
+      ],
+      "events": [
+        {
+          "id": "auric_temple",
+          "type": "structure",
+          "structure": "auric_temple",
+          "chance": 0.16
+        },
+        {
+          "id": "auric_caravan",
+          "type": "story",
+          "reward": {
+            "coins": 200,
+            "items": [
+              {
+                "item": "auric_powder",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "sunmirror_puzzle",
+          "type": "puzzle",
+          "structure": "sunmirror_puzzle",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "shattered_moors",
+    "name": "Shattered Moors",
+    "description": "Broken marshland crackling with unstable runic shards.",
+    "travel": {
+      "baseMinutes": 10,
+      "neighbors": [
+        "glimmering_wastes",
+        "runic_wilds",
+        "voidscar_abyss",
+        "shattered_gate"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "shattered_shard",
+          "min": 1,
+          "max": 3,
+          "chance": 0.46
+        }
+      ],
+      "mine": [
+        {
+          "item": "glimmer_powder",
+          "min": 1,
+          "max": 2,
+          "chance": 0.26
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "runeetched_fragment",
+          "min": 1,
+          "max": 1,
+          "chance": 0.16
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "shattered_wight",
+          "chance": 0.24
+        },
+        {
+          "enemy": "glimmering_phantom",
+          "chance": 0.16
+        }
+      ],
+      "events": [
+        {
+          "id": "shattered_gate",
+          "type": "structure",
+          "structure": "shattered_gate",
+          "chance": 0.16
+        },
+        {
+          "id": "moor_echoes",
+          "type": "story",
+          "reward": {
+            "xp": 250,
+            "items": [
+              {
+                "item": "shattered_shard",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "fragment_trial",
+          "type": "puzzle",
+          "structure": "fragment_trial",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "opaline_fields",
+    "name": "Opaline Fields",
+    "description": "Pastel meadows where opaline seeds float like lanterns.",
+    "travel": {
+      "baseMinutes": 9,
+      "neighbors": [
+        "moonshadow_thicket",
+        "silkwood_vale",
+        "wildvine_glade",
+        "dawnwatch_cliffs"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "opaline_seed",
+          "min": 1,
+          "max": 3,
+          "chance": 0.46
+        }
+      ],
+      "mine": [
+        {
+          "item": "luminous_thread",
+          "min": 1,
+          "max": 2,
+          "chance": 0.26
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "moonpetal_blossom",
+          "min": 1,
+          "max": 1,
+          "chance": 0.16
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "opaline_sprite",
+          "chance": 0.22
+        },
+        {
+          "enemy": "moonshadow_wisp",
+          "chance": 0.14
+        }
+      ],
+      "events": [
+        {
+          "id": "opaline_reservoir",
+          "type": "structure",
+          "structure": "opaline_reservoir",
+          "chance": 0.16
+        },
+        {
+          "id": "seedwhisperer",
+          "type": "story",
+          "reward": {
+            "coins": 170,
+            "items": [
+              {
+                "item": "opaline_seed",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "petalglass_puzzle",
+          "type": "puzzle",
+          "structure": "petalglass_puzzle",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "dawnwatch_cliffs",
+    "name": "Dawnwatch Cliffs",
+    "description": "Wind-carved cliffs where dawnwatch eagles patrol the skies.",
+    "travel": {
+      "baseMinutes": 10,
+      "neighbors": [
+        "mistspire_citadel",
+        "horizon_steppe",
+        "opaline_fields",
+        "starward_valley",
+        "skysong_spires"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "dawnwatch_feather",
+          "min": 1,
+          "max": 2,
+          "chance": 0.34
+        },
+        {
+          "item": "skysong_plume",
+          "min": 1,
+          "max": 1,
+          "chance": 0.2
+        }
+      ],
+      "mine": [
+        {
+          "item": "mistspire_dust",
+          "min": 1,
+          "max": 2,
+          "chance": 0.24
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "horizon_sunsteel",
+          "min": 1,
+          "max": 1,
+          "chance": 0.16
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "dawnwatch_eagle",
+          "chance": 0.24
+        },
+        {
+          "enemy": "stormguard_wyvern",
+          "chance": 0.16
+        }
+      ],
+      "events": [
+        {
+          "id": "dawnwatch_aerie",
+          "type": "structure",
+          "structure": "dawnwatch_aerie",
+          "chance": 0.16
+        },
+        {
+          "id": "aerie_marshal",
+          "type": "story",
+          "reward": {
+            "coins": 200,
+            "items": [
+              {
+                "item": "dawnwatch_feather",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "sunrise_alignment",
+          "type": "puzzle",
+          "structure": "sunrise_alignment",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "starward_valley",
+    "name": "Starward Valley",
+    "description": "A high valley where falling stars seed fields with radiant essence.",
+    "travel": {
+      "baseMinutes": 11,
+      "neighbors": [
+        "crystal_meadows",
+        "moonlit_grove",
+        "runic_highlands",
+        "aurora_steppe",
+        "aurora_steppe"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "starward_essence",
+          "min": 1,
+          "max": 2,
+          "chance": 0.34
+        },
+        {
+          "item": "aurora_ember",
+          "min": 1,
+          "max": 2,
+          "chance": 0.24
+        }
+      ],
+      "mine": [
+        {
+          "item": "starshard_ore",
+          "min": 1,
+          "max": 2,
+          "chance": 0.24
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "starlit_resin",
+          "min": 1,
+          "max": 1,
+          "chance": 0.12
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "borea_stormguard",
+          "chance": 0.22
+        },
+        {
+          "enemy": "stormguard_wyvern",
+          "chance": 0.12
+        }
+      ],
+      "events": [
+        {
+          "id": "starfall_altar",
+          "type": "structure",
+          "structure": "starfall_altar",
+          "chance": 0.16
+        },
+        {
+          "id": "meteor_fragment",
+          "type": "story",
+          "reward": {
+            "xp": 210,
+            "items": [
+              {
+                "item": "starshard_ore",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "aurora_alignment",
+          "type": "puzzle",
+          "structure": "aurora_alignment",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "skybreaker_bastion",
+    "name": "Skybreaker Bastion",
+    "description": "A floating fortress anchored by storm chains and lightning pylons.",
+    "travel": {
+      "baseMinutes": 12,
+      "neighbors": [
+        "mistspire_citadel",
+        "skysong_spires",
+        "stormlash_ridge",
+        "tempest_harbor"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "skybreaker_core",
+          "min": 1,
+          "max": 2,
+          "chance": 0.32
+        },
+        {
+          "item": "skysong_plume",
+          "min": 1,
+          "max": 1,
+          "chance": 0.2
+        },
+        {
+          "item": "stormglass_fragment",
+          "min": 1,
+          "max": 2,
+          "chance": 0.24
+        }
+      ],
+      "mine": [
+        {
+          "item": "stormcore_shard",
+          "min": 1,
+          "max": 2,
+          "chance": 0.26
+        },
+        {
+          "item": "skybreaker_alloy",
+          "min": 1,
+          "max": 2,
+          "chance": 0.26
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "thunderite_ore",
+          "min": 1,
+          "max": 1,
+          "chance": 0.16
+        },
+        {
+          "item": "skybreaker_spool",
+          "min": 1,
+          "max": 1,
+          "chance": 0.2
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "skybreaker_guardian",
+          "chance": 0.24
+        },
+        {
+          "enemy": "stormguard_wyvern",
+          "chance": 0.16
+        }
+      ],
+      "events": [
+        {
+          "id": "skybreaker_armory",
+          "type": "structure",
+          "structure": "skybreaker_armory",
+          "chance": 0.16
+        },
+        {
+          "id": "skybreaker_muster",
+          "type": "story",
+          "reward": {
+            "xp": 260,
+            "items": [
+              {
+                "item": "skybreaker_core",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "skyforge_resonance",
+          "type": "puzzle",
+          "structure": "skyforge_resonance",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "emberlost_foundry",
+    "name": "Emberlost Foundry",
+    "description": "Collapsed forges where ember spirits linger among slagworks.",
+    "travel": {
+      "baseMinutes": 11,
+      "neighbors": [
+        "sunforge_badlands",
+        "emberglow_cavern",
+        "obsidian_wastes",
+        "ashfall_canyon"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "ember_resin",
+          "min": 1,
+          "max": 3,
+          "chance": 0.42
+        }
+      ],
+      "mine": [
+        {
+          "item": "emberlost_ingot",
+          "min": 1,
+          "max": 2,
+          "chance": 0.3
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "emberglass_shard",
+          "min": 1,
+          "max": 2,
+          "chance": 0.18
+        },
+        {
+          "item": "obsidian_cog",
+          "min": 1,
+          "max": 1,
+          "chance": 0.24
+        },
+        {
+          "item": "ashen_pearl",
+          "min": 1,
+          "max": 1,
+          "chance": 0.18
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "emberlost_forgemaster",
+          "chance": 0.24
+        },
+        {
+          "enemy": "emberglow_stalker",
+          "chance": 0.16
+        }
+      ],
+      "events": [
+        {
+          "id": "emberlost_forge",
+          "type": "structure",
+          "structure": "emberlost_forge",
+          "chance": 0.16
+        },
+        {
+          "id": "emberlost_reforge",
+          "type": "story",
+          "reward": {
+            "coins": 210,
+            "items": [
+              {
+                "item": "emberlost_ingot",
+                "quantity": 1
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "slagriver_puzzle",
+          "type": "puzzle",
+          "structure": "slagriver_puzzle",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "gilded_courtyard",
+    "name": "Gilded Courtyard",
+    "description": "Sunlit terraces where goldleaf vines entwine ancient colonnades.",
+    "travel": {
+      "baseMinutes": 9,
+      "neighbors": [
+        "sunglade_terrace",
+        "sunshadow_steppe",
+        "opaline_fields",
+        "horizon_steppe"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "gilded_leaf",
+          "min": 1,
+          "max": 3,
+          "chance": 0.46
+        },
+        {
+          "item": "sunshadow_spice",
+          "min": 1,
+          "max": 2,
+          "chance": 0.24
+        },
+        {
+          "item": "gilded_filament",
+          "min": 1,
+          "max": 2,
+          "chance": 0.24
+        }
+      ],
+      "mine": [
+        {
+          "item": "horizon_sunsteel",
+          "min": 1,
+          "max": 1,
+          "chance": 0.2
+        },
+        {
+          "item": "whisperstone_chip",
+          "min": 1,
+          "max": 2,
+          "chance": 0.22
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "auric_powder",
+          "min": 1,
+          "max": 1,
+          "chance": 0.16
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "gilded_duelist",
+          "chance": 0.22
+        },
+        {
+          "enemy": "sunspire_guard",
+          "chance": 0.16
+        }
+      ],
+      "events": [
+        {
+          "id": "gilded_procession",
+          "type": "story",
+          "reward": {
+            "coins": 190,
+            "items": [
+              {
+                "item": "gilded_leaf",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "gilded_gallery",
+          "type": "structure",
+          "structure": "gilded_gallery",
+          "chance": 0.16
+        },
+        {
+          "id": "sunlace_puzzle",
+          "type": "puzzle",
+          "structure": "sunlace_puzzle",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "stormveil_ridge",
+    "name": "Stormveil Ridge",
+    "description": "Fog-shrouded ridges where stormveil feathers drift on the wind.",
+    "travel": {
+      "baseMinutes": 10,
+      "neighbors": [
+        "stormlash_ridge",
+        "sunshadow_steppe",
+        "tempest_fjords",
+        "skybreaker_bastion"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "stormveil_feather",
+          "min": 1,
+          "max": 2,
+          "chance": 0.34
+        },
+        {
+          "item": "stormveil_thread",
+          "min": 1,
+          "max": 2,
+          "chance": 0.28
+        }
+      ],
+      "mine": [
+        {
+          "item": "thunderite_ore",
+          "min": 1,
+          "max": 2,
+          "chance": 0.26
+        },
+        {
+          "item": "stormlash_ingot",
+          "min": 1,
+          "max": 1,
+          "chance": 0.22
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "stormlash_crest",
+          "min": 1,
+          "max": 1,
+          "chance": 0.18
+        },
+        {
+          "item": "tempest_leaf",
+          "min": 1,
+          "max": 2,
+          "chance": 0.26
+        },
+        {
+          "item": "thunder_amber",
+          "min": 1,
+          "max": 2,
+          "chance": 0.22
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "stormveil_tempest",
+          "chance": 0.22
+        },
+        {
+          "enemy": "stormguard_wyvern",
+          "chance": 0.16
+        }
+      ],
+      "events": [
+        {
+          "id": "stormveil_aerie",
+          "type": "structure",
+          "structure": "stormveil_aerie",
+          "chance": 0.16
+        },
+        {
+          "id": "stormveil_rally",
+          "type": "story",
+          "reward": {
+            "xp": 240,
+            "items": [
+              {
+                "item": "stormveil_feather",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "tempest_plume_trial",
+          "type": "puzzle",
+          "structure": "tempest_plume_trial",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "hollowroot_cavern",
+    "name": "Hollowroot Cavern",
+    "description": "Deep root networks hollowed into chambers of echoing sap-light.",
+    "travel": {
+      "baseMinutes": 10,
+      "neighbors": [
+        "gloamroot_hollow",
+        "dreadroot_swamp",
+        "voidscar_abyss",
+        "emberglow_cavern"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "hollowroot_resin",
+          "min": 1,
+          "max": 3,
+          "chance": 0.42
+        },
+        {
+          "item": "fen_root",
+          "min": 1,
+          "max": 2,
+          "chance": 0.26
+        }
+      ],
+      "mine": [
+        {
+          "item": "gloamshade_spore",
+          "min": 1,
+          "max": 2,
+          "chance": 0.3
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "echo_crystal",
+          "min": 1,
+          "max": 1,
+          "chance": 0.18
+        },
+        {
+          "item": "hollowroot_paste",
+          "min": 1,
+          "max": 1,
+          "chance": 0.22
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "hollowroot_brute",
+          "chance": 0.24
+        },
+        {
+          "enemy": "dreadroot_hag",
+          "chance": 0.16
+        }
+      ],
+      "events": [
+        {
+          "id": "hollowroot_vault",
+          "type": "structure",
+          "structure": "hollowroot_vault",
+          "chance": 0.16
+        },
+        {
+          "id": "hollowroot_echo",
+          "type": "story",
+          "reward": {
+            "coins": 200,
+            "items": [
+              {
+                "item": "hollowroot_resin",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "saplight_puzzle",
+          "type": "puzzle",
+          "structure": "saplight_puzzle",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "sablemarsh",
+    "name": "Sablemarsh",
+    "description": "Pitch-black peat bog where sablemoss lamps flicker over still water.",
+    "travel": {
+      "baseMinutes": 9,
+      "neighbors": [
+        "dreadroot_swamp",
+        "scarlet_bog",
+        "crimson_mire",
+        "sunshadow_steppe"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "sablemarsh_mud",
+          "min": 1,
+          "max": 3,
+          "chance": 0.44
+        }
+      ],
+      "mine": [
+        {
+          "item": "dreadroot_bark",
+          "min": 1,
+          "max": 2,
+          "chance": 0.28
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "scarlet_myrtle",
+          "min": 1,
+          "max": 1,
+          "chance": 0.18
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "sablemarsh_witch",
+          "chance": 0.24
+        },
+        {
+          "enemy": "crimson_mireling",
+          "chance": 0.16
+        }
+      ],
+      "events": [
+        {
+          "id": "sablemarsh_cleanup",
+          "type": "story",
+          "reward": {
+            "coins": 190,
+            "items": [
+              {
+                "item": "sablemarsh_mud",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "sablemarsh_shrine",
+          "type": "structure",
+          "structure": "sablemarsh_shrine",
+          "chance": 0.16
+        },
+        {
+          "id": "peatlight_puzzle",
+          "type": "puzzle",
+          "structure": "peatlight_puzzle",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "sunshadow_steppe",
+    "name": "Sunshadow Steppe",
+    "description": "Dappled plains caught between blazing sun and drifting nightshade.",
+    "travel": {
+      "baseMinutes": 9,
+      "neighbors": [
+        "horizon_steppe",
+        "stormveil_ridge",
+        "gilded_courtyard",
+        "sablemarsh",
+        "sunshadow_basin"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "sunshadow_spice",
+          "min": 1,
+          "max": 3,
+          "chance": 0.46
+        },
+        {
+          "item": "sunshadow_resin",
+          "min": 1,
+          "max": 2,
+          "chance": 0.24
+        }
+      ],
+      "mine": [
+        {
+          "item": "auric_powder",
+          "min": 1,
+          "max": 2,
+          "chance": 0.26
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "sunshadow_spice",
+          "min": 1,
+          "max": 1,
+          "chance": 0.16
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "sunshadow_nomad",
+          "chance": 0.24
+        },
+        {
+          "enemy": "horizon_rider",
+          "chance": 0.16
+        }
+      ],
+      "events": [
+        {
+          "id": "sunshadow_caravan",
+          "type": "story",
+          "reward": {
+            "coins": 190,
+            "items": [
+              {
+                "item": "sunshadow_spice",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "sunshadow_waygate",
+          "type": "structure",
+          "structure": "sunshadow_waygate",
+          "chance": 0.16
+        },
+        {
+          "id": "sunshadow_riddle",
+          "type": "puzzle",
+          "structure": "sunshadow_riddle",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "crystal_veil",
+    "name": "Crystal Veil",
+    "description": "A glacial veil where prismatic shards float in perpetual snowfall.",
+    "travel": {
+      "baseMinutes": 11,
+      "neighbors": [
+        "aurora_steppe",
+        "everfrost_tundra",
+        "radiant_basin",
+        "crystal_meadows"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "crystal_veil_shard",
+          "min": 1,
+          "max": 3,
+          "chance": 0.46
+        },
+        {
+          "item": "aurora_ember",
+          "min": 1,
+          "max": 2,
+          "chance": 0.24
+        }
+      ],
+      "mine": [
+        {
+          "item": "glacial_quartz",
+          "min": 1,
+          "max": 2,
+          "chance": 0.26
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "crystal_spire",
+          "min": 1,
+          "max": 1,
+          "chance": 0.18
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "crystal_veil_sentinel",
+          "chance": 0.24
+        },
+        {
+          "enemy": "icebound_sentinel",
+          "chance": 0.16
+        }
+      ],
+      "events": [
+        {
+          "id": "crystal_veil_spire",
+          "type": "structure",
+          "structure": "crystal_veil_spire",
+          "chance": 0.16
+        },
+        {
+          "id": "crystal_veil_resonance",
+          "type": "story",
+          "reward": {
+            "xp": 260,
+            "items": [
+              {
+                "item": "crystal_veil_shard",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "prismatic_slope",
+          "type": "puzzle",
+          "structure": "prismatic_slope",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "abyssal_gulf",
+    "name": "Abyssal Gulf",
+    "description": "A plunging sea trench where abyssal currents churn with voidlight.",
+    "travel": {
+      "baseMinutes": 13,
+      "neighbors": [
+        "voidscar_abyss",
+        "silverfin_depths",
+        "stormbreak_isles",
+        "radiant_basin"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "abyssal_gem",
+          "min": 1,
+          "max": 2,
+          "chance": 0.32
+        },
+        {
+          "item": "abyssal_fin",
+          "min": 1,
+          "max": 2,
+          "chance": 0.26
+        }
+      ],
+      "mine": [
+        {
+          "item": "voidscar_fragment",
+          "min": 1,
+          "max": 2,
+          "chance": 0.26
+        },
+        {
+          "item": "abyssal_core_fragment",
+          "min": 1,
+          "max": 1,
+          "chance": 0.22
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "silverfin_silk",
+          "min": 1,
+          "max": 1,
+          "chance": 0.18
+        },
+        {
+          "item": "abyssal_resin",
+          "min": 1,
+          "max": 2,
+          "chance": 0.28
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "abyssal_goliath",
+          "chance": 0.24
+        },
+        {
+          "enemy": "voidscar_lich",
+          "chance": 0.16
+        }
+      ],
+      "events": [
+        {
+          "id": "abyssal_gulf_surge",
+          "type": "story",
+          "reward": {
+            "xp": 280,
+            "items": [
+              {
+                "item": "abyssal_gem",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "abyssal_gulf_gate",
+          "type": "structure",
+          "structure": "abyssal_gulf_gate",
+          "chance": 0.16
+        },
+        {
+          "id": "abyssal_depths_puzzle",
+          "type": "puzzle",
+          "structure": "abyssal_depths_puzzle",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "luminous_archives",
+    "name": "Luminous Archives",
+    "description": "Floating libraries of crystal shelves orbiting a radiant core of lore.",
+    "travel": {
+      "baseMinutes": 12,
+      "neighbors": [
+        "skybreaker_bastion",
+        "mistspire_citadel",
+        "celestial_escarpment",
+        "runebound_hollows"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "luminous_script",
+          "min": 1,
+          "max": 2,
+          "chance": 0.38
+        },
+        {
+          "item": "prismvellum",
+          "min": 1,
+          "max": 1,
+          "chance": 0.22
+        },
+        {
+          "item": "celestial_thread",
+          "min": 1,
+          "max": 2,
+          "chance": 0.24
+        }
+      ],
+      "mine": [
+        {
+          "item": "radiant_spireglass",
+          "min": 1,
+          "max": 2,
+          "chance": 0.28
+        },
+        {
+          "item": "galeheart_lattice",
+          "min": 1,
+          "max": 1,
+          "chance": 0.18
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "archivist_focus",
+          "min": 1,
+          "max": 1,
+          "chance": 0.14
+        },
+        {
+          "item": "astro_ink",
+          "min": 1,
+          "max": 1,
+          "chance": 0.2
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "luminous_curator",
+          "chance": 0.24
+        },
+        {
+          "enemy": "archive_warder",
+          "chance": 0.18
+        }
+      ],
+      "events": [
+        {
+          "id": "luminous_codex_chamber",
+          "type": "structure",
+          "structure": "luminous_codex_chamber",
+          "chance": 0.16
+        },
+        {
+          "id": "archive_riddle",
+          "type": "puzzle",
+          "structure": "archive_riddle",
+          "chance": 0.12
+        },
+        {
+          "id": "arcanist_colloquy",
+          "type": "story",
+          "reward": {
+            "xp": 280,
+            "items": [
+              {
+                "item": "luminous_script",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.12
+        }
+      ]
+    }
+  },
+  {
+    "id": "ashen_rift",
+    "name": "Ashen Rift",
+    "description": "A volcanic chasm split by lava falls and obsidian bridges.",
+    "travel": {
+      "baseMinutes": 11,
+      "neighbors": [
+        "emberlost_foundry",
+        "voidscar_abyss",
+        "runebound_hollows",
+        "obsidian_wastes"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "rifted_cinder",
+          "min": 1,
+          "max": 3,
+          "chance": 0.42
+        },
+        {
+          "item": "ashen_fragment",
+          "min": 1,
+          "max": 2,
+          "chance": 0.22
+        }
+      ],
+      "mine": [
+        {
+          "item": "ashen_glass",
+          "min": 1,
+          "max": 2,
+          "chance": 0.3
+        },
+        {
+          "item": "ember_rift_core",
+          "min": 1,
+          "max": 1,
+          "chance": 0.24
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "molten_heart",
+          "min": 1,
+          "max": 1,
+          "chance": 0.15
+        },
+        {
+          "item": "slag_ember",
+          "min": 1,
+          "max": 2,
+          "chance": 0.28
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "ashen_riftwarden",
+          "chance": 0.24
+        },
+        {
+          "enemy": "slagstorm_hydra",
+          "chance": 0.12
+        }
+      ],
+      "events": [
+        {
+          "id": "ashen_rift_forge",
+          "type": "structure",
+          "structure": "ashen_rift_forge",
+          "chance": 0.16
+        },
+        {
+          "id": "cinderquake",
+          "type": "story",
+          "reward": {
+            "coins": 230,
+            "items": [
+              {
+                "item": "rifted_cinder",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "lavaflow_conflux",
+          "type": "puzzle",
+          "structure": "lavaflow_conflux",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "verdant_moors",
+    "name": "Verdant Moors",
+    "description": "Mist-laden wetlands stitched with luminous reeds and deep peat.",
+    "travel": {
+      "baseMinutes": 10,
+      "neighbors": [
+        "sablemarsh",
+        "gilded_courtyard",
+        "glimmerfen_delta",
+        "sunshadow_basin"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "verdant_spore",
+          "min": 1,
+          "max": 3,
+          "chance": 0.44
+        },
+        {
+          "item": "moorfiber_reed",
+          "min": 1,
+          "max": 2,
+          "chance": 0.28
+        },
+        {
+          "item": "verdant_spine",
+          "min": 1,
+          "max": 2,
+          "chance": 0.3
+        },
+        {
+          "item": "bog_amber",
+          "min": 1,
+          "max": 2,
+          "chance": 0.24
+        }
+      ],
+      "mine": [
+        {
+          "item": "peatstone_chunk",
+          "min": 1,
+          "max": 2,
+          "chance": 0.24
+        },
+        {
+          "item": "moor_silk",
+          "min": 1,
+          "max": 2,
+          "chance": 0.26
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "fenfire_globe",
+          "min": 1,
+          "max": 1,
+          "chance": 0.16
+        },
+        {
+          "item": "verdant_pollen",
+          "min": 1,
+          "max": 3,
+          "chance": 0.3
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "fenbound_shaman",
+          "chance": 0.22
+        },
+        {
+          "enemy": "verdant_devourer",
+          "chance": 0.16
+        }
+      ],
+      "events": [
+        {
+          "id": "verdant_waystone",
+          "type": "structure",
+          "structure": "verdant_waystone",
+          "chance": 0.16
+        },
+        {
+          "id": "fenfire_procession",
+          "type": "story",
+          "reward": {
+            "xp": 260,
+            "items": [
+              {
+                "item": "fenfire_globe",
+                "quantity": 1
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "moorweave_pattern",
+          "type": "puzzle",
+          "structure": "moorweave_pattern",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "glimmerfen_delta",
+    "name": "Glimmerfen Delta",
+    "description": "Delta channels glowing with alchemical blooms and tide-moss barges.",
+    "travel": {
+      "baseMinutes": 9,
+      "neighbors": [
+        "verdant_moors",
+        "silverfin_depths",
+        "radiant_basin",
+        "sunshadow_steppe"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "glimmerfen_bloom",
+          "min": 1,
+          "max": 3,
+          "chance": 0.44
+        },
+        {
+          "item": "delta_phosphor",
+          "min": 1,
+          "max": 2,
+          "chance": 0.28
+        }
+      ],
+      "mine": [
+        {
+          "item": "delta_myr",
+          "min": 1,
+          "max": 2,
+          "chance": 0.26
+        },
+        {
+          "item": "tidal_quartz",
+          "min": 1,
+          "max": 2,
+          "chance": 0.24
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "tidelight_resin",
+          "min": 1,
+          "max": 1,
+          "chance": 0.16
+        },
+        {
+          "item": "delta_shell",
+          "min": 1,
+          "max": 2,
+          "chance": 0.26
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "glimmerfen_myrmidon",
+          "chance": 0.22
+        },
+        {
+          "enemy": "riverborn_enchanter",
+          "chance": 0.16
+        }
+      ],
+      "events": [
+        {
+          "id": "delta_barge_cache",
+          "type": "structure",
+          "structure": "delta_barge_cache",
+          "chance": 0.16
+        },
+        {
+          "id": "tidelight_symposium",
+          "type": "story",
+          "reward": {
+            "coins": 210,
+            "items": [
+              {
+                "item": "tidelight_resin",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "glimmerfen_current_puzzle",
+          "type": "puzzle",
+          "structure": "glimmerfen_current_puzzle",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "celestial_escarpment",
+    "name": "Celestial Escarpment",
+    "description": "Clifftop terraces crowned with astrolabes and starlit observatories.",
+    "travel": {
+      "baseMinutes": 13,
+      "neighbors": [
+        "luminous_archives",
+        "skybreaker_bastion",
+        "aurora_steppe",
+        "crystal_veil"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "starseer_chart",
+          "min": 1,
+          "max": 2,
+          "chance": 0.34
+        },
+        {
+          "item": "celestial_leaf",
+          "min": 1,
+          "max": 2,
+          "chance": 0.26
+        }
+      ],
+      "mine": [
+        {
+          "item": "celestial_ore",
+          "min": 1,
+          "max": 2,
+          "chance": 0.28
+        },
+        {
+          "item": "celestial_thread",
+          "min": 1,
+          "max": 2,
+          "chance": 0.24
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "cosmic_lens",
+          "min": 1,
+          "max": 1,
+          "chance": 0.14
+        },
+        {
+          "item": "astro_ink",
+          "min": 1,
+          "max": 1,
+          "chance": 0.22
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "celestial_chanter",
+          "chance": 0.22
+        },
+        {
+          "enemy": "starlit_seraph",
+          "chance": 0.14
+        }
+      ],
+      "events": [
+        {
+          "id": "celestial_armillary",
+          "type": "structure",
+          "structure": "celestial_armillary",
+          "chance": 0.16
+        },
+        {
+          "id": "escarpment_alignment",
+          "type": "story",
+          "reward": {
+            "xp": 300,
+            "items": [
+              {
+                "item": "starseer_chart",
+                "quantity": 1
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "astrolabe_sequence",
+          "type": "puzzle",
+          "structure": "astrolabe_sequence",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "runebound_hollows",
+    "name": "Runebound Hollows",
+    "description": "Sunken caverns etched with runic pillars and echoing wards.",
+    "travel": {
+      "baseMinutes": 12,
+      "neighbors": [
+        "luminous_archives",
+        "ashen_rift",
+        "hollowroot_cavern",
+        "voidscar_abyss"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "runebloom_petals",
+          "min": 1,
+          "max": 2,
+          "chance": 0.36
+        },
+        {
+          "item": "runic_ember",
+          "min": 1,
+          "max": 2,
+          "chance": 0.26
+        }
+      ],
+      "mine": [
+        {
+          "item": "wardstone_fragment",
+          "min": 1,
+          "max": 2,
+          "chance": 0.3
+        },
+        {
+          "item": "glyph_powder",
+          "min": 1,
+          "max": 2,
+          "chance": 0.24
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "echoing_focus",
+          "min": 1,
+          "max": 1,
+          "chance": 0.14
+        },
+        {
+          "item": "runebound_dust",
+          "min": 1,
+          "max": 2,
+          "chance": 0.23
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "runebound_guardian",
+          "chance": 0.24
+        },
+        {
+          "enemy": "hollowed_scribe",
+          "chance": 0.16
+        }
+      ],
+      "events": [
+        {
+          "id": "runebound_cache",
+          "type": "structure",
+          "structure": "runebound_cache",
+          "chance": 0.16
+        },
+        {
+          "id": "wardpulse_echo",
+          "type": "story",
+          "reward": {
+            "coins": 240,
+            "items": [
+              {
+                "item": "wardstone_fragment",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.12
+        },
+        {
+          "id": "glyph_sequence_puzzle",
+          "type": "puzzle",
+          "structure": "glyph_sequence_puzzle",
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "howling_peaks",
+    "name": "Howling Peaks",
+    "description": "Splintered mountain ridges lashed by endless tempests and skyship patrols.",
+    "travel": {
+      "baseMinutes": 11,
+      "neighbors": [
+        "gale_cliffs",
+        "frostblossom_glacier",
+        "stormguard_keep",
+        "thunder_peaks",
+        "stormveil_ridge"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "skyrazor_plume",
+          "min": 1,
+          "max": 2,
+          "chance": 0.38
+        },
+        {
+          "item": "aurora_fragment",
+          "min": 1,
+          "max": 2,
+          "chance": 0.24
+        }
+      ],
+      "mine": [
+        {
+          "item": "stormvein_ore",
+          "min": 1,
+          "max": 2,
+          "chance": 0.45
+        },
+        {
+          "item": "tempest_core",
+          "min": 1,
+          "max": 1,
+          "chance": 0.18
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "stormguard_plate",
+          "min": 1,
+          "max": 1,
+          "chance": 0.08
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "skyrazor_gryphon",
+          "chance": 0.3
+        },
+        {
+          "enemy": "tempest_herald",
+          "chance": 0.22
+        },
+        {
+          "enemy": "stormveil_tempest",
+          "chance": 0.16
+        }
+      ],
+      "events": [
+        {
+          "id": "skyforge_aerie",
+          "type": "structure",
+          "structure": "skyforge_aerie",
+          "chance": 0.2
+        },
+        {
+          "id": "tempest_observatory",
+          "type": "puzzle",
+          "structure": "tempest_observatory",
+          "chance": 0.16
+        },
+        {
+          "id": "storm_chorus_gathering",
+          "type": "story",
+          "reward": {
+            "xp": 210,
+            "items": [
+              {
+                "item": "skyrazor_plume",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.14
+        }
+      ]
+    }
+  },
+  {
+    "id": "ember_depths",
+    "name": "Ember Depths",
+    "description": "Smoldering caverns carved by magma rivers and guarded by ancient titans.",
+    "travel": {
+      "baseMinutes": 12,
+      "neighbors": [
+        "emberglow_cavern",
+        "emberpeak_crater",
+        "emberlost_foundry",
+        "obsidian_wastes",
+        "shadow_depths"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "cinder_resin",
+          "min": 1,
+          "max": 3,
+          "chance": 0.5
+        }
+      ],
+      "mine": [
+        {
+          "item": "magma_pearl",
+          "min": 1,
+          "max": 2,
+          "chance": 0.42
+        },
+        {
+          "item": "obsidian_heart",
+          "min": 1,
+          "max": 1,
+          "chance": 0.22
+        },
+        {
+          "item": "obsidian_fragment",
+          "min": 1,
+          "max": 2,
+          "chance": 0.28
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "cinder_resin",
+          "min": 1,
+          "max": 2,
+          "chance": 0.22
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "magma_basilisk",
+          "chance": 0.28
+        },
+        {
+          "enemy": "emberdrake",
+          "chance": 0.22
+        },
+        {
+          "enemy": "ashen_titan",
+          "chance": 0.12
+        }
+      ],
+      "events": [
+        {
+          "id": "ember_heart_crucible",
+          "type": "rare_unique",
+          "structure": "ember_heart_crucible",
+          "chance": 0.18
+        },
+        {
+          "id": "magma_listening_post",
+          "type": "structure",
+          "structure": "magma_listening_post",
+          "chance": 0.16
+        },
+        {
+          "id": "magma_surge_ritual",
+          "type": "story",
+          "reward": {
+            "xp": 240,
+            "items": [
+              {
+                "item": "magma_pearl",
+                "quantity": 1
+              },
+              {
+                "item": "cinder_resin",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.14
+        }
+      ]
+    }
+  },
+  {
+    "id": "gloomwild_thicket",
+    "name": "Gloomwild Thicket",
+    "description": "Twilight-drenched wilds where fey shadows and glowing flora intermingle.",
+    "travel": {
+      "baseMinutes": 9,
+      "neighbors": [
+        "emerald_grove",
+        "emberfen_bog",
+        "veilwood_marsh",
+        "gloamroot_hollow",
+        "moonlit_grove"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "nightpetal_blossom",
+          "min": 1,
+          "max": 2,
+          "chance": 0.42
+        },
+        {
+          "item": "gloomdew_extract",
+          "min": 1,
+          "max": 2,
+          "chance": 0.32
+        }
+      ],
+      "harvesting": [
+        {
+          "item": "veilhorn_antler",
+          "min": 1,
+          "max": 1,
+          "chance": 0.18
+        }
+      ],
+      "special": [
+        {
+          "item": "focus_elixir",
+          "min": 1,
+          "max": 1,
+          "chance": 0.14
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "gloomshade_prowler",
+          "chance": 0.26
+        },
+        {
+          "enemy": "veilhorn_stag",
+          "chance": 0.18
+        },
+        {
+          "enemy": "moonshadow_wisp",
+          "chance": 0.16
+        }
+      ],
+      "events": [
+        {
+          "id": "twilight_veil_grove",
+          "type": "puzzle",
+          "structure": "twilight_veil_grove",
+          "chance": 0.18
+        },
+        {
+          "id": "gloomwild_waystone",
+          "type": "structure",
+          "structure": "gloomwild_waystone",
+          "chance": 0.16
+        },
+        {
+          "id": "willow_wisp_procession",
+          "type": "story",
+          "reward": {
+            "xp": 210,
+            "items": [
+              {
+                "item": "gloomdew_extract",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.14
+        }
+      ]
+    }
+  }
+]

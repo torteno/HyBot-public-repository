@@ -1,0 +1,119 @@
+[
+  {
+    "id": "emerald_grove",
+    "name": "Emerald Grove",
+    "climate": "temperate",
+    "factions": ["kweebec"],
+    "description": "Lush forests where the Kweebec villages thrive among the treetops.",
+    "threats": ["trork incursions", "shadow spores"],
+    "notableLocations": ["Heartwood Canopy", "Sapling Council"]
+  },
+  {
+    "id": "borea",
+    "name": "Borea",
+    "climate": "tundra",
+    "factions": ["human"],
+    "description": "Frozen strongholds and outposts pushing back against the wilderness.",
+    "threats": ["frostclaw packs", "void scouts"],
+    "notableLocations": ["Stormguard Keep", "Icebreaker Gate"]
+  },
+  {
+    "id": "howling_sands",
+    "name": "Howling Sands",
+    "climate": "desert",
+    "factions": ["outlander", "nomad"],
+    "description": "Endless dunes battered by ceaseless winds and lurking predators.",
+    "threats": ["sand raiders", "dune colossi"],
+    "notableLocations": ["Nomad Caravan Route", "Dune Sepulcher"]
+  },
+  {
+    "id": "gale_cliffs",
+    "name": "Gale Cliffs",
+    "climate": "windy",
+    "factions": ["skysong", "outlander"],
+    "description": "Sheer cliffs where adventurers harness wind magic and glider craft.",
+    "threats": ["gale rocs", "storm aviators"],
+    "notableLocations": ["Gale Spire", "Aurora Watch"]
+  },
+  {
+    "id": "shadow_realm",
+    "name": "Shadow Realm",
+    "climate": "void",
+    "factions": ["varyn"],
+    "description": "Corrupted lands blanketed in darkness and void energies.",
+    "threats": ["void titans", "shadowreavers"],
+    "notableLocations": ["Voidheart Citadel", "Shadow Depths"]
+  },
+  {
+    "id": "volcanic_expanse",
+    "name": "Volcanic Expanse",
+    "climate": "volcanic",
+    "factions": ["ancient", "beast"],
+    "description": "Molten caverns and magma flows sheltering ancient guardians.",
+    "threats": ["emberdrakes", "ash elementals"],
+    "notableLocations": ["Emberforge Crater", "Obsidian Pit"]
+  },
+  {
+    "id": "tidecaller_depths",
+    "name": "Tidecaller Depths",
+    "climate": "oceanic",
+    "factions": ["ocean"],
+    "description": "Sunken sanctums filled with coral cathedrals and resonating hymns.",
+    "threats": ["siren matriarchs", "abyssal myrmidons"],
+    "notableLocations": ["Sunken Cathedral", "Tidecaller Ruins"]
+  },
+  {
+    "id": "scarlet_forest",
+    "name": "Scarlet Forest",
+    "climate": "taiga",
+    "factions": ["trork"],
+    "description": "Dense crimson woods patrolled by relentless Trork warbands.",
+    "threats": ["trork siege breakers", "feral scarabs"],
+    "notableLocations": ["Trork Encampment", "Caravan Ambush Hollow"]
+  },
+  {
+    "id": "wyrmroot_hollow",
+    "name": "Wyrmroot Hollow",
+    "climate": "humid",
+    "factions": ["beast", "kweebec"],
+    "description": "Poison-drenched caverns where vinebound titans slumber.",
+    "threats": ["gloomfang serpents", "vinebound titans"],
+    "notableLocations": ["Wyrmroot Hollow", "Sporefall Grotto"]
+  },
+  {
+    "id": "prismatic_refuge",
+    "name": "Prismatic Refuge",
+    "climate": "arctic",
+    "factions": ["skysong", "ancient"],
+    "description": "Crystalline ridges suffused with refracted aurora light.",
+    "threats": ["crystal constructs", "aurora avatars"],
+    "notableLocations": ["Crystal Sanctuary", "Luminite Temple"]
+  },
+  {
+    "id": "howling_peaks",
+    "name": "Howling Peaks",
+    "climate": "alpine",
+    "factions": ["stormguard", "skysong"],
+    "description": "Shattered mountain ridges where permanent tempests forge aerial citadels.",
+    "threats": ["tempest heralds", "skyrazor flights"],
+    "notableLocations": ["Skyforge Aerie", "Tempest Needle"]
+  },
+  {
+    "id": "ember_depths",
+    "name": "Ember Depths",
+    "climate": "subterranean",
+    "factions": ["ancient", "beast"],
+    "description": "Smoldering caverns threaded with magma rivers and sleeping titans.",
+    "threats": ["slag hydras", "ashen titans"],
+    "notableLocations": ["Molten Maw", "Ashen Crucible"]
+  },
+  {
+    "id": "gloomwild_thicket",
+    "name": "Gloomwild Thicket",
+    "climate": "twilight",
+    "factions": ["fey", "swamp"],
+    "description": "Luminous underbrush and creeping fog hide fey courts and lurking predators.",
+    "threats": ["gloomshade prowlers", "veilhorn stampedes"],
+    "notableLocations": ["Twilight Veil", "Nightpetal Glade"]
+  }
+]

@@ -1,0 +1,1567 @@
+[
+  {
+    "id": "feral_trork",
+    "name": "Feral Trork",
+    "emoji": "🐗",
+    "hp": 30,
+    "damage": 5,
+    "xp": 20,
+    "coins": 10,
+    "faction": "trork",
+    "biome": "forest",
+    "rarity": "common",
+    "tags": [
+      "melee",
+      "aggressive"
+    ]
+  },
+  {
+    "id": "shadow_crawler",
+    "name": "Shadow Crawler",
+    "emoji": "🕷️",
+    "hp": 50,
+    "damage": 8,
+    "xp": 35,
+    "coins": 20,
+    "faction": "varyn",
+    "biome": "shadow",
+    "rarity": "common",
+    "tags": [
+      "poison",
+      "lurker"
+    ]
+  },
+  {
+    "id": "void_knight",
+    "name": "Void Knight",
+    "emoji": "⚔️",
+    "hp": 80,
+    "damage": 12,
+    "xp": 60,
+    "coins": 40,
+    "faction": "varyn",
+    "biome": "shadow",
+    "rarity": "uncommon",
+    "tags": [
+      "elite",
+      "melee"
+    ]
+  },
+  {
+    "id": "ancient_golem",
+    "name": "Ancient Golem",
+    "emoji": "🗿",
+    "hp": 120,
+    "damage": 15,
+    "xp": 100,
+    "coins": 75,
+    "faction": "neutral",
+    "biome": "ruins",
+    "rarity": "rare",
+    "tags": [
+      "guardian",
+      "heavy"
+    ]
+  },
+  {
+    "id": "varyn_warlord",
+    "name": "Varyn Warlord",
+    "emoji": "👹",
+    "hp": 200,
+    "damage": 25,
+    "xp": 200,
+    "coins": 150,
+    "faction": "varyn",
+    "biome": "shadow",
+    "rarity": "boss",
+    "tags": [
+      "boss",
+      "elite"
+    ]
+  },
+  {
+    "id": "kweebec_guardian",
+    "name": "Kweebec Guardian",
+    "emoji": "🌳",
+    "hp": 65,
+    "damage": 9,
+    "xp": 45,
+    "coins": 30,
+    "faction": "kweebec",
+    "biome": "forest",
+    "rarity": "uncommon",
+    "tags": [
+      "ally",
+      "ranged"
+    ]
+  },
+  {
+    "id": "outlander_raider",
+    "name": "Outlander Raider",
+    "emoji": "🏹",
+    "hp": 70,
+    "damage": 11,
+    "xp": 55,
+    "coins": 45,
+    "faction": "outlander",
+    "biome": "desert",
+    "rarity": "uncommon",
+    "tags": [
+      "ranged",
+      "agile"
+    ]
+  },
+  {
+    "id": "howling_sands_nomad",
+    "name": "Howling Sands Nomad",
+    "emoji": "🏜️",
+    "hp": 55,
+    "damage": 10,
+    "xp": 48,
+    "coins": 42,
+    "faction": "nomad",
+    "biome": "desert",
+    "rarity": "common",
+    "tags": [
+      "support",
+      "sand"
+    ]
+  },
+  {
+    "id": "borea_stormguard",
+    "name": "Borea Stormguard",
+    "emoji": "❄️",
+    "hp": 95,
+    "damage": 14,
+    "xp": 88,
+    "coins": 70,
+    "faction": "human",
+    "biome": "tundra",
+    "rarity": "rare",
+    "tags": [
+      "elite",
+      "frost"
+    ]
+  },
+  {
+    "id": "sand_scrapper",
+    "name": "Sand Scrapper",
+    "emoji": "🦂",
+    "hp": 60,
+    "damage": 9,
+    "xp": 40,
+    "coins": 28,
+    "faction": "beast",
+    "biome": "desert",
+    "rarity": "common",
+    "tags": [
+      "poison",
+      "beast"
+    ]
+  },
+  {
+    "id": "crystal_construct",
+    "name": "Crystal Construct",
+    "emoji": "🔷",
+    "hp": 130,
+    "damage": 17,
+    "xp": 120,
+    "coins": 90,
+    "faction": "ancient",
+    "biome": "crystal",
+    "rarity": "rare",
+    "tags": [
+      "guardian",
+      "magic"
+    ]
+  },
+  {
+    "id": "voidcaller",
+    "name": "Voidcaller",
+    "emoji": "🕳️",
+    "hp": 110,
+    "damage": 19,
+    "xp": 140,
+    "coins": 105,
+    "faction": "varyn",
+    "biome": "shadow",
+    "rarity": "epic",
+    "tags": [
+      "caster",
+      "summoner"
+    ]
+  },
+  {
+    "id": "trork_beastmaster",
+    "name": "Trork Beastmaster",
+    "emoji": "🐾",
+    "hp": 150,
+    "damage": 21,
+    "xp": 160,
+    "coins": 120,
+    "faction": "trork",
+    "biome": "forest",
+    "rarity": "elite",
+    "tags": [
+      "leader",
+      "beast"
+    ]
+  },
+  {
+    "id": "skysong_mage",
+    "name": "Skysong Mage",
+    "emoji": "🌀",
+    "hp": 85,
+    "damage": 18,
+    "xp": 130,
+    "coins": 95,
+    "faction": "skysong",
+    "biome": "mountain",
+    "rarity": "rare",
+    "tags": [
+      "caster",
+      "support"
+    ]
+  },
+  {
+    "id": "deep_ocean_siren",
+    "name": "Deep Ocean Siren",
+    "emoji": "🧜‍♀️",
+    "hp": 90,
+    "damage": 16,
+    "xp": 125,
+    "coins": 85,
+    "faction": "ocean",
+    "biome": "ocean",
+    "rarity": "rare",
+    "tags": [
+      "debuff",
+      "song"
+    ]
+  },
+  {
+    "id": "emberdrake",
+    "name": "Emberdrake",
+    "emoji": "🐉",
+    "hp": 160,
+    "damage": 22,
+    "xp": 180,
+    "coins": 120,
+    "faction": "beast",
+    "biome": "volcanic",
+    "rarity": "elite",
+    "tags": [
+      "dragon",
+      "fire"
+    ]
+  },
+  {
+    "id": "stormguard_wyvern",
+    "name": "Stormguard Wyvern",
+    "emoji": "🦅",
+    "hp": 140,
+    "damage": 20,
+    "xp": 150,
+    "coins": 110,
+    "faction": "stormguard",
+    "biome": "mountain",
+    "rarity": "rare",
+    "tags": [
+      "flying",
+      "storm"
+    ]
+  },
+  {
+    "id": "thunder_wraith",
+    "name": "Thunder Wraith",
+    "emoji": "⚡",
+    "hp": 110,
+    "damage": 24,
+    "xp": 160,
+    "coins": 105,
+    "faction": "storm",
+    "biome": "mountain",
+    "rarity": "rare",
+    "tags": [
+      "spectral",
+      "storm"
+    ]
+  },
+  {
+    "id": "gloam_stalker",
+    "name": "Gloam Stalker",
+    "emoji": "👣",
+    "hp": 95,
+    "damage": 16,
+    "xp": 120,
+    "coins": 88,
+    "faction": "varyn",
+    "biome": "marsh",
+    "rarity": "uncommon",
+    "tags": [
+      "stealth",
+      "ambusher"
+    ]
+  },
+  {
+    "id": "runic_guardian",
+    "name": "Runic Guardian",
+    "emoji": "🛡️",
+    "hp": 170,
+    "damage": 23,
+    "xp": 190,
+    "coins": 140,
+    "faction": "ancient",
+    "biome": "highlands",
+    "rarity": "elite",
+    "tags": [
+      "construct",
+      "magic"
+    ]
+  },
+  {
+    "id": "ironbark_colossus",
+    "name": "Ironbark Colossus",
+    "emoji": "🌲",
+    "hp": 200,
+    "damage": 24,
+    "xp": 210,
+    "coins": 150,
+    "faction": "forest",
+    "biome": "mountain",
+    "rarity": "boss",
+    "tags": [
+      "guardian",
+      "nature"
+    ]
+  },
+  {
+    "id": "echo_specter",
+    "name": "Echo Specter",
+    "emoji": "👻",
+    "hp": 105,
+    "damage": 18,
+    "xp": 140,
+    "coins": 92,
+    "faction": "varyn",
+    "biome": "cavern",
+    "rarity": "rare",
+    "tags": [
+      "spectral",
+      "resonance"
+    ]
+  },
+  {
+    "id": "scarlet_fiend",
+    "name": "Scarlet Fiend",
+    "emoji": "🦂",
+    "hp": 120,
+    "damage": 20,
+    "xp": 150,
+    "coins": 98,
+    "faction": "bog",
+    "biome": "marsh",
+    "rarity": "rare",
+    "tags": [
+      "poison",
+      "agile"
+    ]
+  },
+  {
+    "id": "ashbound_colossus",
+    "name": "Ashbound Colossus",
+    "emoji": "🪨",
+    "hp": 220,
+    "damage": 28,
+    "xp": 240,
+    "coins": 160,
+    "faction": "volcanic",
+    "biome": "wasteland",
+    "rarity": "boss",
+    "tags": [
+      "giant",
+      "fire"
+    ]
+  },
+  {
+    "id": "coral_guardian",
+    "name": "Coral Guardian",
+    "emoji": "🐙",
+    "hp": 130,
+    "damage": 19,
+    "xp": 160,
+    "coins": 108,
+    "faction": "ocean",
+    "biome": "reef",
+    "rarity": "elite",
+    "tags": [
+      "aquatic",
+      "defender"
+    ]
+  },
+  {
+    "id": "lavaborn_colossus",
+    "name": "Lavaborn Colossus",
+    "emoji": "🔥",
+    "hp": 190,
+    "damage": 26,
+    "xp": 220,
+    "coins": 150,
+    "faction": "volcanic",
+    "biome": "badlands",
+    "rarity": "elite",
+    "tags": [
+      "giant",
+      "fire"
+    ]
+  },
+  {
+    "id": "sunforge_golem",
+    "name": "Sunforge Golem",
+    "emoji": "🗿",
+    "hp": 210,
+    "damage": 27,
+    "xp": 230,
+    "coins": 160,
+    "faction": "volcanic",
+    "biome": "badlands",
+    "rarity": "boss",
+    "tags": [
+      "construct",
+      "fire"
+    ]
+  },
+  {
+    "id": "emberglass_spider",
+    "name": "Emberglass Spider",
+    "emoji": "🕸️",
+    "hp": 120,
+    "damage": 18,
+    "xp": 150,
+    "coins": 100,
+    "faction": "volcanic",
+    "biome": "cavern",
+    "rarity": "rare",
+    "tags": [
+      "fire",
+      "poison"
+    ]
+  },
+  {
+    "id": "tempest_privateer",
+    "name": "Tempest Privateer",
+    "emoji": "⚓",
+    "hp": 110,
+    "damage": 20,
+    "xp": 150,
+    "coins": 120,
+    "faction": "pirate",
+    "biome": "ocean",
+    "rarity": "rare",
+    "tags": [
+      "melee",
+      "storm"
+    ]
+  },
+  {
+    "id": "ironheart_treant",
+    "name": "Ironheart Treant",
+    "emoji": "🌲",
+    "hp": 160,
+    "damage": 23,
+    "xp": 180,
+    "coins": 120,
+    "faction": "forest",
+    "biome": "mountain",
+    "rarity": "elite",
+    "tags": [
+      "guardian",
+      "nature"
+    ]
+  },
+  {
+    "id": "wildvine_beast",
+    "name": "Wildvine Beast",
+    "emoji": "🐗",
+    "hp": 105,
+    "damage": 17,
+    "xp": 140,
+    "coins": 95,
+    "faction": "forest",
+    "biome": "forest",
+    "rarity": "uncommon",
+    "tags": [
+      "beast",
+      "nature"
+    ]
+  },
+  {
+    "id": "mistspire_sentinel",
+    "name": "Mistspire Sentinel",
+    "emoji": "🛡️",
+    "hp": 150,
+    "damage": 22,
+    "xp": 180,
+    "coins": 130,
+    "faction": "skysong",
+    "biome": "mountain",
+    "rarity": "elite",
+    "tags": [
+      "flying",
+      "defender"
+    ]
+  },
+  {
+    "id": "moonshadow_wisp",
+    "name": "Moonshadow Wisp",
+    "emoji": "✨",
+    "hp": 85,
+    "damage": 14,
+    "xp": 120,
+    "coins": 80,
+    "faction": "fey",
+    "biome": "forest",
+    "rarity": "rare",
+    "tags": [
+      "spectral",
+      "support"
+    ]
+  },
+  {
+    "id": "sunglade_keeper",
+    "name": "Sunglade Keeper",
+    "emoji": "🌞",
+    "hp": 115,
+    "damage": 19,
+    "xp": 150,
+    "coins": 110,
+    "faction": "sunspire",
+    "biome": "forest",
+    "rarity": "uncommon",
+    "tags": [
+      "melee",
+      "blessed"
+    ]
+  },
+  {
+    "id": "silkwood_silkspinner",
+    "name": "Silkwood Silkspinner",
+    "emoji": "🕷️",
+    "hp": 100,
+    "damage": 15,
+    "xp": 130,
+    "coins": 88,
+    "faction": "forest",
+    "biome": "forest",
+    "rarity": "uncommon",
+    "tags": [
+      "poison",
+      "weaver"
+    ]
+  },
+  {
+    "id": "everfrost_mammoth",
+    "name": "Everfrost Mammoth",
+    "emoji": "🐘",
+    "hp": 200,
+    "damage": 24,
+    "xp": 210,
+    "coins": 150,
+    "faction": "polar",
+    "biome": "tundra",
+    "rarity": "elite",
+    "tags": [
+      "beast",
+      "frost"
+    ]
+  },
+  {
+    "id": "glimmering_phantom",
+    "name": "Glimmering Phantom",
+    "emoji": "👻",
+    "hp": 120,
+    "damage": 21,
+    "xp": 170,
+    "coins": 120,
+    "faction": "runic",
+    "biome": "desert",
+    "rarity": "rare",
+    "tags": [
+      "spectral",
+      "magic"
+    ]
+  },
+  {
+    "id": "horizon_rider",
+    "name": "Horizon Rider",
+    "emoji": "🏇",
+    "hp": 115,
+    "damage": 18,
+    "xp": 150,
+    "coins": 110,
+    "faction": "savanna",
+    "biome": "steppe",
+    "rarity": "uncommon",
+    "tags": [
+      "cavalry",
+      "swift"
+    ]
+  },
+  {
+    "id": "skysong_sentinel",
+    "name": "Skysong Sentinel",
+    "emoji": "🛩️",
+    "hp": 140,
+    "damage": 22,
+    "xp": 180,
+    "coins": 128,
+    "faction": "skysong",
+    "biome": "mountain",
+    "rarity": "rare",
+    "tags": [
+      "flying",
+      "defender"
+    ]
+  },
+  {
+    "id": "ashen_berserker",
+    "name": "Ashen Berserker",
+    "emoji": "🔥",
+    "hp": 130,
+    "damage": 23,
+    "xp": 170,
+    "coins": 120,
+    "faction": "volcanic",
+    "biome": "shore",
+    "rarity": "rare",
+    "tags": [
+      "melee",
+      "rage"
+    ]
+  },
+  {
+    "id": "emberglow_stalker",
+    "name": "Emberglow Stalker",
+    "emoji": "🦎",
+    "hp": 120,
+    "damage": 20,
+    "xp": 160,
+    "coins": 115,
+    "faction": "volcanic",
+    "biome": "cavern",
+    "rarity": "rare",
+    "tags": [
+      "stealth",
+      "fire"
+    ]
+  },
+  {
+    "id": "voidscar_lich",
+    "name": "Voidscar Lich",
+    "emoji": "💀",
+    "hp": 180,
+    "damage": 27,
+    "xp": 230,
+    "coins": 160,
+    "faction": "varyn",
+    "biome": "abyss",
+    "rarity": "boss",
+    "tags": [
+      "caster",
+      "void"
+    ]
+  },
+  {
+    "id": "radiant_golem",
+    "name": "Radiant Golem",
+    "emoji": "🔆",
+    "hp": 170,
+    "damage": 24,
+    "xp": 210,
+    "coins": 150,
+    "faction": "stormguard",
+    "biome": "basin",
+    "rarity": "elite",
+    "tags": [
+      "construct",
+      "light"
+    ]
+  },
+  {
+    "id": "dreadroot_hag",
+    "name": "Dreadroot Hag",
+    "emoji": "🧙",
+    "hp": 125,
+    "damage": 19,
+    "xp": 160,
+    "coins": 115,
+    "faction": "swamp",
+    "biome": "bog",
+    "rarity": "rare",
+    "tags": [
+      "caster",
+      "poison"
+    ]
+  },
+  {
+    "id": "silverfin_serpent",
+    "name": "Silverfin Serpent",
+    "emoji": "🐍",
+    "hp": 135,
+    "damage": 21,
+    "xp": 175,
+    "coins": 125,
+    "faction": "ocean",
+    "biome": "reef",
+    "rarity": "elite",
+    "tags": [
+      "aquatic",
+      "venom"
+    ]
+  },
+  {
+    "id": "bluehaven_corsair",
+    "name": "Bluehaven Corsair",
+    "emoji": "🏴‍☠️",
+    "hp": 115,
+    "damage": 19,
+    "xp": 150,
+    "coins": 120,
+    "faction": "pirate",
+    "biome": "lagoon",
+    "rarity": "rare",
+    "tags": [
+      "melee",
+      "ocean"
+    ]
+  },
+  {
+    "id": "sunspire_guard",
+    "name": "Sunspire Guard",
+    "emoji": "🌞",
+    "hp": 120,
+    "damage": 20,
+    "xp": 160,
+    "coins": 120,
+    "faction": "sunspire",
+    "biome": "savanna",
+    "rarity": "uncommon",
+    "tags": [
+      "melee",
+      "blessed"
+    ]
+  },
+  {
+    "id": "stormbreak_raider",
+    "name": "Stormbreak Raider",
+    "emoji": "🚢",
+    "hp": 120,
+    "damage": 21,
+    "xp": 165,
+    "coins": 130,
+    "faction": "pirate",
+    "biome": "isles",
+    "rarity": "rare",
+    "tags": [
+      "melee",
+      "storm"
+    ]
+  },
+  {
+    "id": "crimson_mireling",
+    "name": "Crimson Mireling",
+    "emoji": "🩸",
+    "hp": 105,
+    "damage": 17,
+    "xp": 140,
+    "coins": 95,
+    "faction": "swamp",
+    "biome": "bog",
+    "rarity": "uncommon",
+    "tags": [
+      "poison",
+      "lurker"
+    ]
+  },
+  {
+    "id": "stonebark_sentinel",
+    "name": "Stonebark Sentinel",
+    "emoji": "🪵",
+    "hp": 160,
+    "damage": 22,
+    "xp": 190,
+    "coins": 135,
+    "faction": "forest",
+    "biome": "highlands",
+    "rarity": "elite",
+    "tags": [
+      "guardian",
+      "nature"
+    ]
+  },
+  {
+    "id": "auric_lion",
+    "name": "Auric Lion",
+    "emoji": "🦁",
+    "hp": 150,
+    "damage": 23,
+    "xp": 200,
+    "coins": 140,
+    "faction": "savanna",
+    "biome": "desert",
+    "rarity": "elite",
+    "tags": [
+      "beast",
+      "sun"
+    ]
+  },
+  {
+    "id": "shattered_wight",
+    "name": "Shattered Wight",
+    "emoji": "💠",
+    "hp": 130,
+    "damage": 21,
+    "xp": 170,
+    "coins": 120,
+    "faction": "runic",
+    "biome": "moor",
+    "rarity": "rare",
+    "tags": [
+      "spectral",
+      "magic"
+    ]
+  },
+  {
+    "id": "opaline_sprite",
+    "name": "Opaline Sprite",
+    "emoji": "🧚",
+    "hp": 90,
+    "damage": 15,
+    "xp": 130,
+    "coins": 85,
+    "faction": "fey",
+    "biome": "field",
+    "rarity": "rare",
+    "tags": [
+      "caster",
+      "support"
+    ]
+  },
+  {
+    "id": "dawnwatch_eagle",
+    "name": "Dawnwatch Eagle",
+    "emoji": "🦅",
+    "hp": 110,
+    "damage": 20,
+    "xp": 160,
+    "coins": 110,
+    "faction": "sunspire",
+    "biome": "cliff",
+    "rarity": "rare",
+    "tags": [
+      "flying",
+      "blessed"
+    ]
+  },
+  {
+    "id": "starward_colossus",
+    "name": "Starward Colossus",
+    "emoji": "🌟",
+    "hp": 220,
+    "damage": 28,
+    "xp": 250,
+    "coins": 170,
+    "faction": "cosmic",
+    "biome": "valley",
+    "rarity": "boss",
+    "tags": [
+      "giant",
+      "magic"
+    ]
+  },
+  {
+    "id": "skybreaker_guardian",
+    "name": "Skybreaker Guardian",
+    "emoji": "🛡️",
+    "hp": 170,
+    "damage": 24,
+    "xp": 210,
+    "coins": 150,
+    "faction": "stormguard",
+    "biome": "fortress",
+    "rarity": "elite",
+    "tags": [
+      "construct",
+      "storm"
+    ]
+  },
+  {
+    "id": "emberlost_forgemaster",
+    "name": "Emberlost Forgemaster",
+    "emoji": "🔥",
+    "hp": 180,
+    "damage": 26,
+    "xp": 220,
+    "coins": 160,
+    "faction": "ancient",
+    "biome": "forge",
+    "rarity": "boss",
+    "tags": [
+      "caster",
+      "fire"
+    ]
+  },
+  {
+    "id": "gilded_duelist",
+    "name": "Gilded Duelist",
+    "emoji": "🤺",
+    "hp": 130,
+    "damage": 20,
+    "xp": 170,
+    "coins": 125,
+    "faction": "sunspire",
+    "biome": "courtyard",
+    "rarity": "rare",
+    "tags": [
+      "melee",
+      "blessed"
+    ]
+  },
+  {
+    "id": "stormveil_tempest",
+    "name": "Stormveil Tempest",
+    "emoji": "🌪️",
+    "hp": 140,
+    "damage": 24,
+    "xp": 190,
+    "coins": 135,
+    "faction": "stormguard",
+    "biome": "ridge",
+    "rarity": "elite",
+    "tags": [
+      "flying",
+      "storm"
+    ]
+  },
+  {
+    "id": "hollowroot_brute",
+    "name": "Hollowroot Brute",
+    "emoji": "🌿",
+    "hp": 150,
+    "damage": 23,
+    "xp": 185,
+    "coins": 130,
+    "faction": "forest",
+    "biome": "cavern",
+    "rarity": "rare",
+    "tags": [
+      "guardian",
+      "nature"
+    ]
+  },
+  {
+    "id": "sablemarsh_witch",
+    "name": "Sablemarsh Witch",
+    "emoji": "🧙",
+    "hp": 120,
+    "damage": 21,
+    "xp": 170,
+    "coins": 118,
+    "faction": "swamp",
+    "biome": "bog",
+    "rarity": "rare",
+    "tags": [
+      "caster",
+      "poison"
+    ]
+  },
+  {
+    "id": "sunshadow_nomad",
+    "name": "Sunshadow Nomad",
+    "emoji": "🏇",
+    "hp": 125,
+    "damage": 19,
+    "xp": 165,
+    "coins": 120,
+    "faction": "nomad",
+    "biome": "steppe",
+    "rarity": "uncommon",
+    "tags": [
+      "cavalry",
+      "agile"
+    ]
+  },
+  {
+    "id": "crystal_veil_sentinel",
+    "name": "Crystal Veil Sentinel",
+    "emoji": "❄️",
+    "hp": 170,
+    "damage": 24,
+    "xp": 210,
+    "coins": 150,
+    "faction": "polar",
+    "biome": "glacier",
+    "rarity": "elite",
+    "tags": [
+      "guardian",
+      "frost"
+    ]
+  },
+  {
+    "id": "abyssal_goliath",
+    "name": "Abyssal Goliath",
+    "emoji": "🐙",
+    "hp": 220,
+    "damage": 29,
+    "xp": 260,
+    "coins": 180,
+    "faction": "ocean",
+    "biome": "trench",
+    "rarity": "boss",
+    "tags": [
+      "giant",
+      "void"
+    ]
+  },
+  {
+    "id": "luminous_curator",
+    "name": "Luminous Curator",
+    "emoji": "ðŸ“š",
+    "hp": 160,
+    "damage": 22,
+    "xp": 210,
+    "coins": 150,
+    "faction": "skysong",
+    "biome": "archives",
+    "rarity": "elite",
+    "tags": [
+      "caster",
+      "light"
+    ],
+    "loot": [
+      {
+        "item": "luminous_script",
+        "chance": 0.4,
+        "min": 1,
+        "max": 2
+      },
+      {
+        "item": "celestial_thread",
+        "chance": 0.28,
+        "min": 1,
+        "max": 1
+      }
+    ]
+  },
+  {
+    "id": "archive_warder",
+    "name": "Archive Warder",
+    "emoji": "ðŸ›¡ï¸",
+    "hp": 150,
+    "damage": 20,
+    "xp": 200,
+    "coins": 140,
+    "faction": "skysong",
+    "biome": "archives",
+    "rarity": "rare",
+    "tags": [
+      "guardian",
+      "light"
+    ],
+    "loot": [
+      {
+        "item": "astro_ink",
+        "chance": 0.35,
+        "min": 1,
+        "max": 2
+      }
+    ]
+  },
+  {
+    "id": "ashen_riftwarden",
+    "name": "Ashen Riftwarden",
+    "emoji": "ðŸ”¥",
+    "hp": 190,
+    "damage": 27,
+    "xp": 240,
+    "coins": 170,
+    "faction": "ancient",
+    "biome": "rift",
+    "rarity": "elite",
+    "tags": [
+      "guardian",
+      "fire"
+    ],
+    "loot": [
+      {
+        "item": "ember_rift_core",
+        "chance": 0.32,
+        "min": 1,
+        "max": 1
+      },
+      {
+        "item": "slag_ember",
+        "chance": 0.38,
+        "min": 1,
+        "max": 2
+      }
+    ]
+  },
+  {
+    "id": "slagstorm_hydra",
+    "name": "Slagstorm Hydra",
+    "emoji": "ðŸ",
+    "hp": 230,
+    "damage": 31,
+    "xp": 280,
+    "coins": 210,
+    "faction": "ancient",
+    "biome": "rift",
+    "rarity": "boss",
+    "tags": [
+      "beast",
+      "fire"
+    ],
+    "loot": [
+      {
+        "item": "ember_rift_shard",
+        "chance": 0.42,
+        "min": 1,
+        "max": 2
+      }
+    ]
+  },
+  {
+    "id": "fenbound_shaman",
+    "name": "Fenbound Shaman",
+    "emoji": "ðŸª„",
+    "hp": 140,
+    "damage": 21,
+    "xp": 195,
+    "coins": 135,
+    "faction": "swamp",
+    "biome": "moor",
+    "rarity": "rare",
+    "tags": [
+      "caster",
+      "poison"
+    ],
+    "loot": [
+      {
+        "item": "verdant_spine",
+        "chance": 0.36,
+        "min": 1,
+        "max": 2
+      },
+      {
+        "item": "verdant_elixir",
+        "chance": 0.28,
+        "min": 1,
+        "max": 1
+      }
+    ]
+  },
+  {
+    "id": "verdant_devourer",
+    "name": "Verdant Devourer",
+    "emoji": "ðŸª²",
+    "hp": 170,
+    "damage": 24,
+    "xp": 215,
+    "coins": 150,
+    "faction": "swamp",
+    "biome": "moor",
+    "rarity": "elite",
+    "tags": [
+      "beast",
+      "nature"
+    ],
+    "loot": [
+      {
+        "item": "fen_marrow",
+        "chance": 0.4,
+        "min": 1,
+        "max": 2
+      }
+    ]
+  },
+  {
+    "id": "glimmerfen_myrmidon",
+    "name": "Glimmerfen Myrmidon",
+    "emoji": "ðŸ›¶",
+    "hp": 150,
+    "damage": 22,
+    "xp": 205,
+    "coins": 145,
+    "faction": "river",
+    "biome": "delta",
+    "rarity": "rare",
+    "tags": [
+      "fighter",
+      "water"
+    ],
+    "loot": [
+      {
+        "item": "delta_shell",
+        "chance": 0.35,
+        "min": 1,
+        "max": 2
+      },
+      {
+        "item": "delta_phosphor",
+        "chance": 0.3,
+        "min": 1,
+        "max": 2
+      }
+    ]
+  },
+  {
+    "id": "riverborn_enchanter",
+    "name": "Riverborn Enchanter",
+    "emoji": "ðŸ’§",
+    "hp": 140,
+    "damage": 21,
+    "xp": 200,
+    "coins": 140,
+    "faction": "river",
+    "biome": "delta",
+    "rarity": "rare",
+    "tags": [
+      "caster",
+      "water"
+    ],
+    "loot": [
+      {
+        "item": "tidal_quartz",
+        "chance": 0.34,
+        "min": 1,
+        "max": 2
+      }
+    ]
+  },
+  {
+    "id": "celestial_chanter",
+    "name": "Celestial Chanter",
+    "emoji": "âœ¨",
+    "hp": 170,
+    "damage": 24,
+    "xp": 230,
+    "coins": 165,
+    "faction": "cosmic",
+    "biome": "escarpment",
+    "rarity": "elite",
+    "tags": [
+      "caster",
+      "light"
+    ],
+    "loot": [
+      {
+        "item": "celestial_leaf",
+        "chance": 0.36,
+        "min": 1,
+        "max": 2
+      },
+      {
+        "item": "celestial_thread",
+        "chance": 0.3,
+        "min": 1,
+        "max": 1
+      }
+    ]
+  },
+  {
+    "id": "starlit_seraph",
+    "name": "Starlit Seraph",
+    "emoji": "ðŸª½",
+    "hp": 210,
+    "damage": 28,
+    "xp": 260,
+    "coins": 190,
+    "faction": "cosmic",
+    "biome": "escarpment",
+    "rarity": "boss",
+    "tags": [
+      "flying",
+      "light"
+    ],
+    "loot": [
+      {
+        "item": "celestial_orb",
+        "chance": 0.28,
+        "min": 1,
+        "max": 1
+      },
+      {
+        "item": "aurora_crystal",
+        "chance": 0.34,
+        "min": 1,
+        "max": 2
+      }
+    ]
+  },
+  {
+    "id": "runebound_guardian",
+    "name": "Runebound Guardian",
+    "emoji": "ðŸª¨",
+    "hp": 180,
+    "damage": 25,
+    "xp": 225,
+    "coins": 160,
+    "faction": "void",
+    "biome": "hollows",
+    "rarity": "elite",
+    "tags": [
+      "guardian",
+      "arcane"
+    ],
+    "loot": [
+      {
+        "item": "runic_ember",
+        "chance": 0.36,
+        "min": 1,
+        "max": 2
+      },
+      {
+        "item": "glyph_powder",
+        "chance": 0.3,
+        "min": 1,
+        "max": 2
+      }
+    ]
+  },
+  {
+    "id": "hollowed_scribe",
+    "name": "Hollowed Scribe",
+    "emoji": "ðŸ“œ",
+    "hp": 150,
+    "damage": 22,
+    "xp": 205,
+    "coins": 145,
+    "faction": "void",
+    "biome": "hollows",
+    "rarity": "rare",
+    "tags": [
+      "caster",
+      "arcane"
+    ],
+    "loot": [
+      {
+        "item": "runebound_dust",
+        "chance": 0.34,
+        "min": 1,
+        "max": 2
+      }
+    ]
+  },
+  {
+    "id": "skyrazor_gryphon",
+    "name": "Skyrazor Gryphon",
+    "emoji": "🪶",
+    "hp": 165,
+    "damage": 24,
+    "xp": 210,
+    "coins": 155,
+    "faction": "stormguard",
+    "biome": "howling_peaks",
+    "rarity": "elite",
+    "tags": [
+      "flying",
+      "storm",
+      "beast"
+    ],
+    "loot": [
+      {
+        "item": "skyrazor_plume",
+        "chance": 0.45,
+        "min": 1,
+        "max": 2
+      },
+      {
+        "item": "stormvein_ore",
+        "chance": 0.32,
+        "min": 1,
+        "max": 2
+      }
+    ]
+  },
+  {
+    "id": "tempest_herald",
+    "name": "Tempest Herald",
+    "emoji": "🌩️",
+    "hp": 150,
+    "damage": 27,
+    "xp": 230,
+    "coins": 165,
+    "faction": "skysong",
+    "biome": "howling_peaks",
+    "rarity": "rare",
+    "tags": [
+      "caster",
+      "storm",
+      "support"
+    ],
+    "loot": [
+      {
+        "item": "tempest_core",
+        "chance": 0.38,
+        "min": 1,
+        "max": 1
+      },
+      {
+        "item": "skyrazor_plume",
+        "chance": 0.28,
+        "min": 1,
+        "max": 1
+      }
+    ]
+  },
+  {
+    "id": "magma_basilisk",
+    "name": "Magma Basilisk",
+    "emoji": "🦎",
+    "hp": 175,
+    "damage": 25,
+    "xp": 220,
+    "coins": 160,
+    "faction": "ancient",
+    "biome": "ember_depths",
+    "rarity": "elite",
+    "tags": [
+      "beast",
+      "fire",
+      "burrower"
+    ],
+    "loot": [
+      {
+        "item": "magma_pearl",
+        "chance": 0.42,
+        "min": 1,
+        "max": 2
+      },
+      {
+        "item": "cinder_resin",
+        "chance": 0.36,
+        "min": 1,
+        "max": 3
+      }
+    ]
+  },
+  {
+    "id": "ashen_titan",
+    "name": "Ashen Titan",
+    "emoji": "🗿",
+    "hp": 240,
+    "damage": 32,
+    "xp": 320,
+    "coins": 240,
+    "faction": "ancient",
+    "biome": "ember_depths",
+    "rarity": "boss",
+    "tags": [
+      "giant",
+      "fire",
+      "guardian"
+    ],
+    "loot": [
+      {
+        "item": "obsidian_heart",
+        "chance": 0.44,
+        "min": 1,
+        "max": 1
+      },
+      {
+        "item": "magma_pearl",
+        "chance": 0.36,
+        "min": 1,
+        "max": 2
+      }
+    ]
+  },
+  {
+    "id": "gloomshade_prowler",
+    "name": "Gloomshade Prowler",
+    "emoji": "🐺",
+    "hp": 140,
+    "damage": 22,
+    "xp": 185,
+    "coins": 135,
+    "faction": "fey",
+    "biome": "gloomwild_thicket",
+    "rarity": "uncommon",
+    "tags": [
+      "stealth",
+      "ambusher",
+      "nature"
+    ],
+    "loot": [
+      {
+        "item": "gloomdew_extract",
+        "chance": 0.4,
+        "min": 1,
+        "max": 2
+      }
+    ]
+  },
+  {
+    "id": "veilhorn_stag",
+    "name": "Veilhorn Stag",
+    "emoji": "🦌",
+    "hp": 185,
+    "damage": 24,
+    "xp": 240,
+    "coins": 175,
+    "faction": "fey",
+    "biome": "gloomwild_thicket",
+    "rarity": "elite",
+    "tags": [
+      "guardian",
+      "nature",
+      "charge"
+    ],
+    "loot": [
+      {
+        "item": "veilhorn_antler",
+        "chance": 0.48,
+        "min": 1,
+        "max": 2
+      },
+      {
+        "item": "nightpetal_blossom",
+        "chance": 0.28,
+        "min": 1,
+        "max": 1
+      }
+    ]
+  },
+  {
+    "id": "twilight_matriarch",
+    "name": "Twilight Matriarch",
+    "emoji": "🌘",
+    "hp": 220,
+    "damage": 30,
+    "xp": 300,
+    "coins": 220,
+    "faction": "fey",
+    "biome": "gloomwild_thicket",
+    "rarity": "boss",
+    "tags": [
+      "caster",
+      "nature",
+      "support"
+    ],
+    "loot": [
+      {
+        "item": "nightpetal_blossom",
+        "chance": 0.42,
+        "min": 1,
+        "max": 2
+      },
+      {
+        "item": "tempest_core",
+        "chance": 0.18,
+        "min": 1,
+        "max": 1
+      }
+    ]
+  }
+]

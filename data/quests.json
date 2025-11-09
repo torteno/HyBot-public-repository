@@ -1,0 +1,566 @@
+[
+  {
+    "id": 1,
+    "slug": "sapling-supplies",
+    "name": "Sapling Supplies",
+    "description": "Gather vital materials so the Kweebec saplings can reinforce their village platforms.",
+    "faction": "kweebec",
+    "region": "Emerald Grove",
+    "req": { "level": 1 },
+    "objectives": [
+      { "type": "gather", "item": "ancient_bark", "quantity": 10, "description": "Collect Ancient Bark from nearby groves." },
+      { "type": "gather", "item": "sunstone_shard", "quantity": 3, "description": "Find Sunstone Shards from crystal caches." }
+    ],
+    "reward": {
+      "xp": 120,
+      "coins": 80,
+      "items": [
+        { "item": "kweebec_charm", "quantity": 1 }
+      ]
+    }
+  },
+  {
+    "id": 2,
+    "slug": "trork-raiding-party",
+    "name": "Trork Raiding Party",
+    "description": "Push back the Trork raiders threatening Kweebec trade routes.",
+    "faction": "kweebec",
+    "region": "Emerald Grove",
+    "req": { "level": 3 },
+    "objectives": [
+      { "type": "defeat", "enemy": "feral_trork", "quantity": 8, "description": "Defeat Feral Trorks lurking near the paths." }
+    ],
+    "reward": {
+      "xp": 160,
+      "coins": 120,
+      "items": []
+    },
+    "prerequisites": [1]
+  },
+  {
+    "id": 3,
+    "slug": "skysong-research",
+    "name": "Skysong Research",
+    "description": "Assist the Skysong scholars by retrieving rare arcane materials.",
+    "faction": "skysong",
+    "region": "Gale Cliffs",
+    "req": { "level": 5 },
+    "objectives": [
+      { "type": "gather", "item": "orbis_crystal", "quantity": 2, "description": "Secure Orbis Crystals from crystal caverns." },
+      { "type": "craft", "item": "focus_elixir", "quantity": 1, "description": "Distill a Focus Elixir for the research team." }
+    ],
+    "reward": {
+      "xp": 240,
+      "coins": 220,
+      "items": [
+        { "item": "arcane_staff", "quantity": 1 }
+      ]
+    },
+    "prerequisites": [1]
+  },
+  {
+    "id": 4,
+    "slug": "borea-defense",
+    "name": "Borea Defense",
+    "description": "Support the Borea Stormguard by crafting gear and defeating icebound threats.",
+    "faction": "human",
+    "region": "Borea",
+    "req": { "level": 6 },
+    "objectives": [
+      { "type": "craft", "item": "steel_sword", "quantity": 1, "description": "Forge a Steel Sword for the Stormguard." },
+      { "type": "defeat", "enemy": "borea_stormguard", "quantity": 1, "description": "Spar with a Stormguard veteran to test your mettle." }
+    ],
+    "reward": {
+      "xp": 260,
+      "coins": 200,
+      "items": [
+        { "item": "guardian_armor", "quantity": 1 }
+      ]
+    }
+  },
+  {
+    "id": 5,
+    "slug": "void-incursion",
+    "name": "Void Incursion",
+    "description": "Disrupt the Varyn incursion by striking at their elite forces.",
+    "faction": "varyn",
+    "region": "Shadow Realm",
+    "req": { "level": 7 },
+    "objectives": [
+      { "type": "defeat", "enemy": "void_knight", "quantity": 5, "description": "Defeat Void Knights patrolling the corruption zones." },
+      { "type": "defeat", "enemy": "voidcaller", "quantity": 2, "description": "Silence the Voidcallers summoning reinforcements." }
+    ],
+    "reward": {
+      "xp": 320,
+      "coins": 280,
+      "items": [
+        { "item": "void_essence", "quantity": 3 }
+      ]
+    },
+    "prerequisites": [3]
+  },
+  {
+    "id": 6,
+    "slug": "ember-cavern",
+    "name": "Ember Cavern Expedition",
+    "description": "Delve into the volcanic caverns and defeat their fiery guardians.",
+    "faction": "ancient",
+    "region": "Volcanic Expanse",
+    "req": { "level": 8 },
+    "objectives": [
+      { "type": "defeat", "enemy": "emberdrake", "quantity": 1, "description": "Slay an Emberdrake within the magma vents." },
+      { "type": "gather", "item": "luminite_core", "quantity": 1, "description": "Retrieve a Luminite Core from the cavern." }
+    ],
+    "reward": {
+      "xp": 380,
+      "coins": 350,
+      "items": [
+        { "item": "gale_blade", "quantity": 1 }
+      ]
+    },
+    "prerequisites": [4]
+  },
+  {
+    "id": 7,
+    "slug": "dungeon-delver",
+    "name": "Dungeon Delver",
+    "description": "Complete a Shadow Depths dungeon run and bring back the spoils.",
+    "faction": "explorers",
+    "region": "Shadow Depths",
+    "req": { "level": 6 },
+    "objectives": [
+      { "type": "dungeon", "dungeon": "shadow_depths", "quantity": 1, "description": "Clear the Shadow Depths dungeon." }
+    ],
+    "reward": {
+      "xp": 420,
+      "coins": 320,
+      "items": [
+        { "item": "luminite_core", "quantity": 1 },
+        { "item": "focus_elixir", "quantity": 2 }
+      ]
+    },
+    "prerequisites": [2]
+  },
+  {
+    "id": 8,
+    "slug": "brewmasters-path",
+    "name": "Brewmaster's Path",
+    "description": "Demonstrate your brewing prowess to the Howling Sands caravans.",
+    "faction": "outlander",
+    "region": "Howling Sands",
+    "req": { "level": 4 },
+    "objectives": [
+      { "type": "craft", "item": "ember_ale", "quantity": 2, "description": "Brew Ember Ale for the caravan camp." },
+      { "type": "craft", "item": "focus_elixir", "quantity": 1, "description": "Distill a Focus Elixir as a desert tonic." }
+    ],
+    "reward": {
+      "xp": 210,
+      "coins": 190,
+      "items": [
+        { "item": "ember_ale", "quantity": 2 }
+      ]
+    }
+  },
+  {
+    "id": 9,
+    "slug": "storm-forge",
+    "name": "Storm Forge",
+    "description": "Craft advanced gear and defeat elite foes across Orbis.",
+    "faction": "explorers",
+    "region": "Gale Cliffs",
+    "req": { "level": 9 },
+    "objectives": [
+      { "type": "craft", "item": "skyseer_talisman", "quantity": 1, "description": "Craft a Skyseer Talisman at an arcane table." },
+      { "type": "defeat", "enemy": "ashen_colossus", "quantity": 1, "description": "Defeat the Ashen Colossus guarding the molten plateau." }
+    ],
+    "reward": {
+      "xp": 520,
+      "coins": 480,
+      "items": [
+        { "item": "skyseer_talisman", "quantity": 1 }
+      ]
+    },
+    "prerequisites": [6, 7]
+  },
+  {
+    "id": 10,
+    "slug": "champion-of-orbis",
+    "name": "Champion of Orbis",
+    "description": "Prove your mastery across factions by completing varied feats.",
+    "faction": "orbis",
+    "region": "World",
+    "req": { "level": 10 },
+    "objectives": [
+      { "type": "defeat", "enemy": "varyn_warlord", "quantity": 1, "description": "Defeat a Varyn Warlord leading the incursion." },
+      { "type": "dungeon", "dungeon": "shadow_depths", "quantity": 2, "description": "Clear the Shadow Depths twice to secure the region." },
+      { "type": "craft", "item": "guardian_armor", "quantity": 1, "description": "Craft Guardian Bulwark armor for the final defense." }
+    ],
+    "reward": {
+      "xp": 800,
+      "coins": 650,
+      "items": [
+        { "item": "skyseer_talisman", "quantity": 1 },
+        { "item": "kweebec_charm", "quantity": 1 }
+      ]
+    },
+    "prerequisites": [5, 9]
+  },
+  {
+    "id": 11,
+    "slug": "aurora-harvest",
+    "name": "Aurora Harvest",
+    "description": "Aid the Skysong in harnessing aurora light for their archives.",
+    "faction": "skysong",
+    "region": "Aurora Watch",
+    "req": { "level": 7 },
+    "objectives": [
+      { "type": "gather", "item": "aurora_fragment", "quantity": 3, "description": "Collect Aurora Fragments under the shimmering skies." },
+      { "type": "defeat", "enemy": "aurora_watcher", "quantity": 2, "description": "Defeat Aurora Watchers guarding the Luminite caches." }
+    ],
+    "reward": {
+      "xp": 340,
+      "coins": 260,
+      "items": [
+        { "item": "aurora_tea", "quantity": 2 }
+      ]
+    },
+    "prerequisites": [3]
+  },
+  {
+    "id": 12,
+    "slug": "scarlet-cleanse",
+    "name": "Scarlet Cleanse",
+    "description": "Purge Trork warbands from the scarlet forest that borders the Kweebec grove.",
+    "faction": "kweebec",
+    "region": "Scarlet Forest",
+    "req": { "level": 6 },
+    "objectives": [
+      { "type": "defeat", "enemy": "trork_siege_breaker", "quantity": 1, "description": "Defeat a Trork Siege Breaker leading the assault." },
+      { "type": "defeat", "enemy": "trork_shaman", "quantity": 2, "description": "Eliminate Trork Shamans empowering the raid." }
+    ],
+    "reward": {
+      "xp": 290,
+      "coins": 240,
+      "items": [
+        { "item": "sapling_staff", "quantity": 1 },
+        { "item": "focus_elixir", "quantity": 1 }
+      ]
+    },
+    "prerequisites": [2]
+  },
+  {
+    "id": 13,
+    "slug": "stormguard-convoy",
+    "name": "Stormguard Convoy",
+    "description": "Escort the Stormguard convoy through blizzard-choked passes.",
+    "faction": "human",
+    "region": "Borea",
+    "req": { "level": 7 },
+    "objectives": [
+      { "type": "defeat", "enemy": "frostclaw_bear", "quantity": 2, "description": "Clear Frostclaw ambushes along the convoy route." },
+      { "type": "dungeon", "dungeon": "borea_stronghold", "quantity": 1, "description": "Secure the stronghold that oversees the pass." }
+    ],
+    "reward": {
+      "xp": 380,
+      "coins": 310,
+      "items": [
+        { "item": "stormbrew_tonic", "quantity": 2 }
+      ]
+    },
+    "prerequisites": [4]
+  },
+  {
+    "id": 14,
+    "slug": "tidecaller-council",
+    "name": "Tidecaller Council",
+    "description": "Win the favor of the Tidecaller Council by preserving their sanctums.",
+    "faction": "ocean",
+    "region": "Tidecaller Depths",
+    "req": { "level": 8 },
+    "objectives": [
+      { "type": "dungeon", "dungeon": "sunken_cathedral", "quantity": 1, "description": "Cleanse the Sunken Cathedral of void corruption." },
+      { "type": "gather", "item": "sunken_pearl", "quantity": 1, "description": "Retrieve a Sunken Pearl for the council." }
+    ],
+    "reward": {
+      "xp": 410,
+      "coins": 340,
+      "items": [
+        { "item": "tidecaller_shell", "quantity": 1 },
+        { "item": "siren_tear_elixir", "quantity": 1 }
+      ]
+    }
+  },
+  {
+    "id": 15,
+    "slug": "emberforge-alliance",
+    "name": "Emberforge Alliance",
+    "description": "Earn the trust of the Ancient Guardians by restoring the Emberforge.",
+    "faction": "ancient",
+    "region": "Emberforge Crater",
+    "req": { "level": 9 },
+    "objectives": [
+      { "type": "dungeon", "dungeon": "emberforge_crater", "quantity": 1, "description": "Defeat the Ashen Colossus guarding the Emberforge." },
+      { "type": "craft", "item": "emberstorm_bow", "quantity": 1, "description": "Forge an Emberstorm Bow as a sign of alliance." }
+    ],
+    "reward": {
+      "xp": 520,
+      "coins": 420,
+      "items": [
+        { "item": "obsidian_shield", "quantity": 1 }
+      ]
+    },
+    "prerequisites": [6]
+  },
+  {
+    "id": 16,
+    "slug": "aurora-architect",
+    "name": "Aurora Architect",
+    "description": "Construct a resonance array that channels aurora energy.",
+    "faction": "skysong",
+    "region": "Aurora Watch",
+    "req": { "level": 9 },
+    "objectives": [
+      { "type": "craft", "item": "skyseer_talisman", "quantity": 1, "description": "Craft a Skyseer Talisman as the array core." },
+      { "type": "gather", "item": "aurora_fragment", "quantity": 4, "description": "Harvest Aurora Fragments to fuel the array." }
+    ],
+    "reward": {
+      "xp": 560,
+      "coins": 460,
+      "items": [
+        { "item": "skyflare_pendant", "quantity": 1 }
+      ]
+    },
+    "prerequisites": [11]
+  },
+  {
+    "id": 17,
+    "slug": "voidbreak-vanguard",
+    "name": "Voidbreak Vanguard",
+    "description": "Lead a strike team into the Voidheart and sever the titan's tether.",
+    "faction": "orbis",
+    "region": "Voidheart Citadel",
+    "req": { "level": 10 },
+    "objectives": [
+      { "type": "dungeon", "dungeon": "voidheart_citadel", "quantity": 1, "description": "Defeat the Void Titan at the heart of the citadel." },
+      { "type": "gather", "item": "void_essence", "quantity": 4, "description": "Harvest void essence samples for the Skysong." }
+    ],
+    "reward": {
+      "xp": 760,
+      "coins": 600,
+      "items": [
+        { "item": "voidveil_cloak", "quantity": 1 }
+      ]
+    },
+    "prerequisites": [10]
+  },
+  {
+    "id": 18,
+    "slug": "nomad-pilgrimage",
+    "name": "Nomad Pilgrimage",
+    "description": "Accompany the caravan on its sacred pilgrimage and defend it from threats.",
+    "faction": "nomad",
+    "region": "Howling Sands",
+    "req": { "level": 6 },
+    "objectives": [
+      { "type": "defeat", "enemy": "howling_sands_stalker", "quantity": 3, "description": "Drive off predators stalking the caravan." },
+      { "type": "craft", "item": "sandroot_stew", "quantity": 2, "description": "Prepare Sandroot Stew to sustain the travelers." }
+    ],
+    "reward": {
+      "xp": 310,
+      "coins": 250,
+      "items": [
+        { "item": "nomad_wraps", "quantity": 1 }
+      ]
+    },
+    "prerequisites": [8]
+  },
+  {
+    "id": 19,
+    "slug": "warden-of-wilds",
+    "name": "Warden of the Wilds",
+    "description": "Restore balance in the Wyrmroot Hollow by aiding its guardians.",
+    "faction": "beast",
+    "region": "Wyrmroot Hollow",
+    "req": { "level": 8 },
+    "objectives": [
+      { "type": "defeat", "enemy": "gloomfang_serpent", "quantity": 2, "description": "Cull serpents poisoning the wyrm springs." },
+      { "type": "dungeon", "dungeon": "wyrmroot_hollow", "quantity": 1, "description": "Defeat the Vinebound Titan menacing the grove." }
+    ],
+    "reward": {
+      "xp": 440,
+      "coins": 360,
+      "items": [
+        { "item": "wyrmroot_salve", "quantity": 2 }
+      ]
+    }
+  },
+  {
+    "id": 20,
+    "slug": "archivist-accord",
+    "name": "Archivist Accord",
+    "description": "Assemble a codex of Orbis by collecting relics from across the world.",
+    "faction": "skysong",
+    "region": "Gale Cliffs",
+    "req": { "level": 10 },
+    "objectives": [
+      { "type": "gather", "item": "aurora_fragment", "quantity": 5, "description": "Gather aurora fragments for the archives." },
+      { "type": "gather", "item": "sunken_pearl", "quantity": 2, "description": "Collect pearls from the Tidecaller sanctums." },
+      { "type": "gather", "item": "void_essence", "quantity": 2, "description": "Secure void essences for containment studies." }
+    ],
+    "reward": {
+      "xp": 900,
+      "coins": 720,
+      "items": [
+        { "item": "lumin_archivist_tome", "quantity": 1 },
+        { "item": "aurora_tea", "quantity": 2 }
+      ]
+    },
+    "prerequisites": [11, 14, 17]
+  },
+  {
+    "id": 21,
+    "slug": "skybreaker-ascension",
+    "name": "Skybreaker Ascension",
+    "description": "Earn the right to don the Skybreaker Regalia by reforging storm power.",
+    "faction": "stormguard",
+    "region": "Skybreaker Bastion",
+    "req": { "level": 12 },
+    "objectives": [
+      { "type": "craft", "item": "skybreaker_halberd", "quantity": 1, "description": "Forge a Skybreaker Halberd within the bastion forges." },
+      { "type": "craft", "item": "skybreaker_plate", "quantity": 1, "description": "Plate warsteel with stormglass to fashion the regalia." },
+      { "type": "craft", "item": "skybreaker_torque", "quantity": 1, "description": "Braid a torque that stabilises lightning surges." },
+      { "type": "defeat", "enemy": "skybreaker_guardian", "quantity": 5, "description": "Defeat Skybreaker Guardians in the floating bastions." },
+      { "type": "dungeon", "dungeon": "stormguard_keep", "quantity": 1, "description": "Clear Stormguard Keep to prove mastery over the tempests." }
+    ],
+    "reward": {
+      "xp": 1200,
+      "coins": 900,
+      "items": [
+        { "item": "tempest_capacitor", "quantity": 2 },
+        { "item": "skybreaker_alloy", "quantity": 3 }
+      ]
+    },
+    "prerequisites": [20]
+  },
+  {
+    "id": 22,
+    "slug": "ember-rift-resurgence",
+    "name": "Ember Rift Resurgence",
+    "description": "Reignite the Emberlost foundry and awaken its legendary arsenal.",
+    "faction": "ancient",
+    "region": "Ashen Rift",
+    "req": { "level": 12 },
+    "objectives": [
+      { "type": "craft", "item": "ember_rift_blade", "quantity": 1, "description": "Temper a blade within the Ember Rift crucibles." },
+      { "type": "craft", "item": "emberweave_hauberk", "quantity": 1, "description": "Weave a hauberk from living slag embers." },
+      { "type": "brew", "brew": "ember_rift_draught", "quantity": 2, "description": "Brew draughts that let you stride molten rivers." },
+      { "type": "defeat", "enemy": "emberlost_forgemaster", "quantity": 3, "description": "Defeat Emberlost Forgemasters to stabilise the foundry." }
+    ],
+    "reward": {
+      "xp": 1150,
+      "coins": 860,
+      "items": [
+        { "item": "ember_rift_core", "quantity": 2 },
+        { "item": "ember_rift_talisman", "quantity": 1 }
+      ]
+    },
+    "prerequisites": [21]
+  },
+  {
+    "id": 23,
+    "slug": "verdant-reclamation",
+    "name": "Verdant Reclamation",
+    "description": "Cleanse the Verdant Moors and bond with the living ward.",
+    "faction": "fenbound",
+    "region": "Verdant Moors",
+    "req": { "level": 11 },
+    "objectives": [
+      { "type": "craft", "item": "verdant_guard", "quantity": 1, "description": "Grow armour interwoven with fenlife." },
+      { "type": "craft", "item": "verdant_brooch", "quantity": 1, "description": "Shape fenfire charms into a verdant brooch." },
+      { "type": "gather", "item": "verdant_pollen", "quantity": 12, "description": "Harvest verdant pollen to heal the moors." },
+      { "type": "defeat", "enemy": "fenbound_shaman", "quantity": 6, "description": "Calm the shaman stirring chaotic growth." }
+    ],
+    "reward": {
+      "xp": 980,
+      "coins": 720,
+      "items": [
+        { "item": "verdant_elixir", "quantity": 3 },
+        { "item": "fenfire_salve", "quantity": 2 }
+      ]
+    },
+    "prerequisites": [21]
+  },
+  {
+    "id": 24,
+    "slug": "celestial-alignment",
+    "name": "Celestial Alignment",
+    "description": "Chart the starpaths and weave the Celestial Convergence.",
+    "faction": "skysong",
+    "region": "Celestial Escarpment",
+    "req": { "level": 13 },
+    "objectives": [
+      { "type": "craft", "item": "celestial_longbow", "quantity": 1, "description": "String a longbow with comet threads." },
+      { "type": "craft", "item": "celestial_raiment", "quantity": 1, "description": "Stitch raiment from starlit cords." },
+      { "type": "gather", "item": "celestial_thread", "quantity": 6, "description": "Gather celestial thread along the escarpment." },
+      { "type": "dungeon", "dungeon": "crystal_sanctuary", "quantity": 1, "description": "Align the Crystal Sanctuary to skysong frequencies." }
+    ],
+    "reward": {
+      "xp": 1300,
+      "coins": 950,
+      "items": [
+        { "item": "celestial_orb", "quantity": 1 },
+        { "item": "celestial_tea", "quantity": 2 }
+      ]
+    },
+    "prerequisites": [20]
+  },
+  {
+    "id": 25,
+    "slug": "abyssal-coronation",
+    "name": "Abyssal Coronation",
+    "description": "Earn the blessing of the deep to wield abyssal sovereignty.",
+    "faction": "tidecaller",
+    "region": "Abyssal Gulf",
+    "req": { "level": 13 },
+    "objectives": [
+      { "type": "craft", "item": "abyssal_scepter", "quantity": 1, "description": "Forge a scepter in the pressure of the abyss." },
+      { "type": "craft", "item": "abyssal_carapace", "quantity": 1, "description": "Assemble carapace plates tempered undersea." },
+      { "type": "defeat", "enemy": "abyssal_goliath", "quantity": 3, "description": "Defeat Abyssal Goliaths rising from the trench." },
+      { "type": "dungeon", "dungeon": "sunken_cathedral", "quantity": 1, "description": "Cleanse the Sunken Cathedral of void rifts." }
+    ],
+    "reward": {
+      "xp": 1380,
+      "coins": 980,
+      "items": [
+        { "item": "abyssal_phial", "quantity": 2 },
+        { "item": "abyssal_resin", "quantity": 3 }
+      ]
+    },
+    "prerequisites": [24]
+  },
+  {
+    "id": 26,
+    "slug": "runebound-convergence",
+    "name": "Runebound Convergence",
+    "description": "Synchronise the void wards to complete the Runebound Bulwark.",
+    "faction": "archivist",
+    "region": "Runebound Hollows",
+    "req": { "level": 14 },
+    "objectives": [
+      { "type": "craft", "item": "runebound_barrier", "quantity": 1, "description": "Forge a barrier harness from wardstone fragments." },
+      { "type": "craft", "item": "runebound_focus", "quantity": 1, "description": "Carve a focus that refracts spells safely." },
+      { "type": "gather", "item": "runic_ember", "quantity": 6, "description": "Harvest runic embers stabilising the hollows." },
+      { "type": "gather", "item": "glyph_powder", "quantity": 6, "description": "Grind glyph powder from newly etched wards." },
+      { "type": "dungeon", "dungeon": "voidheart_citadel", "quantity": 1, "description": "Seal the Voidheart Citadel once more." }
+    ],
+    "reward": {
+      "xp": 1500,
+      "coins": 1100,
+      "items": [
+        { "item": "runebound_tonic", "quantity": 3 },
+        { "item": "runebound_grimoire", "quantity": 1 }
+      ]
+    },
+    "prerequisites": [24]
+  }
+]

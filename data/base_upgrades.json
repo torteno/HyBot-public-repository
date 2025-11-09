@@ -1,0 +1,700 @@
+{
+  "ranks": [
+    {
+      "level": 1,
+      "name": "Frontier Outpost",
+      "description": "A hastily assembled foothold that keeps you safe between expeditions.",
+      "storageBonus": 0,
+      "incidentDefense": 0.05,
+      "unlocks": ["storage", "extractor"],
+      "cost": null
+    },
+    {
+      "level": 2,
+      "name": "Settled Camp",
+      "description": "Reinforced stockades, humble gardens, and the first sparks of industry.",
+      "storageBonus": 40,
+      "incidentDefense": 0.08,
+      "unlocks": ["workshop", "farm", "portal"],
+      "cost": {
+        "coins": 450,
+        "materials": {
+          "ancient_bark": 20,
+          "aurora_fragment": 12,
+          "sunstone_shard": 10
+        }
+      }
+    },
+    {
+      "level": 3,
+      "name": "Fortified Base",
+      "description": "Modular walls, dedicated workshops, and trade lines hum with activity.",
+      "storageBonus": 90,
+      "incidentDefense": 0.12,
+      "unlocks": ["brewery", "tradepost", "ward_pylon"],
+      "cost": {
+        "coins": 900,
+        "materials": {
+          "verdant_pollen": 18,
+          "stormcore_shard": 14,
+          "ember_rift_core": 6
+        }
+      }
+    },
+    {
+      "level": 4,
+      "name": "Research Nexus",
+      "description": "Arcane relays and survey towers turn the base into a knowledge engine.",
+      "storageBonus": 140,
+      "incidentDefense": 0.15,
+      "unlocks": ["arcane_relay", "surveyor", "lumen_reactor"],
+      "cost": {
+        "coins": 1500,
+        "materials": {
+          "celestial_thread": 12,
+          "runic_ember": 12,
+          "voidscale_plate": 6
+        }
+      }
+    },
+    {
+      "level": 5,
+      "name": "Skybound Citadel",
+      "description": "A self-sustaining citadel that draws power from every corner of Orbis.",
+      "storageBonus": 200,
+      "incidentDefense": 0.2,
+      "unlocks": ["armory"],
+      "cost": {
+        "coins": 2100,
+        "materials": {
+          "skybreaker_alloy": 10,
+          "abyssal_resin": 10,
+          "stormveil_feather": 8
+        }
+      }
+    }
+  ],
+  "modules": [
+    {
+      "id": "storage",
+      "name": "Staging Warehouse",
+      "category": "infrastructure",
+      "startLevel": 1,
+      "maxLevel": 6,
+      "description": "Expand reinforced storage bays to keep more materials on hand.",
+      "levels": {
+        "1": { "capacity": 160, "summary": "Base storage capacity 160." },
+        "2": {
+          "capacity": 220,
+          "bonuses": { "storageBonus": 20 },
+          "summary": "Capacity 220. Minor storage bonus.",
+          "cost": { "coins": 240, "materials": { "ancient_bark": 16, "sunstone_shard": 8 } }
+        },
+        "3": {
+          "capacity": 280,
+          "bonuses": { "storageBonus": 40 },
+          "summary": "Capacity 280. Additional storage bonus.",
+          "cost": { "coins": 360, "materials": { "aurora_fragment": 14, "stormcore_shard": 8 } }
+        },
+        "4": {
+          "capacity": 360,
+          "bonuses": { "storageBonus": 60 },
+          "summary": "Capacity 360. Reinforced shelving.",
+          "cost": { "coins": 540, "materials": { "verdant_pollen": 16, "luminous_script": 6 } }
+        },
+        "5": {
+          "capacity": 460,
+          "bonuses": { "storageBonus": 90 },
+          "summary": "Capacity 460. Integrated ledgers lower waste.",
+          "cost": { "coins": 780, "materials": { "voidscar_fragment": 10, "ember_rift_core": 4 } }
+        },
+        "6": {
+          "capacity": 580,
+          "bonuses": { "storageBonus": 120 },
+          "summary": "Capacity 580. Arc-suspended vaults prevent loss.",
+          "cost": { "coins": 1100, "materials": { "skybreaker_alloy": 6, "abyssal_resin": 6 } }
+        }
+      }
+    },
+    {
+      "id": "extractor",
+      "name": "Resource Extractor",
+      "category": "automation",
+      "startLevel": 0,
+      "maxLevel": 5,
+      "description": "Automates harvesting based on biome resources.",
+      "levels": {
+        "1": {
+          "rate": 1,
+          "summary": "One automated gather roll per minute.",
+          "cost": { "coins": 300, "materials": { "ancient_bark": 12, "aurora_fragment": 6 } }
+        },
+        "2": {
+          "rate": 2,
+          "bonuses": { "extractorRate": 1.1 },
+          "summary": "Two rolls per minute. Small efficiency boost.",
+          "cost": { "coins": 520, "materials": { "stormcore_shard": 8, "verdant_pollen": 10 } }
+        },
+        "3": {
+          "rate": 3,
+          "bonuses": { "extractorRate": 1.2 },
+          "summary": "Three rolls per minute. Less resource loss.",
+          "cost": { "coins": 760, "materials": { "luminous_script": 6, "ember_rift_core": 4 } }
+        },
+        "4": {
+          "rate": 4,
+          "bonuses": { "extractorRate": 1.35, "storageBonus": 20 },
+          "summary": "Four rolls per minute. Adds spillover catchment.",
+          "cost": { "coins": 1020, "materials": { "voidscar_fragment": 8, "celestial_thread": 6 } }
+        },
+        "5": {
+          "rate": 5,
+          "bonuses": { "extractorRate": 1.5, "incidentDefense": 0.05 },
+          "summary": "Five rolls per minute. Hardened piping reduces mishaps.",
+          "cost": { "coins": 1380, "materials": { "skybreaker_alloy": 4, "abyssal_resin": 4 } }
+        }
+      }
+    },
+    {
+      "id": "workshop",
+      "name": "Workshop Fabricator",
+      "category": "automation",
+      "startLevel": 0,
+      "maxLevel": 4,
+      "description": "Craft basic materials into refined goods from base storage.",
+      "levels": {
+        "1": {
+          "conversions": [
+            { "input": "ancient_bark", "output": "grove_tonic", "ratio": 3, "perHour": 3 }
+          ],
+          "summary": "Converts bark into grove tonics.",
+          "cost": { "coins": 280, "materials": { "ancient_bark": 14, "grove_tonic": 2 } },
+          "requires": { "baseRank": 2 }
+        },
+        "2": {
+          "conversions": [
+            { "input": "aurora_fragment", "output": "focus_elixir", "ratio": 2, "perHour": 2 },
+            { "input": "stormcore_shard", "output": "stormbrew_tonic", "ratio": 3, "perHour": 2 }
+          ],
+          "summary": "Adds elixir distillation.",
+          "cost": { "coins": 520, "materials": { "aurora_fragment": 12, "stormcore_shard": 6 } }
+        },
+        "3": {
+          "conversions": [
+            { "input": "verdant_pollen", "output": "verdant_elixir", "ratio": 3, "perHour": 2 },
+            { "input": "voidscar_fragment", "output": "luminous_script", "ratio": 2, "perHour": 1 }
+          ],
+          "summary": "Produces rare tonics and script.",
+          "cost": { "coins": 820, "materials": { "verdant_pollen": 12, "voidscar_fragment": 6 } }
+        },
+        "4": {
+          "conversions": [
+            { "input": "abyssal_resin", "output": "abyssal_phial", "ratio": 2, "perHour": 1 },
+            { "input": "celestial_thread", "output": "celestial_tea", "ratio": 2, "perHour": 1 }
+          ],
+          "summary": "Refines pinnacle reagents.",
+          "bonuses": { "storageBonus": 30 },
+          "cost": { "coins": 1240, "materials": { "abyssal_resin": 6, "celestial_thread": 6 } }
+        }
+      }
+    },
+    {
+      "id": "portal",
+      "name": "Wayfarer Portal",
+      "category": "mobility",
+      "startLevel": 0,
+      "maxLevel": 3,
+      "description": "Attune portals to shorten travel times between neighboring biomes.",
+      "levels": {
+        "1": {
+          "bonuses": { "travelModifier": 0.85 },
+          "summary": "Reduce travel time by 15%.",
+          "cost": { "coins": 420, "materials": { "stormlens_scope": 2, "aurora_fragment": 10 } },
+          "requires": { "baseRank": 2, "modules": { "storage": 2 } }
+        },
+        "2": {
+          "bonuses": { "travelModifier": 0.75 },
+          "summary": "Reduce travel time by 25%.",
+          "cost": { "coins": 760, "materials": { "luminous_script": 6, "voidscar_fragment": 6 } }
+        },
+        "3": {
+          "bonuses": { "travelModifier": 0.6, "surveyBoost": 0.05 },
+          "summary": "Reduce travel by 40%. Adds survey synergy.",
+          "cost": { "coins": 1180, "materials": { "skybreaker_alloy": 4, "celestial_thread": 4 } }
+        }
+      }
+    },
+    {
+      "id": "farm",
+      "name": "Verdant Hydroponics",
+      "category": "sustain",
+      "startLevel": 0,
+      "maxLevel": 4,
+      "description": "Cultivate rare herbs and grains in protected growbeds.",
+      "levels": {
+        "1": {
+          "outputs": [
+            {
+              "perHour": 4,
+              "table": [
+                { "item": "verdant_pollen", "chance": 0.55, "min": 1, "max": 2 },
+                { "item": "fen_root", "chance": 0.3, "min": 1, "max": 1 },
+                { "item": "sunshadow_spice", "chance": 0.15, "min": 1, "max": 1 }
+              ]
+            }
+          ],
+          "summary": "Harvest pollen and roots when storage allows.",
+          "cost": { "coins": 320, "materials": { "verdant_pollen": 8, "ancient_bark": 10 } },
+          "requires": { "baseRank": 2 }
+        },
+        "2": {
+          "outputs": [
+            {
+              "perHour": 5,
+              "table": [
+                { "item": "verdant_pollen", "chance": 0.5, "min": 1, "max": 2 },
+                { "item": "sunshadow_spice", "chance": 0.25, "min": 1, "max": 2 },
+                { "item": "wildvine_bloom", "chance": 0.25, "min": 1, "max": 1 }
+              ]
+            }
+          ],
+          "summary": "Adds spice harvests and yields more pollen.",
+          "cost": { "coins": 560, "materials": { "sunshadow_spice": 10, "verdant_pollen": 12 } }
+        },
+        "3": {
+          "outputs": [
+            {
+              "perHour": 6,
+              "table": [
+                { "item": "verdant_pollen", "chance": 0.45, "min": 2, "max": 3 },
+                { "item": "fen_root", "chance": 0.3, "min": 1, "max": 2 },
+                { "item": "delta_shell", "chance": 0.25, "min": 1, "max": 1 }
+              ]
+            }
+          ],
+          "bonuses": { "storageBonus": 20 },
+          "summary": "Improved irrigation boosts output.",
+          "cost": { "coins": 820, "materials": { "delta_shell": 8, "verdant_pollen": 16 } }
+        },
+        "4": {
+          "outputs": [
+            {
+              "perHour": 7,
+              "table": [
+                { "item": "verdant_pollen", "chance": 0.4, "min": 2, "max": 3 },
+                { "item": "wildvine_bloom", "chance": 0.35, "min": 1, "max": 2 },
+                { "item": "aurora_ember", "chance": 0.25, "min": 1, "max": 1 }
+              ]
+            }
+          ],
+          "bonuses": { "incidentDefense": 0.05 },
+          "summary": "Rare blooms add resilience to incident fallout.",
+          "cost": { "coins": 1180, "materials": { "wildvine_bloom": 10, "aurora_ember": 6 } }
+        }
+      }
+    },
+    {
+      "id": "brewery",
+      "name": "Alchemical Brewery",
+      "category": "automation",
+      "startLevel": 0,
+      "maxLevel": 3,
+      "description": "Ferment brews and tonics directly from stored reagents.",
+      "levels": {
+        "1": {
+          "outputs": [
+            {
+              "perHour": 3,
+              "table": [
+                { "item": "grove_tonic", "chance": 0.5, "min": 1, "max": 1 },
+                { "item": "ember_rift_draught", "chance": 0.25, "min": 1, "max": 1 },
+                { "item": "stormbrew_tonic", "chance": 0.25, "min": 1, "max": 1 }
+              ]
+            }
+          ],
+          "summary": "Brew basic tonics automatically.",
+          "cost": { "coins": 520, "materials": { "grove_tonic": 4, "stormbrew_tonic": 2 } },
+          "requires": { "baseRank": 3, "modules": { "workshop": 1 } }
+        },
+        "2": {
+          "outputs": [
+            {
+              "perHour": 4,
+              "table": [
+                { "item": "ember_rift_draught", "chance": 0.35, "min": 1, "max": 1 },
+                { "item": "verdant_elixir", "chance": 0.35, "min": 1, "max": 1 },
+                { "item": "aurora_tea", "chance": 0.3, "min": 1, "max": 1 }
+              ]
+            }
+          ],
+          "bonuses": { "incidentDefense": 0.03 },
+          "summary": "Expanded kettles brew rarer elixirs.",
+          "cost": { "coins": 820, "materials": { "verdant_elixir": 4, "aurora_tea": 4 } }
+        },
+        "3": {
+          "outputs": [
+            {
+              "perHour": 5,
+              "table": [
+                { "item": "abyssal_phial", "chance": 0.25, "min": 1, "max": 1 },
+                { "item": "luminous_nectar", "chance": 0.35, "min": 1, "max": 1 },
+                { "item": "voidglass_serum", "chance": 0.4, "min": 1, "max": 1 }
+              ]
+            }
+          ],
+          "summary": "Crystallised fermenters unlock pinnacle brews.",
+          "cost": { "coins": 1260, "materials": { "abyssal_phial": 3, "voidglass_serum": 3 } }
+        }
+      }
+    },
+    {
+      "id": "tradepost",
+      "name": "Trade Post",
+      "category": "economy",
+      "startLevel": 0,
+      "maxLevel": 4,
+      "description": "Dispatch caravans and barter with neighboring factions.",
+      "levels": {
+        "1": {
+          "coinsPerHour": 60,
+          "summary": "Generates 60 coins per hour when supplied.",
+          "cost": { "coins": 420, "materials": { "sunshadow_spice": 8, "delta_shell": 6 } },
+          "requires": { "baseRank": 3 }
+        },
+        "2": {
+          "coinsPerHour": 90,
+          "bonuses": { "incidentDefense": 0.03 },
+          "summary": "Generates 90 coins per hour. Adds guard stipends.",
+          "cost": { "coins": 680, "materials": { "focus_elixir": 6, "tidal_quartz": 6 } }
+        },
+        "3": {
+          "coinsPerHour": 130,
+          "summary": "Generates 130 coins per hour and boosts settlement wealth.",
+          "bonuses": { "settlementWealthBonus": 0.05 },
+          "cost": { "coins": 960, "materials": { "luminous_script": 6, "aurora_crystal": 6 } }
+        },
+        "4": {
+          "coinsPerHour": 180,
+          "summary": "Generates 180 coins per hour. Contracts yield better loot.",
+          "bonuses": { "contractRewardBonus": 0.1 },
+          "cost": { "coins": 1340, "materials": { "abyssal_resin": 6, "stormveil_feather": 6 } }
+        }
+      }
+    },
+    {
+      "id": "arcane_relay",
+      "name": "Arcane Relay",
+      "category": "knowledge",
+      "startLevel": 0,
+      "maxLevel": 3,
+      "description": "Collect ambient resonance to accelerate research and training.",
+      "levels": {
+        "1": {
+          "xpPerHour": 80,
+          "summary": "Siphons 80 XP per hour to the base owner.",
+          "cost": { "coins": 640, "materials": { "luminous_script": 6, "celestial_thread": 4 } },
+          "requires": { "baseRank": 4 }
+        },
+        "2": {
+          "xpPerHour": 120,
+          "bonuses": { "brewSuccessBonus": 0.05 },
+          "summary": "XP gain 120/h and stabilises brewing.",
+          "cost": { "coins": 940, "materials": { "runic_ember": 6, "voidglass_band": 3 } }
+        },
+        "3": {
+          "xpPerHour": 160,
+          "bonuses": { "incidentDefense": 0.04, "surveyBoost": 0.05 },
+          "summary": "XP 160/h. Helps ward off anomalies.",
+          "cost": { "coins": 1320, "materials": { "celestial_orb": 2, "abyssal_phial": 2 } }
+        }
+      }
+    },
+    {
+      "id": "ward_pylon",
+      "name": "Ward Pylon",
+      "category": "defense",
+      "startLevel": 0,
+      "maxLevel": 3,
+      "description": "Project shielding sigils to deter raids and mitigate incidents.",
+      "levels": {
+        "1": {
+          "bonuses": { "incidentDefense": 0.12 },
+          "summary": "Significantly lowers raid risk.",
+          "cost": { "coins": 560, "materials": { "wardstone_fragment": 8, "stormcore_shard": 6 } },
+          "requires": { "baseRank": 3 }
+        },
+        "2": {
+          "bonuses": { "incidentDefense": 0.18, "storageBonus": 20 },
+          "summary": "Improved wards protect supplies.",
+          "cost": { "coins": 870, "materials": { "runic_ember": 6, "voidscale_plate": 4 } }
+        },
+        "3": {
+          "bonuses": { "incidentDefense": 0.25, "settlementDefenseBonus": 0.1 },
+          "summary": "Strongest barriers share power with settlements.",
+          "cost": { "coins": 1260, "materials": { "abyssal_resin": 4, "tempest_plume": 4 } }
+        }
+      }
+    },
+    {
+      "id": "surveyor",
+      "name": "Surveyor Array",
+      "category": "exploration",
+      "startLevel": 0,
+      "maxLevel": 3,
+      "description": "Deploy scouting drones to reveal and track nearby biomes.",
+      "levels": {
+        "1": {
+          "surveyChancePerHour": 0.18,
+          "summary": "18% hourly chance to discover an adjacent biome.",
+          "cost": { "coins": 520, "materials": { "stormlens_scope": 2, "delta_shell": 6 } },
+          "requires": { "baseRank": 4, "modules": { "portal": 1 } }
+        },
+        "2": {
+          "surveyChancePerHour": 0.27,
+          "bonuses": { "travelModifier": 0.95 },
+          "summary": "Better telemetry: faster travel and more discoveries.",
+          "cost": { "coins": 840, "materials": { "celestial_thread": 4, "aurora_crystal": 6 } }
+        },
+        "3": {
+          "surveyChancePerHour": 0.36,
+          "bonuses": { "incidentDefense": 0.04, "extractorRate": 1.05 },
+          "summary": "Survey data optimises extraction routes.",
+          "cost": { "coins": 1260, "materials": { "luminous_signet": 2, "stormveil_feather": 4 } }
+        }
+      }
+    },
+    {
+      "id": "lumen_reactor",
+      "name": "Lumen Reactor",
+      "category": "refinement",
+      "startLevel": 0,
+      "maxLevel": 3,
+      "description": "Concentrate captured light and void to forge rare alloys.",
+      "levels": {
+        "1": {
+          "outputs": [
+            {
+              "perHour": 2,
+              "table": [
+                { "item": "luminous_script", "chance": 0.5, "min": 1, "max": 1 },
+                { "item": "runic_ember", "chance": 0.3, "min": 1, "max": 1 },
+                { "item": "skybreaker_alloy", "chance": 0.2, "min": 1, "max": 1 }
+              ]
+            }
+          ],
+          "summary": "Refines script, ember, and alloy.",
+          "cost": { "coins": 760, "materials": { "luminous_script": 4, "runic_ember": 4 } },
+          "requires": { "baseRank": 4 }
+        },
+        "2": {
+          "outputs": [
+            {
+              "perHour": 3,
+              "table": [
+                { "item": "skybreaker_alloy", "chance": 0.4, "min": 1, "max": 1 },
+                { "item": "abyssal_resin", "chance": 0.3, "min": 1, "max": 1 },
+                { "item": "celestial_thread", "chance": 0.3, "min": 1, "max": 1 }
+              ]
+            }
+          ],
+          "bonuses": { "extractorRate": 1.05 },
+          "summary": "Higher yield of alloys and thread.",
+          "cost": { "coins": 1120, "materials": { "skybreaker_alloy": 4, "abyssal_resin": 4 } }
+        },
+        "3": {
+          "outputs": [
+            {
+              "perHour": 4,
+              "table": [
+                { "item": "skybreaker_alloy", "chance": 0.35, "min": 1, "max": 2 },
+                { "item": "voidscale_plate", "chance": 0.35, "min": 1, "max": 1 },
+                { "item": "stormveil_thread", "chance": 0.3, "min": 1, "max": 2 }
+              ]
+            }
+          ],
+          "bonuses": { "incidentDefense": 0.05, "storageBonus": 40 },
+          "summary": "Produces high tier alloys with stabilised output.",
+          "cost": { "coins": 1560, "materials": { "voidscale_plate": 4, "stormveil_thread": 4 } }
+        }
+      }
+    },
+    {
+      "id": "armory",
+      "name": "Skywatch Armory",
+      "category": "defense",
+      "startLevel": 0,
+      "maxLevel": 3,
+      "description": "Equip defenders and cache emergency supplies to withstand assaults.",
+      "levels": {
+        "1": {
+          "bonuses": { "incidentDefense": 0.1, "storageBonus": 20 },
+          "summary": "Arm the garrison to repel minor raids.",
+          "cost": { "coins": 960, "materials": { "stormguard_plate": 2, "tempest_plume": 3 } },
+          "requires": { "baseRank": 5 }
+        },
+        "2": {
+          "bonuses": { "incidentDefense": 0.15, "settlementDefenseBonus": 0.1 },
+          "summary": "Fortified armory shares supplies with settlements.",
+          "cost": { "coins": 1380, "materials": { "abyssal_carapace": 2, "stormveil_plume": 3 } }
+        },
+        "3": {
+          "bonuses": { "incidentDefense": 0.2, "travelModifier": 0.95 },
+          "summary": "Elite training ensures rapid, safe deployments.",
+          "cost": { "coins": 1820, "materials": { "tempest_capacitor": 2, "aurora_warhammer": 1 } }
+        }
+      }
+    },
+    {
+      "id": "leyline_gateway",
+      "name": "Leyline Gateway",
+      "category": "mobility",
+      "startLevel": 0,
+      "maxLevel": 3,
+      "description": "Stabilise a leyline arch that links distant bases for rapid redeployment.",
+      "levels": {
+        "1": {
+          "bonuses": { "travelModifier": 0.8 },
+          "summary": "Reduce inter-biome travel times by 20%.",
+          "cost": { "coins": 1280, "materials": { "celestial_thread": 6, "aurora_fragment": 10 } },
+          "requires": { "baseRank": 4, "modules": { "portal": 2 } }
+        },
+        "2": {
+          "bonuses": { "travelModifier": 0.65, "surveyBoost": 0.05 },
+          "summary": "Reduce travel by 35%. Surveyors map faster using stabilised ley currents.",
+          "cost": { "coins": 1680, "materials": { "stormveil_plume": 4, "stormcore_shard": 8 } }
+        },
+        "3": {
+          "bonuses": { "travelModifier": 0.4, "surveyBoost": 0.1, "settlementDefenseBonus": 0.1 },
+          "summary": "Anchor instantaneous recalls and shield allied settlements via ley relays.",
+          "cost": { "coins": 2240, "materials": { "abyssal_resin": 6, "voidscale_plate": 2 } }
+        }
+      }
+    },
+    {
+      "id": "planar_anchor",
+      "name": "Planar Anchor",
+      "category": "defense",
+      "startLevel": 0,
+      "maxLevel": 3,
+      "description": "Bind the base to a planar keystone, enabling emergency recalls and warding void incursions.",
+      "levels": {
+        "1": {
+          "bonuses": { "incidentDefense": 0.1, "storageBonus": 30 },
+          "summary": "Anchor stabilises supply caches and reduces planar bleed.",
+          "cost": { "coins": 1120, "materials": { "voidglass_band": 3, "runic_ember": 4 } },
+          "requires": { "baseRank": 4 }
+        },
+        "2": {
+          "bonuses": { "incidentDefense": 0.16, "travelModifier": 0.9, "settlementDefenseBonus": 0.08 },
+          "summary": "Extends planar wards to nearby settlements; grants mild travel boon.",
+          "cost": { "coins": 1540, "materials": { "abyssal_resin": 4, "stormveil_thread": 3 } }
+        },
+        "3": {
+          "bonuses": { "incidentDefense": 0.24, "storageBonus": 60, "travelModifier": 0.8 },
+          "summary": "Fortified anchor wards against major breaches and accelerates planar transit.",
+          "cost": { "coins": 2060, "materials": { "voidscale_plate": 4, "skybreaker_alloy": 4 } }
+        }
+      }
+    },
+    {
+      "id": "expedition_hall",
+      "name": "Expedition Hall",
+      "category": "settlement",
+      "startLevel": 0,
+      "maxLevel": 4,
+      "description": "Coordinate scouting parties, trade caravans, and strike teams launched from this base.",
+      "levels": {
+        "1": {
+          "bonuses": { "settlementWealthBonus": 0.05 },
+          "summary": "Expeditions dispatched from linked settlements earn 5% more wealth.",
+          "cost": { "coins": 880, "materials": { "sunshadow_spice": 8, "aurora_fragment": 6 } },
+          "requires": { "baseRank": 3 }
+        },
+        "2": {
+          "bonuses": { "settlementWealthBonus": 0.08, "settlementDefenseBonus": 0.05 },
+          "summary": "Provide escorts and training for safer expeditions.",
+          "cost": { "coins": 1240, "materials": { "stormbrew_tonic": 4, "stormcore_shard": 6 } }
+        },
+        "3": {
+          "bonuses": { "settlementWealthBonus": 0.12, "contractRewardBonus": 0.08 },
+          "summary": "Guild quartermasters optimise contracts and mission logistics.",
+          "cost": { "coins": 1680, "materials": { "voidglass_band": 2, "aurora_tea": 4 } }
+        },
+        "4": {
+          "bonuses": { "settlementWealthBonus": 0.16, "settlementDefenseBonus": 0.08, "surveyBoost": 0.05 },
+          "summary": "Integrated command centre forecasts threats and opportunities.",
+          "cost": { "coins": 2140, "materials": { "tempest_capacitor": 2, "luminous_script": 6 } }
+        }
+      }
+    },
+    {
+      "id": "artisan_foundry",
+      "name": "Artisan Foundry",
+      "category": "automation",
+      "startLevel": 0,
+      "maxLevel": 4,
+      "description": "Replicate high-tier alloys and components from cross-biome stockpiles.",
+      "levels": {
+        "1": {
+          "outputs": [
+            {
+              "perHour": 2,
+              "table": [
+                { "item": "stormveil_thread", "chance": 0.35, "min": 1, "max": 1 },
+                { "item": "luminous_script", "chance": 0.4, "min": 1, "max": 1 },
+                { "item": "voidglass_serum", "chance": 0.25, "min": 1, "max": 1 }
+              ]
+            }
+          ],
+          "summary": "Forge refined components provided inputs exist.",
+          "cost": { "coins": 1340, "materials": { "luminous_script": 6, "stormveil_thread": 4 } },
+          "requires": { "baseRank": 4, "modules": { "workshop": 2 } }
+        },
+        "2": {
+          "outputs": [
+            {
+              "perHour": 3,
+              "table": [
+                { "item": "stormveil_thread", "chance": 0.35, "min": 1, "max": 2 },
+                { "item": "skybreaker_alloy", "chance": 0.35, "min": 1, "max": 1 },
+                { "item": "abyssal_resin", "chance": 0.3, "min": 1, "max": 1 }
+              ]
+            }
+          ],
+          "bonuses": { "extractorRate": 1.05 },
+          "summary": "Recycling furnaces recover precious reagents.",
+          "cost": { "coins": 1760, "materials": { "skybreaker_alloy": 4, "abyssal_resin": 4 } }
+        },
+        "3": {
+          "outputs": [
+            {
+              "perHour": 4,
+              "table": [
+                { "item": "voidscale_plate", "chance": 0.3, "min": 1, "max": 1 },
+                { "item": "tempest_capacitor", "chance": 0.35, "min": 1, "max": 1 },
+                { "item": "abyssal_resin", "chance": 0.35, "min": 1, "max": 1 }
+              ]
+            }
+          ],
+          "summary": "High-pressure crucibles synthesise late-game alloys.",
+          "cost": { "coins": 2260, "materials": { "tempest_capacitor": 2, "voidglass_serum": 3 } }
+        },
+        "4": {
+          "outputs": [
+            {
+              "perHour": 5,
+              "table": [
+                { "item": "voidscale_plate", "chance": 0.35, "min": 1, "max": 1 },
+                { "item": "stormguard_plate", "chance": 0.25, "min": 1, "max": 1 },
+                { "item": "abyssal_relic", "chance": 0.4, "min": 1, "max": 1 }
+              ]
+            }
+          ],
+          "bonuses": { "storageBonus": 80, "incidentDefense": 0.06 },
+          "summary": "Temporal stamping yields pinnacle materials with minimal waste.",
+          "cost": { "coins": 2880, "materials": { "abyssal_relic": 2, "voidscale_plate": 2 } }
+        }
+      }
+    }
+  ]
+}

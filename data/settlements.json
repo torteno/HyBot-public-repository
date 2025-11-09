@@ -1,0 +1,607 @@
+[
+  {
+    "id": "kweebec_village",
+    "name": "Kweebec Village",
+    "faction": "kweebec",
+    "baseBuildings": [
+      "hearth",
+      "storeroom"
+    ],
+    "possibleBuildings": [
+      "workshop",
+      "ritual_grove",
+      "market",
+      "watchtower"
+    ],
+    "population": {
+      "min": 12,
+      "max": 28
+    },
+    "happiness": 72,
+    "wealth": 120,
+    "garrison": 36,
+    "traits": [
+      "agrarian",
+      "artisan"
+    ],
+    "decisionTable": [
+      "welcome_trader",
+      "festival_plans",
+      "trork_raiders",
+      "celebration_boon"
+    ],
+    "expeditions": [
+      "trade_caravan",
+      "grove_scouts"
+    ],
+    "buildQueues": {
+      "core": [
+        "hearth",
+        "storeroom",
+        "market"
+      ],
+      "optional": [
+        "workshop",
+        "ritual_grove",
+        "watchtower",
+        "farmland"
+      ],
+      "factionExclusive": [
+        "songgrove_stage",
+        "sapling_nursery"
+      ]
+    },
+    "governance": {
+      "eventCadenceMinutes": [90, 210],
+      "defaultPolicies": [
+        {
+          "id": "open_harvest",
+          "effect": { "happiness": 6, "production": { "verdant_pollen": 1 } },
+          "cost": { "coins": 120 }
+        },
+        {
+          "id": "sapling_guard",
+          "effect": { "garrison": 6 },
+          "cost": { "materials": { "ancient_bark": 10 } }
+        }
+      ],
+      "storyMoments": [
+        {
+          "id": "elder_conclave",
+          "description": "The elders request guidance on expanding the grove.",
+          "options": [
+            { "id": "expand_farmlands", "effect": { "production": { "wildvine_bloom": 1 }, "prestige": 2 } },
+            { "id": "fortify_canopy", "effect": { "garrison": 8, "happiness": -4 }, "cooldownMinutes": 240 }
+          ]
+        }
+      ]
+    },
+    "expeditionProfiles": [
+      {
+        "id": "trade_caravan",
+        "durationRangeMinutes": [120, 360],
+        "recommendedVillagers": ["merchant", "forager"],
+        "successModifiers": { "traits": { "trader": 0.15, "agrarian": 0.05 } },
+        "rewardPreview": {
+          "coins": [90, 180],
+          "items": [
+            { "item": "verdant_pollen", "min": 2, "max": 6 },
+            { "item": "grove_tonic", "min": 1, "max": 2 }
+          ]
+        },
+        "rareOutcome": {
+          "chance": 0.04,
+          "rewards": { "items": [{ "item": "kweebec_charm", "quantity": 1 }], "prestige": 4 }
+        }
+      },
+      {
+        "id": "grove_scouts",
+        "durationRangeMinutes": [90, 240],
+        "recommendedVillagers": ["scout", "ranger"],
+        "successModifiers": { "traits": { "artisan": 0.05, "mystic": 0.08 } },
+        "rewardPreview": {
+          "xp": [80, 160],
+          "items": [
+            { "item": "ancient_bark", "min": 3, "max": 8 },
+            { "item": "wildvine_bloom", "min": 1, "max": 3 }
+          ]
+        },
+        "rareOutcome": {
+          "chance": 0.06,
+          "rewards": { "items": [{ "item": "sapling_staff", "quantity": 1 }], "prestige": 5 }
+        }
+      }
+    ],
+    "production": {
+      "verdant_pollen": 3,
+      "fen_root": 2,
+      "wildvine_bloom": 2
+    }
+  },
+  {
+    "id": "skysong_outpost",
+    "name": "Skysong Outpost",
+    "faction": "skysong",
+    "baseBuildings": [
+      "archive",
+      "portal_circle"
+    ],
+    "possibleBuildings": [
+      "resonance_tower",
+      "market",
+      "workshop",
+      "embassy"
+    ],
+    "population": {
+      "min": 8,
+      "max": 20
+    },
+    "happiness": 65,
+    "wealth": 160,
+    "garrison": 30,
+    "traits": [
+      "scholarly",
+      "diplomatic"
+    ],
+    "decisionTable": [
+      "scribe_request",
+      "storm_front",
+      "lost_archive",
+      "celebration_boon"
+    ],
+    "expeditions": [
+      "knowledge_run",
+      "diplomatic_envoy",
+      "ritual_voyage"
+    ],
+    "buildQueues": {
+      "core": ["archive", "portal_circle", "market"],
+      "optional": ["resonance_tower", "workshop", "embassy", "observatory"],
+      "factionExclusive": ["aetheric_laboratory", "skysong_auditorium"]
+    },
+    "governance": {
+      "eventCadenceMinutes": [120, 260],
+      "defaultPolicies": [
+        {
+          "id": "codex_drive",
+          "effect": { "knowledge": 12, "happiness": -3 },
+          "cost": { "coins": 140 }
+        },
+        {
+          "id": "leyline_mediation",
+          "effect": { "happiness": 6, "prestige": 3 },
+          "cost": { "materials": { "aurora_fragment": 6 } }
+        }
+      ],
+      "storyMoments": [
+        {
+          "id": "lost_scrolls",
+          "description": "Recovered scrolls could be auctioned or archived.",
+          "options": [
+            { "id": "auction_scrolls", "effect": { "coins": 220, "reputation": { "human": 4 } } },
+            { "id": "archive_scrolls", "effect": { "knowledge": 18, "prestige": 3 } }
+          ]
+        }
+      ]
+    },
+    "expeditionProfiles": [
+      {
+        "id": "knowledge_run",
+        "durationRangeMinutes": [180, 420],
+        "recommendedVillagers": ["scribe", "scholar"],
+        "successModifiers": { "traits": { "scholarly": 0.12, "mystic": 0.08 } },
+        "rewardPreview": {
+          "xp": [120, 240],
+          "items": [
+            { "item": "aurora_tea", "min": 1, "max": 3 },
+            { "item": "focus_elixir", "min": 1, "max": 2 }
+          ]
+        },
+        "rareOutcome": {
+          "chance": 0.05,
+          "rewards": { "items": [{ "item": "resonance_codex", "quantity": 1 }] }
+        }
+      },
+      {
+        "id": "diplomatic_envoy",
+        "durationRangeMinutes": [240, 520],
+        "recommendedVillagers": ["envoy", "mediator"],
+        "successModifiers": { "traits": { "diplomatic": 0.15, "scholarly": 0.05 } },
+        "rewardPreview": {
+          "reputation": { "skysong": [4, 8], "kweebec": [2, 4] },
+          "coins": [140, 220]
+        },
+        "rareOutcome": {
+          "chance": 0.03,
+          "rewards": { "items": [{ "item": "skysong_draught", "quantity": 2 }], "prestige": 6 }
+        }
+      },
+      {
+        "id": "ritual_voyage",
+        "durationRangeMinutes": [210, 540],
+        "recommendedVillagers": ["ritualist", "guardian"],
+        "successModifiers": { "traits": { "mystic": 0.12, "scholarly": 0.06 } },
+        "rewardPreview": {
+          "items": [
+            { "item": "aurora_lantern", "min": 1, "max": 2 },
+            { "item": "celestial_thread", "min": 1, "max": 3 }
+          ],
+          "reputation": { "skysong": [3, 6] }
+        },
+        "rareOutcome": {
+          "chance": 0.04,
+          "rewards": { "items": [{ "item": "luminous_script", "quantity": 2 }], "prestige": 7 }
+        }
+      }
+    ],
+    "production": {
+      "celestial_thread": 2,
+      "astro_ink": 1,
+      "celestial_leaf": 2
+    }
+  },
+  {
+    "id": "stormguard_bastion",
+    "name": "Stormguard Bastion",
+    "faction": "human",
+    "baseBuildings": [
+      "barracks",
+      "forge"
+    ],
+    "possibleBuildings": [
+      "watchtower",
+      "armory",
+      "market",
+      "portal_circle"
+    ],
+    "population": {
+      "min": 16,
+      "max": 32
+    },
+    "happiness": 58,
+    "wealth": 190,
+    "garrison": 72,
+    "traits": [
+      "militaristic",
+      "industrial"
+    ],
+    "decisionTable": [
+      "war_council",
+      "supply_shortage",
+      "recruitment_drive",
+      "defense_drill"
+    ],
+    "expeditions": [
+      "war_patrol",
+      "supply_convoy",
+      "defense_patrol"
+    ],
+    "buildQueues": {
+      "core": ["barracks", "forge", "watchtower"],
+      "optional": ["armory", "portal_circle", "market", "hospital"],
+      "factionExclusive": ["stormkeep_bastion", "thunderhead_foundry"]
+    },
+    "governance": {
+      "eventCadenceMinutes": [100, 220],
+      "defaultPolicies": [
+        {
+          "id": "steel_quota",
+          "effect": { "garrison": 12, "happiness": -6 },
+          "cost": { "materials": { "stormcore_shard": 8 } }
+        },
+        {
+          "id": "soldiers_festival",
+          "effect": { "happiness": 10, "prestige": 2 },
+          "cost": { "coins": 180 }
+        }
+      ],
+      "storyMoments": [
+        {
+          "id": "war_commission",
+          "description": "Stormguard command requests a major offensive.",
+          "options": [
+            { "id": "launch_strike", "effect": { "garrison": -8, "prestige": 6, "reward": { "items": [{ "item": "stormguard_plate", "quantity": 1 }] } } },
+            { "id": "fortify_position", "effect": { "incidentDefense": 0.05, "happiness": 4 } }
+          ]
+        }
+      ]
+    },
+    "expeditionProfiles": [
+      {
+        "id": "war_patrol",
+        "durationRangeMinutes": [150, 360],
+        "recommendedVillagers": ["guard", "captain"],
+        "successModifiers": { "traits": { "militaristic": 0.15, "industrial": 0.04 } },
+        "rewardPreview": {
+          "coins": [140, 240],
+          "items": [
+            { "item": "stormguard_plate", "min": 1, "max": 1 },
+            { "item": "stormbrew_tonic", "min": 1, "max": 2 }
+          ]
+        },
+        "rareOutcome": {
+          "chance": 0.05,
+          "rewards": { "items": [{ "item": "stormbreaker_hammer", "quantity": 1 }], "prestige": 8 }
+        }
+      },
+      {
+        "id": "supply_convoy",
+        "durationRangeMinutes": [200, 420],
+        "recommendedVillagers": ["quartermaster", "engineer"],
+        "successModifiers": { "traits": { "industrial": 0.12, "trader": 0.05 } },
+        "rewardPreview": {
+          "coins": [110, 200],
+          "items": [
+            { "item": "stormbrew_tonic", "min": 1, "max": 3 },
+            { "item": "stormcore_shard", "min": 2, "max": 4 }
+          ]
+        },
+        "rareOutcome": {
+          "chance": 0.04,
+          "rewards": { "items": [{ "item": "tempest_capacitor", "quantity": 1 }] }
+        }
+      },
+      {
+        "id": "defense_patrol",
+        "durationRangeMinutes": [110, 260],
+        "recommendedVillagers": ["guard", "scout"],
+        "successModifiers": { "traits": { "militaristic": 0.1, "scholarly": 0.02 } },
+        "rewardPreview": {
+          "coins": [80, 160],
+          "settlement": { "garrison": [4, 10] }
+        },
+        "rareOutcome": {
+          "chance": 0.05,
+          "rewards": { "items": [{ "item": "stormlens_scope", "quantity": 1 }], "prestige": 4 }
+        }
+      }
+    ],
+    "production": {
+      "skybreaker_alloy": 2,
+      "stormlash_ingot": 1,
+      "skybreaker_ration": 2
+    }
+  },
+  {
+    "id": "desert_waystation",
+    "name": "Desert Waystation",
+    "faction": "scavenger",
+    "baseBuildings": [
+      "market",
+      "watchtower"
+    ],
+    "possibleBuildings": [
+      "workshop",
+      "embassy",
+      "portal_circle"
+    ],
+    "population": {
+      "min": 10,
+      "max": 24
+    },
+    "happiness": 60,
+    "wealth": 180,
+    "garrison": 28,
+    "traits": [
+      "nomadic",
+      "trader"
+    ],
+    "decisionTable": [
+      "welcome_trader",
+      "supply_shortage",
+      "celebration_boon"
+    ],
+    "expeditions": [
+      "trade_caravan",
+      "exploration_run",
+      "defense_patrol"
+    ],
+    "buildQueues": {
+      "core": ["market", "watchtower", "workshop"],
+      "optional": ["embassy", "portal_circle", "brewery", "bazaar"],
+      "factionExclusive": ["sandship_dock", "mirage_atelier"]
+    },
+    "governance": {
+      "eventCadenceMinutes": [110, 240],
+      "defaultPolicies": [
+        {
+          "id": "open_bazaar",
+          "effect": { "wealth": 60, "happiness": 4 },
+          "cost": { "coins": 150 }
+        },
+        {
+          "id": "dune_patrols",
+          "effect": { "garrison": 6, "prestige": 2 },
+          "cost": { "materials": { "sunshadow_resin": 6 } }
+        }
+      ],
+      "storyMoments": [
+        {
+          "id": "caravan_feud",
+          "description": "Two caravan houses dispute ownership of an artifact.",
+          "options": [
+            { "id": "arbitrate", "effect": { "prestige": 4, "happiness": -3, "reward": { "items": [{ "item": "delta_phosphor", "quantity": 2 }] } } },
+            { "id": "auction", "effect": { "coins": 210, "prestige": 2 } }
+          ]
+        }
+      ]
+    },
+    "expeditionProfiles": [
+      {
+        "id": "trade_caravan",
+        "durationRangeMinutes": [180, 420],
+        "recommendedVillagers": ["merchant", "scout"],
+        "successModifiers": { "traits": { "trader": 0.18, "nomadic": 0.08 } },
+        "rewardPreview": {
+          "coins": [150, 280],
+          "items": [
+            { "item": "sunshadow_spice", "min": 2, "max": 6 },
+            { "item": "delta_phosphor", "min": 2, "max": 4 }
+          ]
+        },
+        "rareOutcome": {
+          "chance": 0.05,
+          "rewards": { "items": [{ "item": "gilded_truffle", "quantity": 2 }], "prestige": 5 }
+        }
+      },
+      {
+        "id": "exploration_run",
+        "durationRangeMinutes": [160, 360],
+        "recommendedVillagers": ["scout", "excavator"],
+        "successModifiers": { "traits": { "nomadic": 0.12, "scholarly": 0.03 } },
+        "rewardPreview": {
+          "items": [
+            { "item": "amber_glass", "min": 1, "max": 3 },
+            { "item": "sunshadow_resin", "min": 2, "max": 4 }
+          ],
+          "xp": [120, 220]
+        },
+        "rareOutcome": {
+          "chance": 0.05,
+          "rewards": { "items": [{ "item": "sandstrider_spear", "quantity": 1 }], "prestige": 4 }
+        }
+      },
+      {
+        "id": "defense_patrol",
+        "durationRangeMinutes": [120, 260],
+        "recommendedVillagers": ["guard", "sharpshooter"],
+        "successModifiers": { "traits": { "militaristic": 0.08, "trader": 0.03 } },
+        "rewardPreview": {
+          "coins": [70, 150],
+          "settlement": { "garrison": [3, 8] }
+        },
+        "rareOutcome": {
+          "chance": 0.04,
+          "rewards": { "items": [{ "item": "stormbrew_tonic", "quantity": 1 }], "prestige": 3 }
+        }
+      }
+    ],
+    "production": {
+      "sunshadow_resin": 2,
+      "gilded_truffle": 1,
+      "delta_phosphor": 2
+    }
+  },
+  {
+    "id": "glacier_enclave",
+    "name": "Glacier Enclave",
+    "faction": "skysong",
+    "baseBuildings": [
+      "archive",
+      "hearth"
+    ],
+    "possibleBuildings": [
+      "resonance_tower",
+      "ritual_grove",
+      "workshop"
+    ],
+    "population": {
+      "min": 6,
+      "max": 18
+    },
+    "happiness": 68,
+    "wealth": 140,
+    "garrison": 22,
+    "traits": [
+      "scholarly",
+      "mystic"
+    ],
+    "decisionTable": [
+      "lost_archive",
+      "storm_front",
+      "celebration_boon"
+    ],
+    "expeditions": [
+      "knowledge_run",
+      "grove_scouts",
+      "ritual_voyage"
+    ],
+    "buildQueues": {
+      "core": ["archive", "hearth", "resonance_tower"],
+      "optional": ["ritual_grove", "workshop", "market", "portal_circle"],
+      "factionExclusive": ["glacier_sanctum", "aurora_observatory"]
+    },
+    "governance": {
+      "eventCadenceMinutes": [130, 280],
+      "defaultPolicies": [
+        {
+          "id": "aurora_vigil",
+          "effect": { "prestige": 3, "knowledge": 10 },
+          "cost": { "materials": { "aurora_fragment": 6 } }
+        },
+        {
+          "id": "glacier_relief",
+          "effect": { "happiness": 8 },
+          "cost": { "coins": 160 }
+        }
+      ],
+      "storyMoments": [
+        {
+          "id": "frozen_relic",
+          "description": "A relic encased in ice offers power or profit.",
+          "options": [
+            { "id": "study_relic", "effect": { "knowledge": 18, "prestige": 5 } },
+            { "id": "sell_relic", "effect": { "coins": 240, "reputation": { "human": 3 } } }
+          ]
+        }
+      ]
+    },
+    "expeditionProfiles": [
+      {
+        "id": "knowledge_run",
+        "durationRangeMinutes": [180, 420],
+        "recommendedVillagers": ["scholar", "librarian"],
+        "successModifiers": { "traits": { "scholarly": 0.14, "mystic": 0.05 } },
+        "rewardPreview": {
+          "xp": [140, 240],
+          "items": [
+            { "item": "aurora_lantern", "min": 1, "max": 2 },
+            { "item": "frostblossom_petals", "min": 2, "max": 5 }
+          ]
+        },
+        "rareOutcome": {
+          "chance": 0.05,
+          "rewards": { "items": [{ "item": "celestial_thread", "quantity": 2 }], "prestige": 6 }
+        }
+      },
+      {
+        "id": "grove_scouts",
+        "durationRangeMinutes": [150, 320],
+        "recommendedVillagers": ["scout", "trapper"],
+        "successModifiers": { "traits": { "scholarly": 0.04, "mystic": 0.06 } },
+        "rewardPreview": {
+          "items": [
+            { "item": "frostblossom_petals", "min": 2, "max": 4 },
+            { "item": "aurora_fragment", "min": 1, "max": 3 }
+          ]
+        },
+        "rareOutcome": {
+          "chance": 0.04,
+          "rewards": { "items": [{ "item": "aurora_lantern", "quantity": 1 }], "prestige": 4 }
+        }
+      },
+      {
+        "id": "ritual_voyage",
+        "durationRangeMinutes": [210, 500],
+        "recommendedVillagers": ["ritualist", "guardian"],
+        "successModifiers": { "traits": { "mystic": 0.14, "scholarly": 0.05 } },
+        "rewardPreview": {
+          "items": [
+            { "item": "celestial_thread", "min": 1, "max": 3 },
+            { "item": "aurora_ember", "min": 1, "max": 2 }
+          ],
+          "reputation": { "skysong": [4, 7] }
+        },
+        "rareOutcome": {
+          "chance": 0.05,
+          "rewards": { "items": [{ "item": "luminous_script", "quantity": 1 }], "prestige": 6 }
+        }
+      }
+    ],
+    "production": {
+      "aurora_crystal": 2,
+      "aurora_sorbet": 1,
+      "aurora_ember": 2
+    }
+  }
+]
