@@ -288,7 +288,7 @@ function mergeResistances(target = {}, source = {}) {
 function getEquippedItemIds(player) {
   if (!player?.equipped) return [];
   return Object.values(player.equipped)
-    .filter(Boolean)
+    .filter(itemId => itemId && typeof itemId === 'string')
     .map(itemId => itemId.toLowerCase());
 }
 
