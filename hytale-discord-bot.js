@@ -6379,6 +6379,8 @@ async function completeQuest(message, questIdentifier) {
 
 async function showAchievements(message) {
   const player = getPlayer(message.author.id);
+  if (!player.achievements) player.achievements = { claimed: [], notified: [] };
+  
   const embed = new EmbedBuilder()
     .setColor('#F1C40F')
     .setTitle('🎖️ Achievements')
@@ -6387,14 +6389,24 @@ async function showAchievements(message) {
   const unlocked = [];
   const locked = [];
   
+  if (!ACHIEVEMENTS || !Array.isArray(ACHIEVEMENTS) || ACHIEVEMENTS.length === 0) {
+    embed.setDescription('No achievements available yet. Start adventuring!');
+    return sendStyledEmbed(message, embed, 'achievements');
+  }
+  
   ACHIEVEMENTS.forEach(achievement => {
-    const line = `${achievement.emoji} **${achievement.name}** — ${achievement.description}`;
-    if (player.achievements.claimed.includes(achievement.id)) {
-      unlocked.push(`✅ ${line}`);
-    } else if (isAchievementComplete(player, achievement)) {
-      unlocked.push(`✨ ${line} (Ready to claim)`);
-    } else {
-      locked.push(`❌ ${line}`);
+    if (!achievement || !achievement.id) return;
+    try {
+      const line = `${achievement.emoji || '🏆'} **${achievement.name || achievement.id}** — ${achievement.description || 'No description'}`;
+      if (player.achievements.claimed && player.achievements.claimed.includes(achievement.id)) {
+        unlocked.push(`✅ ${line}`);
+      } else if (isAchievementComplete && isAchievementComplete(player, achievement)) {
+        unlocked.push(`✨ ${line} (Ready to claim)`);
+      } else {
+        locked.push(`❌ ${line}`);
+      }
+    } catch (error) {
+      console.error(`Error processing achievement ${achievement.id}:`, error);
     }
   });
   
@@ -6894,33 +6906,67 @@ async function showHelp(message, category) {
   const embed = new EmbedBuilder()
     .setColor('#00D4FF')
     .setTitle('🆘 Hytale Bot Command Reference')
-    .setThumbnail(EMBED_VISUALS.info)
     .setFooter({ text: `Prefix: ${PREFIX} | Slash mirror available via /hy …` });
+  
+  if (EMBED_VISUALS && EMBED_VISUALS.info) {
+    embed.setThumbnail(EMBED_VISUALS.info);
+  }
 
   const renderCategory = (key, data) => {
-    const rows = data.commands.map(([cmd, desc]) => `\`${PREFIX} ${cmd}\` — ${desc}`).join('\n');
-    embed.addFields({ name: `**${data.title}**`, value: rows, inline: false });
-    if (data.tips && Array.isArray(data.tips) && data.tips.length > 0) {
-      embed.addFields({ name: '💡 Tips & Information', value: data.tips.join('\n\n'), inline: false });
+    if (!data || !data.commands || !Array.isArray(data.commands)) return;
+    try {
+      const rows = data.commands.map(([cmd, desc]) => `\`${PREFIX} ${cmd}\` — ${desc || 'No description'}`).join('\n');
+      if (rows && rows.length > 0) {
+        // Discord embed field value limit is 1024 characters
+        const maxLength = 1024;
+        if (rows.length > maxLength) {
+          const truncated = rows.substring(0, maxLength - 3) + '...';
+          embed.addFields({ name: `**${data.title || key}**`, value: truncated, inline: false });
+        } else {
+          embed.addFields({ name: `**${data.title || key}**`, value: rows, inline: false });
+        }
+      }
+      if (data.tips && Array.isArray(data.tips) && data.tips.length > 0) {
+        const tipsText = data.tips.join('\n\n');
+        if (tipsText.length > maxLength) {
+          const truncated = tipsText.substring(0, maxLength - 3) + '...';
+          embed.addFields({ name: '💡 Tips & Information', value: truncated, inline: false });
+        } else {
+          embed.addFields({ name: '💡 Tips & Information', value: tipsText, inline: false });
+        }
+      }
+    } catch (error) {
+      console.error(`Error rendering category ${key}:`, error);
     }
   };
 
-  if (selectedKey) {
-    renderCategory(selectedKey, categories[selectedKey]);
-  } else {
-    categoryKeys.forEach(key => renderCategory(key, categories[key]));
-    embed.addFields({
-      name: '🎮 Quick Start',
-      value: `\`${PREFIX} profile\` — check your stats\n\`${PREFIX} tutorial\` — onboarding guide\n\`${PREFIX} hunt\` — jump into combat\n\`${PREFIX} shop\` — restock and gear up`
-    });
+  try {
+    if (selectedKey) {
+      if (categories[selectedKey]) {
+        renderCategory(selectedKey, categories[selectedKey]);
+      }
+    } else {
+      categoryKeys.forEach(key => {
+        if (categories[key]) {
+          renderCategory(key, categories[key]);
+        }
+      });
+      embed.addFields({
+        name: '🎮 Quick Start',
+        value: `\`${PREFIX} profile\` — check your stats\n\`${PREFIX} tutorial\` — onboarding guide\n\`${PREFIX} hunt\` — jump into combat\n\`${PREFIX} shop\` — restock and gear up`
+      });
+    }
+
+    const overview = selectedKey
+      ? `Categories: ${categoryKeys.map(key => key === selectedKey ? `**${key}**` : key).join(' • ')}`
+      : `Categories: ${categoryKeys.map(key => `\`${key}\``).join(' • ')}`;
+    embed.setDescription(`${overview}\nUse \`${PREFIX} help <category>\` or \`/help <category>\` to drill down.`);
+
+    return sendStyledEmbed(message, embed, 'info');
+  } catch (error) {
+    console.error('Error in showHelp:', error);
+    return message.reply('❌ An error occurred while displaying help. Please try again.');
   }
-
-  const overview = selectedKey
-    ? `Categories: ${categoryKeys.map(key => key === selectedKey ? `**${key}**` : key).join(' • ')}`
-    : `Categories: ${categoryKeys.map(key => `\`${key}\``).join(' • ')}`;
-  embed.setDescription(`${overview}\nUse \`${PREFIX} help <category>\` or \`/help <category>\` to drill down.`);
-
-  return sendStyledEmbed(message, embed, 'info');
 }
 
 async function showInfo(message) {
