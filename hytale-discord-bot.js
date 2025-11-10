@@ -1632,6 +1632,26 @@ ENEMIES.forEach(enemy => {
 });
 const ENEMY_LIST = ENEMIES;
 
+// Combat state management - stores active combat sessions
+const ACTIVE_COMBAT = new Map(); // userId -> combatState
+
+// Get enemies available in a biome
+function getEnemiesForBiome(biomeId) {
+  if (!biomeId) return [];
+  const biome = BIOME_LOOKUP[biomeId.toLowerCase()];
+  if (!biome || !biome.encounters || !Array.isArray(biome.encounters.combat)) {
+    return [];
+  }
+  
+  const enemyIds = biome.encounters.combat.map(enc => enc.enemy).filter(Boolean);
+  const enemies = enemyIds
+    .map(id => ENEMY_MAP[id.toLowerCase()])
+    .filter(Boolean);
+  
+  // If no enemies found in biome encounters, return empty (don't fall back to all enemies)
+  return enemies;
+}
+
 const fallbackQuestDefinitions = [
   {
     id: 1,
@@ -4298,8 +4318,9 @@ function refreshQuestProgress(player, quest) {
   return progress;
 }
 function updateQuestProgress(player, event) {
-  if (!player.questProgress || !player.quests || player.quests.length === 0) return [];
+  if (!player.questProgress || !player.quests || player.quests.length === 0) return { readyQuests: [], completedObjectives: [] };
   const readyQuests = [];
+  const completedObjectives = [];
   const count = event.count || 1;
   for (const questId of player.quests) {
     const quest = QUEST_MAP[questId];
@@ -4310,46 +4331,72 @@ function updateQuestProgress(player, event) {
     quest.objectives.forEach((objective, index) => {
       const current = progress.objectives[index] || 0;
       if (current >= objective.quantity) return;
+      let wasUpdated = false;
+      let oldProgress = current;
       switch (objective.type) {
         case 'defeat': {
           if (event.type === 'defeat' && objective.enemy && objective.enemy === event.enemyId) {
             progress.objectives[index] = Math.min(objective.quantity, current + count);
-            updated = true;
+            wasUpdated = progress.objectives[index] !== oldProgress;
+            updated = wasUpdated || updated;
+            if (wasUpdated && progress.objectives[index] >= objective.quantity) {
+              completedObjectives.push({ quest, objective, index });
+            }
           }
           break;
         }
         case 'gather': {
           if (event.type === 'gather' && objective.item && objective.item === event.itemId) {
             progress.objectives[index] = Math.min(objective.quantity, current + count);
-            updated = true;
+            wasUpdated = progress.objectives[index] !== oldProgress;
+            updated = wasUpdated || updated;
+            if (wasUpdated && progress.objectives[index] >= objective.quantity) {
+              completedObjectives.push({ quest, objective, index });
+            }
           }
           break;
         }
         case 'craft': {
           if (event.type === 'craft' && objective.item && objective.item === event.itemId) {
             progress.objectives[index] = Math.min(objective.quantity, current + count);
-            updated = true;
+            wasUpdated = progress.objectives[index] !== oldProgress;
+            updated = wasUpdated || updated;
+            if (wasUpdated && progress.objectives[index] >= objective.quantity) {
+              completedObjectives.push({ quest, objective, index });
+            }
           }
           break;
         }
         case 'dungeon': {
           if (event.type === 'dungeon' && objective.dungeon && objective.dungeon === event.dungeonId) {
             progress.objectives[index] = Math.min(objective.quantity, current + count);
-            updated = true;
+            wasUpdated = progress.objectives[index] !== oldProgress;
+            updated = wasUpdated || updated;
+            if (wasUpdated && progress.objectives[index] >= objective.quantity) {
+              completedObjectives.push({ quest, objective, index });
+            }
           }
           break;
         }
         case 'codex': {
           if (event.type === 'codex' && objective.category && event.category === objective.category && event.entry === objective.entry) {
             progress.objectives[index] = Math.min(objective.quantity, current + count);
-            updated = true;
+            wasUpdated = progress.objectives[index] !== oldProgress;
+            updated = wasUpdated || updated;
+            if (wasUpdated && progress.objectives[index] >= objective.quantity) {
+              completedObjectives.push({ quest, objective, index });
+            }
           }
           break;
         }
         case 'faction': {
-          if (event.type === 'faction' && objective.faction && event.faction === objective.faction) {
+          if (event.type === 'faction' && objective.faction && objective.faction === event.faction) {
             progress.objectives[index] = Math.min(objective.quantity, current + count);
-            updated = true;
+            wasUpdated = progress.objectives[index] !== oldProgress;
+            updated = wasUpdated || updated;
+            if (wasUpdated && progress.objectives[index] >= objective.quantity) {
+              completedObjectives.push({ quest, objective, index });
+            }
           }
           break;
         }
@@ -4359,7 +4406,11 @@ function updateQuestProgress(player, event) {
             const matchesAction = objective.action ? objective.action === event.action : true;
             if (matchesBrew && matchesAction) {
               progress.objectives[index] = Math.min(objective.quantity, current + count);
-              updated = true;
+              wasUpdated = progress.objectives[index] !== oldProgress;
+              updated = wasUpdated || updated;
+              if (wasUpdated && progress.objectives[index] >= objective.quantity) {
+                completedObjectives.push({ quest, objective, index });
+              }
             }
           }
           break;
@@ -4369,7 +4420,11 @@ function updateQuestProgress(player, event) {
             const matchesResult = objective.result ? objective.result === event.result : true;
             if (matchesResult) {
               progress.objectives[index] = Math.min(objective.quantity, current + count);
-              updated = true;
+              wasUpdated = progress.objectives[index] !== oldProgress;
+              updated = wasUpdated || updated;
+              if (wasUpdated && progress.objectives[index] >= objective.quantity) {
+                completedObjectives.push({ quest, objective, index });
+              }
             }
           }
           break;
@@ -4377,7 +4432,22 @@ function updateQuestProgress(player, event) {
         case 'command': {
           if (event.type === 'command' && objective.target && objective.target === event.command) {
             progress.objectives[index] = Math.min(objective.quantity, current + count);
-            updated = true;
+            wasUpdated = progress.objectives[index] !== oldProgress;
+            updated = wasUpdated || updated;
+            if (wasUpdated && progress.objectives[index] >= objective.quantity) {
+              completedObjectives.push({ quest, objective, index });
+            }
+          }
+          break;
+        }
+        case 'explore': {
+          if (event.type === 'explore' && objective.target && objective.target === event.biomeId) {
+            progress.objectives[index] = Math.min(objective.quantity, current + count);
+            wasUpdated = progress.objectives[index] !== oldProgress;
+            updated = wasUpdated || updated;
+            if (wasUpdated && progress.objectives[index] >= objective.quantity) {
+              completedObjectives.push({ quest, objective, index });
+            }
           }
           break;
         }
@@ -4393,7 +4463,7 @@ function updateQuestProgress(player, event) {
       }
     }
   }
-  return readyQuests;
+  return { readyQuests, completedObjectives };
 }
 function notifyQuestReady(message, quests) {
   if (!message || !quests || quests.length === 0) return;
@@ -4480,10 +4550,19 @@ function sendTutorialNPCMessage(message, quest, dialogueType, objectiveType = nu
   }
 }
 function processQuestEvent(message, player, event) {
-  const ready = updateQuestProgress(player, event) || [];
-  if (ready.length > 0) {
-    notifyQuestReady(message, ready);
+  const result = updateQuestProgress(player, event) || { readyQuests: [], completedObjectives: [] };
+  const { readyQuests, completedObjectives } = result;
+  
+  // Notify when individual objectives are completed
+  if (completedObjectives.length > 0 && message) {
+    notifyObjectiveComplete(message, player, completedObjectives);
   }
+  
+  // Notify when quests are ready to turn in
+  if (readyQuests.length > 0) {
+    notifyQuestReady(message, readyQuests);
+  }
+  
   const readyContracts = updateContractProgress(player, event) || [];
   if (readyContracts.length > 0) {
     notifyContractsReady(message, readyContracts);
@@ -4491,6 +4570,37 @@ function processQuestEvent(message, player, event) {
   
   // Check adventure mode progress
   checkAdventureModeProgress(player, event);
+}
+
+// Notify when individual quest objectives are completed
+function notifyObjectiveComplete(message, player, completedObjectives) {
+  if (!message || !completedObjectives || completedObjectives.length === 0) return;
+  
+  // Group by quest
+  const byQuest = new Map();
+  completedObjectives.forEach(({ quest, objective }) => {
+    if (!byQuest.has(quest.id)) {
+      byQuest.set(quest.id, { quest, objectives: [] });
+    }
+    byQuest.get(quest.id).objectives.push(objective);
+  });
+  
+  // Send notifications
+  byQuest.forEach(({ quest, objectives }) => {
+    const objectiveText = objectives.map(obj => `✅ ${obj.description || formatObjectiveLabel(obj)}`).join('\n');
+    const embed = new EmbedBuilder()
+      .setColor('#2ECC71')
+      .setTitle(`📜 Quest Progress: ${quest.name}`)
+      .setDescription(`**Objective(s) Completed:**\n${objectiveText}`)
+      .setFooter({ text: 'Keep going! Complete all objectives to finish the quest.' });
+    
+    const payload = buildStyledPayload(embed, 'quests', { components: buildSystemComponents('quests') });
+    if (message.reply) {
+      message.reply(payload).catch(() => {});
+    } else if (message.channel) {
+      message.channel.send(payload).catch(() => {});
+    }
+  });
 }
 function isAchievementComplete(player, achievement) {
   const { requirement } = achievement;
@@ -5613,15 +5723,226 @@ async function showStats(message) {
   return sendStyledEmbed(message, embed, 'stats');
 }
 // ==================== COMBAT COMMANDS ====================
-async function startBattle(message) {
+
+// Get enemy abilities (2-3 attacks with conditions)
+function getEnemyAbilities(enemy) {
+  const abilities = enemy.abilities || [];
+  if (abilities.length === 0) {
+    // Default: create basic abilities from enemy stats
+    return [
+      { id: 'basic_attack', name: 'Basic Attack', damage: enemy.damage || 5, type: 'physical', condition: null },
+      { id: 'power_strike', name: 'Power Strike', damage: Math.floor((enemy.damage || 5) * 1.5), type: 'physical', condition: { hpBelow: 0.5 }, chance: 0.3 }
+    ];
+  }
+  return abilities;
+}
+
+// Select enemy ability based on conditions
+function selectEnemyAbility(enemy, enemyHp, enemyMaxHp) {
+  const abilities = getEnemyAbilities(enemy);
+  const availableAbilities = abilities.filter(ability => {
+    if (!ability.condition) return true;
+    if (ability.condition.hpBelow && (enemyHp / enemyMaxHp) > ability.condition.hpBelow) return false;
+    if (ability.condition.hpAbove && (enemyHp / enemyMaxHp) < ability.condition.hpAbove) return false;
+    return true;
+  });
+  
+  if (availableAbilities.length === 0) return abilities[0] || { id: 'basic_attack', name: 'Basic Attack', damage: enemy.damage || 5, type: 'physical' };
+  
+  // Weighted selection if chances are specified
+  const weighted = [];
+  availableAbilities.forEach(ability => {
+    const weight = ability.chance ? Math.floor(ability.chance * 100) : 50;
+    for (let i = 0; i < weight; i++) {
+      weighted.push(ability);
+    }
+  });
+  
+  return weighted[Math.floor(Math.random() * weighted.length)] || availableAbilities[0];
+}
+
+// Execute enemy ability
+function executeEnemyAbility(ability, enemyProfile, playerProfile) {
+  if (ability.type === 'attack' || ability.type === 'physical') {
+    // Modify enemy profile temporarily for this ability
+    const originalDamage = enemyProfile.damageMin;
+    enemyProfile.damageMin = ability.damage || enemyProfile.damageMin;
+    enemyProfile.damageMax = ability.damage || enemyProfile.damageMax;
+    const result = resolveAttack(enemyProfile, playerProfile);
+    enemyProfile.damageMin = originalDamage;
+    enemyProfile.damageMax = originalDamage;
+    return { ...result, abilityName: ability.name };
+  }
+  // Default to basic attack
+  return resolveAttack(enemyProfile, playerProfile);
+}
+
+// Build combat action buttons
+function buildCombatActionButtons(player, enemy, combatState) {
+  const row1 = new ActionRowBuilder();
+  const row2 = new ActionRowBuilder();
+  const row3 = new ActionRowBuilder();
+  
+  // Attack button
+  row1.addComponents(
+    new ButtonBuilder()
+      .setCustomId(`combat|attack|${combatState.battleId}`)
+      .setLabel('⚔️ Attack')
+      .setStyle(ButtonStyle.Primary)
+      .setDisabled(combatState.turn !== 'player' || combatState.ended)
+  );
+  
+  // Spell buttons (if available)
+  const equippedSpells = player.spells?.equipped || [];
+  const availableSpells = equippedSpells.filter(spellId => {
+    const spell = SPELL_LOOKUP[spellId.toLowerCase()];
+    if (!spell) return false;
+    if (player.mana < spell.manaCost) return false;
+    const cooldown = player.spells?.cooldowns?.[spell.id] || 0;
+    return cooldown <= Date.now();
+  }).slice(0, 2); // Max 2 spell buttons
+  
+  availableSpells.forEach(spellId => {
+    const spell = SPELL_LOOKUP[spellId.toLowerCase()];
+    if (spell) {
+      row1.addComponents(
+        new ButtonBuilder()
+          .setCustomId(`combat|spell|${combatState.battleId}|${spell.id}`)
+          .setLabel(`${spell.emoji || '🔮'} ${spell.name}`)
+          .setStyle(ButtonStyle.Secondary)
+          .setDisabled(combatState.turn !== 'player' || combatState.ended)
+      );
+    }
+  });
+  
+  // Item/Potion buttons
+  const potions = Object.entries(player.inventory || {}).filter(([id, count]) => {
+    const item = ITEMS[id];
+    return item && (item.type === 'consumable' || item.heal || item.mana) && count > 0;
+  }).slice(0, 2);
+  
+  if (potions.length > 0) {
+    row2.addComponents(
+      new ButtonBuilder()
+        .setCustomId(`combat|items|${combatState.battleId}`)
+        .setLabel('🍷 Use Item')
+        .setStyle(ButtonStyle.Success)
+        .setDisabled(combatState.turn !== 'player' || combatState.ended)
+    );
+  }
+  
+  // Pet ability (if active pet)
+  const activePet = player.pets?.active;
+  if (activePet) {
+    const pet = PET_LOOKUP[activePet.toLowerCase()];
+    if (pet && pet.abilities && pet.abilities.combat) {
+      row2.addComponents(
+        new ButtonBuilder()
+          .setCustomId(`combat|pet|${combatState.battleId}`)
+          .setLabel(`🐾 ${pet.name} Ability`)
+          .setStyle(ButtonStyle.Success)
+          .setDisabled(combatState.turn !== 'player' || combatState.ended)
+      );
+    }
+  }
+  
+  // Retreat button
+  row3.addComponents(
+    new ButtonBuilder()
+      .setCustomId(`combat|retreat|${combatState.battleId}`)
+      .setLabel('🏃 Retreat')
+      .setStyle(ButtonStyle.Danger)
+      .setDisabled(combatState.ended)
+  );
+  
+  const components = [row1];
+  if (row2.components.length > 0) components.push(row2);
+  if (row3.components.length > 0) components.push(row3);
+  
+  return components;
+}
+
+// Build combat embed
+function buildCombatEmbed(player, enemy, combatState, battleLog) {
+  const playerHp = combatState.playerHp !== undefined ? combatState.playerHp : player.hp;
+  const playerMaxHp = combatState.playerMaxHp !== undefined ? combatState.playerMaxHp : player.maxHp;
+  const enemyHp = combatState.enemyHp !== undefined ? combatState.enemyHp : (enemy.hp || enemy.maxHp || 30);
+  const enemyMaxHp = combatState.enemyMaxHp !== undefined ? combatState.enemyMaxHp : (enemy.maxHp || enemy.hp || 30);
+  
+  const embed = new EmbedBuilder()
+    .setColor('#E74C3C')
+    .setTitle(`⚔️ ${enemy.emoji} ${enemy.name}`)
+    .setDescription(battleLog.slice(-5).join('\n') || 'Battle in progress...')
+    .addFields(
+      { name: '👤 Player', value: `HP: ${playerHp}/${playerMaxHp}\nMana: ${player.mana || 0}/${player.maxMana || 0}`, inline: true },
+      { name: '👹 Enemy', value: `HP: ${enemyHp}/${enemyMaxHp}`, inline: true },
+      { name: '🔄 Turn', value: combatState.turn === 'player' ? 'Your Turn' : "Enemy's Turn", inline: true }
+    )
+    .setFooter({ text: combatState.ended ? 'Battle Ended' : (combatState.turn === 'player' ? 'Choose your action!' : 'Waiting for enemy...') });
+  
+  return embed;
+}
+
+// Initialize combat state
+function initializeCombatState(player, enemy, messageId) {
+  const battleId = `${messageId}_${Date.now()}`;
+  return {
+    battleId,
+    playerId: player.userId || messageId,
+    enemy: { ...enemy },
+    playerHp: player.hp,
+    playerMaxHp: player.maxHp,
+    enemyHp: enemy.hp || enemy.maxHp || 30,
+    enemyMaxHp: enemy.maxHp || enemy.hp || 30,
+    turn: 'player',
+    battleLog: [`⚔️ **Battle Started!** ${enemy.emoji} ${enemy.name} appears!`],
+    ended: false,
+    messageId: null,
+    channelId: null
+  };
+}
+
+async function startBattle(message, options = {}) {
   const player = getPlayer(message.author.id);
   
   if (player.hp <= 0) {
     return message.reply('❌ You need to heal before battling! Use a health potion or `!hy heal`.');
   }
   
-  const enemy = { ...ENEMIES[Math.floor(Math.random() * ENEMIES.length)] };
-  if (enemy.hp == null) enemy.hp = enemy.maxHp || 30;
+  // Check if player is already in combat
+  if (ACTIVE_COMBAT.has(message.author.id) && !options.force) {
+    return message.reply('❌ You are already in combat! Finish your current battle first.');
+  }
+  
+  // Get enemy based on biome
+  const exploration = ensureExplorationState(player);
+  const biomeId = exploration.currentBiome || 'emerald_grove';
+  const availableEnemies = getEnemiesForBiome(biomeId);
+  
+  if (availableEnemies.length === 0) {
+    // Fallback: if no enemies in biome, try to find any enemy (shouldn't happen, but safety)
+    return message.reply(`❌ No enemies found in ${biomeId}. This biome may need enemy configuration.`);
+  }
+  
+  // Weighted selection based on encounter chances
+  const biome = BIOME_LOOKUP[biomeId.toLowerCase()];
+  const combatEncounters = biome?.encounters?.combat || [];
+  const weightedEnemies = [];
+  
+  availableEnemies.forEach(enemy => {
+    const encounter = combatEncounters.find(e => e.enemy?.toLowerCase() === enemy.id?.toLowerCase());
+    const chance = encounter?.chance || 0.1;
+    // Add enemy multiple times based on chance (weighted selection)
+    const weight = Math.max(1, Math.floor(chance * 100));
+    for (let i = 0; i < weight; i++) {
+      weightedEnemies.push(enemy);
+    }
+  });
+  
+  const selectedEnemy = weightedEnemies[Math.floor(Math.random() * weightedEnemies.length)] || availableEnemies[0];
+  const enemy = { ...selectedEnemy };
+  if (enemy.hp == null) enemy.hp = enemy.maxHp || enemy.hp || 30;
+  enemy.maxHp = enemy.maxHp || enemy.hp || 30;
   const modifiers = getBrewModifiers(player);
   const playerProfile = buildPlayerCombatProfile(player, {
     label: message.author.username,
@@ -5629,100 +5950,259 @@ async function startBattle(message) {
   });
   const enemyProfile = buildEnemyCombatProfile(enemy);
   
-  const battleLog = [`⚔️ **Battle Started!** ${enemy.emoji} ${enemy.name} appears!\n`];
+  // Initialize combat state for turn-based combat
+  const tempMessageId = message.id || `${Date.now()}`;
+  const combatState = initializeCombatState(player, enemy, tempMessageId);
+  combatState.playerProfile = playerProfile;
+  combatState.enemyProfile = enemyProfile;
+  combatState.modifiers = modifiers;
+  combatState.skillBonuses = playerProfile.skillBonuses || {};
+  combatState.userId = message.author.id;
   
-  // Apply skill tree bonuses
-  const skillBonuses = playerProfile.skillBonuses || {};
+  // Store combat state
+  ACTIVE_COMBAT.set(message.author.id, combatState);
   
-  while (player.hp > 0 && enemy.hp > 0) {
-    // Player's turn - try to use spell if available, otherwise physical attack
-    let playerAction = null;
-    const equippedSpells = player.spells?.equipped || [];
-    
-    // Check if player has any equipped spells and enough mana
-    const availableSpell = equippedSpells.find(spellId => {
-      const spell = SPELL_LOOKUP[spellId.toLowerCase()];
-      if (!spell) return false;
-      if (player.mana < spell.manaCost) return false;
-      const cooldown = player.spells?.cooldowns?.[spell.id] || 0;
-      return cooldown <= Date.now();
-    });
-    
-    if (availableSpell && Math.random() < 0.3) { // 30% chance to use spell if available
-      const spell = SPELL_LOOKUP[availableSpell.toLowerCase()];
-      playerAction = resolveSpell(spell, playerProfile, enemyProfile, skillBonuses);
-      if (playerAction.type === 'spell') {
-        battleLog.push(formatAttackResult(playerProfile.label, enemyProfile.label, playerAction, enemy.hp, enemyProfile.maxHp));
-        if (enemy.hp <= 0) break;
-      } else {
-        // Spell failed, use physical attack
-        const playerStrike = resolveAttack(playerProfile, enemyProfile);
-        battleLog.push(formatAttackResult(playerProfile.label, enemyProfile.label, playerStrike, enemy.hp, enemyProfile.maxHp));
-      }
-    } else {
-      // Physical attack
-      const playerStrike = resolveAttack(playerProfile, enemyProfile);
-      battleLog.push(formatAttackResult(playerProfile.label, enemyProfile.label, playerStrike, enemy.hp, enemyProfile.maxHp));
-    }
-    
-    if (enemy.hp <= 0) break;
-    
-    // Enemy's turn
-    const enemyStrike = resolveAttack(enemyProfile, playerProfile);
-    battleLog.push(formatAttackResult(enemyProfile.label, playerProfile.label, enemyStrike, player.hp, playerProfile.maxHp));
+  // Send initial combat message with buttons
+  const embed = buildCombatEmbed(player, enemy, combatState, combatState.battleLog);
+  const components = buildCombatActionButtons(player, enemy, combatState);
+  
+  const combatMessage = await message.reply({ embeds: [embed], components });
+  combatState.messageId = combatMessage.id;
+  combatState.channelId = message.channel.id;
+  
+  // Update stored combat state with message ID
+  ACTIVE_COMBAT.set(message.author.id, combatState);
+}
+
+// Handle combat button interactions
+async function handleCombatAction(interaction, action, battleId, spellId = null) {
+  const player = getPlayer(interaction.user.id);
+  const combatState = ACTIVE_COMBAT.get(interaction.user.id);
+  
+  if (!combatState || combatState.battleId !== battleId) {
+    return interaction.reply({ ephemeral: true, content: '❌ Combat session not found or expired.' });
   }
   
-  if (player.hp > 0) {
+  if (combatState.turn !== 'player' && action !== 'retreat') {
+    return interaction.reply({ ephemeral: true, content: '❌ Not your turn!' });
+  }
+  
+  if (combatState.ended) {
+    return interaction.reply({ ephemeral: true, content: '❌ This battle has already ended.' });
+  }
+  
+  const { playerProfile, enemyProfile, skillBonuses, modifiers } = combatState;
+  const enemy = combatState.enemy;
+  
+  // Update player/enemy HP from combat state
+  player.hp = combatState.playerHp;
+  enemy.hp = combatState.enemyHp;
+  player.mana = player.mana || 0;
+  
+  let actionText = '';
+  
+  switch (action) {
+    case 'attack': {
+      // Set HP references for resolveAttack
+      enemy.hp = combatState.enemyHp;
+      enemyProfile.hpRef = enemy;
+      const result = resolveAttack(playerProfile, enemyProfile);
+      combatState.enemyHp = Math.max(0, enemy.hp);
+      actionText = formatAttackResult(playerProfile.label, enemyProfile.label, result, combatState.enemyHp, combatState.enemyMaxHp);
+      combatState.battleLog.push(actionText);
+      break;
+    }
+    case 'spell': {
+      if (!spellId) {
+        return interaction.reply({ ephemeral: true, content: '❌ Spell not specified.' });
+      }
+      const spell = SPELL_LOOKUP[spellId.toLowerCase()];
+      if (!spell) {
+        return interaction.reply({ ephemeral: true, content: '❌ Spell not found.' });
+      }
+      // Set HP references for resolveSpell
+      enemy.hp = combatState.enemyHp;
+      enemyProfile.hpRef = enemy;
+      player.hp = combatState.playerHp;
+      playerProfile.hpRef = player;
+      const result = resolveSpell(spell, playerProfile, enemyProfile, skillBonuses);
+      if (result.type === 'spell') {
+        combatState.enemyHp = Math.max(0, enemy.hp);
+        combatState.playerHp = Math.min(combatState.playerMaxHp, player.hp);
+        actionText = formatAttackResult(playerProfile.label, enemyProfile.label, result, combatState.enemyHp, combatState.enemyMaxHp);
+        combatState.battleLog.push(actionText);
+      } else {
+        return interaction.reply({ ephemeral: true, content: `❌ ${result.type === 'insufficient_mana' ? `Not enough mana! Need ${result.required}, have ${result.current}` : 'Spell failed!'}` });
+      }
+      break;
+    }
+    case 'items': {
+      const potions = Object.entries(player.inventory || {}).filter(([id, count]) => {
+        const item = ITEMS[id];
+        return item && (item.type === 'consumable' || item.heal || item.mana) && count > 0;
+      });
+      if (potions.length === 0) {
+        return interaction.reply({ ephemeral: true, content: '❌ No usable items in inventory!' });
+      }
+      const [itemId] = potions[0];
+      const item = ITEMS[itemId];
+      player.inventory[itemId]--;
+      if (player.inventory[itemId] === 0) delete player.inventory[itemId];
+      
+      const healAmount = item.heal || 0;
+      const manaAmount = item.mana || 0;
+      if (healAmount) {
+        combatState.playerHp = Math.min(combatState.playerMaxHp, combatState.playerHp + healAmount);
+        actionText = `🍷 Used **${item.name}** and restored ${healAmount} HP!`;
+      }
+      if (manaAmount) {
+        player.mana = Math.min(player.maxMana, (player.mana || 0) + manaAmount);
+        actionText += ` Restored ${manaAmount} Mana!`;
+      }
+      combatState.battleLog.push(actionText);
+      break;
+    }
+    case 'pet': {
+      const activePet = player.pets?.active;
+      if (!activePet) {
+        return interaction.reply({ ephemeral: true, content: '❌ No active pet!' });
+      }
+      const pet = PET_LOOKUP[activePet.toLowerCase()];
+      if (!pet || !pet.abilities || !pet.abilities.combat) {
+        return interaction.reply({ ephemeral: true, content: '❌ Pet has no combat ability!' });
+      }
+      const heal = pet.bonuses?.hp || 10;
+      combatState.playerHp = Math.min(combatState.playerMaxHp, combatState.playerHp + heal);
+      actionText = `🐾 ${pet.name} used its ability and restored ${heal} HP!`;
+      combatState.battleLog.push(actionText);
+      break;
+    }
+    case 'retreat': {
+      combatState.ended = true;
+      combatState.battleLog.push(`🏃 **Retreat!** You fled from battle.`);
+      player.hp = Math.max(1, Math.floor(combatState.playerHp * 0.8));
+      ACTIVE_COMBAT.delete(interaction.user.id);
+      await updateCombatMessage(interaction, combatState, player, enemy);
+      return interaction.reply({ ephemeral: true, content: '✅ You retreated from battle!' });
+    }
+    default:
+      return interaction.reply({ ephemeral: true, content: '❌ Unknown action.' });
+  }
+  
+  // Check if enemy is defeated
+  if (combatState.enemyHp <= 0) {
+    await endCombat(interaction, combatState, player, enemy, true);
+    return;
+  }
+  
+  // Enemy's turn
+  combatState.turn = 'enemy';
+  player.hp = combatState.playerHp;
+  playerProfile.hpRef = player;
+  const enemyAbility = selectEnemyAbility(enemy, combatState.enemyHp, combatState.enemyMaxHp);
+  const enemyResult = executeEnemyAbility(enemyAbility, enemyProfile, playerProfile);
+  combatState.playerHp = Math.max(0, player.hp);
+  let enemyText = formatAttackResult(enemyProfile.label, playerProfile.label, enemyResult, combatState.playerHp, combatState.playerMaxHp);
+  if (enemyAbility.name && enemyAbility.name !== 'Basic Attack') {
+    combatState.battleLog.push(`💥 ${enemy.name} uses **${enemyAbility.name}**!`);
+  }
+  combatState.battleLog.push(enemyText);
+  
+  // Check if player is defeated
+  if (combatState.playerHp <= 0) {
+    await endCombat(interaction, combatState, player, enemy, false);
+    return;
+  }
+  
+  // Player's turn again
+  combatState.turn = 'player';
+  player.hp = combatState.playerHp;
+  enemy.hp = combatState.enemyHp;
+  
+  // Update combat message
+  await updateCombatMessage(interaction, combatState, player, enemy);
+  await interaction.deferUpdate();
+}
+
+// Update combat message
+async function updateCombatMessage(interaction, combatState, player, enemy) {
+  const embed = buildCombatEmbed(player, enemy, combatState, combatState.battleLog);
+  const components = buildCombatActionButtons(player, enemy, combatState);
+  
+  try {
+    const channel = interaction.channel || client.channels.cache.get(combatState.channelId);
+    if (channel && combatState.messageId) {
+      const message = await channel.messages.fetch(combatState.messageId);
+      await message.edit({ embeds: [embed], components });
+    }
+  } catch (error) {
+    console.error('Error updating combat message:', error);
+  }
+}
+
+// End combat
+async function endCombat(interaction, combatState, player, enemy, victory) {
+  combatState.ended = true;
+  player.hp = combatState.playerHp;
+  enemy.hp = combatState.enemyHp;
+  const { modifiers, skillBonuses } = combatState;
+  
+  if (victory) {
     const xpGain = Math.max(5, Math.round(enemy.xp * (1 + modifiers.xpBonus)));
-    battleLog.push(`\n🎉 **Victory!** You defeated ${enemy.emoji} ${enemy.name}!`);
-    battleLog.push(`+${xpGain} XP | +${enemy.coins} coins`);
+    combatState.battleLog.push(`\n🎉 **Victory!** You defeated ${enemy.emoji} ${enemy.name}!`);
+    combatState.battleLog.push(`+${xpGain} XP | +${enemy.coins} coins`);
     
     player.coins += enemy.coins;
     player.stats.kills++;
     
-    // Apply skill tree passive effects (e.g., Bloodlust)
     if (skillBonuses.hpPerKill) {
       const healAmount = skillBonuses.hpPerKill;
       player.hp = Math.min(player.maxHp, player.hp + healAmount);
-      battleLog.push(`💚 **Bloodlust** activated! You gain ${healAmount} HP from the kill!`);
+      combatState.battleLog.push(`💚 **Bloodlust** activated! You gain ${healAmount} HP from the kill!`);
     }
     
     const leveled = addXp(player, xpGain);
     if (leveled) {
-      battleLog.push(`\n⭐ **LEVEL UP!** You are now level ${player.level}!`);
+      combatState.battleLog.push(`\n⭐ **LEVEL UP!** You are now level ${player.level}!`);
     }
 
     const questEnemyId = enemy.id || enemy.slug || (enemy.name ? enemy.name.toLowerCase().replace(/\s+/g, '_') : null);
     if (questEnemyId) {
+      const message = createMessageAdapterFromInteraction(interaction);
       processQuestEvent(message, player, { type: 'defeat', enemyId: questEnemyId, count: 1 });
     }
 
     const lootRewards = rollMaterialDrops(player);
     if (lootRewards.length > 0) {
-      battleLog.push(`Loot: ${lootRewards.map(entry => entry.label).join(', ')}`);
+      combatState.battleLog.push(`Loot: ${lootRewards.map(entry => entry.label).join(', ')}`);
+      const message = createMessageAdapterFromInteraction(interaction);
       lootRewards.forEach(entry => {
         processQuestEvent(message, player, { type: 'gather', itemId: entry.itemId, count: entry.quantity });
       });
     }
   } else {
-    battleLog.push(`\n💀 **Defeated!** ${enemy.emoji} ${enemy.name} was too strong...`);
+    combatState.battleLog.push(`\n💀 **Defeated!** ${enemy.emoji} ${enemy.name} was too strong...`);
     player.hp = Math.floor(player.maxHp * 0.5);
     player.coins = Math.max(0, player.coins - 20);
     player.stats.deaths++;
-    battleLog.push(`Lost 20 coins. HP restored to 50%.`);
+    combatState.battleLog.push(`Lost 20 coins. HP restored to 50%.`);
   }
   
-  applyPostBattleBuffs(player, battleLog);
+  applyPostBattleBuffs(player, combatState.battleLog);
   
   const embed = new EmbedBuilder()
-    .setColor(player.hp > 0 ? '#00FF00' : '#FF0000')
+    .setColor(victory ? '#00FF00' : '#FF0000')
     .setTitle('⚔️ Battle Report')
-    .setDescription(battleLog.join('\n'))
+    .setDescription(combatState.battleLog.join('\n'))
     .setFooter({ text: `HP: ${player.hp}/${player.maxHp} | Mana: ${player.mana || 0}/${player.maxMana || 0} | Coins: ${player.coins}` });
   
-  await message.reply({ embeds: [embed] });
+  await updateCombatMessage(interaction, combatState, player, enemy);
+  ACTIVE_COMBAT.delete(interaction.user.id);
+  
+  const message = createMessageAdapterFromInteraction(interaction);
   await handleAchievementCheck(message, player);
 }
+
 async function startRaid(message) {
   if (activeGames.has(message.channel.id)) {
     return message.reply('❌ A game is already active in this channel!');
@@ -13944,6 +14424,12 @@ async function handleButtonInteraction(interaction) {
         
         const runId = rest[0];
         return dungeonHandlers.handleDungeonButton(interaction, action, runId, { getPlayerFunc: getPlayer });
+      }
+      case 'combat': {
+        const combatAction = action; // attack, spell, items, pet, retreat
+        const battleId = rest[0];
+        const spellId = rest[1] || null;
+        return handleCombatAction(interaction, combatAction, battleId, spellId);
       }
       case 'inventory': {
         if (action === 'filter') {
