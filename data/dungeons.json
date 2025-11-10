@@ -3034,5 +3034,279 @@
         }
       ]
     }
+  },
+  {
+    "id": "sand_temple",
+    "name": "Sand Temple",
+    "theme": "desert",
+    "biome": "howling_sands",
+    "minLevel": 15,
+    "recommendedPower": 300,
+    "timeLimitSeconds": 1200,
+    "environment": "Ancient temple filled with wind magic and sandstorms. Wind elementals guard the inner sanctum.",
+    "floors": [
+      {
+        "name": "Desert Guardian",
+        "emoji": "🏜️",
+        "description": "A guardian of the temple's outer chambers, wielding sand magic.",
+        "baseHp": 150,
+        "hpPerLevel": 18,
+        "baseDamage": 18,
+        "damagePerLevel": 2.5,
+        "baseXp": 120,
+        "xpPerLevel": 15,
+        "baseCoins": 100,
+        "coinsPerLevel": 8,
+        "healPercent": 0.25,
+        "loot": [
+          {
+            "item": "desert_iron",
+            "chance": 0.4,
+            "min": 2,
+            "max": 4
+          },
+          {
+            "item": "wind_crystal",
+            "chance": 0.3,
+            "min": 1,
+            "max": 2
+          }
+        ]
+      },
+      {
+        "name": "Wind Elemental",
+        "emoji": "💨",
+        "description": "A powerful wind elemental that controls the temple's storms.",
+        "relic": {
+          "item": "wind_essence",
+          "chance": 0.5,
+          "amount": 2
+        },
+        "baseHp": 200,
+        "hpPerLevel": 22,
+        "baseDamage": 22,
+        "damagePerLevel": 3.0,
+        "baseXp": 180,
+        "xpPerLevel": 18,
+        "baseCoins": 140,
+        "coinsPerLevel": 10,
+        "healPercent": 0.3,
+        "loot": [
+          {
+            "item": "wind_essence",
+            "chance": 0.45,
+            "min": 2,
+            "max": 3
+          },
+          {
+            "item": "tempest_crystal",
+            "chance": 0.25,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      },
+      {
+        "name": "Tempest Lord",
+        "emoji": "🌪️",
+        "description": "The master of the temple, a powerful tempest lord who commands the winds.",
+        "boss": true,
+        "relic": {
+          "item": "wind_core",
+          "chance": 0.7,
+          "amount": 1
+        },
+        "baseHp": 350,
+        "hpPerLevel": 30,
+        "baseDamage": 35,
+        "damagePerLevel": 3.5,
+        "baseXp": 350,
+        "xpPerLevel": 25,
+        "baseCoins": 300,
+        "coinsPerLevel": 15,
+        "healPercent": 1.0,
+        "loot": [
+          {
+            "item": "wind_core",
+            "chance": 0.6,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "item": "wind_mage_staff",
+            "chance": 0.4,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "item": "tempest_robes",
+            "chance": 0.3,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      }
+    ],
+    "completionReward": {
+      "coins": {
+        "base": 500,
+        "perLevel": 25
+      },
+      "xp": {
+        "base": 600,
+        "perLevel": 30
+      },
+      "items": [
+        {
+          "item": "wind_core",
+          "quantity": 1
+        },
+        {
+          "item": "desert_robes",
+          "quantity": 1
+        },
+        {
+          "item": "wind_essence",
+          "quantity": 3
+        }
+      ]
+    }
+  },
+  {
+    "id": "dune_sepulcher",
+    "name": "Dune Sepulcher",
+    "theme": "ancient",
+    "biome": "dune_sepulcher",
+    "minLevel": 18,
+    "recommendedPower": 350,
+    "timeLimitSeconds": 1500,
+    "environment": "Ancient burial grounds filled with mummies and cursed treasures. The pharaoh's curse weakens all who enter.",
+    "floors": [
+      {
+        "name": "Mummy Guardian",
+        "emoji": "🧟",
+        "description": "An undead guardian protecting the outer tombs.",
+        "baseHp": 180,
+        "hpPerLevel": 20,
+        "baseDamage": 20,
+        "damagePerLevel": 2.8,
+        "baseXp": 150,
+        "xpPerLevel": 18,
+        "baseCoins": 120,
+        "coinsPerLevel": 10,
+        "healPercent": 0.25,
+        "loot": [
+          {
+            "item": "mummy_wrappings",
+            "chance": 0.5,
+            "min": 2,
+            "max": 4
+          },
+          {
+            "item": "ancient_scarab",
+            "chance": 0.35,
+            "min": 1,
+            "max": 2
+          }
+        ]
+      },
+      {
+        "name": "Sand Wraith",
+        "emoji": "👻",
+        "description": "A powerful wraith that haunts the inner chambers.",
+        "relic": {
+          "item": "cursed_gold",
+          "chance": 0.5,
+          "amount": 5
+        },
+        "baseHp": 250,
+        "hpPerLevel": 25,
+        "baseDamage": 25,
+        "damagePerLevel": 3.2,
+        "baseXp": 220,
+        "xpPerLevel": 22,
+        "baseCoins": 180,
+        "coinsPerLevel": 12,
+        "healPercent": 0.3,
+        "loot": [
+          {
+            "item": "cursed_gold",
+            "chance": 0.45,
+            "min": 3,
+            "max": 5
+          },
+          {
+            "item": "ancient_amulet",
+            "chance": 0.2,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      },
+      {
+        "name": "Pharaoh Lich",
+        "emoji": "👑",
+        "description": "The ancient pharaoh, risen as a lich to guard his eternal tomb.",
+        "boss": true,
+        "relic": {
+          "item": "pharaoh_stone",
+          "chance": 0.8,
+          "amount": 1
+        },
+        "baseHp": 450,
+        "hpPerLevel": 35,
+        "baseDamage": 40,
+        "damagePerLevel": 4.0,
+        "baseXp": 450,
+        "xpPerLevel": 30,
+        "baseCoins": 400,
+        "coinsPerLevel": 20,
+        "healPercent": 1.0,
+        "loot": [
+          {
+            "item": "pharaoh_stone",
+            "chance": 0.7,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "item": "pharaoh_crown",
+            "chance": 0.5,
+            "min": 1,
+            "max": 1
+          },
+          {
+            "item": "ancient_amulet",
+            "chance": 0.4,
+            "min": 1,
+            "max": 1
+          }
+        ]
+      }
+    ],
+    "completionReward": {
+      "coins": {
+        "base": 600,
+        "perLevel": 30
+      },
+      "xp": {
+        "base": 700,
+        "perLevel": 35
+      },
+      "items": [
+        {
+          "item": "pharaoh_stone",
+          "quantity": 1
+        },
+        {
+          "item": "pharaoh_crown",
+          "quantity": 1
+        },
+        {
+          "item": "cursed_gold",
+          "quantity": 10
+        }
+      ]
+    }
   }
 ]

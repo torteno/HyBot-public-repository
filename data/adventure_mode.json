@@ -1,0 +1,142 @@
+[
+  {
+    "id": "chapter_1",
+    "name": "Chapter 1: The Awakening",
+    "emoji": "📖",
+    "description": "Begin your journey in the world of Hytale.",
+    "level": 1,
+    "chapters": [
+      {
+        "id": "chapter_1_1",
+        "name": "The First Steps",
+        "description": "Learn the basics of survival.",
+        "objectives": [
+          {
+            "type": "gather",
+            "target": "ancient_bark",
+            "quantity": 5,
+            "description": "Gather 5 Ancient Bark"
+          },
+          {
+            "type": "defeat",
+            "target": "trork",
+            "quantity": 3,
+            "description": "Defeat 3 Trorks"
+          }
+        ],
+        "rewards": {
+          "xp": 100,
+          "coins": 50,
+          "items": [
+            { "item": "adventurer_pack", "quantity": 1 }
+          ]
+        },
+        "choices": [
+          {
+            "id": "choice_1",
+            "text": "Help the Kweebecs",
+            "consequence": "gain_reputation_kweebec",
+            "rewards": { "reputation": { "kweebec": 10 } }
+          },
+          {
+            "id": "choice_2",
+            "text": "Explore alone",
+            "consequence": "gain_xp",
+            "rewards": { "xp": 50 }
+          }
+        ]
+      },
+      {
+        "id": "chapter_1_2",
+        "name": "The Emerald Grove",
+        "description": "Discover the secrets of the Emerald Grove.",
+        "objectives": [
+          {
+            "type": "explore",
+            "target": "emerald_grove",
+            "quantity": 1,
+            "description": "Explore the Emerald Grove"
+          },
+          {
+            "type": "complete",
+            "target": "quest",
+            "quantity": 1,
+            "description": "Complete a quest"
+          }
+        ],
+        "rewards": {
+          "xp": 200,
+          "coins": 100,
+          "items": [
+            { "item": "grove_tonic", "quantity": 2 }
+          ]
+        }
+      },
+      {
+        "id": "chapter_1_complete",
+        "name": "Zone 1 Complete",
+        "description": "Complete your journey through Zone 1 and unlock access to Zone 2: Howling Sands.",
+        "objectives": [
+          {
+            "type": "level",
+            "target": "level",
+            "quantity": 15,
+            "description": "Reach level 15"
+          },
+          {
+            "type": "complete",
+            "target": "dungeon",
+            "quantity": 3,
+            "description": "Complete 3 dungeons"
+          }
+        ],
+        "rewards": {
+          "xp": 1000,
+          "coins": 500,
+          "items": [
+            { "item": "zone_2_key", "quantity": 1 }
+          ],
+          "unlocks": {
+            "zone": "zone_2"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "chapter_2",
+    "name": "Chapter 2: The Shadow Depths",
+    "emoji": "🌑",
+    "description": "Venture into the dark depths.",
+    "level": 10,
+    "chapters": [
+      {
+        "id": "chapter_2_1",
+        "name": "Descent into Darkness",
+        "description": "Enter the Shadow Depths and face the darkness.",
+        "objectives": [
+          {
+            "type": "explore",
+            "target": "shadow_realm",
+            "quantity": 1,
+            "description": "Explore the Shadow Realm"
+          },
+          {
+            "type": "defeat",
+            "target": "shadow_creature",
+            "quantity": 10,
+            "description": "Defeat 10 Shadow Creatures"
+          }
+        ],
+        "rewards": {
+          "xp": 500,
+          "coins": 250,
+          "items": [
+            { "item": "shadow_resistance_potion", "quantity": 1 }
+          ]
+        }
+      }
+    ]
+  }
+]
+

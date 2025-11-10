@@ -1,0 +1,213 @@
+[
+  {
+    "id": "warrior",
+    "name": "Warrior",
+    "emoji": "⚔️",
+    "description": "Master of melee combat and physical prowess.",
+    "branches": [
+      {
+        "id": "berserker",
+        "name": "Berserker",
+        "description": "Unleash devastating melee attacks.",
+        "skills": [
+          {
+            "id": "berserker_rage",
+            "name": "Berserker Rage",
+            "level": 1,
+            "cost": 1,
+            "description": "Increases damage by 10% when HP is below 50%.",
+            "bonuses": { "damageMultiplier": 0.1, "condition": "hp_below_50" }
+          },
+          {
+            "id": "bloodlust",
+            "name": "Bloodlust",
+            "level": 3,
+            "cost": 2,
+            "description": "Gain 5 HP per kill.",
+            "bonuses": { "hpPerKill": 5 }
+          },
+          {
+            "id": "whirlwind",
+            "name": "Whirlwind",
+            "level": 5,
+            "cost": 3,
+            "description": "Attack all nearby enemies.",
+            "ability": "whirlwind_attack"
+          }
+        ]
+      },
+      {
+        "id": "tank",
+        "name": "Tank",
+        "description": "Become an unbreakable shield.",
+        "skills": [
+          {
+            "id": "fortress",
+            "name": "Fortress",
+            "level": 1,
+            "cost": 1,
+            "description": "Increases defense by 20%.",
+            "bonuses": { "defenseMultiplier": 0.2 }
+          },
+          {
+            "id": "taunt",
+            "name": "Taunt",
+            "level": 3,
+            "cost": 2,
+            "description": "Force enemies to attack you.",
+            "ability": "taunt_enemies"
+          },
+          {
+            "id": "immovable",
+            "name": "Immovable",
+            "level": 5,
+            "cost": 3,
+            "description": "Cannot be stunned or knocked back.",
+            "bonuses": { "stunResistance": 1.0, "knockbackResistance": 1.0 }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "mage",
+    "name": "Mage",
+    "emoji": "🔮",
+    "description": "Wielder of arcane magic and elemental power.",
+    "branches": [
+      {
+        "id": "pyromancer",
+        "name": "Pyromancer",
+        "description": "Master of fire magic.",
+        "skills": [
+          {
+            "id": "fire_mastery",
+            "name": "Fire Mastery",
+            "level": 1,
+            "cost": 1,
+            "description": "Fire spells deal 15% more damage.",
+            "bonuses": { "fireSpellDamage": 0.15 }
+          },
+          {
+            "id": "burning_aura",
+            "name": "Burning Aura",
+            "level": 3,
+            "cost": 2,
+            "description": "Enemies near you take fire damage over time.",
+            "ability": "burning_aura"
+          },
+          {
+            "id": "phoenix_flame",
+            "name": "Phoenix Flame",
+            "level": 5,
+            "cost": 3,
+            "description": "Revive once per battle with 50% HP when killed.",
+            "ability": "phoenix_rebirth"
+          }
+        ]
+      },
+      {
+        "id": "cryomancer",
+        "name": "Cryomancer",
+        "description": "Master of ice magic.",
+        "skills": [
+          {
+            "id": "ice_mastery",
+            "name": "Ice Mastery",
+            "level": 1,
+            "cost": 1,
+            "description": "Ice spells slow enemies by 30%.",
+            "bonuses": { "iceSlowEffect": 0.3 }
+          },
+          {
+            "id": "frozen_armor",
+            "name": "Frozen Armor",
+            "level": 3,
+            "cost": 2,
+            "description": "Gain defense based on mana.",
+            "bonuses": { "defenseFromMana": 0.1 }
+          },
+          {
+            "id": "absolute_zero",
+            "name": "Absolute Zero",
+            "level": 5,
+            "cost": 3,
+            "description": "Freeze enemies solid, preventing all actions.",
+            "ability": "freeze_enemies"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rogue",
+    "name": "Rogue",
+    "emoji": "🗡️",
+    "description": "Swift and deadly assassin.",
+    "branches": [
+      {
+        "id": "assassin",
+        "name": "Assassin",
+        "description": "Strike from the shadows.",
+        "skills": [
+          {
+            "id": "backstab",
+            "name": "Backstab",
+            "level": 1,
+            "cost": 1,
+            "description": "Attacks from behind deal 200% damage.",
+            "bonuses": { "backstabMultiplier": 2.0 }
+          },
+          {
+            "id": "stealth",
+            "name": "Stealth",
+            "level": 3,
+            "cost": 2,
+            "description": "Become invisible for 10 seconds.",
+            "ability": "stealth_mode"
+          },
+          {
+            "id": "assassinate",
+            "name": "Assassinate",
+            "level": 5,
+            "cost": 3,
+            "description": "Instant kill on enemies below 25% HP.",
+            "ability": "assassinate"
+          }
+        ]
+      },
+      {
+        "id": "ranger",
+        "name": "Ranger",
+        "description": "Master of ranged combat.",
+        "skills": [
+          {
+            "id": "eagle_eye",
+            "name": "Eagle Eye",
+            "level": 1,
+            "cost": 1,
+            "description": "Ranged attacks have 100% accuracy.",
+            "bonuses": { "rangedAccuracy": 1.0 }
+          },
+          {
+            "id": "rapid_fire",
+            "name": "Rapid Fire",
+            "level": 3,
+            "cost": 2,
+            "description": "Attack twice per turn.",
+            "ability": "rapid_fire"
+          },
+          {
+            "id": "piercing_shot",
+            "name": "Piercing Shot",
+            "level": 5,
+            "cost": 3,
+            "description": "Arrows pierce through multiple enemies.",
+            "ability": "piercing_shot"
+          }
+        ]
+      }
+    ]
+  }
+]
+

@@ -1,0 +1,87 @@
+[
+  {
+    "id": "daily_gather_50",
+    "name": "Resource Gatherer",
+    "emoji": "🌿",
+    "category": "gathering",
+    "type": "gather",
+    "target": "any",
+    "quantity": 50,
+    "description": "Gather 50 resources",
+    "rewards": {
+      "xp": 100,
+      "coins": 50
+    }
+  },
+  {
+    "id": "daily_defeat_10",
+    "name": "Monster Slayer",
+    "emoji": "⚔️",
+    "category": "combat",
+    "type": "defeat",
+    "target": "any",
+    "quantity": 10,
+    "description": "Defeat 10 enemies",
+    "rewards": {
+      "xp": 150,
+      "coins": 75
+    }
+  },
+  {
+    "id": "daily_explore_3",
+    "name": "Explorer",
+    "emoji": "🧭",
+    "category": "exploration",
+    "type": "explore",
+    "target": "biome",
+    "quantity": 3,
+    "description": "Explore 3 different biomes",
+    "rewards": {
+      "xp": 200,
+      "coins": 100
+    }
+  },
+  {
+    "id": "daily_craft_5",
+    "name": "Crafter",
+    "emoji": "🔨",
+    "category": "crafting",
+    "type": "craft",
+    "target": "any",
+    "quantity": 5,
+    "description": "Craft 5 items",
+    "rewards": {
+      "xp": 120,
+      "coins": 60
+    }
+  },
+  {
+    "id": "daily_quest_1",
+    "name": "Quest Master",
+    "emoji": "📜",
+    "category": "quests",
+    "type": "complete",
+    "target": "quest",
+    "quantity": 1,
+    "description": "Complete 1 quest",
+    "rewards": {
+      "xp": 250,
+      "coins": 125
+    }
+  },
+  {
+    "id": "daily_dungeon_1",
+    "name": "Dungeon Delver",
+    "emoji": "🏰",
+    "category": "dungeons",
+    "type": "complete",
+    "target": "dungeon",
+    "quantity": 1,
+    "description": "Complete 1 dungeon",
+    "rewards": {
+      "xp": 500,
+      "coins": 250
+    }
+  }
+]
+

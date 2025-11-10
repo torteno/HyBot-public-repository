@@ -1,0 +1,105 @@
+[
+  {
+    "id": "dragon_invasion",
+    "name": "Dragon Invasion",
+    "emoji": "🐉",
+    "type": "invasion",
+    "duration": 3600,
+    "description": "Dragons have invaded the realm! Defeat them to earn rewards.",
+    "objectives": [
+      {
+        "type": "defeat",
+        "target": "dragon",
+        "quantity": 100,
+        "description": "Defeat 100 dragons"
+      }
+    ],
+    "rewards": {
+      "xp": 1000,
+      "coins": 500,
+      "items": [
+        { "item": "dragon_scale", "quantity": 1, "chance": 0.5 }
+      ]
+    },
+    "spawnRate": 0.1
+  },
+  {
+    "id": "harvest_festival",
+    "name": "Harvest Festival",
+    "emoji": "🌾",
+    "type": "festival",
+    "duration": 7200,
+    "description": "A time of celebration! Gather resources for bonus rewards.",
+    "objectives": [
+      {
+        "type": "gather",
+        "target": "any",
+        "quantity": 50,
+        "description": "Gather 50 resources"
+      }
+    ],
+    "rewards": {
+      "xp": 500,
+      "coins": 300,
+      "items": [
+        { "item": "harvest_blessing", "quantity": 1, "chance": 1.0 }
+      ]
+    },
+    "bonuses": {
+      "gatheringSpeed": 0.5,
+      "gatheringQuantity": 0.3
+    }
+  },
+  {
+    "id": "void_storm",
+    "name": "Void Storm",
+    "emoji": "🌑",
+    "type": "disaster",
+    "duration": 1800,
+    "description": "A void storm rages across the realm! Survive and earn rewards.",
+    "objectives": [
+      {
+        "type": "survive",
+        "target": "void_storm",
+        "quantity": 1,
+        "description": "Survive the void storm"
+      }
+    ],
+    "rewards": {
+      "xp": 2000,
+      "coins": 800,
+      "items": [
+        { "item": "void_resistance_potion", "quantity": 1, "chance": 1.0 }
+      ]
+    },
+    "effects": {
+      "damageOverTime": 10,
+      "darkness": true
+    }
+  },
+  {
+    "id": "treasure_hunt",
+    "name": "Treasure Hunt",
+    "emoji": "💰",
+    "type": "event",
+    "duration": 5400,
+    "description": "Hidden treasures have appeared! Find them for rewards.",
+    "objectives": [
+      {
+        "type": "discover",
+        "target": "treasure",
+        "quantity": 5,
+        "description": "Discover 5 treasures"
+      }
+    ],
+    "rewards": {
+      "xp": 1500,
+      "coins": 1000,
+      "items": [
+        { "item": "treasure_chest", "quantity": 1, "chance": 0.8 }
+      ]
+    },
+    "spawnRate": 0.05
+  }
+]
+

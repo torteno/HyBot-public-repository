@@ -1,0 +1,553 @@
+[
+  {
+    "id": "forest_fox",
+    "name": "Forest Fox",
+    "emoji": "🦊",
+    "rarity": "common",
+    "type": "companion",
+    "description": "A playful forest fox that provides small stat bonuses.",
+    "bonuses": {
+      "agility": 2,
+      "luck": 1
+    },
+    "travelSpeed": 0.1,
+    "obtainMethods": ["exploration", "shop"],
+    "value": 150,
+    "biome": "emerald_grove"
+  },
+  {
+    "id": "mountain_goat",
+    "name": "Mountain Goat",
+    "emoji": "🐐",
+    "rarity": "uncommon",
+    "type": "travel",
+    "description": "A sure-footed mountain goat that speeds up travel significantly.",
+    "bonuses": {
+      "resilience": 3
+    },
+    "travelSpeed": 0.4,
+    "obtainMethods": ["exploration", "shop"],
+    "value": 300,
+    "biome": "borea"
+  },
+  {
+    "id": "shadow_cat",
+    "name": "Shadow Cat",
+    "emoji": "🐈‍⬛",
+    "rarity": "rare",
+    "type": "combat",
+    "description": "A mysterious shadow cat that fights alongside you in combat.",
+    "bonuses": {
+      "power": 5,
+      "agility": 4
+    },
+    "combat": {
+      "damage": 8,
+      "hp": 50,
+      "abilities": ["shadow_strike"]
+    },
+    "travelSpeed": 0.2,
+    "obtainMethods": ["exploration", "dungeon"],
+    "value": 500,
+    "biome": "shadow_realm"
+  },
+  {
+    "id": "grove_sprite",
+    "name": "Grove Sprite",
+    "emoji": "✨",
+    "rarity": "uncommon",
+    "type": "task",
+    "description": "A helpful sprite that can gather resources for you automatically.",
+    "bonuses": {
+      "focus": 3,
+      "mana": 10
+    },
+    "tasks": {
+      "gathering": true,
+      "speed": 0.5
+    },
+    "travelSpeed": 0.15,
+    "obtainMethods": ["exploration", "base"],
+    "value": 400,
+    "biome": "emerald_grove"
+  },
+  {
+    "id": "iron_construct",
+    "name": "Iron Construct",
+    "emoji": "🤖",
+    "rarity": "rare",
+    "type": "task",
+    "description": "An automated construct that can mine and craft for you.",
+    "bonuses": {
+      "power": 4,
+      "resilience": 6
+    },
+    "tasks": {
+      "mining": true,
+      "crafting": true,
+      "speed": 0.6
+    },
+    "travelSpeed": 0.25,
+    "obtainMethods": ["base", "crafting"],
+    "value": 600,
+    "biome": "borea"
+  },
+  {
+    "id": "storm_griffin",
+    "name": "Storm Griffin",
+    "emoji": "🦅",
+    "rarity": "epic",
+    "type": "travel",
+    "description": "A majestic griffin that makes travel nearly instantaneous.",
+    "bonuses": {
+      "power": 8,
+      "agility": 6
+    },
+    "travelSpeed": 0.9,
+    "obtainMethods": ["dungeon", "quest"],
+    "value": 1000,
+    "biome": "gale_cliffs"
+  },
+  {
+    "id": "void_hound",
+    "name": "Void Hound",
+    "emoji": "🐕",
+    "rarity": "epic",
+    "type": "combat",
+    "description": "A powerful void-touched hound that deals devastating damage in combat.",
+    "bonuses": {
+      "power": 10,
+      "agility": 5,
+      "resilience": 5
+    },
+    "combat": {
+      "damage": 15,
+      "hp": 100,
+      "abilities": ["void_bite", "shadow_howl"]
+    },
+    "travelSpeed": 0.5,
+    "obtainMethods": ["dungeon", "exploration"],
+    "value": 1200,
+    "biome": "shadow_realm"
+  },
+  {
+    "id": "crystal_dragon",
+    "name": "Crystal Dragon",
+    "emoji": "🐉",
+    "rarity": "legendary",
+    "type": "travel",
+    "description": "A legendary dragon that makes travel completely instantaneous.",
+    "bonuses": {
+      "power": 15,
+      "agility": 10,
+      "resilience": 10,
+      "focus": 8
+    },
+    "combat": {
+      "damage": 25,
+      "hp": 200,
+      "abilities": ["dragon_breath", "crystal_barrage"]
+    },
+    "travelSpeed": 0.99,
+    "obtainMethods": ["dungeon", "quest", "breeding"],
+    "value": 5000,
+    "biome": "prismatic_refuge"
+  },
+  {
+    "id": "grove_warden",
+    "name": "Grove Warden",
+    "emoji": "🦌",
+    "rarity": "rare",
+    "type": "companion",
+    "description": "A protective grove warden that provides strong stat bonuses.",
+    "bonuses": {
+      "power": 6,
+      "resilience": 8,
+      "hp": 30
+    },
+    "travelSpeed": 0.3,
+    "obtainMethods": ["exploration", "settlement"],
+    "value": 700,
+    "biome": "emerald_grove"
+  },
+  {
+    "id": "mechanical_owl",
+    "name": "Mechanical Owl",
+    "emoji": "🦉",
+    "rarity": "uncommon",
+    "type": "task",
+    "description": "A mechanical owl that can scout and gather information for you.",
+    "bonuses": {
+      "focus": 5,
+      "luck": 3
+    },
+    "tasks": {
+      "scouting": true,
+      "information": true,
+      "speed": 0.4
+    },
+    "travelSpeed": 0.2,
+    "obtainMethods": ["base", "crafting"],
+    "value": 350,
+    "biome": "borea"
+  },
+  {
+    "id": "flame_salamander",
+    "name": "Flame Salamander",
+    "emoji": "🦎",
+    "rarity": "rare",
+    "type": "combat",
+    "description": "A fiery salamander that burns enemies in combat.",
+    "bonuses": {
+      "power": 7,
+      "focus": 4
+    },
+    "combat": {
+      "damage": 12,
+      "hp": 70,
+      "abilities": ["flame_burst", "fire_aura"]
+    },
+    "travelSpeed": 0.25,
+    "obtainMethods": ["exploration", "dungeon"],
+    "value": 550,
+    "biome": "volcanic_peaks"
+  },
+  {
+    "id": "wind_runner",
+    "name": "Wind Runner",
+    "emoji": "🐎",
+    "rarity": "uncommon",
+    "type": "travel",
+    "description": "A swift horse that significantly speeds up travel.",
+    "bonuses": {
+      "agility": 5
+    },
+    "travelSpeed": 0.5,
+    "obtainMethods": ["shop", "exploration"],
+    "value": 400,
+    "biome": "gale_cliffs"
+  },
+  {
+    "id": "earth_golem",
+    "name": "Earth Golem",
+    "emoji": "🗿",
+    "rarity": "epic",
+    "type": "task",
+    "description": "A powerful golem that can mine, craft, and defend your base.",
+    "bonuses": {
+      "power": 12,
+      "resilience": 15
+    },
+    "tasks": {
+      "mining": true,
+      "crafting": true,
+      "defense": true,
+      "speed": 0.7
+    },
+    "combat": {
+      "damage": 18,
+      "hp": 150,
+      "abilities": ["earth_slam", "stone_armor"]
+    },
+    "travelSpeed": 0.35,
+    "obtainMethods": ["base", "dungeon"],
+    "value": 1500,
+    "biome": "stone_plains"
+  },
+  {
+    "id": "mystic_raven",
+    "name": "Mystic Raven",
+    "emoji": "🐦‍⬛",
+    "rarity": "rare",
+    "type": "companion",
+    "description": "A mystical raven that enhances your magical abilities.",
+    "bonuses": {
+      "focus": 8,
+      "mana": 20,
+      "luck": 5
+    },
+    "travelSpeed": 0.3,
+    "obtainMethods": ["exploration", "quest"],
+    "value": 800,
+    "biome": "shadow_realm"
+  },
+  {
+    "id": "pack_mule",
+    "name": "Pack Mule",
+    "emoji": "🫏",
+    "rarity": "common",
+    "type": "companion",
+    "description": "A sturdy mule that increases your inventory capacity.",
+    "bonuses": {
+      "resilience": 2,
+      "inventoryCapacity": 10
+    },
+    "travelSpeed": 0.2,
+    "obtainMethods": ["shop", "exploration"],
+    "value": 200,
+    "biome": "borea"
+  },
+  {
+    "id": "phoenix_chick",
+    "name": "Phoenix Chick",
+    "emoji": "🐣",
+    "rarity": "legendary",
+    "type": "combat",
+    "description": "A young phoenix that grows stronger over time and can revive you in combat.",
+    "bonuses": {
+      "power": 12,
+      "focus": 10,
+      "hp": 50
+    },
+    "combat": {
+      "damage": 20,
+      "hp": 120,
+      "abilities": ["phoenix_flame", "rebirth"]
+    },
+    "travelSpeed": 0.6,
+    "obtainMethods": ["dungeon", "quest", "breeding"],
+    "value": 3000,
+    "biome": "volcanic_peaks"
+  },
+  {
+    "id": "water_serpent",
+    "name": "Water Serpent",
+    "emoji": "🐍",
+    "rarity": "rare",
+    "type": "task",
+    "description": "A serpent that can fish and gather aquatic resources for you.",
+    "bonuses": {
+      "agility": 6,
+      "focus": 4
+    },
+    "tasks": {
+      "fishing": true,
+      "gathering": true,
+      "speed": 0.5
+    },
+    "travelSpeed": 0.3,
+    "obtainMethods": ["exploration", "base"],
+    "value": 600,
+    "biome": "emerald_grove"
+  },
+  {
+    "id": "sky_whale",
+    "name": "Sky Whale",
+    "emoji": "🐋",
+    "rarity": "epic",
+    "type": "travel",
+    "description": "A massive sky whale that makes long-distance travel nearly instant.",
+    "bonuses": {
+      "resilience": 12,
+      "hp": 100
+    },
+    "travelSpeed": 0.95,
+    "obtainMethods": ["dungeon", "quest"],
+    "value": 2000,
+    "biome": "gale_cliffs"
+  },
+  {
+    "id": "treasure_goblin",
+    "name": "Treasure Goblin",
+    "emoji": "👹",
+    "rarity": "rare",
+    "type": "task",
+    "description": "A mischievous goblin that finds extra coins and items for you.",
+    "bonuses": {
+      "luck": 10,
+      "coins": 0.1
+    },
+    "tasks": {
+      "scavenging": true,
+      "treasure": true,
+      "speed": 0.4
+    },
+    "travelSpeed": 0.2,
+    "obtainMethods": ["exploration", "dungeon"],
+    "value": 900,
+    "biome": "shadow_realm"
+  },
+  {
+    "id": "ancient_tortoise",
+    "name": "Ancient Tortoise",
+    "emoji": "🐢",
+    "rarity": "epic",
+    "type": "companion",
+    "description": "An ancient tortoise that provides massive defensive bonuses.",
+    "bonuses": {
+      "resilience": 20,
+      "hp": 80,
+      "defense": 15
+    },
+    "travelSpeed": 0.1,
+    "obtainMethods": ["quest", "dungeon"],
+    "value": 1800,
+    "biome": "emerald_grove"
+  },
+  {
+    "id": "crystal_sprite",
+    "name": "Crystal Sprite",
+    "emoji": "✨",
+    "rarity": "uncommon",
+    "type": "companion",
+    "description": "A sprite made of pure crystal from Zone 1. Enhances mana and provides gathering bonuses.",
+    "bonuses": {
+      "mana": 20,
+      "focus": 5
+    },
+    "tasks": {
+      "gathering": true,
+      "speed": 0.4
+    },
+    "travelSpeed": 0.2,
+    "obtainMethods": ["exploration", "crafting"],
+    "value": 350,
+    "biome": "crystal_meadows",
+    "requiredItems": ["crystal_shard", 20, "luminous_petal", 10]
+  },
+  {
+    "id": "coastal_dolphin",
+    "name": "Coastal Dolphin",
+    "emoji": "🐬",
+    "rarity": "rare",
+    "type": "travel",
+    "description": "A friendly dolphin from Zone 1 coastal areas. Speeds up travel significantly.",
+    "bonuses": {
+      "agility": 5,
+      "luck": 3
+    },
+    "travelSpeed": 0.5,
+    "obtainMethods": ["exploration", "quest"],
+    "value": 500,
+    "biome": "azure_cove",
+    "requiredItems": ["pearl", 5, "sea_salt", 20]
+  },
+  {
+    "id": "bog_wisp",
+    "name": "Bog Wisp",
+    "emoji": "🔥",
+    "rarity": "uncommon",
+    "type": "companion",
+    "description": "A glowing wisp from Zone 1 bogs. Provides fire resistance and gathering bonuses.",
+    "bonuses": {
+      "resilience": 4,
+      "focus": 3
+    },
+    "tasks": {
+      "gathering": true,
+      "speed": 0.35
+    },
+    "travelSpeed": 0.15,
+    "obtainMethods": ["exploration"],
+    "value": 300,
+    "biome": "emberfen_bog",
+    "requiredItems": ["ember_mushroom", 15, "peat", 30]
+  },
+  {
+    "id": "rune_guardian_pet",
+    "name": "Rune Guardian Pet",
+    "emoji": "🛡️",
+    "rarity": "epic",
+    "type": "combat",
+    "description": "A miniature rune guardian from Zone 1. Fights alongside you and provides defense.",
+    "bonuses": {
+      "defense": 8,
+      "resilience": 6
+    },
+    "combat": {
+      "damage": 12,
+      "hp": 80,
+      "abilities": ["rune_shield", "ancient_strike"]
+    },
+    "travelSpeed": 0.3,
+    "obtainMethods": ["dungeon", "quest"],
+    "value": 800,
+    "biome": "ancient_ruins",
+    "requiredItems": ["rune_crystal", 5, "ancient_relic", 1]
+  },
+  {
+    "id": "desert_scorpion",
+    "name": "Desert Scorpion",
+    "emoji": "🦂",
+    "rarity": "uncommon",
+    "type": "combat",
+    "description": "A loyal scorpion from Zone 2. Provides poison attacks and desert navigation.",
+    "bonuses": {
+      "agility": 4,
+      "power": 3
+    },
+    "combat": {
+      "damage": 10,
+      "hp": 70,
+      "abilities": ["poison_sting", "sand_burrow"]
+    },
+    "travelSpeed": 0.25,
+    "obtainMethods": ["exploration"],
+    "value": 400,
+    "biome": "howling_sands",
+    "requiredItems": ["desert_bloom", 10, "wind_essence", 5]
+  },
+  {
+    "id": "oasis_serpent",
+    "name": "Oasis Serpent",
+    "emoji": "🐍",
+    "rarity": "rare",
+    "type": "travel",
+    "description": "A mystical serpent from Zone 2 oases. Greatly speeds up travel and provides healing.",
+    "bonuses": {
+      "hp": 30,
+      "mana": 15
+    },
+    "travelSpeed": 0.6,
+    "obtainMethods": ["exploration", "quest"],
+    "value": 600,
+    "biome": "oasis_springs",
+    "requiredItems": ["spring_water", 10, "oasis_palm_fruit", 20]
+  },
+  {
+    "id": "wind_elemental_pet",
+    "name": "Wind Elemental",
+    "emoji": "💨",
+    "rarity": "epic",
+    "type": "combat",
+    "description": "A powerful wind elemental from Zone 2. Deals devastating wind damage.",
+    "bonuses": {
+      "power": 10,
+      "agility": 8
+    },
+    "combat": {
+      "damage": 20,
+      "hp": 100,
+      "abilities": ["wind_blast", "tornado"]
+    },
+    "travelSpeed": 0.7,
+    "obtainMethods": ["dungeon", "quest"],
+    "value": 1000,
+    "biome": "wind_temple",
+    "requiredItems": ["wind_core", 1, "wind_crystal", 10]
+  },
+  {
+    "id": "mirage_phantom_pet",
+    "name": "Mirage Phantom",
+    "emoji": "👻",
+    "rarity": "legendary",
+    "type": "combat",
+    "description": "A rare phantom from Zone 2 canyons. Can phase through attacks and deal shadow damage.",
+    "bonuses": {
+      "power": 12,
+      "agility": 10,
+      "luck": 5
+    },
+    "combat": {
+      "damage": 25,
+      "hp": 120,
+      "abilities": ["phase_shift", "shadow_strike", "mirage_clone"]
+    },
+    "travelSpeed": 0.8,
+    "obtainMethods": ["dungeon", "quest"],
+    "value": 1500,
+    "biome": "mirage_canyon",
+    "requiredItems": ["lost_caravan_treasure", 1, "mirage_flower", 5]
+  }
+]
+

@@ -1240,5 +1240,125 @@
       "glimmerdew_petals": 2
     },
     "description": "Whip auroral grains and ribbonfish glaze into a luminescent soufflé."
+  },
+  {
+    "id": "desert_wind_blade",
+    "result": "desert_wind_blade",
+    "name": "Forge Desert Wind Blade",
+    "level": 16,
+    "coins": 300,
+    "station": "forge",
+    "ingredients": {
+      "nomad_scimitar": 1,
+      "ancient_bark": 5,
+      "wind_essence": 3,
+      "sunstone_shard": 4
+    },
+    "description": "Combine Zone 1 materials with Zone 2 wind magic to create a powerful desert blade."
+  },
+  {
+    "id": "tempest_armor",
+    "result": "tempest_armor",
+    "name": "Craft Tempest Armor",
+    "level": 17,
+    "coins": 350,
+    "station": "forge",
+    "ingredients": {
+      "desert_robes": 1,
+      "ancient_bark": 8,
+      "wind_crystal": 5,
+      "crystal_shard": 6
+    },
+    "description": "Blend Zone 1 crystals with Zone 2 wind materials for protective armor."
+  },
+  {
+    "id": "pharaoh_weapon",
+    "result": "pharaoh_weapon",
+    "name": "Forge Pharaoh Weapon",
+    "level": 18,
+    "coins": 400,
+    "station": "forge",
+    "ingredients": {
+      "rune_weapon": 1,
+      "pharaoh_stone": 2,
+      "ancient_scroll": 3,
+      "rune_crystal": 2
+    },
+    "description": "Combine Zone 1 ancient runes with Zone 2 pharaoh power for a legendary weapon."
+  },
+  {
+    "id": "oasis_elixir",
+    "result": "oasis_elixir",
+    "name": "Brew Oasis Elixir",
+    "level": 16,
+    "coins": 200,
+    "station": "brewery",
+    "ingredients": {
+      "spring_water": 2,
+      "grove_tonic": 1,
+      "crystal_flower": 3,
+      "ancient_bark": 2
+    },
+    "description": "Mix Zone 1 grove tonics with Zone 2 spring water for a powerful elixir."
+  },
+  {
+    "id": "wind_storm_staff",
+    "result": "wind_storm_staff",
+    "name": "Craft Wind Storm Staff",
+    "level": 17,
+    "coins": 380,
+    "station": "arcane_table",
+    "ingredients": {
+      "wind_mage_staff": 1,
+      "rune_crystal": 2,
+      "wind_core": 1,
+      "ancient_relic": 1
+    },
+    "description": "Combine Zone 1 ancient relics with Zone 2 wind cores for a master staff."
+  },
+  {
+    "id": "desert_nomad_gear",
+    "result": "desert_nomad_gear",
+    "name": "Craft Desert Nomad Gear",
+    "level": 16,
+    "coins": 280,
+    "station": "forge",
+    "ingredients": {
+      "desert_robes": 1,
+      "pearl": 2,
+      "sea_salt": 5,
+      "wind_essence": 3
+    },
+    "description": "Blend Zone 1 coastal materials with Zone 2 desert essence for nomad gear."
+  },
+  {
+    "id": "sandstorm_boots",
+    "result": "sandstorm_boots",
+    "name": "Craft Sandstorm Boots",
+    "level": 17,
+    "coins": 320,
+    "station": "forge",
+    "ingredients": {
+      "storm_rider_boots": 1,
+      "ancient_stone": 4,
+      "wind_crystal": 3,
+      "crystal_shard": 4
+    },
+    "description": "Enhance Zone 2 boots with Zone 1 crystals for superior protection."
+  },
+  {
+    "id": "cross_zone_amulet",
+    "result": "cross_zone_amulet",
+    "name": "Craft Cross-Zone Amulet",
+    "level": 18,
+    "coins": 450,
+    "station": "arcane_table",
+    "ingredients": {
+      "ancient_amulet": 1,
+      "ancient_relic": 1,
+      "wind_core": 1,
+      "pharaoh_stone": 1
+    },
+    "description": "Combine Zone 1 and Zone 2 ancient artifacts for a legendary amulet."
   }
 ]

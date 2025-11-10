@@ -13358,5 +13358,952 @@
       "brew",
       "prismatic_refuge"
     ]
+  },
+  {
+    "id": "remote_dungeon_key",
+    "name": "Remote Dungeon Key",
+    "type": "accessory",
+    "rarity": "legendary",
+    "value": 500,
+    "emoji": "🗝️",
+    "description": "An ancient key that allows you to join dungeon queues from anywhere in the world. Obtained through a long and arduous quest chain.",
+    "tags": [
+      "dungeon",
+      "quest_reward",
+      "legendary"
+    ],
+    "special": {
+      "unlocks": ["dungeonAnywhere"]
+    }
+  },
+  {
+    "id": "leather_helmet",
+    "name": "Leather Cap",
+    "type": "helmet",
+    "rarity": "common",
+    "value": 20,
+    "emoji": "⛑️",
+    "defense": 2,
+    "description": "A simple leather cap offering basic head protection.",
+    "tags": ["starter", "common"]
+  },
+  {
+    "id": "iron_helmet",
+    "name": "Iron Helmet",
+    "type": "helmet",
+    "rarity": "uncommon",
+    "value": 60,
+    "emoji": "⛑️",
+    "defense": 5,
+    "description": "A sturdy iron helmet forged by Borea smiths.",
+    "tags": ["human", "borea"]
+  },
+  {
+    "id": "steel_helmet",
+    "name": "Steel Helm",
+    "type": "helmet",
+    "rarity": "rare",
+    "value": 120,
+    "emoji": "⛑️",
+    "defense": 8,
+    "description": "A reinforced steel helmet with excellent protection.",
+    "tags": ["crafted", "rare"]
+  },
+  {
+    "id": "void_helmet",
+    "name": "Void Visage",
+    "type": "helmet",
+    "rarity": "epic",
+    "value": 200,
+    "emoji": "⛑️",
+    "defense": 12,
+    "resistances": {
+      "void": 0.15
+    },
+    "description": "A dark helmet infused with void energy, granting resistance to shadow magic.",
+    "tags": ["varyn", "epic"]
+  },
+  {
+    "id": "kweebec_helmet",
+    "name": "Grove Guardian Cap",
+    "type": "helmet",
+    "rarity": "uncommon",
+    "value": 70,
+    "emoji": "⛑️",
+    "defense": 6,
+    "description": "A nature-infused cap worn by Kweebec guardians.",
+    "tags": ["kweebec", "nature"]
+  },
+  {
+    "id": "leather_chestplate",
+    "name": "Leather Tunic",
+    "type": "chestplate",
+    "rarity": "common",
+    "value": 30,
+    "emoji": "🛡️",
+    "defense": 4,
+    "description": "A basic leather tunic for protection.",
+    "tags": ["starter", "common"]
+  },
+  {
+    "id": "iron_chestplate",
+    "name": "Iron Chestplate",
+    "type": "chestplate",
+    "rarity": "uncommon",
+    "value": 80,
+    "emoji": "🛡️",
+    "defense": 8,
+    "description": "A solid iron chestplate offering good protection.",
+    "tags": ["human", "borea"]
+  },
+  {
+    "id": "steel_chestplate",
+    "name": "Steel Breastplate",
+    "type": "chestplate",
+    "rarity": "rare",
+    "value": 150,
+    "emoji": "🛡️",
+    "defense": 12,
+    "description": "A well-crafted steel breastplate with superior defense.",
+    "tags": ["crafted", "rare"]
+  },
+  {
+    "id": "void_chestplate",
+    "name": "Void Carapace",
+    "type": "chestplate",
+    "rarity": "epic",
+    "value": 250,
+    "emoji": "🛡️",
+    "defense": 18,
+    "resistances": {
+      "void": 0.20
+    },
+    "description": "A dark chestplate forged from void-touched materials.",
+    "tags": ["varyn", "epic"]
+  },
+  {
+    "id": "kweebec_chestplate",
+    "name": "Grove Warden Tunic",
+    "type": "chestplate",
+    "rarity": "uncommon",
+    "value": 90,
+    "emoji": "🛡️",
+    "defense": 9,
+    "description": "A nature-blessed tunic worn by Kweebec wardens.",
+    "tags": ["kweebec", "nature"]
+  },
+  {
+    "id": "leather_leggings",
+    "name": "Leather Leggings",
+    "type": "leggings",
+    "rarity": "common",
+    "value": 25,
+    "emoji": "🦵",
+    "defense": 3,
+    "description": "Simple leather leggings for leg protection.",
+    "tags": ["starter", "common"]
+  },
+  {
+    "id": "iron_leggings",
+    "name": "Iron Leggings",
+    "type": "leggings",
+    "rarity": "uncommon",
+    "value": 70,
+    "emoji": "🦵",
+    "defense": 6,
+    "description": "Sturdy iron leggings for combat protection.",
+    "tags": ["human", "borea"]
+  },
+  {
+    "id": "steel_leggings",
+    "name": "Steel Greaves",
+    "type": "leggings",
+    "rarity": "rare",
+    "value": 130,
+    "emoji": "🦵",
+    "defense": 10,
+    "description": "Well-forged steel greaves offering excellent leg protection.",
+    "tags": ["crafted", "rare"]
+  },
+  {
+    "id": "void_leggings",
+    "name": "Void Greaves",
+    "type": "leggings",
+    "rarity": "epic",
+    "value": 220,
+    "emoji": "🦵",
+    "defense": 15,
+    "resistances": {
+      "void": 0.15
+    },
+    "description": "Dark greaves infused with void energy.",
+    "tags": ["varyn", "epic"]
+  },
+  {
+    "id": "kweebec_leggings",
+    "name": "Grove Warden Leggings",
+    "type": "leggings",
+    "rarity": "uncommon",
+    "value": 75,
+    "emoji": "🦵",
+    "defense": 7,
+    "description": "Nature-infused leggings from the Emerald Grove.",
+    "tags": ["kweebec", "nature"]
+  },
+  {
+    "id": "leather_boots",
+    "name": "Leather Boots",
+    "type": "boots",
+    "rarity": "common",
+    "value": 20,
+    "emoji": "👢",
+    "defense": 2,
+    "description": "Basic leather boots for foot protection.",
+    "tags": ["starter", "common"]
+  },
+  {
+    "id": "iron_boots",
+    "name": "Iron Boots",
+    "type": "boots",
+    "rarity": "uncommon",
+    "value": 60,
+    "emoji": "👢",
+    "defense": 5,
+    "description": "Sturdy iron boots for traversing rough terrain.",
+    "tags": ["human", "borea"]
+  },
+  {
+    "id": "steel_boots",
+    "name": "Steel Boots",
+    "type": "boots",
+    "rarity": "rare",
+    "value": 120,
+    "emoji": "👢",
+    "defense": 8,
+    "description": "Reinforced steel boots with excellent protection.",
+    "tags": ["crafted", "rare"]
+  },
+  {
+    "id": "void_boots",
+    "name": "Void Treads",
+    "type": "boots",
+    "rarity": "epic",
+    "value": 200,
+    "emoji": "👢",
+    "defense": 12,
+    "resistances": {
+      "void": 0.10
+    },
+    "description": "Dark boots that seem to absorb light, granting void resistance.",
+    "tags": ["varyn", "epic"]
+  },
+  {
+    "id": "kweebec_boots",
+    "name": "Grove Walker Boots",
+    "type": "boots",
+    "rarity": "uncommon",
+    "value": 65,
+    "emoji": "👢",
+    "defense": 6,
+    "description": "Nature-blessed boots that help you move silently through groves.",
+    "tags": ["kweebec", "nature"]
+  },
+  {
+    "id": "lucky_charm",
+    "name": "Lucky Charm",
+    "type": "accessory",
+    "rarity": "common",
+    "value": 50,
+    "emoji": "📿",
+    "luck": 2,
+    "description": "A small charm that brings a bit of luck.",
+    "tags": ["common", "accessory"]
+  },
+  {
+    "id": "mana_ring",
+    "name": "Mana Ring",
+    "type": "accessory",
+    "rarity": "uncommon",
+    "value": 100,
+    "emoji": "💍",
+    "mana": 10,
+    "description": "A ring that increases your mana capacity.",
+    "tags": ["uncommon", "accessory"]
+  },
+  {
+    "id": "health_amulet",
+    "name": "Health Amulet",
+    "type": "accessory",
+    "rarity": "uncommon",
+    "value": 120,
+    "emoji": "📿",
+    "hp": 20,
+    "description": "An amulet that increases your maximum health.",
+    "tags": ["uncommon", "accessory"]
+  },
+  {
+    "id": "power_bracelet",
+    "name": "Power Bracelet",
+    "type": "accessory",
+    "rarity": "rare",
+    "value": 200,
+    "emoji": "📿",
+    "luck": 5,
+    "mana": 15,
+    "description": "A powerful bracelet that enhances both luck and mana.",
+    "tags": ["rare", "accessory"]
+  },
+  {
+    "id": "zone_2_key",
+    "name": "Zone 2 Access Key",
+    "type": "special",
+    "rarity": "epic",
+    "value": 0,
+    "emoji": "🗝️",
+    "description": "A key that grants access to Zone 2: Howling Sands. Obtained by completing Chapter 1 of Adventure Mode.",
+    "tags": ["zone", "key", "unlock"],
+    "special": {
+      "unlocks": {
+        "zone": "zone_2"
+      }
+    }
+  },
+  {
+    "id": "desert_bloom",
+    "name": "Desert Bloom",
+    "type": "material",
+    "rarity": "common",
+    "value": 15,
+    "emoji": "🌺",
+    "description": "A rare flower that blooms in the desert sands.",
+    "tags": ["zone_2", "material", "desert"]
+  },
+  {
+    "id": "wind_crystal",
+    "name": "Wind Crystal",
+    "type": "material",
+    "rarity": "uncommon",
+    "value": 35,
+    "emoji": "💨",
+    "description": "A crystal infused with wind magic from the Howling Sands.",
+    "tags": ["zone_2", "material", "wind"]
+  },
+  {
+    "id": "sandstone_core",
+    "name": "Sandstone Core",
+    "type": "material",
+    "rarity": "rare",
+    "value": 80,
+    "emoji": "🪨",
+    "description": "A core of compressed sandstone with magical properties.",
+    "tags": ["zone_2", "material", "desert"]
+  },
+  {
+    "id": "desert_iron",
+    "name": "Desert Iron",
+    "type": "material",
+    "rarity": "common",
+    "value": 20,
+    "emoji": "⚙️",
+    "description": "Iron ore found in desert mines.",
+    "tags": ["zone_2", "material", "ore"]
+  },
+  {
+    "id": "wind_essence",
+    "name": "Wind Essence",
+    "type": "material",
+    "rarity": "uncommon",
+    "value": 40,
+    "emoji": "🌪️",
+    "description": "Pure essence of wind magic.",
+    "tags": ["zone_2", "material", "wind"]
+  },
+  {
+    "id": "nomad_scimitar",
+    "name": "Nomad Scimitar",
+    "type": "weapon",
+    "rarity": "uncommon",
+    "value": 120,
+    "emoji": "⚔️",
+    "damage": 18,
+    "description": "A curved blade favored by desert nomads.",
+    "tags": ["zone_2", "weapon", "nomad"]
+  },
+  {
+    "id": "desert_robes",
+    "name": "Desert Robes",
+    "type": "chestplate",
+    "rarity": "uncommon",
+    "value": 100,
+    "emoji": "👘",
+    "defense": 8,
+    "description": "Light robes that protect against desert heat and sandstorms.",
+    "tags": ["zone_2", "armor", "desert"]
+  },
+  {
+    "id": "ancient_scarab",
+    "name": "Ancient Scarab",
+    "type": "material",
+    "rarity": "uncommon",
+    "value": 45,
+    "emoji": "🐞",
+    "description": "A scarab from ancient burial grounds.",
+    "tags": ["zone_2", "material", "ancient"]
+  },
+  {
+    "id": "mummy_wrappings",
+    "name": "Mummy Wrappings",
+    "type": "material",
+    "rarity": "common",
+    "value": 12,
+    "emoji": "🧷",
+    "description": "Ancient wrappings from mummified remains.",
+    "tags": ["zone_2", "material", "ancient"]
+  },
+  {
+    "id": "cursed_gold",
+    "name": "Cursed Gold",
+    "type": "material",
+    "rarity": "rare",
+    "value": 150,
+    "emoji": "💰",
+    "description": "Gold coins cursed by ancient pharaohs.",
+    "tags": ["zone_2", "material", "cursed"]
+  },
+  {
+    "id": "pharaoh_stone",
+    "name": "Pharaoh Stone",
+    "type": "material",
+    "rarity": "epic",
+    "value": 300,
+    "emoji": "👑",
+    "description": "A stone imbued with pharaonic power.",
+    "tags": ["zone_2", "material", "ancient"]
+  },
+  {
+    "id": "ancient_amulet",
+    "name": "Ancient Amulet",
+    "type": "accessory",
+    "rarity": "rare",
+    "value": 250,
+    "emoji": "🔮",
+    "hp": 30,
+    "mana": 20,
+    "description": "An amulet from an ancient pharaoh's tomb.",
+    "tags": ["zone_2", "accessory", "ancient"]
+  },
+  {
+    "id": "pharaoh_crown",
+    "name": "Pharaoh Crown",
+    "type": "helmet",
+    "rarity": "epic",
+    "value": 500,
+    "emoji": "👑",
+    "defense": 15,
+    "hp": 50,
+    "description": "The crown of an ancient pharaoh, imbued with great power.",
+    "tags": ["zone_2", "armor", "ancient"]
+  },
+  {
+    "id": "storm_petal",
+    "name": "Storm Petal",
+    "type": "material",
+    "rarity": "uncommon",
+    "value": 38,
+    "emoji": "🌸",
+    "description": "A petal that glows with storm energy.",
+    "tags": ["zone_2", "material", "wind"]
+  },
+  {
+    "id": "tempest_crystal",
+    "name": "Tempest Crystal",
+    "type": "material",
+    "rarity": "rare",
+    "value": 120,
+    "emoji": "💎",
+    "description": "A crystal that channels tempest energy.",
+    "tags": ["zone_2", "material", "wind"]
+  },
+  {
+    "id": "wind_core",
+    "name": "Wind Core",
+    "type": "material",
+    "rarity": "epic",
+    "value": 400,
+    "emoji": "🌀",
+    "description": "The core of a wind elemental, containing pure wind magic.",
+    "tags": ["zone_2", "material", "wind"]
+  },
+  {
+    "id": "wind_mage_staff",
+    "name": "Wind Mage Staff",
+    "type": "weapon",
+    "rarity": "rare",
+    "value": 300,
+    "emoji": "🪄",
+    "damage": 25,
+    "mana": 30,
+    "description": "A staff that channels wind magic.",
+    "tags": ["zone_2", "weapon", "wind"]
+  },
+  {
+    "id": "tempest_robes",
+    "name": "Tempest Robes",
+    "type": "chestplate",
+    "rarity": "rare",
+    "value": 280,
+    "emoji": "👘",
+    "defense": 12,
+    "mana": 40,
+    "description": "Robes that resonate with tempest energy.",
+    "tags": ["zone_2", "armor", "wind"]
+  },
+  {
+    "id": "storm_grass",
+    "name": "Storm Grass",
+    "type": "material",
+    "rarity": "common",
+    "value": 10,
+    "emoji": "🌾",
+    "description": "Grass that grows in sandstorm plains.",
+    "tags": ["zone_2", "material", "desert"]
+  },
+  {
+    "id": "sand_pearl",
+    "name": "Sand Pearl",
+    "type": "material",
+    "rarity": "uncommon",
+    "value": 50,
+    "emoji": "🫧",
+    "description": "A pearl formed in desert sands.",
+    "tags": ["zone_2", "material", "desert"]
+  },
+  {
+    "id": "storm_vein_ore",
+    "name": "Storm Vein Ore",
+    "type": "material",
+    "rarity": "uncommon",
+    "value": 42,
+    "emoji": "⛏️",
+    "description": "Ore that contains storm energy.",
+    "tags": ["zone_2", "material", "ore"]
+  },
+  {
+    "id": "storm_rider_boots",
+    "name": "Storm Rider Boots",
+    "type": "boots",
+    "rarity": "rare",
+    "value": 220,
+    "emoji": "👢",
+    "defense": 10,
+    "agility": 5,
+    "description": "Boots that allow you to ride sandstorms.",
+    "tags": ["zone_2", "armor", "wind"]
+  },
+  {
+    "id": "sandstorm_cloak",
+    "name": "Sandstorm Cloak",
+    "type": "accessory",
+    "rarity": "rare",
+    "value": 200,
+    "emoji": "🧥",
+    "defense": 5,
+    "agility": 8,
+    "description": "A cloak that protects against sandstorms.",
+    "tags": ["zone_2", "accessory", "desert"]
+  },
+  {
+    "id": "crystal_flower",
+    "name": "Crystal Flower",
+    "type": "material",
+    "rarity": "common",
+    "value": 12,
+    "emoji": "🌸",
+    "description": "A flower that glows with crystal light.",
+    "tags": ["zone_1", "material", "crystal"]
+  },
+  {
+    "id": "luminous_petal",
+    "name": "Luminous Petal",
+    "type": "material",
+    "rarity": "uncommon",
+    "value": 25,
+    "emoji": "✨",
+    "description": "A petal that emits soft light.",
+    "tags": ["zone_1", "material", "crystal"]
+  },
+  {
+    "id": "crystal_shard",
+    "name": "Crystal Shard",
+    "type": "material",
+    "rarity": "common",
+    "value": 15,
+    "emoji": "💎",
+    "description": "A shard of pure crystal.",
+    "tags": ["zone_1", "material", "crystal"]
+  },
+  {
+    "id": "crystal_amulet",
+    "name": "Crystal Amulet",
+    "type": "accessory",
+    "rarity": "uncommon",
+    "value": 120,
+    "emoji": "🔮",
+    "mana": 15,
+    "description": "An amulet that enhances mana capacity.",
+    "tags": ["zone_1", "accessory", "crystal"]
+  },
+  {
+    "id": "seaweed",
+    "name": "Seaweed",
+    "type": "material",
+    "rarity": "common",
+    "value": 8,
+    "emoji": "🌿",
+    "description": "Common seaweed found along the coast.",
+    "tags": ["zone_1", "material", "coastal"]
+  },
+  {
+    "id": "coastal_herb",
+    "name": "Coastal Herb",
+    "type": "material",
+    "rarity": "common",
+    "value": 10,
+    "emoji": "🌱",
+    "description": "A herb that grows near the coast.",
+    "tags": ["zone_1", "material", "coastal"]
+  },
+  {
+    "id": "sea_salt",
+    "name": "Sea Salt",
+    "type": "material",
+    "rarity": "common",
+    "value": 5,
+    "emoji": "🧂",
+    "description": "Salt harvested from the sea.",
+    "tags": ["zone_1", "material", "coastal"]
+  },
+  {
+    "id": "pearl",
+    "name": "Pearl",
+    "type": "material",
+    "rarity": "uncommon",
+    "value": 80,
+    "emoji": "🫧",
+    "description": "A rare pearl from the ocean.",
+    "tags": ["zone_1", "material", "coastal"]
+  },
+  {
+    "id": "driftwood",
+    "name": "Driftwood",
+    "type": "material",
+    "rarity": "common",
+    "value": 3,
+    "emoji": "🪵",
+    "description": "Wood washed up on the shore.",
+    "tags": ["zone_1", "material", "coastal"]
+  },
+  {
+    "id": "shell_necklace",
+    "name": "Shell Necklace",
+    "type": "accessory",
+    "rarity": "common",
+    "value": 50,
+    "emoji": "🐚",
+    "luck": 2,
+    "description": "A necklace made from shells.",
+    "tags": ["zone_1", "accessory", "coastal"]
+  },
+  {
+    "id": "ember_mushroom",
+    "name": "Ember Mushroom",
+    "type": "material",
+    "rarity": "common",
+    "value": 12,
+    "emoji": "🍄",
+    "description": "A mushroom that glows like embers.",
+    "tags": ["zone_1", "material", "bog"]
+  },
+  {
+    "id": "bog_herb",
+    "name": "Bog Herb",
+    "type": "material",
+    "rarity": "common",
+    "value": 10,
+    "emoji": "🌿",
+    "description": "A herb that grows in bogs.",
+    "tags": ["zone_1", "material", "bog"]
+  },
+  {
+    "id": "peat",
+    "name": "Peat",
+    "type": "material",
+    "rarity": "common",
+    "value": 4,
+    "emoji": "🪨",
+    "description": "Compressed organic matter from bogs.",
+    "tags": ["zone_1", "material", "bog"]
+  },
+  {
+    "id": "bog_iron",
+    "name": "Bog Iron",
+    "type": "material",
+    "rarity": "uncommon",
+    "value": 30,
+    "emoji": "⚙️",
+    "description": "Iron ore found in bogs.",
+    "tags": ["zone_1", "material", "bog"]
+  },
+  {
+    "id": "preserved_remains",
+    "name": "Preserved Remains",
+    "type": "material",
+    "rarity": "rare",
+    "value": 150,
+    "emoji": "💀",
+    "description": "Ancient remains preserved in the bog.",
+    "tags": ["zone_1", "material", "bog"]
+  },
+  {
+    "id": "ancient_scroll",
+    "name": "Ancient Scroll",
+    "type": "material",
+    "rarity": "uncommon",
+    "value": 45,
+    "emoji": "📜",
+    "description": "A scroll from an ancient civilization.",
+    "tags": ["zone_1", "material", "ancient"]
+  },
+  {
+    "id": "rune_fragment",
+    "name": "Rune Fragment",
+    "type": "material",
+    "rarity": "common",
+    "value": 18,
+    "emoji": "🔷",
+    "description": "A fragment of an ancient rune.",
+    "tags": ["zone_1", "material", "ancient"]
+  },
+  {
+    "id": "ancient_stone",
+    "name": "Ancient Stone",
+    "type": "material",
+    "rarity": "common",
+    "value": 12,
+    "emoji": "🪨",
+    "description": "Stone from ancient ruins.",
+    "tags": ["zone_1", "material", "ancient"]
+  },
+  {
+    "id": "rune_crystal",
+    "name": "Rune Crystal",
+    "type": "material",
+    "rarity": "rare",
+    "value": 120,
+    "emoji": "💎",
+    "description": "A crystal inscribed with ancient runes.",
+    "tags": ["zone_1", "material", "ancient"]
+  },
+  {
+    "id": "ancient_relic",
+    "name": "Ancient Relic",
+    "type": "accessory",
+    "rarity": "epic",
+    "value": 400,
+    "emoji": "🏺",
+    "hp": 40,
+    "mana": 30,
+    "description": "A powerful relic from an ancient civilization.",
+    "tags": ["zone_1", "accessory", "ancient"]
+  },
+  {
+    "id": "rune_weapon",
+    "name": "Rune Weapon",
+    "type": "weapon",
+    "rarity": "epic",
+    "value": 450,
+    "emoji": "⚔️",
+    "damage": 30,
+    "description": "A weapon inscribed with powerful runes.",
+    "tags": ["zone_1", "weapon", "ancient"]
+  },
+  {
+    "id": "oasis_palm_fruit",
+    "name": "Oasis Palm Fruit",
+    "type": "material",
+    "rarity": "common",
+    "value": 14,
+    "emoji": "🥥",
+    "description": "Sweet fruit from oasis palms.",
+    "tags": ["zone_2", "material", "desert"]
+  },
+  {
+    "id": "spring_water",
+    "name": "Spring Water",
+    "type": "material",
+    "rarity": "uncommon",
+    "value": 35,
+    "emoji": "💧",
+    "description": "Pure water from desert springs.",
+    "tags": ["zone_2", "material", "desert"]
+  },
+  {
+    "id": "spring_crystal",
+    "name": "Spring Crystal",
+    "type": "material",
+    "rarity": "uncommon",
+    "value": 42,
+    "emoji": "💎",
+    "description": "A crystal formed in desert springs.",
+    "tags": ["zone_2", "material", "desert"]
+  },
+  {
+    "id": "oasis_treasure",
+    "name": "Oasis Treasure",
+    "type": "accessory",
+    "rarity": "rare",
+    "value": 250,
+    "emoji": "💎",
+    "hp": 25,
+    "mana": 20,
+    "description": "A treasure found in an oasis.",
+    "tags": ["zone_2", "accessory", "desert"]
+  },
+  {
+    "id": "canyon_herb",
+    "name": "Canyon Herb",
+    "type": "material",
+    "rarity": "common",
+    "value": 11,
+    "emoji": "🌿",
+    "description": "A herb that grows in canyons.",
+    "tags": ["zone_2", "material", "desert"]
+  },
+  {
+    "id": "mirage_flower",
+    "name": "Mirage Flower",
+    "type": "material",
+    "rarity": "uncommon",
+    "value": 38,
+    "emoji": "🌸",
+    "description": "A rare flower that appears like a mirage.",
+    "tags": ["zone_2", "material", "desert"]
+  },
+  {
+    "id": "canyon_stone",
+    "name": "Canyon Stone",
+    "type": "material",
+    "rarity": "common",
+    "value": 13,
+    "emoji": "🪨",
+    "description": "Stone from desert canyons.",
+    "tags": ["zone_2", "material", "desert"]
+  },
+  {
+    "id": "lost_caravan_treasure",
+    "name": "Lost Caravan Treasure",
+    "type": "accessory",
+    "rarity": "epic",
+    "value": 500,
+    "emoji": "💎",
+    "coins": 50,
+    "luck": 10,
+    "description": "A treasure from a lost caravan.",
+    "tags": ["zone_2", "accessory", "desert"]
+  },
+  {
+    "id": "desert_wind_blade",
+    "name": "Desert Wind Blade",
+    "type": "weapon",
+    "rarity": "epic",
+    "value": 500,
+    "emoji": "⚔️",
+    "damage": 35,
+    "description": "A powerful blade forged from Zone 1 and Zone 2 materials.",
+    "tags": ["zone_2", "weapon", "cross_zone"]
+  },
+  {
+    "id": "tempest_armor",
+    "name": "Tempest Armor",
+    "type": "armor",
+    "rarity": "epic",
+    "value": 550,
+    "emoji": "🛡️",
+    "defense": 25,
+    "hp": 50,
+    "description": "Armor crafted from Zone 1 crystals and Zone 2 wind materials.",
+    "tags": ["zone_2", "armor", "cross_zone"]
+  },
+  {
+    "id": "pharaoh_weapon",
+    "name": "Pharaoh Weapon",
+    "type": "weapon",
+    "rarity": "legendary",
+    "value": 800,
+    "emoji": "⚔️",
+    "damage": 45,
+    "description": "A legendary weapon combining Zone 1 runes with Zone 2 pharaoh power.",
+    "tags": ["zone_2", "weapon", "cross_zone"]
+  },
+  {
+    "id": "oasis_elixir",
+    "name": "Oasis Elixir",
+    "type": "consumable",
+    "rarity": "rare",
+    "value": 150,
+    "emoji": "🧪",
+    "hp": 100,
+    "mana": 50,
+    "description": "A powerful elixir mixing Zone 1 grove tonics with Zone 2 spring water.",
+    "tags": ["zone_2", "consumable", "cross_zone"]
+  },
+  {
+    "id": "wind_storm_staff",
+    "name": "Wind Storm Staff",
+    "type": "weapon",
+    "rarity": "legendary",
+    "value": 750,
+    "emoji": "🔮",
+    "damage": 40,
+    "mana": 30,
+    "description": "A master staff combining Zone 1 ancient relics with Zone 2 wind cores.",
+    "tags": ["zone_2", "weapon", "cross_zone"]
+  },
+  {
+    "id": "desert_nomad_gear",
+    "name": "Desert Nomad Gear",
+    "type": "armor",
+    "rarity": "epic",
+    "value": 480,
+    "emoji": "🧥",
+    "defense": 20,
+    "agility": 10,
+    "description": "Gear crafted from Zone 1 coastal materials and Zone 2 desert essence.",
+    "tags": ["zone_2", "armor", "cross_zone"]
+  },
+  {
+    "id": "sandstorm_boots",
+    "name": "Sandstorm Boots",
+    "type": "armor",
+    "rarity": "epic",
+    "value": 450,
+    "emoji": "👢",
+    "defense": 15,
+    "agility": 12,
+    "description": "Boots enhanced with Zone 1 crystals for superior protection.",
+    "tags": ["zone_2", "armor", "cross_zone"]
+  },
+  {
+    "id": "cross_zone_amulet",
+    "name": "Cross-Zone Amulet",
+    "type": "accessory",
+    "rarity": "legendary",
+    "value": 1000,
+    "emoji": "💎",
+    "hp": 60,
+    "mana": 50,
+    "power": 15,
+    "description": "A legendary amulet combining Zone 1 and Zone 2 ancient artifacts.",
+    "tags": ["zone_2", "accessory", "cross_zone"]
   }
 ]

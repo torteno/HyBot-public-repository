@@ -562,5 +562,177 @@
       ]
     },
     "prerequisites": [24]
+  },
+  {
+    "id": 26,
+    "slug": "master-dungeon-delver",
+    "name": "Master Dungeon Delver",
+    "description": "Prove your mastery of dungeon exploration by completing multiple challenging dungeons and gathering rare materials from the depths.",
+    "faction": "neutral",
+    "region": "All Regions",
+    "req": { "level": 10 },
+    "objectives": [
+      { "type": "dungeon", "dungeon": "shadow_depths", "quantity": 1, "description": "Complete the Shadow Depths dungeon." },
+      { "type": "dungeon", "dungeon": "emerald_warren", "quantity": 1, "description": "Complete the Emerald Warren dungeon." },
+      { "type": "gather", "item": "luminite_core", "quantity": 1, "description": "Obtain a Luminite Core from a dungeon boss." },
+      { "type": "gather", "item": "orbis_crystal", "quantity": 3, "description": "Collect Orbis Crystals from dungeon chests." },
+      { "type": "defeat", "enemy": "depth_tyrant", "quantity": 1, "description": "Defeat a dungeon boss (Depth Tyrant or equivalent)." }
+    ],
+    "reward": {
+      "xp": 2000,
+      "coins": 1500,
+      "items": [
+        { "item": "remote_dungeon_key", "quantity": 1 }
+      ],
+      "flags": ["dungeonAnywhere"]
+    },
+    "prerequisites": [25]
+  },
+  {
+    "id": 27,
+    "slug": "cross-zone-mastery",
+    "name": "Cross-Zone Mastery",
+    "description": "Master the art of combining materials from different zones. This quest requires gathering resources from both Zone 1 and Zone 2, then crafting a powerful cross-zone item.",
+    "faction": "neutral",
+    "region": "All Zones",
+    "req": { "level": 16 },
+    "objectives": [
+      { "type": "gather", "item": "ancient_bark", "quantity": 20, "description": "Gather 20 Ancient Bark from Zone 1." },
+      { "type": "gather", "item": "wind_essence", "quantity": 15, "description": "Gather 15 Wind Essence from Zone 2." },
+      { "type": "gather", "item": "crystal_shard", "quantity": 10, "description": "Gather 10 Crystal Shards from Zone 1." },
+      { "type": "gather", "item": "wind_crystal", "quantity": 8, "description": "Gather 8 Wind Crystals from Zone 2." },
+      { "type": "craft", "item": "desert_wind_blade", "quantity": 1, "description": "Craft a Desert Wind Blade using Zone 1 and Zone 2 materials." },
+      { "type": "explore", "target": "emerald_grove", "quantity": 1, "description": "Explore Emerald Grove in Zone 1." },
+      { "type": "explore", "target": "howling_sands", "quantity": 1, "description": "Explore Howling Sands in Zone 2." }
+    ],
+    "reward": {
+      "xp": 2500,
+      "coins": 2000,
+      "items": [
+        { "item": "cross_zone_amulet", "quantity": 1 }
+      ],
+      "flags": ["crossZoneMaster"]
+    },
+    "prerequisites": [26]
+  },
+  {
+    "id": 28,
+    "slug": "ancient-secrets",
+    "name": "Ancient Secrets",
+    "description": "Uncover the secrets of ancient civilizations by exploring ruins in both zones. This quest requires finding specific rare items and solving puzzles.",
+    "faction": "archivist",
+    "region": "All Zones",
+    "req": { "level": 12 },
+    "objectives": [
+      { "type": "explore", "target": "ancient_ruins", "quantity": 1, "description": "Explore Ancient Ruins in Zone 1." },
+      { "type": "explore", "target": "dune_sepulcher", "quantity": 1, "description": "Explore Dune Sepulcher in Zone 2." },
+      { "type": "gather", "item": "ancient_scroll", "quantity": 5, "description": "Find 5 Ancient Scrolls from Zone 1 ruins." },
+      { "type": "gather", "item": "pharaoh_stone", "quantity": 2, "description": "Obtain 2 Pharaoh Stones from Zone 2 tombs." },
+      { "type": "gather", "item": "rune_crystal", "quantity": 3, "description": "Collect 3 Rune Crystals from Zone 1." },
+      { "type": "gather", "item": "ancient_relic", "quantity": 1, "description": "Find 1 Ancient Relic (rare drop from Zone 1 ruins)." },
+      { "type": "defeat", "enemy": "rune_guardian", "quantity": 3, "description": "Defeat 3 Rune Guardians in Zone 1." },
+      { "type": "defeat", "enemy": "pharaoh_lich", "quantity": 1, "description": "Defeat a Pharaoh Lich in Zone 2 (rare boss)." }
+    ],
+    "reward": {
+      "xp": 3000,
+      "coins": 2500,
+      "items": [
+        { "item": "pharaoh_weapon", "quantity": 1 },
+        { "item": "ancient_relic", "quantity": 1 }
+      ],
+      "flags": ["ancientSecretsUnlocked"]
+    },
+    "prerequisites": [20]
+  },
+  {
+    "id": 29,
+    "slug": "coastal-to-desert",
+    "name": "From Coast to Desert",
+    "description": "A mysterious quest that requires traveling between coastal Zone 1 biomes and desert Zone 2 biomes. The objective is unclear until you begin exploring.",
+    "faction": "nomad",
+    "region": "All Zones",
+    "req": { "level": 15 },
+    "objectives": [
+      { "type": "gather", "item": "pearl", "quantity": 5, "description": "Gather 5 Pearls from Zone 1 coastal areas." },
+      { "type": "gather", "item": "sea_salt", "quantity": 20, "description": "Collect 20 Sea Salt from Zone 1." },
+      { "type": "gather", "item": "spring_water", "quantity": 10, "description": "Obtain 10 Spring Water from Zone 2 oases." },
+      { "type": "gather", "item": "oasis_palm_fruit", "quantity": 15, "description": "Harvest 15 Oasis Palm Fruits from Zone 2." },
+      { "type": "explore", "target": "azure_cove", "quantity": 1, "description": "Explore Azure Cove in Zone 1." },
+      { "type": "explore", "target": "oasis_springs", "quantity": 1, "description": "Explore Oasis Springs in Zone 2." },
+      { "type": "craft", "item": "desert_nomad_gear", "quantity": 1, "description": "Craft Desert Nomad Gear using coastal and desert materials." }
+    ],
+    "reward": {
+      "xp": 2200,
+      "coins": 1800,
+      "items": [
+        { "item": "oasis_elixir", "quantity": 3 },
+        { "item": "oasis_treasure", "quantity": 1 }
+      ],
+      "reputation": {
+        "nomad": 25
+      }
+    },
+    "prerequisites": [26]
+  },
+  {
+    "id": 30,
+    "slug": "crystal-wind-fusion",
+    "name": "Crystal Wind Fusion",
+    "description": "Master the fusion of crystal magic from Zone 1 with wind magic from Zone 2. This advanced quest requires deep knowledge of both zones.",
+    "faction": "skysong",
+    "region": "All Zones",
+    "req": { "level": 17 },
+    "objectives": [
+      { "type": "gather", "item": "crystal_shard", "quantity": 15, "description": "Gather 15 Crystal Shards from Zone 1." },
+      { "type": "gather", "item": "wind_essence", "quantity": 20, "description": "Collect 20 Wind Essence from Zone 2." },
+      { "type": "gather", "item": "wind_crystal", "quantity": 10, "description": "Obtain 10 Wind Crystals from Zone 2." },
+      { "type": "gather", "item": "rune_crystal", "quantity": 5, "description": "Find 5 Rune Crystals from Zone 1." },
+      { "type": "gather", "item": "wind_core", "quantity": 1, "description": "Obtain 1 Wind Core (rare drop from Zone 2 bosses)." },
+      { "type": "craft", "item": "wind_storm_staff", "quantity": 1, "description": "Craft a Wind Storm Staff combining Zone 1 and Zone 2 materials." },
+      { "type": "craft", "item": "tempest_armor", "quantity": 1, "description": "Craft Tempest Armor using crystal and wind materials." },
+      { "type": "defeat", "enemy": "tempest_lord", "quantity": 1, "description": "Defeat a Tempest Lord in Zone 2 (boss)." }
+    ],
+    "reward": {
+      "xp": 3500,
+      "coins": 3000,
+      "items": [
+        { "item": "wind_storm_staff", "quantity": 1 },
+        { "item": "tempest_armor", "quantity": 1 },
+        { "item": "wind_core", "quantity": 1 }
+      ],
+      "reputation": {
+        "skysong": 30
+      }
+    },
+    "prerequisites": [27]
+  },
+  {
+    "id": 31,
+    "slug": "hidden-treasures",
+    "name": "Hidden Treasures",
+    "description": "A cryptic quest with no clear objectives. You must discover what needs to be done by exploring and gathering rare items. The quest description is intentionally vague.",
+    "faction": "neutral",
+    "region": "All Zones",
+    "req": { "level": 14 },
+    "objectives": [
+      { "type": "gather", "item": "ancient_relic", "quantity": 1, "description": "Find an Ancient Relic (hidden objective - not shown initially)." },
+      { "type": "gather", "item": "lost_caravan_treasure", "quantity": 1, "description": "Discover a Lost Caravan Treasure (hidden objective)." },
+      { "type": "gather", "item": "pharaoh_crown", "quantity": 1, "description": "Obtain a Pharaoh Crown (hidden objective)." },
+      { "type": "explore", "target": "mirage_canyon", "quantity": 1, "description": "Explore Mirage Canyon (hidden objective)." },
+      { "type": "explore", "target": "ancient_ruins", "quantity": 1, "description": "Explore Ancient Ruins (hidden objective)." },
+      { "type": "defeat", "enemy": "rune_guardian", "quantity": 5, "description": "Defeat 5 Rune Guardians (hidden objective)." },
+      { "type": "defeat", "enemy": "mirage_phantom", "quantity": 3, "description": "Defeat 3 Mirage Phantoms (hidden objective)." }
+    ],
+    "reward": {
+      "xp": 4000,
+      "coins": 3500,
+      "items": [
+        { "item": "cross_zone_amulet", "quantity": 1 },
+        { "item": "lost_caravan_treasure", "quantity": 1 }
+      ],
+      "flags": ["treasureHunter"]
+    },
+    "prerequisites": [28],
+    "hidden": true
   }
 ]

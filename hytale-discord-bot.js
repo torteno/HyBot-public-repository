@@ -21,6 +21,10 @@ const cron = require('node-cron');
 const fs = require('fs');
 const path = require('path');
 
+// Dungeon modules
+const dungeonHandlers = require('./dungeons/handlers');
+const dungeonRun = require('./dungeons/run');
+
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -228,6 +232,8 @@ const GATHERING_RESOURCE_KEYS = {
   fishing: ['fishing']
 };
 const ACTIVE_GATHER_SESSIONS = new Map();
+const EXPLORATION_PROGRESS_UPDATE_MS = 2000;
+const ACTIVE_EXPLORATION_SESSIONS = new Map();
 const GATHERING_SLASH_CHOICES = GATHERING_SET_TYPES.map(type => ({
   name: GATHERING_TYPE_LABELS[type],
   value: type
@@ -548,7 +554,7 @@ async function showTutorial(message) {
       },
       {
         name: '2️⃣ Explore & Travel',
-        value: `Check \`${PREFIX} explore status\` to see your current biome, then \`${PREFIX} travel <biome>\` to discover new regions.`,
+        value: `Check \`${PREFIX} explore status\` to see your current biome and zone, then \`${PREFIX} travel <biome>\` to discover new regions. You start in **Zone 1: Emerald Grove**. Unlock **Zone 2: Howling Sands** by reaching level 15 and completing Adventure Mode Chapter 1!`,
         inline: false
       },
       {
@@ -586,6 +592,11 @@ async function showTutorial(message) {
       {
         name: 'Codex & Lore',
         value: `Log discoveries with \`${PREFIX} codex <category>\` and dive into story bits via \`${PREFIX} lore <topic>\`.`,
+        inline: false
+      },
+      {
+        name: '🌍 Zones & Progression',
+        value: `Orbis is divided into zones! Start in **Zone 1: Emerald Grove** and unlock **Zone 2: Howling Sands** by reaching level 15 and completing Adventure Mode (\`${PREFIX} adventure\`). Each zone has unique biomes, enemies, and rewards!`,
         inline: false
       },
       {
@@ -902,6 +913,7 @@ function resolveGatheringRewards(player, pool, type, modifiers, options = {}) {
     drops.push({ item: entry.item, quantity, rarity: entry.rarity, source: entry.source || type });
     addItemToInventory(player, entry.item, quantity);
     processQuestEvent(null, player, { type: 'gather', itemId: entry.item, count: quantity });
+    player.stats.resourcesGathered = (player.stats.resourcesGathered || 0) + quantity;
   }
 
   if (!drops.length && pool.length) {
@@ -912,6 +924,7 @@ function resolveGatheringRewards(player, pool, type, modifiers, options = {}) {
       drops.push({ item: pityEntry.item, quantity: qty, rarity: pityEntry.rarity, source: pityEntry.source || type, pity: true });
       addItemToInventory(player, pityEntry.item, qty);
       processQuestEvent(null, player, { type: 'gather', itemId: pityEntry.item, count: qty });
+      player.stats.resourcesGathered = (player.stats.resourcesGathered || 0) + qty;
     }
   }
 
@@ -923,6 +936,122 @@ function buildProgressBar(percent, length = 18) {
   const filled = Math.round(normalized * length);
   const empty = Math.max(0, length - filled);
   return `${'█'.repeat(filled)}${'░'.repeat(empty)}`;
+}
+
+// Game tips system for exploration and travel
+const EXPLORATION_TIPS = {
+  general: [
+    '💡 **Zones & Progression**: Orbis is divided into zones! You start in **Zone 1: Emerald Grove**. Unlock **Zone 2: Howling Sands** by reaching level 15 and completing Adventure Mode Chapter 1.',
+    '💡 **Zone Unlocking**: Complete Adventure Mode quests to unlock new zones. Each zone has unique biomes, enemies, dungeons, and better rewards!',
+    '💡 **Zone Access**: You cannot travel to biomes in locked zones. Check your zone progress with `/adventure` and `/explore status`.',
+    '💡 **Settlement Discovery**: Do exploration activities (forage, mine, scavenge) to trigger random events. One event type discovers settlements!',
+    '💡 **Event Chances**: After completing exploration activities, there\'s a 25-75% chance to trigger random events including settlements, structures, camps, and rare encounters.',
+    '💡 **Survey First**: Use `/explore survey` before other activities to increase event discovery chances in your current biome.',
+    '💡 **Biome Activities**: Check `/explore activities` for unique biome-specific activities that may have better discovery rates.',
+    '💡 **Gathering Gear**: Equip better gathering tools to increase material yields, speed, and rare item chances. Check `/gather gear`!',
+    '💡 **Multiple Activities**: Try different exploration activities (forage, mine, scavenge) - each can trigger different types of events.',
+    '💡 **Base Benefits**: Claim a base in a biome with `/base claim` to automate resource gathering and unlock base modules.',
+    '💡 **Equipment Matters**: Equip better armor and weapons before exploring dangerous biomes. Check your `/profile` for equipped gear.',
+    '💡 **Quest Integration**: Many exploration activities count toward quest objectives. Check `/quests` to see what you need!',
+    '💡 **Codex Unlocks**: Discovering new items, enemies, and locations unlocks codex entries. Use `/codex` to browse your discoveries.',
+    '💡 **Faction Reputation**: Helping factions through exploration can increase your reputation. Check `/reputation` to see standings.',
+    '💡 **Resource Planning**: Different biomes have different resources. Plan your exploration based on what materials you need!',
+    '💡 **Chain Activities**: Some exploration activities can be chained together. Check `/explore chains` for multi-step adventures.',
+    '💡 **Combat Preparation**: Keep health potions and brews ready - sudden combat can occur during exploration!',
+    '💡 **Settlement Management**: Once you discover a settlement, manage it with `/settlement info <id>` to grow its population and wealth.',
+    '💡 **Zone Rewards**: Higher zones have better loot, more XP, and stronger enemies. Progress through Adventure Mode to unlock them!'
+  ],
+  travel: [
+    '💡 **Zones & Travel**: Orbis has multiple zones! You start in Zone 1. Unlock Zone 2 by reaching level 15 and completing Adventure Mode Chapter 1.',
+    '💡 **Zone Access**: You cannot travel to biomes in locked zones. Check `/adventure` to see your zone unlock progress.',
+    '💡 **Travel Planning**: Check `/travel` to see neighboring biomes before starting your journey. Zone info is shown in `/explore status`.',
+    '💡 **Biome Discovery**: Traveling to new biomes automatically adds them to your discovered biomes list.',
+    '💡 **Travel Safety**: Make sure you have enough HP before traveling - some journeys can be dangerous!',
+    '💡 **Base Locations**: Consider claiming bases in strategic biomes to create fast travel points.',
+    '💡 **Resource Routes**: Plan travel routes through biomes that have resources you need for crafting.',
+    '💡 **Faction Territories**: Different biomes are home to different factions. Travel to find new faction vendors and contracts.',
+    '💡 **Dungeon Access**: Some dungeons require you to be in specific biomes. Travel to access dungeon entrances.',
+    '💡 **Biome Activities**: Each biome has unique activities. Travel to explore new opportunities!',
+    '💡 **Travel History**: Your travel history is tracked. Use it to plan efficient routes between biomes.',
+    '💡 **Neighbor Exploration**: Start by exploring neighboring biomes - they\'re usually safer and closer.',
+    '💡 **Zone Progression**: Higher zones have better rewards but require higher levels. Complete Adventure Mode to unlock them!'
+  ],
+  foraging: [
+    '💡 **Foraging Tips**: Foraging can discover rare plants and materials. Better gathering gear increases your chances!',
+    '💡 **Biome-Specific**: Different biomes have different forageable items. Explore multiple biomes for variety.',
+    '💡 **Event Discovery**: Foraging activities can trigger random events including settlement discoveries!',
+    '💡 **Quest Items**: Many quests require foraged materials. Check `/quests` to see what you need.',
+    '💡 **Crafting Materials**: Foraged items are often used in crafting recipes. Check `/recipes` to see what you can make!'
+  ],
+  mining: [
+    '💡 **Mining Rewards**: Mining can yield valuable ores and crystals. Better pickaxes increase yields significantly!',
+    '💡 **Rare Materials**: Mining has a chance to discover rare materials used in advanced crafting recipes.',
+    '💡 **Event Discovery**: Mining activities can trigger random events including settlement discoveries!',
+    '💡 **Equipment Crafting**: Mined materials are essential for crafting weapons and armor. Plan your mining trips!',
+    '💡 **Biome Ores**: Different biomes contain different ores. Travel to find the materials you need.'
+  ],
+  scavenging: [
+    '💡 **Scavenging Finds**: Scavenging can discover useful items, materials, and sometimes rare equipment!',
+    '💡 **Event Discovery**: Scavenging activities can trigger random events including settlement discoveries!',
+    '💡 **Hidden Treasures**: Some biomes have better scavenging opportunities. Explore to find the best spots!',
+    '💡 **Quest Items**: Scavenging can find items needed for quests. Keep an eye on your quest objectives!',
+    '💡 **Resource Efficiency**: Scavenging is a great way to find materials without combat or crafting.'
+  ],
+  activity: [
+    '💡 **Biome Activities**: Each biome has unique activities with special rewards and discovery chances!',
+    '💡 **Activity Rewards**: Biome activities often have better rewards than standard exploration actions.',
+    '💡 **Event Discovery**: Biome activities can trigger random events including settlement discoveries!',
+    '💡 **Check Activities**: Use `/explore activities` to see all available activities in your current biome.',
+    '💡 **Activity Chains**: Some activities can be part of exploration chains. Check `/explore chains`!'
+  ],
+  structure: [
+    '💡 **Structure Discovery**: Exploring structures can yield valuable rewards and unlock codex entries!',
+    '💡 **Structure Types**: Different structures have different rewards. Keep exploring to find them all!',
+    '💡 **Codex Unlocks**: Discovering structures adds them to your codex. Use `/codex` to view them!',
+    '💡 **Rare Structures**: Some structures are very rare and offer exceptional rewards when found!',
+    '💡 **Structure Rewards**: Structures often contain unique items not found elsewhere.'
+  ],
+  survey: [
+    '💡 **Survey Benefits**: Surveying increases the chance of future events in your current biome!',
+    '💡 **Event Boost**: Use survey before other activities to maximize event discovery chances.',
+    '💡 **Biome Knowledge**: Surveying helps you understand the biome better and find hidden opportunities.',
+    '💡 **Discovery Prep**: Survey first, then do other activities for better results!',
+    '💡 **Strategic Surveying**: Survey in biomes where you want to discover settlements or structures.'
+  ]
+};
+
+function getRandomGameTip(actionType, biome = null, tipIndex = 0) {
+  let tipPool = [];
+  
+  // Add travel-specific tips
+  if (actionType === 'travel') {
+    tipPool = [...EXPLORATION_TIPS.travel];
+  } else {
+    // Add general tips
+    tipPool = [...EXPLORATION_TIPS.general];
+    
+    // Add activity-specific tips
+    if (actionType === 'forage') {
+      tipPool = [...tipPool, ...EXPLORATION_TIPS.foraging];
+    } else if (actionType === 'mine') {
+      tipPool = [...tipPool, ...EXPLORATION_TIPS.mining];
+    } else if (actionType === 'scavenge') {
+      tipPool = [...tipPool, ...EXPLORATION_TIPS.scavenging];
+    } else if (actionType === 'survey') {
+      tipPool = [...tipPool, ...EXPLORATION_TIPS.survey];
+    } else if (actionType === 'structure' || actionType === 'puzzle') {
+      tipPool = [...tipPool, ...EXPLORATION_TIPS.structure];
+    } else if (actionType === 'activity' || actionType === 'event') {
+      tipPool = [...tipPool, ...EXPLORATION_TIPS.activity];
+    }
+  }
+  
+  if (tipPool.length === 0) return null;
+  
+  // Use tipIndex to rotate through tips consistently
+  // This ensures the same tip shows during each rotation period
+  const selectedIndex = tipIndex % tipPool.length;
+  return tipPool[selectedIndex];
 }
 
 async function startGatheringSession(player, type, context = {}) {
@@ -1121,7 +1250,13 @@ async function startGatheringSession(player, type, context = {}) {
       player.tutorials.gathering.completionHint = true;
     }
 
-    await updateReply({ content: summaryLines.join('\n') }).catch(error => console.error('Failed to send gathering completion message:', error));
+    const summaryText = summaryLines.join('\n');
+    const summaryEmbed = new EmbedBuilder()
+      .setColor('#27AE60')
+      .setTitle(`${emoji} Harvest Complete`)
+      .setDescription(summaryText)
+      .setFooter({ text: `Elapsed: ${adjustedSeconds}s${equippedTool ? ` | Tool: ${equippedTool.definition.name}` : ''}` });
+
     const notifyChannel = context.message?.channel || context.interaction?.channel || null;
     const notifyUser = context.message?.author || context.interaction?.user || null;
     if (notifyChannel && shouldSendGatherNotifications(player)) {
@@ -1142,9 +1277,208 @@ async function startGatheringSession(player, type, context = {}) {
         ? createMessageAdapterFromInteraction(context.interaction, { ephemeral: context.ephemeral })
         : null;
     await handleAchievementCheck(achievementTarget, player);
+
+    const menuEmbed = buildGatherStatusEmbed(player, biomeData, exploration, { includeTutorial: false });
+    menuEmbed.addFields({
+      name: 'Resource Highlights',
+      value: summarizeBiomeGatheringResources(biomeData),
+      inline: false
+    });
+    const components = [
+      ...buildGatheringActionComponents(userId, exploration),
+      ...buildDashboardComponents()
+    ];
+    const payload = {
+      embeds: [
+        applyVisualStyle(summaryEmbed, 'gather'),
+        applyVisualStyle(menuEmbed, 'gather')
+      ],
+      components
+    };
+    await updateReply(payload).catch(error => console.error('Failed to send gathering completion message:', error));
   }, durationMs);
 
   return { success: true, durationMs };
+}
+
+function cancelExplorationProgressSession(userId) {
+  const existing = ACTIVE_EXPLORATION_SESSIONS.get(userId);
+  if (!existing) return;
+  if (existing.updateTimer) clearTimeout(existing.updateTimer);
+  if (existing.timeout) clearTimeout(existing.timeout);
+  ACTIVE_EXPLORATION_SESSIONS.delete(userId);
+}
+
+async function startExplorationProgressSession(player, context = {}, options = {}) {
+  const userId = options.userId || context.userId || context.message?.author?.id || context.interaction?.user?.id;
+  if (!userId) return;
+  cancelExplorationProgressSession(userId);
+
+  const exploration = ensureExplorationState(player);
+  const action = options.action || exploration.action;
+  if (!action) return;
+
+  const startedAt = action.startedAt || Date.now();
+  const endsAt = action.endsAt || startedAt;
+  const durationMs = Math.max(0, endsAt - startedAt);
+  if (durationMs <= 0) {
+    resolveExplorationAction(player, context.message || null);
+    return;
+  }
+
+  const interaction = context.interaction || context.message?.interaction || null;
+  let progressMessage = options.reuseMessage || null;
+  const visualKey = options.visualKey || (action.type === 'travel' ? 'travel' : 'explore');
+  const emoji = options.emoji || (action.type === 'travel' ? '🚶' : '⏳');
+  const currentBiome = getBiomeDefinition(action.biomeId || exploration.currentBiome);
+  const biomeName = currentBiome?.name || formatBiomeName(action.biomeId || exploration.currentBiome);
+  const actionLabel = options.label || (action.type === 'travel'
+    ? `Travel to ${biomeName}`
+    : `${formatActionName(action.type)} — ${biomeName}`);
+  const instructions = options.instructions || 'Completes automatically; results will post here.';
+  const prependEmbeds = Array.isArray(options.prependEmbeds) ? options.prependEmbeds.slice() : [];
+
+  const buildProgressEmbed = (percent, remainingMs, tipIndexOverride = null) => {
+    const embed = new EmbedBuilder()
+      .setColor('#2980B9')
+      .setTitle(`${emoji} ${actionLabel}`)
+      .addFields(
+        { name: 'Progress', value: `\`${buildProgressBar(percent)}\` ${(percent * 100).toFixed(0)}%`, inline: false },
+        { name: 'Time Remaining', value: formatDuration(remainingMs), inline: true }
+      );
+    
+    // Add rotating game tip - use tipIndexOverride if provided, otherwise calculate based on progress
+    let currentTipIndex = 0;
+    if (tipIndexOverride !== null) {
+      currentTipIndex = tipIndexOverride;
+    } else {
+      const tipRotationInterval = Math.max(3000, Math.floor(durationMs / 4));
+      currentTipIndex = Math.floor((Date.now() - startedAt) / tipRotationInterval);
+    }
+    
+    // Use tip index to rotate through tips consistently during each rotation period
+    const tip = getRandomGameTip(action.type, currentBiome, currentTipIndex);
+    if (tip) {
+      embed.addFields({ name: '💡 Game Tip', value: tip, inline: false });
+    }
+    
+    embed.setFooter({ text: instructions });
+    return applyVisualStyle(embed, visualKey);
+  };
+
+  const buildProgressPayload = (percent, remainingMs, tipIndexOverride = null) => {
+    const embeds = [...prependEmbeds, buildProgressEmbed(percent, remainingMs, tipIndexOverride)];
+    return { embeds };
+  };
+
+  const initializeReply = async payload => {
+    if (interaction) {
+      const flags = context.ephemeral ? { flags: MessageFlags.Ephemeral } : {};
+      if (!interaction.deferred && !interaction.replied) {
+        await interaction.deferReply(flags);
+      }
+      progressMessage = await interaction.editReply(payload);
+      return progressMessage;
+    }
+    if (progressMessage) {
+      await progressMessage.edit(payload);
+      return progressMessage;
+    }
+    if (context.message?.reply) {
+      progressMessage = await context.message.reply(payload);
+      return progressMessage;
+    }
+    return null;
+  };
+
+  const initialPercent = Math.min(1, (Date.now() - startedAt) / (durationMs || 1));
+  const initialRemaining = Math.max(0, endsAt - Date.now());
+  await initializeReply(buildProgressPayload(initialPercent, initialRemaining));
+
+  const updateReply = payload => {
+    if (interaction) {
+      return interaction.editReply(payload);
+    }
+    if (progressMessage) {
+      return progressMessage.edit(payload);
+    }
+    return Promise.resolve();
+  };
+
+  const session = {
+    userId,
+    interaction,
+    progressMessage,
+    updateTimer: null,
+    timeout: null,
+    shownTips: [],
+    lastTipIndex: -1,
+    cancel() {
+      if (this.updateTimer) clearTimeout(this.updateTimer);
+      if (this.timeout) clearTimeout(this.timeout);
+      ACTIVE_EXPLORATION_SESSIONS.delete(userId);
+    }
+  };
+  ACTIVE_EXPLORATION_SESSIONS.set(userId, session);
+
+  const scheduleUpdate = () => {
+    if (!ACTIVE_EXPLORATION_SESSIONS.has(userId)) return;
+    const now = Date.now();
+    const percent = Math.min(1, (now - startedAt) / durationMs);
+    const remaining = Math.max(0, endsAt - now);
+    
+    // Calculate tip rotation (show new tip every 25% progress or every 3 seconds)
+    const tipRotationInterval = Math.max(3000, Math.floor(durationMs / 4));
+    const currentTipIndex = Math.floor((now - startedAt) / tipRotationInterval);
+    
+    // Only update if tip index changed or it's a regular progress update
+    const shouldUpdateTip = currentTipIndex !== session.lastTipIndex;
+    if (shouldUpdateTip) {
+      session.lastTipIndex = currentTipIndex;
+    }
+    
+    updateReply(buildProgressPayload(percent, remaining, currentTipIndex)).catch(error => console.error('Exploration progress update failed:', error));
+    if (percent < 1) {
+      session.updateTimer = setTimeout(scheduleUpdate, EXPLORATION_PROGRESS_UPDATE_MS);
+    }
+  };
+  session.updateTimer = setTimeout(scheduleUpdate, EXPLORATION_PROGRESS_UPDATE_MS);
+
+  const finalize = async () => {
+    session.cancel();
+    const messageAdapter = context.message || null;
+    const result = resolveExplorationAction(player, messageAdapter);
+    const completionText = result?.text || `${formatActionName(action.type)} complete.`;
+    const summaryEmbed = new EmbedBuilder()
+      .setColor('#2ECC71')
+      .setTitle(`${emoji} ${actionLabel} Complete`)
+      .setDescription(completionText);
+    if (Array.isArray(result?.fields) && result.fields.length) {
+      summaryEmbed.addFields(result.fields.slice(0, 25));
+    }
+    const summaryStyled = applyVisualStyle(summaryEmbed, visualKey);
+    const latestExploration = ensureExplorationState(player);
+    const statusBiome = getBiomeDefinition(latestExploration.currentBiome);
+    const statusEmbed = applyVisualStyle(buildExplorationStatusEmbed(player, statusBiome, latestExploration), 'explore');
+    const components = options.components || buildDashboardComponents();
+    await updateReply({ embeds: [summaryStyled, statusEmbed], components }).catch(error => console.error('Exploration completion update failed:', error));
+
+    const nextAction = latestExploration.action;
+    if (nextAction && nextAction.endsAt > Date.now()) {
+      await startExplorationProgressSession(player, { ...context }, {
+        action: nextAction,
+        emoji: nextAction.type === 'travel' ? '🚶' : '⏳',
+        visualKey: nextAction.type === 'travel' ? 'travel' : 'explore',
+        label: `${formatActionName(nextAction.type)} — ${formatBiomeName(nextAction.biomeId || latestExploration.currentBiome)}`,
+        instructions,
+        prependEmbeds: [summaryStyled],
+        reuseMessage: progressMessage,
+        components
+      });
+    }
+  };
+
+  session.timeout = setTimeout(finalize, Math.max(0, endsAt - Date.now()));
 }
 
 const STARTUP_COMMAND_TESTS = [
@@ -1296,6 +1630,7 @@ ENEMIES.forEach(enemy => {
   const key = enemy.id || enemy.name?.toLowerCase().replace(/\s+/g, '_');
   if (key) ENEMY_MAP[key] = enemy;
 });
+const ENEMY_LIST = ENEMIES;
 
 const fallbackQuestDefinitions = [
   {
@@ -1323,6 +1658,58 @@ const fallbackQuestDefinitions = [
     reward: { xp: 150, coins: 100, items: [{ item: 'orbis_crystal', quantity: 1 }] }
   }
 ];
+const PET_DEFINITIONS = loadDataFile('pets.json', []);
+const PET_LOOKUP = {};
+PET_DEFINITIONS.forEach(pet => {
+  PET_LOOKUP[pet.id.toLowerCase()] = pet;
+});
+
+const SPELL_DEFINITIONS = loadDataFile('spells.json', []);
+const SPELL_LOOKUP = {};
+SPELL_DEFINITIONS.forEach(spell => {
+  SPELL_LOOKUP[spell.id.toLowerCase()] = spell;
+});
+
+const SKILL_TREE_DEFINITIONS = loadDataFile('skill_trees.json', []);
+const SKILL_TREE_LOOKUP = {};
+SKILL_TREE_DEFINITIONS.forEach(tree => {
+  SKILL_TREE_LOOKUP[tree.id.toLowerCase()] = tree;
+});
+
+const WORLD_BOSS_DEFINITIONS = loadDataFile('world_bosses.json', []);
+const WORLD_BOSS_LOOKUP = {};
+WORLD_BOSS_DEFINITIONS.forEach(boss => {
+  WORLD_BOSS_LOOKUP[boss.id.toLowerCase()] = boss;
+});
+
+const WORLD_EVENT_DEFINITIONS = loadDataFile('world_events.json', []);
+const WORLD_EVENT_LOOKUP = {};
+WORLD_EVENT_DEFINITIONS.forEach(event => {
+  WORLD_EVENT_LOOKUP[event.id.toLowerCase()] = event;
+});
+
+const ADVENTURE_MODE_DEFINITIONS = loadDataFile('adventure_mode.json', []);
+const ADVENTURE_MODE_LOOKUP = {};
+ADVENTURE_MODE_DEFINITIONS.forEach(chapter => {
+  ADVENTURE_MODE_LOOKUP[chapter.id.toLowerCase()] = chapter;
+});
+
+const DAILY_CHALLENGE_DEFINITIONS = loadDataFile('daily_challenges.json', []);
+const DAILY_CHALLENGE_LOOKUP = {};
+DAILY_CHALLENGE_DEFINITIONS.forEach(challenge => {
+  DAILY_CHALLENGE_LOOKUP[challenge.id.toLowerCase()] = challenge;
+});
+
+const ZONE_DEFINITIONS = loadDataFile('zones.json', []);
+const ZONE_LOOKUP = {};
+const BIOME_TO_ZONE = {};
+ZONE_DEFINITIONS.forEach(zone => {
+  ZONE_LOOKUP[zone.id.toLowerCase()] = zone;
+  (zone.biomes || []).forEach(biomeId => {
+    BIOME_TO_ZONE[biomeId.toLowerCase()] = zone.id.toLowerCase();
+  });
+});
+
 const QUEST_DEFINITIONS = loadDataFile('quests.json', fallbackQuestDefinitions).map(raw => {
   const rewardItems = Array.isArray(raw.reward?.items)
     ? raw.reward.items.map(entry => ({
@@ -1779,7 +2166,8 @@ EVENT_DEFINITIONS.forEach(event => {
   if (event?.id) EVENT_LOOKUP[event.id.toLowerCase()] = event;
 });
 const EVENT_SUBSCRIPTIONS = new Map(); // guildId -> { channelId, preferredEvent? }
-const ACTIVE_WORLD_EVENTS = new Map(); // guildId -> event state
+const ACTIVE_WORLD_EVENTS = new Map(); // guildId -> event state (legacy)
+const ACTIVE_WORLD_EVENTS_NEW = new Map(); // eventId -> { event, participants: [], progress: {}, startedAt, endsAt }
 const ACTIVE_DUELS = new Map(); // channelId -> duel state
 const TEAM_QUEUE = new Map(); // channelId -> array of userIds waiting for team duel
 const DUEL_TIMEOUT_MS = 120000;
@@ -2164,7 +2552,7 @@ const LEGACY_SLASH_COMMANDS = [
         { name: 'Dungeons', value: 'dungeons' }
       ]
     },
-    { type: 3, name: 'entry', description: 'Entry identifier', required: false }
+    { type: 3, name: 'entry', description: 'Entry identifier', required: false, autocomplete: true }
   ] },
   { name: 'reputation', description: 'Check faction reputation.', options: [{ type: 3, name: 'faction', description: 'Faction identifier', required: false }] },
   { name: 'eventsub', description: 'Subscribe the current channel to world events.', options: [{ type: 3, name: 'event', description: 'Event identifier or "off"', required: false }] },
@@ -3310,6 +3698,13 @@ function shouldTriggerSuddenCombat(exploration) {
   return Math.random() < getSuddenCombatChance(exploration);
 }
 
+function getPetBonuses(player) {
+  if (!player.pets?.active) return {};
+  const pet = PET_LOOKUP[player.pets.active.toLowerCase()];
+  if (!pet?.bonuses) return {};
+  return { ...pet.bonuses };
+}
+
 function recalcPlayerBaseBonuses(player) {
   const totals = {
     contractRewardBonus: 0,
@@ -3371,7 +3766,14 @@ function getPlayer(userId) {
       maxMana: 50,
       coins: 100,
       inventory: { 'wooden_sword': 1, 'health_potion': 2, 'rusty_multi_tool': 1 },
-      equipped: { weapon: 'wooden_sword', armor: null, accessory: null },
+      equipped: { 
+        weapon: 'wooden_sword', 
+        helmet: null,
+        chestplate: null,
+        leggings: null,
+        boots: null,
+        accessories: [] // Array for multiple accessories (max 3)
+      },
       quests: [],
       completedQuests: [],
       questProgress: {},
@@ -3406,13 +3808,59 @@ function getPlayer(userId) {
       activeBuffs: {},
       contracts: {},
       cosmetics: { titles: { owned: [], equipped: null } },
+      pets: {
+        owned: [], // Array of pet IDs
+        active: null, // Currently active pet ID
+        stabled: [], // Pets in stable (can have multiple)
+        taskQueue: [] // Pet tasks in queue
+      },
+      spells: {
+        known: [], // Array of spell IDs
+        equipped: [], // Equipped spells (max 4)
+        cooldowns: {} // Spell cooldowns
+      },
+      skillTree: {
+        class: null, // Selected class (warrior, mage, rogue)
+        branches: {}, // Branch progress {branchId: {skills: [skillId], points: number}}
+        totalPoints: 0 // Total skill points spent
+      },
+      adventureMode: {
+        currentChapter: null,
+        currentSection: null,
+        progress: {}, // Chapter progress
+        choices: [] // Story choices made
+      },
+      dailyChallenges: {
+        active: [], // Active challenge IDs
+        completed: [], // Completed today
+        streak: 0, // Consecutive days
+        lastReset: null // Last reset timestamp
+      },
+      pvp: {
+        rating: 1000, // Starting rating
+        wins: 0,
+        losses: 0,
+        streak: 0,
+        rank: "unranked"
+      },
+      worldBosses: {
+        participated: [], // Boss IDs participated in
+        lastDamage: {}, // Last damage dealt to each boss
+        rewards: [] // Pending rewards
+      },
+      worldEvents: {
+        active: [], // Active event IDs
+        participation: {}, // Event participation tracking
+        rewards: [] // Pending rewards
+      },
       exploration: {
         currentBiome: 'emerald_grove',
         targetBiome: null,
         status: 'idle',
         action: null,
         discoveredBiomes: ['emerald_grove'],
-        lastTick: Date.now()
+        lastTick: Date.now(),
+        unlockedZones: ['zone_1'] // Start with Zone 1 unlocked
       },
       bases: {},
       settlements: {},
@@ -3488,10 +3936,33 @@ function getPlayer(userId) {
   if (!player.bases) player.bases = {};
   if (!player.settlements) player.settlements = {};
   if (!player.travelHistory) player.travelHistory = [];
-  if (!player.equipped) player.equipped = { weapon: 'wooden_sword', armor: null, accessory: null };
+  if (!player.equipped) {
+    player.equipped = { 
+      weapon: 'wooden_sword', 
+      helmet: null,
+      chestplate: null,
+      leggings: null,
+      boots: null,
+      accessories: [],
+      tool: 'rusty_multi_tool'
+    };
+  }
+  // Migrate old equipment structure to new one
+  if (player.equipped.armor && !player.equipped.chestplate) {
+    player.equipped.chestplate = player.equipped.armor;
+    player.equipped.armor = null;
+  }
+  if (player.equipped.accessory && !Array.isArray(player.equipped.accessories)) {
+    player.equipped.accessories = player.equipped.accessory ? [player.equipped.accessory] : [];
+    player.equipped.accessory = null;
+  }
+  // Ensure all slots exist
   if (player.equipped.weapon === undefined) player.equipped.weapon = 'wooden_sword';
-  if (player.equipped.armor === undefined) player.equipped.armor = null;
-  if (player.equipped.accessory === undefined) player.equipped.accessory = null;
+  if (player.equipped.helmet === undefined) player.equipped.helmet = null;
+  if (player.equipped.chestplate === undefined) player.equipped.chestplate = null;
+  if (player.equipped.leggings === undefined) player.equipped.leggings = null;
+  if (player.equipped.boots === undefined) player.equipped.boots = null;
+  if (!Array.isArray(player.equipped.accessories)) player.equipped.accessories = [];
   if (player.equipped.tool === undefined) player.equipped.tool = 'rusty_multi_tool';
   if (!player.settings) player.settings = {};
   if (player.settings.gatherNotifications === undefined) player.settings.gatherNotifications = true;
@@ -3902,6 +4373,9 @@ function processQuestEvent(message, player, event) {
   if (readyContracts.length > 0) {
     notifyContractsReady(message, readyContracts);
   }
+  
+  // Check adventure mode progress
+  checkAdventureModeProgress(player, event);
 }
 function isAchievementComplete(player, achievement) {
   const { requirement } = achievement;
@@ -3915,6 +4389,39 @@ function isAchievementComplete(player, achievement) {
       return player.level >= requirement.value;
     case 'inventorySize':
       return Object.keys(player.inventory).length >= requirement.value;
+    case 'petsOwned':
+      return (player.pets?.owned?.length || 0) >= requirement.value;
+    case 'spellsLearned':
+      return (player.spells?.known?.length || 0) >= requirement.value;
+    case 'spellsCast':
+      return (player.stats.spellsCast || 0) >= requirement.value;
+    case 'pvpWins':
+      return (player.pvp?.wins || 0) >= requirement.value;
+    case 'pvpRating':
+      return (player.pvp?.rating || 1000) >= requirement.value;
+    case 'classChosen':
+      return player.skillTree?.class ? 1 >= requirement.value : false;
+    case 'skillsLearned':
+      if (!player.skillTree?.branches) return false;
+      let totalSkills = 0;
+      Object.values(player.skillTree.branches).forEach(branch => {
+        totalSkills += (branch.skills?.length || 0);
+      });
+      return totalSkills >= requirement.value;
+    case 'adventureChapter':
+      return player.adventureMode?.currentChapter ? 1 >= requirement.value : false;
+    case 'adventureChapters':
+      return Object.keys(player.adventureMode?.progress || {}).length >= requirement.value;
+    case 'worldBossesDefeated':
+      return (player.worldBosses?.participated?.length || 0) >= requirement.value;
+    case 'eventsParticipated':
+      return (player.stats.eventsParticipated || 0) >= requirement.value;
+    case 'dailyChallengesCompleted':
+      return (player.stats.dailyChallengesCompleted || 0) >= requirement.value;
+    case 'dailyStreak':
+      return (player.dailyChallenges?.streak || 0) >= requirement.value;
+    case 'resourcesGathered':
+      return (player.stats.resourcesGathered || 0) >= requirement.value;
     default:
       return false;
   }
@@ -3930,6 +4437,39 @@ function getAchievementProgress(player, achievement) {
       return { current: player.level, target: requirement.value };
     case 'inventorySize':
       return { current: Object.keys(player.inventory).length, target: requirement.value };
+    case 'petsOwned':
+      return { current: player.pets?.owned?.length || 0, target: requirement.value };
+    case 'spellsLearned':
+      return { current: player.spells?.known?.length || 0, target: requirement.value };
+    case 'spellsCast':
+      return { current: player.stats.spellsCast || 0, target: requirement.value };
+    case 'pvpWins':
+      return { current: player.pvp?.wins || 0, target: requirement.value };
+    case 'pvpRating':
+      return { current: player.pvp?.rating || 1000, target: requirement.value };
+    case 'classChosen':
+      return { current: player.skillTree?.class ? 1 : 0, target: requirement.value };
+    case 'skillsLearned':
+      if (!player.skillTree?.branches) return { current: 0, target: requirement.value };
+      let totalSkills = 0;
+      Object.values(player.skillTree.branches).forEach(branch => {
+        totalSkills += (branch.skills?.length || 0);
+      });
+      return { current: totalSkills, target: requirement.value };
+    case 'adventureChapter':
+      return { current: player.adventureMode?.currentChapter ? 1 : 0, target: requirement.value };
+    case 'adventureChapters':
+      return { current: Object.keys(player.adventureMode?.progress || {}).length, target: requirement.value };
+    case 'worldBossesDefeated':
+      return { current: player.worldBosses?.participated?.length || 0, target: requirement.value };
+    case 'eventsParticipated':
+      return { current: player.stats.eventsParticipated || 0, target: requirement.value };
+    case 'dailyChallengesCompleted':
+      return { current: player.stats.dailyChallengesCompleted || 0, target: requirement.value };
+    case 'dailyStreak':
+      return { current: player.dailyChallenges?.streak || 0, target: requirement.value };
+    case 'resourcesGathered':
+      return { current: player.stats.resourcesGathered || 0, target: requirement.value };
     default:
       return { current: 0, target: 0 };
   }
@@ -3998,7 +4538,7 @@ async function executeCommand(message, command, args) {
     await healPlayer(message);
   }
   else if (command === 'dungeon') {
-    await startDungeon(message, args[0]);
+    await handleDungeonCommand(message, args);
   }
   else if (command === 'dungeons') {
     await showDungeons(message);
@@ -4328,6 +4868,106 @@ client.on('messageCreate', async message => {
       await claimAchievement(message, args[0]);
     }
     
+    // Pet Commands
+    else if (command === 'pets' || command === 'pet') {
+      await showPets(message, args[0]);
+    }
+    else if (command === 'activatepet' || command === 'setpet') {
+      await activatePet(message, args[0]);
+    }
+    else if (command === 'stablepet' || command === 'unsetpet') {
+      await stablePet(message);
+    }
+    else if (command === 'buypet') {
+      await buyPet(message, args[0]);
+    }
+    else if (command === 'pettask' || command === 'assignpet') {
+      await assignPetTask(message, args[0], args[1]);
+    }
+    else if (command === 'raisepet' || command === 'breedpet') {
+      await raisePet(message, args[0], args[1]);
+    }
+    else if (command === 'petstable' || command === 'stable') {
+      await showPetStable(message);
+    }
+    
+    // Magic/Spells Commands
+    else if (command === 'spells' || command === 'spell') {
+      await showSpells(message, args[0]);
+    }
+    else if (command === 'cast' || command === 'castspell') {
+      await castSpell(message, args[0], args[1]);
+    }
+    else if (command === 'equipspell' || command === 'equips') {
+      await equipSpell(message, args[0]);
+    }
+    else if (command === 'learnspell' || command === 'learn') {
+      await learnSpell(message, args[0]);
+    }
+    
+    // PvP Commands
+    else if (command === 'pvp' || command === 'arena') {
+      await showPvP(message, args[0]);
+    }
+    else if (command === 'challenge' || command === 'duel') {
+      await challengePlayer(message, args[0]);
+    }
+    else if (command === 'acceptchallenge' || command === 'accept') {
+      await acceptChallenge(message, args[0]);
+    }
+    else if (command === 'pvpstats' || command === 'pvpstat') {
+      await showPvPStats(message);
+    }
+    
+    // Skill Tree Commands
+    else if (command === 'skilltree' || command === 'skills') {
+      await showSkillTree(message, args[0]);
+    }
+    else if (command === 'learnskill' || command === 'skill') {
+      await learnSkill(message, args[0], args[1]);
+    }
+    else if (command === 'chooseclass' || command === 'class') {
+      await chooseClass(message, args[0]);
+    }
+    
+    // Adventure Mode Commands
+    else if (command === 'adventure' || command === 'story') {
+      await showAdventureMode(message, args[0]);
+    }
+    else if (command === 'startadventure' || command === 'startstory') {
+      await startAdventureMode(message, args[0]);
+    }
+    else if (command === 'adventurechoice' || command === 'choice') {
+      await makeAdventureChoice(message, args[0]);
+    }
+    
+    // Daily Challenges Commands
+    else if (command === 'dailychallenges' || command === 'dailies' || command === 'challenges') {
+      await showDailyChallenges(message);
+    }
+    else if (command === 'claimchallenge' || command === 'claimdaily') {
+      await claimDailyChallenge(message, args[0]);
+    }
+    
+    // World Boss Commands
+    else if (command === 'worldboss' || command === 'boss') {
+      await showWorldBoss(message, args[0]);
+    }
+    else if (command === 'joinboss' || command === 'join') {
+      await joinWorldBoss(message, args[0]);
+    }
+    else if (command === 'attackboss' || command === 'attack') {
+      await attackWorldBoss(message, args[0]);
+    }
+    
+    // World Events Commands
+    else if (command === 'worldevent' || command === 'event') {
+      await showWorldEvent(message, args[0]);
+    }
+    else if (command === 'joinevent' || command === 'participate') {
+      await joinWorldEvent(message, args[0]);
+    }
+    
     // Mini-Games
     else if (command === 'scramble') {
       await startScramble(message);
@@ -4469,13 +5109,40 @@ async function showProfile(message, userId = message.author.id) {
     .setFooter({ text: 'Hytale RPG System' })
     .setTimestamp();
   
-  if (player.equipped.weapon || player.equipped.armor || player.equipped.accessory || player.equipped.tool) {
-    const equipped = [];
-    if (player.equipped.weapon) equipped.push(`Weapon: ${player.equipped.weapon}`);
-    if (player.equipped.armor) equipped.push(`Armor: ${player.equipped.armor}`);
-    if (player.equipped.accessory) equipped.push(`Accessory: ${player.equipped.accessory}`);
-    if (player.equipped.tool) equipped.push(`Tool: ${player.equipped.tool}`);
-    embed.addFields({ name: '⚔️ Equipped', value: equipped.join('\n') || 'Nothing' });
+  const equipped = [];
+  if (player.equipped.weapon) {
+    const item = ITEMS[player.equipped.weapon];
+    equipped.push(`⚔️ **Weapon:** ${item?.name || player.equipped.weapon}`);
+  }
+  if (player.equipped.helmet) {
+    const item = ITEMS[player.equipped.helmet];
+    equipped.push(`⛑️ **Helmet:** ${item?.name || player.equipped.helmet}`);
+  }
+  if (player.equipped.chestplate) {
+    const item = ITEMS[player.equipped.chestplate];
+    equipped.push(`🛡️ **Chestplate:** ${item?.name || player.equipped.chestplate}`);
+  }
+  if (player.equipped.leggings) {
+    const item = ITEMS[player.equipped.leggings];
+    equipped.push(`🦵 **Leggings:** ${item?.name || player.equipped.leggings}`);
+  }
+  if (player.equipped.boots) {
+    const item = ITEMS[player.equipped.boots];
+    equipped.push(`👢 **Boots:** ${item?.name || player.equipped.boots}`);
+  }
+  if (Array.isArray(player.equipped.accessories) && player.equipped.accessories.length > 0) {
+    const accessoryNames = player.equipped.accessories.map(acc => {
+      const item = ITEMS[acc];
+      return item?.name || acc;
+    }).join(', ');
+    equipped.push(`📿 **Accessories:** ${accessoryNames} (${player.equipped.accessories.length}/3)`);
+  }
+  if (player.equipped.tool) {
+    const item = ITEMS[player.equipped.tool];
+    equipped.push(`🛠️ **Tool:** ${item?.name || player.equipped.tool}`);
+  }
+  if (equipped.length > 0) {
+    embed.addFields({ name: '⚔️ Equipped Gear', value: equipped.join('\n') });
   }
 
   const activeSetData = getActiveItemSetData(player);
@@ -4489,34 +5156,118 @@ async function showProfile(message, userId = message.author.id) {
     embed.addFields({ name: '🎭 Title', value: titleDef ? titleDef.name : player.cosmetics.titles.equipped });
   }
   
+  // Show active pet
+  if (player.pets?.active) {
+    const pet = PET_LOOKUP[player.pets.active.toLowerCase()];
+    if (pet) {
+      const petBonuses = [];
+      if (pet.bonuses) {
+        Object.entries(pet.bonuses).forEach(([stat, value]) => {
+          if (stat === 'hp') petBonuses.push(`HP +${value}`);
+          else if (stat === 'mana') petBonuses.push(`Mana +${value}`);
+          else if (stat === 'coins') petBonuses.push(`Coins +${Math.round(value * 100)}%`);
+          else if (stat === 'inventoryCapacity') petBonuses.push(`Inventory +${value}`);
+          else petBonuses.push(`${stat.charAt(0).toUpperCase() + stat.slice(1)} +${value}`);
+        });
+      }
+      const petInfo = `${pet.emoji} **${pet.name}**${petBonuses.length ? ` (${petBonuses.join(', ')})` : ''}`;
+      embed.addFields({ name: '🐾 Active Pet', value: petInfo, inline: false });
+    }
+  }
+  
   embed.addFields({ name: '🤝 Faction Standing', value: formatTopReputation(player) });
   embed.addFields({ name: '🧪 Active Buffs', value: formatActiveBuffs(player) });
   
   return sendStyledEmbed(message, embed, 'profile');
 }
 
-async function showInventory(message) {
+async function showInventory(message, category = null) {
   const player = getPlayer(message.author.id);
   
   if (Object.keys(player.inventory).length === 0) {
     return message.reply('🎒 Your inventory is empty!');
   }
   
-  let items = [];
-  for (const [item, count] of Object.entries(player.inventory)) {
-    const itemData = ITEMS[item];
-    if (itemData) {
-      items.push(`${itemData.emoji} **${item}** x${count} (${itemData.value} coins)`);
+  // Build category filter
+  const categories = {
+    all: 'All Items',
+    weapon: 'Weapons',
+    helmet: 'Helmets',
+    chestplate: 'Chestplates',
+    leggings: 'Leggings',
+    boots: 'Boots',
+    accessory: 'Accessories',
+    tool: 'Tools',
+    consumable: 'Consumables',
+    material: 'Materials',
+    other: 'Other'
+  };
+  
+  // Filter items by category
+  let filteredItems = [];
+  for (const [itemId, count] of Object.entries(player.inventory)) {
+    const itemData = ITEMS[itemId];
+    if (!itemData) continue;
+    
+    if (category && category !== 'all') {
+      const itemType = itemData.type || 'other';
+      if (category === 'material' && !['weapon', 'helmet', 'chestplate', 'leggings', 'boots', 'accessory', 'tool', 'consumable'].includes(itemType)) {
+        // Include materials
+      } else if (category !== itemType && category !== 'material') {
+        continue;
+      }
     }
+    
+    const isEquipped = 
+      player.equipped.weapon === itemId ||
+      player.equipped.helmet === itemId ||
+      player.equipped.chestplate === itemId ||
+      player.equipped.leggings === itemId ||
+      player.equipped.boots === itemId ||
+      (Array.isArray(player.equipped.accessories) && player.equipped.accessories.includes(itemId)) ||
+      player.equipped.tool === itemId;
+    
+    const equippedMark = isEquipped ? ' ⭐' : '';
+    filteredItems.push(`${itemData.emoji} **${itemData.name || itemId}** x${count}${equippedMark}`);
   }
+  
+  if (filteredItems.length === 0) {
+    return message.reply(`🎒 No items found in category "${categories[category] || category}"!`);
+  }
+  
+  // Create buttons for category filtering
+  const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+  const categoryButtons = new ActionRowBuilder();
+  
+  Object.entries(categories).slice(0, 5).forEach(([key, label]) => {
+    categoryButtons.addComponents(
+      new ButtonBuilder()
+        .setCustomId(`inventory|filter|${key}`)
+        .setLabel(label)
+        .setStyle(key === (category || 'all') ? ButtonStyle.Primary : ButtonStyle.Secondary)
+    );
+  });
+  
+  const categoryButtons2 = new ActionRowBuilder();
+  Object.entries(categories).slice(5).forEach(([key, label]) => {
+    categoryButtons2.addComponents(
+      new ButtonBuilder()
+        .setCustomId(`inventory|filter|${key}`)
+        .setLabel(label)
+        .setStyle(key === (category || 'all') ? ButtonStyle.Primary : ButtonStyle.Secondary)
+    );
+  });
   
   const embed = new EmbedBuilder()
     .setColor('#00D4FF')
-    .setTitle('🎒 Your Inventory')
-    .setDescription(items.join('\n'))
-    .setFooter({ text: `Use ${PREFIX} equip <item> or ${PREFIX} use <item>` });
+    .setTitle(`🎒 Your Inventory${category && category !== 'all' ? ` - ${categories[category]}` : ''}`)
+    .setDescription(filteredItems.slice(0, 20).join('\n') + (filteredItems.length > 20 ? `\n\n...and ${filteredItems.length - 20} more items` : ''))
+    .setFooter({ text: `⭐ = Equipped | Use ${PREFIX} equip <item> or ${PREFIX} use <item>` });
   
-  return sendStyledEmbed(message, embed, 'inventory');
+  const components = [categoryButtons];
+  if (categoryButtons2.components.length > 0) components.push(categoryButtons2);
+  
+  return sendStyledEmbed(message, embed, 'inventory', { components });
 }
 async function equipItem(message, itemName) {
   if (!itemName) return message.reply('❌ Please specify an item to equip!');
@@ -4531,6 +5282,12 @@ async function equipItem(message, itemName) {
   const item = ITEMS[itemName];
   if (!item) return message.reply('❌ Unknown item!');
 
+  // Check if item is equippable
+  const equippableTypes = ['weapon', 'helmet', 'chestplate', 'leggings', 'boots', 'accessory', 'tool'];
+  if (!equippableTypes.includes(item.type)) {
+    return message.reply(`❌ This item cannot be equipped! Item type: ${item.type || 'unknown'}`);
+  }
+
   const beforeSetIds = new Set(getActiveItemSetData(player).sets.map(set => set.id));
   let responseMessage = '';
   
@@ -4539,20 +5296,54 @@ async function equipItem(message, itemName) {
     const damageText = item.damageMin || item.damageMax
       ? `${Math.max(1, item.damageMin || item.damage)}-${Math.max(1, item.damageMax || item.damage)}`
       : `${item.damage || 0}`;
-    responseMessage = `⚔️ Equipped **${itemName}**! Damage: ${damageText}${item.damageType ? ` (${item.damageType})` : ''}`;
-  } else if (item.type === 'armor') {
-    player.equipped.armor = itemName;
+    responseMessage = `⚔️ Equipped **${item.name || itemName}**! Damage: ${damageText}${item.damageType ? ` (${item.damageType})` : ''}`;
+  } else if (item.type === 'helmet') {
+    player.equipped.helmet = itemName;
     const resistText = item.resistances && Object.keys(item.resistances).length
       ? ` | Resist: ${Object.entries(item.resistances).map(([type, value]) => `${type} ${Math.round(value * 100)}%`).join(', ')}`
       : '';
-    responseMessage = `🛡️ Equipped **${itemName}**! Defense: ${item.defense || 0}${resistText}`;
+    responseMessage = `⛑️ Equipped **${item.name || itemName}**! Defense: ${item.defense || 0}${resistText}`;
+  } else if (item.type === 'chestplate') {
+    player.equipped.chestplate = itemName;
+    const resistText = item.resistances && Object.keys(item.resistances).length
+      ? ` | Resist: ${Object.entries(item.resistances).map(([type, value]) => `${type} ${Math.round(value * 100)}%`).join(', ')}`
+      : '';
+    responseMessage = `🛡️ Equipped **${item.name || itemName}**! Defense: ${item.defense || 0}${resistText}`;
+  } else if (item.type === 'leggings') {
+    player.equipped.leggings = itemName;
+    const resistText = item.resistances && Object.keys(item.resistances).length
+      ? ` | Resist: ${Object.entries(item.resistances).map(([type, value]) => `${type} ${Math.round(value * 100)}%`).join(', ')}`
+      : '';
+    responseMessage = `🦵 Equipped **${item.name || itemName}**! Defense: ${item.defense || 0}${resistText}`;
+  } else if (item.type === 'boots') {
+    player.equipped.boots = itemName;
+    const resistText = item.resistances && Object.keys(item.resistances).length
+      ? ` | Resist: ${Object.entries(item.resistances).map(([type, value]) => `${type} ${Math.round(value * 100)}%`).join(', ')}`
+      : '';
+    responseMessage = `👢 Equipped **${item.name || itemName}**! Defense: ${item.defense || 0}${resistText}`;
   } else if (item.type === 'accessory') {
-    player.equipped.accessory = itemName;
+    // Accessories can be equipped multiple times (max 3)
+    if (!Array.isArray(player.equipped.accessories)) player.equipped.accessories = [];
+    if (player.equipped.accessories.length >= 3) {
+      return message.reply('❌ You can only equip up to 3 accessories! Unequip one first.');
+    }
+    if (player.equipped.accessories.includes(itemName)) {
+      return message.reply('❌ This accessory is already equipped!');
+    }
+    player.equipped.accessories.push(itemName);
     const bonuses = [];
     if (item.mana) bonuses.push(`Mana +${item.mana}`);
     if (item.luck) bonuses.push(`Luck +${item.luck}`);
+    if (item.hp) bonuses.push(`HP +${item.hp}`);
     const bonusText = bonuses.length ? ` (${bonuses.join(', ')})` : '';
-    responseMessage = `📿 Equipped **${itemName}**${bonusText}!`;
+    responseMessage = `📿 Equipped **${item.name || itemName}**${bonusText}! (${player.equipped.accessories.length}/3 accessories)`;
+  } else if (item.type === 'armor') {
+    // Legacy armor type - equip as chestplate
+    player.equipped.chestplate = itemName;
+    const resistText = item.resistances && Object.keys(item.resistances).length
+      ? ` | Resist: ${Object.entries(item.resistances).map(([type, value]) => `${type} ${Math.round(value * 100)}%`).join(', ')}`
+      : '';
+    responseMessage = `🛡️ Equipped **${item.name || itemName}** as chestplate! Defense: ${item.defense || 0}${resistText}`;
   } else if (item.type === 'tool') {
     player.equipped.tool = itemName;
     const gather = item.gathering || {};
@@ -4567,7 +5358,7 @@ async function equipItem(message, itemName) {
     if (bonuses.quantity) bonusSegments.push(`Yield +${Math.round(bonuses.quantity * 100)}%`);
     if (bonuses.rarity) bonusSegments.push(`Rare +${Math.round(bonuses.rarity * 100)}%`);
     if (bonuses.extraRolls) bonusSegments.push(`Extra Rolls +${bonuses.extraRolls}`);
-    responseMessage = `🛠️ Equipped **${itemName}**! (${types})${bonusSegments.length ? ` — ${bonusSegments.join(', ')}` : ''}`;
+    responseMessage = `🛠️ Equipped **${item.name || itemName}**! (${types})${bonusSegments.length ? ` — ${bonusSegments.join(', ')}` : ''}`;
   } else {
     return message.reply('❌ This item cannot be equipped!');
   }
@@ -4595,7 +5386,30 @@ async function useItem(message, itemName) {
   }
   
   const item = ITEMS[itemName];
-  if (!item || item.type !== 'consumable') {
+  if (!item) {
+    return message.reply('❌ Item not found!');
+  }
+  
+  // Handle special items (like remote dungeon key)
+  if (item.special?.unlocks) {
+    if (!player.flags) player.flags = {};
+    const unlocked = [];
+    item.special.unlocks.forEach(flag => {
+      if (!player.flags[flag]) {
+        player.flags[flag] = true;
+        unlocked.push(flag);
+      }
+    });
+    
+    if (unlocked.length > 0) {
+      return message.reply(`🔓 **${item.name}** activated! Unlocked: ${unlocked.join(', ')}`);
+    } else {
+      return message.reply(`ℹ️ **${item.name}** is already active. All unlocks are already granted.`);
+    }
+  }
+  
+  // Handle consumables
+  if (item.type !== 'consumable') {
     return message.reply('❌ This item cannot be used!');
   }
   
@@ -4686,13 +5500,45 @@ async function startBattle(message) {
   
   const battleLog = [`⚔️ **Battle Started!** ${enemy.emoji} ${enemy.name} appears!\n`];
   
+  // Apply skill tree bonuses
+  const skillBonuses = playerProfile.skillBonuses || {};
+  
   while (player.hp > 0 && enemy.hp > 0) {
-    const playerStrike = resolveAttack(playerProfile, enemyProfile);
-    battleLog.push(formatAttackResult(playerProfile.label, enemyProfile.label, playerStrike, enemy.hp, enemyProfile.maxHp));
+    // Player's turn - try to use spell if available, otherwise physical attack
+    let playerAction = null;
+    const equippedSpells = player.spells?.equipped || [];
+    
+    // Check if player has any equipped spells and enough mana
+    const availableSpell = equippedSpells.find(spellId => {
+      const spell = SPELL_LOOKUP[spellId.toLowerCase()];
+      if (!spell) return false;
+      if (player.mana < spell.manaCost) return false;
+      const cooldown = player.spells?.cooldowns?.[spell.id] || 0;
+      return cooldown <= Date.now();
+    });
+    
+    if (availableSpell && Math.random() < 0.3) { // 30% chance to use spell if available
+      const spell = SPELL_LOOKUP[availableSpell.toLowerCase()];
+      playerAction = resolveSpell(spell, playerProfile, enemyProfile, skillBonuses);
+      if (playerAction.type === 'spell') {
+        battleLog.push(formatAttackResult(playerProfile.label, enemyProfile.label, playerAction, enemy.hp, enemyProfile.maxHp));
+        if (enemy.hp <= 0) break;
+      } else {
+        // Spell failed, use physical attack
+        const playerStrike = resolveAttack(playerProfile, enemyProfile);
+        battleLog.push(formatAttackResult(playerProfile.label, enemyProfile.label, playerStrike, enemy.hp, enemyProfile.maxHp));
+      }
+    } else {
+      // Physical attack
+      const playerStrike = resolveAttack(playerProfile, enemyProfile);
+      battleLog.push(formatAttackResult(playerProfile.label, enemyProfile.label, playerStrike, enemy.hp, enemyProfile.maxHp));
+    }
+    
     if (enemy.hp <= 0) break;
     
+    // Enemy's turn
     const enemyStrike = resolveAttack(enemyProfile, playerProfile);
-    battleLog.push(formatAttackResult(enemyProfile.label, playerProfile.label, enemyStrike, player.hp, player.maxHp));
+    battleLog.push(formatAttackResult(enemyProfile.label, playerProfile.label, enemyStrike, player.hp, playerProfile.maxHp));
   }
   
   if (player.hp > 0) {
@@ -4702,6 +5548,13 @@ async function startBattle(message) {
     
     player.coins += enemy.coins;
     player.stats.kills++;
+    
+    // Apply skill tree passive effects (e.g., Bloodlust)
+    if (skillBonuses.hpPerKill) {
+      const healAmount = skillBonuses.hpPerKill;
+      player.hp = Math.min(player.maxHp, player.hp + healAmount);
+      battleLog.push(`💚 **Bloodlust** activated! You gain ${healAmount} HP from the kill!`);
+    }
     
     const leveled = addXp(player, xpGain);
     if (leveled) {
@@ -4734,7 +5587,7 @@ async function startBattle(message) {
     .setColor(player.hp > 0 ? '#00FF00' : '#FF0000')
     .setTitle('⚔️ Battle Report')
     .setDescription(battleLog.join('\n'))
-    .setFooter({ text: `HP: ${player.hp}/${player.maxHp} | Coins: ${player.coins}` });
+    .setFooter({ text: `HP: ${player.hp}/${player.maxHp} | Mana: ${player.mana || 0}/${player.maxMana || 0} | Coins: ${player.coins}` });
   
   await message.reply({ embeds: [embed] });
   await handleAchievementCheck(message, player);
@@ -4862,6 +5715,91 @@ async function healPlayer(message) {
   
   message.reply(`✨ Fully healed! HP: ${player.hp}/${player.maxHp} | Mana: ${player.mana}/${player.maxMana} | -${cost} coins`);
 }
+async function handleDungeonCommand(message, args = []) {
+  const subcommand = args[0]?.toLowerCase() || 'queue';
+  const player = getPlayer(message.author.id);
+
+  try {
+    if (subcommand === 'queue' || subcommand === 'join') {
+      const dungeonId = args[1];
+      const result = dungeonHandlers.queuePlayer(message, player, {
+        dungeonId,
+        prefix: PREFIX
+      });
+      
+      if (result.error) {
+        return message.reply(`❌ ${result.error}`);
+      }
+      
+      const payload = { content: result.content || null, embeds: result.embeds || [] };
+      const sent = await message.reply(payload);
+      
+      // Check if queue is full and launch dungeon
+      const queueModule = require('./dungeons/index');
+      const queueId = queueModule.PLAYER_QUEUE_INDEX.get(message.author.id);
+      if (queueId) {
+        const queue = queueModule.QUEUE_REGISTRY.get(queueId);
+        if (queue && queue.players.size >= queueModule.MAX_PARTY_SIZE) {
+          // Launch dungeon after a short delay
+          setTimeout(async () => {
+            await launchDungeonFromFullQueue(queue, message);
+          }, 2000);
+        }
+      }
+      
+      return sent;
+    } else if (subcommand === 'leave') {
+      const result = dungeonHandlers.leaveQueue(message);
+      if (result.error) {
+        return message.reply(`❌ ${result.error}`);
+      }
+      return message.reply(result.content || '✅ Left the queue.');
+    } else if (subcommand === 'status') {
+      const result = dungeonHandlers.getQueueStatus(message, { prefix: PREFIX });
+      if (result.error) {
+        return message.reply(`❌ ${result.error}`);
+      }
+      return message.reply(result);
+    } else {
+      return message.reply(`❌ Unknown dungeon subcommand. Use \`${PREFIX} dungeon queue\`, \`${PREFIX} dungeon leave\`, or \`${PREFIX} dungeon status\`.`);
+    }
+  } catch (error) {
+    console.error('[DUNGEON] Command error:', error);
+    return message.reply('❌ An error occurred processing the dungeon command.');
+  }
+}
+
+async function launchDungeonFromFullQueue(queue, message) {
+  try {
+    const partyMembers = Array.from(queue.players.values());
+    const result = await dungeonHandlers.launchDungeonFromQueue(queue, getPlayer, {
+      channelId: message.channel.id
+    });
+    
+    if (result.error) {
+      return message.channel.send(`❌ Failed to launch dungeon: ${result.error}`);
+    }
+    
+    const run = result.run;
+    if (!run) return;
+    
+    // Create initial dungeon message
+    const embed = dungeonRun.buildRunEmbed(run);
+    const components = dungeonRun.buildRoomActionComponents(run);
+    
+    const sent = await message.channel.send({ embeds: [embed], components });
+    run.messageId = sent.id;
+    dungeonRun.RUN_MESSAGE_INDEX.set(sent.id, run.id);
+    
+    // Notify party
+    const partyMentions = partyMembers.map(p => `<@${p.userId}>`).join(' ');
+    await message.channel.send(`🎮 **Dungeon Launch!** ${partyMentions} — Your dungeon run has begun!`);
+  } catch (error) {
+    console.error('[DUNGEON] Launch error:', error);
+    message.channel.send('❌ Failed to launch dungeon run.');
+  }
+}
+
 async function startDungeon(message, dungeonIdentifier) {
   const existingGame = activeGames.get(message.channel.id);
   if (existingGame) {
@@ -5404,6 +6342,24 @@ async function completeQuest(message, questIdentifier) {
       addItemToInventory(player, entry.item, entry.quantity || 1);
       rewardLines.push(`+${entry.quantity || 1} ${entry.item}`);
       processQuestEvent(message, player, { type: 'gather', itemId: entry.item, count: entry.quantity || 1 });
+      
+      // Check if item has special unlocks
+      const itemData = ITEMS[entry.item];
+      if (itemData?.special?.unlocks) {
+        if (!player.flags) player.flags = {};
+        itemData.special.unlocks.forEach(flag => {
+          player.flags[flag] = true;
+        });
+      }
+    });
+  }
+  
+  // Handle quest reward flags
+  if (Array.isArray(quest.reward.flags)) {
+    if (!player.flags) player.flags = {};
+    quest.reward.flags.forEach(flag => {
+      player.flags[flag] = true;
+      rewardLines.push(`🔓 Unlocked: ${flag}`);
     });
   }
   
@@ -5823,13 +6779,27 @@ async function showHelp(message, category) {
     exploration: {
       title: 'Exploration & Travel',
       commands: [
-        ['explore status', 'Current biome, timers, highlights.'],
-        ['explore activity', 'Start a biome-specific activity.'],
-        ['explore action', 'Perform mine / forage / survey / scavenge.'],
-        ['travel start <biome>', 'Move to a neighboring biome.'],
+        ['explore status', 'Current biome, zone, timers, highlights, and discovery tips.'],
+        ['explore activity <id>', 'Start a biome-specific activity (can discover settlements!).'],
+        ['explore forage', 'Gather resources and potentially discover settlements.'],
+        ['explore mine', 'Mine for materials and potentially discover settlements.'],
+        ['explore scavenge', 'Scavenge for items and potentially discover settlements.'],
+        ['explore survey', 'Survey area to increase event discovery chances.'],
+        ['explore activities', 'List all available activities for current biome.'],
+        ['travel start <biome>', 'Move to a neighboring biome (zone access required).'],
         ['travel resolve', 'Finish travel timers.'],
         ['base claim', 'Establish a base in the current biome.'],
-        ['base upgrade', 'Upgrade base modules & automation.']
+        ['base upgrade', 'Upgrade base modules & automation.'],
+        ['adventure', 'View Adventure Mode progress and unlock new zones!']
+      ],
+      tips: [
+        '💡 **Zones & Progression**: Orbis is divided into zones! You start in **Zone 1: Emerald Grove**. Unlock **Zone 2: Howling Sands** by reaching level 15 and completing Adventure Mode Chapter 1.',
+        '💡 **Zone Unlocking**: Complete Adventure Mode quests to unlock new zones. Each zone has unique biomes, enemies, dungeons, and better rewards!',
+        '💡 **Zone Access**: You cannot travel to biomes in locked zones. Check your zone progress with `/adventure` and `/explore status`.',
+        '💡 **Discovering Settlements**: Do exploration activities (forage, mine, scavenge, or biome activities) to trigger random events. One event type is settlement discovery!',
+        '💡 **Event Discovery**: After completing exploration activities, there\'s a chance (25-75%) to trigger random events including settlements, structures, camps, and more.',
+        '💡 **Survey Action**: Use `/explore survey` to increase the chance of future events in your current biome.',
+        '💡 **Biome Activities**: Check `/explore activities` for unique activities in each biome that may have better discovery rates.'
       ]
     },
     settlements: {
@@ -5843,6 +6813,13 @@ async function showHelp(message, category) {
         ['contracts [faction]', 'Accept faction contracts.'],
         ['vendor [faction]', 'View faction vendor inventory.'],
         ['reputation [faction]', 'Check faction standings.']
+      ],
+      tips: [
+        '💡 **How to Discover Settlements**: Settlements are discovered through random events during exploration!',
+        '💡 **Discovery Methods**: Do exploration activities like `/explore forage`, `/explore mine`, `/explore scavenge`, or `/explore activity <id>` to trigger random events.',
+        '💡 **Event Chance**: After completing exploration activities, there\'s a 25-75% chance (based on biome) to trigger random events, including settlement discoveries.',
+        '💡 **Pro Tip**: Use `/explore survey` to increase event discovery chances. Different biomes may have different settlement discovery rates!',
+        '💡 **Once Discovered**: When you discover a settlement, you\'ll see a message like "🏘️ Discovered settlement **<name>**". Use `/settlement info <id>` to manage it.'
       ]
     },
     combat: {
@@ -5923,6 +6900,9 @@ async function showHelp(message, category) {
   const renderCategory = (key, data) => {
     const rows = data.commands.map(([cmd, desc]) => `\`${PREFIX} ${cmd}\` — ${desc}`).join('\n');
     embed.addFields({ name: `**${data.title}**`, value: rows, inline: false });
+    if (data.tips && Array.isArray(data.tips) && data.tips.length > 0) {
+      embed.addFields({ name: '💡 Tips & Information', value: data.tips.join('\n\n'), inline: false });
+    }
   };
 
   if (selectedKey) {
@@ -6238,6 +7218,9 @@ function ensureCosmeticState(player) {
   if (!player.cosmetics) player.cosmetics = { titles: { owned: [], equipped: null } };
   if (!player.cosmetics.titles) player.cosmetics.titles = { owned: [], equipped: null };
   if (!Array.isArray(player.cosmetics.titles.owned)) player.cosmetics.titles.owned = [];
+  if (!player.pets) player.pets = { owned: [], active: null, stabled: [] };
+  if (!Array.isArray(player.pets.owned)) player.pets.owned = [];
+  if (!Array.isArray(player.pets.stabled)) player.pets.stabled = [];
 }
 function unlockCosmetic(player, cosmetic, message) {
   ensureCosmeticState(player);
@@ -6321,20 +7304,47 @@ async function equipTitle(message, titleId) {
 }
 async function showCodex(message, category, entryIdentifier) {
   if (!category) {
+    const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
     const embed = new EmbedBuilder()
       .setColor('#3498DB')
       .setTitle('📘 Orbis Codex')
       .setDescription(
-        `Available categories:\n` +
-        `• \`${PREFIX} codex items [id]\`\n` +
-        `• \`${PREFIX} codex enemies [id]\`\n` +
-        `• \`${PREFIX} codex factions [id]\`\n` +
-        `• \`${PREFIX} codex biomes [id]\`\n` +
-        `• \`${PREFIX} codex dungeons [id]\`\n\n` +
+        `Browse the knowledge of Hytale! Select a category below or use commands:\n\n` +
+        `**Categories:**\n` +
+        `• 📦 Items — Weapons, armor, consumables, and materials\n` +
+        `• 👹 Enemies — Creatures and hostile entities\n` +
+        `• 🛡️ Factions — Groups and organizations\n` +
+        `• 🌍 Biomes — Regions and environments\n` +
+        `• 🏰 Dungeons — Challenging locations\n\n` +
         `Example: \`${PREFIX} codex factions kweebec\``
       )
       .setFooter({ text: 'Discover the lore and knowledge of Hytale.' });
-    return sendStyledEmbed(message, embed, 'codex');
+    
+    const categoryButtons = new ActionRowBuilder()
+      .addComponents(
+        new ButtonBuilder()
+          .setCustomId('codex|category|items')
+          .setLabel('📦 Items')
+          .setStyle(ButtonStyle.Primary),
+        new ButtonBuilder()
+          .setCustomId('codex|category|enemies')
+          .setLabel('👹 Enemies')
+          .setStyle(ButtonStyle.Primary),
+        new ButtonBuilder()
+          .setCustomId('codex|category|factions')
+          .setLabel('🛡️ Factions')
+          .setStyle(ButtonStyle.Primary),
+        new ButtonBuilder()
+          .setCustomId('codex|category|biomes')
+          .setLabel('🌍 Biomes')
+          .setStyle(ButtonStyle.Primary),
+        new ButtonBuilder()
+          .setCustomId('codex|category|dungeons')
+          .setLabel('🏰 Dungeons')
+          .setStyle(ButtonStyle.Primary)
+      );
+    
+    return sendStyledEmbed(message, embed, 'codex', { components: [categoryButtons] });
   }
 
   const player = getPlayer(message.author.id);
@@ -6343,51 +7353,93 @@ async function showCodex(message, category, entryIdentifier) {
 
   if (!entry) {
     if (!entryIdentifier) {
+      const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
       const listEmbed = new EmbedBuilder()
         .setColor('#2980B9')
         .setTitle(`📘 Codex: ${lowerCat.charAt(0).toUpperCase()}${lowerCat.slice(1)}`);
 
       let lines = [];
+      let categoryData = [];
       switch (lowerCat) {
         case 'items':
         case 'item':
           ITEM_LIST.forEach(item => {
-            lines.push(`${item.emoji} **${item.id}** (${item.rarity})`);
+            const line = `${item.emoji} **${item.name || item.id}** (${item.rarity || 'common'})`;
+            lines.push(line);
+            categoryData.push({ id: item.id, name: item.name || item.id, emoji: item.emoji });
           });
           break;
         case 'enemies':
         case 'enemy':
           ENEMY_LIST.forEach(enemy => {
-            lines.push(`${enemy.emoji || '❔'} **${enemy.id || enemy.name}** — ${enemy.faction || 'wild'} (${enemy.rarity || 'common'})`);
+            const line = `${enemy.emoji || '❔'} **${enemy.name || enemy.id}** — ${enemy.faction || 'wild'} (${enemy.rarity || 'common'})`;
+            lines.push(line);
+            categoryData.push({ id: enemy.id || enemy.name, name: enemy.name || enemy.id, emoji: enemy.emoji || '❔' });
           });
           break;
         case 'factions':
         case 'faction':
           FACTIONS.forEach(faction => {
-            lines.push(`**${faction.id}** — ${faction.name}`);
+            const line = `**${faction.name || faction.id}** — ${faction.description || 'No description'}`;
+            lines.push(line);
+            categoryData.push({ id: faction.id, name: faction.name || faction.id, emoji: '🛡️' });
           });
           break;
         case 'biomes':
         case 'biome':
           BIOMES.forEach(biome => {
-            lines.push(`**${biome.id}** — ${biome.name}`);
+            const line = `**${biome.name || biome.id}** — ${biome.description || 'No description'}`;
+            lines.push(line);
+            categoryData.push({ id: biome.id, name: biome.name || biome.id, emoji: '🌍' });
           });
           break;
         case 'dungeons':
         case 'dungeon':
           DUNGEON_DEFINITIONS.forEach(d => {
-            lines.push(`**${d.id}** — ${d.name} (Lvl ${d.minLevel || 1})`);
+            const line = `**${d.name || d.id}** — Lvl ${d.minLevel || 1} (${d.theme || 'unknown'})`;
+            lines.push(line);
+            categoryData.push({ id: d.id, name: d.name || d.id, emoji: '🏰' });
           });
           break;
         default:
           lines.push('Unknown category.');
       }
 
-      addQuestField(listEmbed, 'Entries', lines);
+      // Add navigation buttons
+      const navButtons = new ActionRowBuilder()
+        .addComponents(
+          new ButtonBuilder()
+            .setCustomId('codex|category|items')
+            .setLabel('📦 Items')
+            .setStyle(lowerCat === 'items' || lowerCat === 'item' ? ButtonStyle.Primary : ButtonStyle.Secondary),
+          new ButtonBuilder()
+            .setCustomId('codex|category|enemies')
+            .setLabel('👹 Enemies')
+            .setStyle(lowerCat === 'enemies' || lowerCat === 'enemy' ? ButtonStyle.Primary : ButtonStyle.Secondary),
+          new ButtonBuilder()
+            .setCustomId('codex|category|factions')
+            .setLabel('🛡️ Factions')
+            .setStyle(lowerCat === 'factions' || lowerCat === 'faction' ? ButtonStyle.Primary : ButtonStyle.Secondary),
+          new ButtonBuilder()
+            .setCustomId('codex|category|biomes')
+            .setLabel('🌍 Biomes')
+            .setStyle(lowerCat === 'biomes' || lowerCat === 'biome' ? ButtonStyle.Primary : ButtonStyle.Secondary),
+          new ButtonBuilder()
+            .setCustomId('codex|category|dungeons')
+            .setLabel('🏰 Dungeons')
+            .setStyle(lowerCat === 'dungeons' || lowerCat === 'dungeon' ? ButtonStyle.Primary : ButtonStyle.Secondary)
+        );
+
+      addQuestField(listEmbed, 'Entries', lines.slice(0, 20));
+      if (lines.length > 20) {
+        listEmbed.addFields({ name: 'More Entries', value: `...and ${lines.length - 20} more. Use \`${PREFIX} codex ${lowerCat} <id>\` to view details.` });
+      }
       if (!lines.length) {
         listEmbed.setDescription('No data found for this category.');
+      } else {
+        listEmbed.setDescription(`Found ${lines.length} entries. Use \`${PREFIX} codex ${lowerCat} <id>\` to view details.`);
       }
-      return sendStyledEmbed(message, listEmbed, 'codex');
+      return sendStyledEmbed(message, listEmbed, 'codex', { components: [navButtons] });
     }
     return message.reply('❌ Codex entry not found. Check the category or identifier.');
   }
@@ -6503,8 +7555,35 @@ async function showCodex(message, category, entryIdentifier) {
 
   if (questCategory) {
     maybeStartCodexQuest(message, player, questCategory, normalizedEntryId, unlocked);
-}
-  return sendStyledEmbed(message, embed, 'codex');
+  }
+  
+  // Add navigation buttons to entry view
+  const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+  const navButtons = new ActionRowBuilder()
+    .addComponents(
+      new ButtonBuilder()
+        .setCustomId('codex|category|items')
+        .setLabel('📦 Items')
+        .setStyle(lowerCat === 'items' || lowerCat === 'item' ? ButtonStyle.Primary : ButtonStyle.Secondary),
+      new ButtonBuilder()
+        .setCustomId('codex|category|enemies')
+        .setLabel('👹 Enemies')
+        .setStyle(lowerCat === 'enemies' || lowerCat === 'enemy' ? ButtonStyle.Primary : ButtonStyle.Secondary),
+      new ButtonBuilder()
+        .setCustomId('codex|category|factions')
+        .setLabel('🛡️ Factions')
+        .setStyle(lowerCat === 'factions' || lowerCat === 'faction' ? ButtonStyle.Primary : ButtonStyle.Secondary),
+      new ButtonBuilder()
+        .setCustomId('codex|category|biomes')
+        .setLabel('🌍 Biomes')
+        .setStyle(lowerCat === 'biomes' || lowerCat === 'biome' ? ButtonStyle.Primary : ButtonStyle.Secondary),
+      new ButtonBuilder()
+        .setCustomId('codex|category|dungeons')
+        .setLabel('🏰 Dungeons')
+        .setStyle(lowerCat === 'dungeons' || lowerCat === 'dungeon' ? ButtonStyle.Primary : ButtonStyle.Secondary)
+    );
+  
+  return sendStyledEmbed(message, embed, 'codex', { components: [navButtons] });
 }
 async function showReputation(message, factionIdentifier) {
   const player = getPlayer(message.author.id);
@@ -6675,6 +7754,9 @@ async function addCoinsAdmin(message, targetUser, amount) {
 client.once('ready', async () => {
   console.log(`✅ Hytale Bot is online as ${client.user.tag}!`);
   console.log(`📊 Serving ${client.guilds.cache.size} servers`);
+  
+  // Set up player helper functions for dungeon system (after functions are defined)
+  dungeonHandlers.setPlayerHelpers(addXp, addItemToInventory);
   
   client.user.setActivity('Hytale | !hy help', { type: 'PLAYING' });
   triggerWorldEvents();
@@ -6882,6 +7964,283 @@ const ACHIEVEMENTS = [
     requirement: { type: 'inventorySize', value: 30 },
     reward: { coins: 500, xp: 400, item: 'lumin_archivist_tome', itemAmount: 1 },
     description: 'Collect 30 unique items and document them in the Codex.'
+  },
+  // Pet Achievements
+  {
+    id: 'pet_owner',
+    name: 'Pet Owner',
+    emoji: '🐾',
+    requirement: { type: 'stat', key: 'petsOwned', value: 1 },
+    reward: { coins: 200, xp: 150 },
+    description: 'Own your first pet.'
+  },
+  {
+    id: 'pet_collector',
+    name: 'Pet Collector',
+    emoji: '🐕',
+    requirement: { type: 'stat', key: 'petsOwned', value: 5 },
+    reward: { coins: 500, xp: 350, item: 'pet_treat', itemAmount: 3 },
+    description: 'Own 5 different pets.'
+  },
+  {
+    id: 'pet_master',
+    name: 'Pet Master',
+    emoji: '🐉',
+    requirement: { type: 'stat', key: 'petsOwned', value: 10 },
+    reward: { coins: 1000, xp: 700, item: 'legendary_pet_egg', itemAmount: 1 },
+    description: 'Own 10 different pets.'
+  },
+  // Spell Achievements
+  {
+    id: 'spell_learner',
+    name: 'Spell Learner',
+    emoji: '🔮',
+    requirement: { type: 'stat', key: 'spellsLearned', value: 1 },
+    reward: { coins: 150, xp: 100 },
+    description: 'Learn your first spell.'
+  },
+  {
+    id: 'spell_master',
+    name: 'Spell Master',
+    emoji: '✨',
+    requirement: { type: 'stat', key: 'spellsLearned', value: 10 },
+    reward: { coins: 800, xp: 600, item: 'arcane_tome', itemAmount: 1 },
+    description: 'Learn 10 different spells.'
+  },
+  {
+    id: 'spell_caster',
+    name: 'Spell Caster',
+    emoji: '⚡',
+    requirement: { type: 'stat', key: 'spellsCast', value: 100 },
+    reward: { coins: 600, xp: 450 },
+    description: 'Cast 100 spells.'
+  },
+  // PvP Achievements
+  {
+    id: 'pvp_warrior',
+    name: 'PvP Warrior',
+    emoji: '⚔️',
+    requirement: { type: 'stat', key: 'pvpWins', value: 1 },
+    reward: { coins: 300, xp: 200 },
+    description: 'Win your first PvP match.'
+  },
+  {
+    id: 'pvp_champion',
+    name: 'PvP Champion',
+    emoji: '🏆',
+    requirement: { type: 'stat', key: 'pvpWins', value: 10 },
+    reward: { coins: 1000, xp: 700, item: 'champion_medal', itemAmount: 1 },
+    description: 'Win 10 PvP matches.'
+  },
+  {
+    id: 'pvp_legend',
+    name: 'PvP Legend',
+    emoji: '👑',
+    requirement: { type: 'stat', key: 'pvpWins', value: 50 },
+    reward: { coins: 2500, xp: 1500, item: 'legendary_duelist_sword', itemAmount: 1 },
+    description: 'Win 50 PvP matches.'
+  },
+  {
+    id: 'pvp_rating',
+    name: 'Elite Fighter',
+    emoji: '💎',
+    requirement: { type: 'pvpRating', value: 1500 },
+    reward: { coins: 1500, xp: 1000, item: 'elite_fighter_badge', itemAmount: 1 },
+    description: 'Reach 1500 PvP rating.'
+  },
+  // Skill Tree Achievements
+  {
+    id: 'class_choice',
+    name: 'Class Choice',
+    emoji: '🎯',
+    requirement: { type: 'classChosen', value: 1 },
+    reward: { coins: 200, xp: 150 },
+    description: 'Choose your class specialization.'
+  },
+  {
+    id: 'skill_learner',
+    name: 'Skill Learner',
+    emoji: '📖',
+    requirement: { type: 'stat', key: 'skillsLearned', value: 5 },
+    reward: { coins: 400, xp: 300 },
+    description: 'Learn 5 skills from your skill tree.'
+  },
+  {
+    id: 'skill_master',
+    name: 'Skill Master',
+    emoji: '🌟',
+    requirement: { type: 'stat', key: 'skillsLearned', value: 15 },
+    reward: { coins: 1200, xp: 900, item: 'master_skill_tome', itemAmount: 1 },
+    description: 'Learn 15 skills from your skill tree.'
+  },
+  // Adventure Mode Achievements
+  {
+    id: 'adventurer_start',
+    name: 'Adventure Begins',
+    emoji: '📖',
+    requirement: { type: 'adventureChapter', value: 1 },
+    reward: { coins: 250, xp: 200 },
+    description: 'Start your first adventure chapter.'
+  },
+  {
+    id: 'adventurer_complete',
+    name: 'Adventure Complete',
+    emoji: '📚',
+    requirement: { type: 'adventureChapters', value: 3 },
+    reward: { coins: 800, xp: 600, item: 'adventurer_badge', itemAmount: 1 },
+    description: 'Complete 3 adventure chapters.'
+  },
+  // World Boss Achievements
+  {
+    id: 'boss_slayer',
+    name: 'Boss Slayer',
+    emoji: '🐉',
+    requirement: { type: 'stat', key: 'worldBossesDefeated', value: 1 },
+    reward: { coins: 500, xp: 350 },
+    description: 'Defeat your first world boss.'
+  },
+  {
+    id: 'boss_master',
+    name: 'Boss Master',
+    emoji: '👹',
+    requirement: { type: 'stat', key: 'worldBossesDefeated', value: 5 },
+    reward: { coins: 1500, xp: 1000, item: 'boss_slayer_medal', itemAmount: 1 },
+    description: 'Defeat 5 world bosses.'
+  },
+  // World Event Achievements
+  {
+    id: 'event_participant',
+    name: 'Event Participant',
+    emoji: '🌍',
+    requirement: { type: 'stat', key: 'eventsParticipated', value: 1 },
+    reward: { coins: 200, xp: 150 },
+    description: 'Participate in your first world event.'
+  },
+  {
+    id: 'event_champion',
+    name: 'Event Champion',
+    emoji: '🎇',
+    requirement: { type: 'stat', key: 'eventsParticipated', value: 10 },
+    reward: { coins: 1000, xp: 700, item: 'event_champion_badge', itemAmount: 1 },
+    description: 'Participate in 10 world events.'
+  },
+  // Daily Challenge Achievements
+  {
+    id: 'daily_completer',
+    name: 'Daily Completer',
+    emoji: '📅',
+    requirement: { type: 'stat', key: 'dailyChallengesCompleted', value: 1 },
+    reward: { coins: 100, xp: 75 },
+    description: 'Complete your first daily challenge.'
+  },
+  {
+    id: 'daily_streak',
+    name: 'Daily Streak',
+    emoji: '🔥',
+    requirement: { type: 'dailyStreak', value: 7 },
+    reward: { coins: 500, xp: 350, item: 'streak_bonus_potion', itemAmount: 1 },
+    description: 'Maintain a 7-day daily challenge streak.'
+  },
+  {
+    id: 'daily_master',
+    name: 'Daily Master',
+    emoji: '⭐',
+    requirement: { type: 'stat', key: 'dailyChallengesCompleted', value: 30 },
+    reward: { coins: 2000, xp: 1500, item: 'daily_master_crown', itemAmount: 1 },
+    description: 'Complete 30 daily challenges.'
+  },
+  // Gathering Achievements
+  {
+    id: 'gatherer',
+    name: 'Gatherer',
+    emoji: '🌿',
+    requirement: { type: 'stat', key: 'resourcesGathered', value: 100 },
+    reward: { coins: 300, xp: 200 },
+    description: 'Gather 100 resources.'
+  },
+  {
+    id: 'master_gatherer',
+    name: 'Master Gatherer',
+    emoji: '🌾',
+    requirement: { type: 'stat', key: 'resourcesGathered', value: 1000 },
+    reward: { coins: 1200, xp: 800, item: 'gathering_master_tool', itemAmount: 1 },
+    description: 'Gather 1000 resources.'
+  },
+  // Quest Achievements
+  {
+    id: 'quest_completer',
+    name: 'Quest Completer',
+    emoji: '📜',
+    requirement: { type: 'stat', key: 'questsCompleted', value: 10 },
+    reward: { coins: 500, xp: 350 },
+    description: 'Complete 10 quests.'
+  },
+  {
+    id: 'quest_master',
+    name: 'Quest Master',
+    emoji: '📖',
+    requirement: { type: 'stat', key: 'questsCompleted', value: 50 },
+    reward: { coins: 2000, xp: 1500, item: 'quest_master_tome', itemAmount: 1 },
+    description: 'Complete 50 quests.'
+  },
+  // Level Achievements
+  {
+    id: 'level_20',
+    name: 'Level 20',
+    emoji: '⭐',
+    requirement: { type: 'level', value: 20 },
+    reward: { coins: 800, xp: 0 },
+    description: 'Reach level 20.'
+  },
+  {
+    id: 'level_30',
+    name: 'Level 30',
+    emoji: '🌟',
+    requirement: { type: 'level', value: 30 },
+    reward: { coins: 1500, xp: 0, item: 'level_30_reward', itemAmount: 1 },
+    description: 'Reach level 30.'
+  },
+  {
+    id: 'level_50',
+    name: 'Level 50',
+    emoji: '💫',
+    requirement: { type: 'level', value: 50 },
+    reward: { coins: 3000, xp: 0, item: 'level_50_reward', itemAmount: 1 },
+    description: 'Reach level 50.'
+  },
+  // Base Achievements
+  {
+    id: 'base_owner',
+    name: 'Base Owner',
+    emoji: '🏠',
+    requirement: { type: 'stat', key: 'basesClaimed', value: 1 },
+    reward: { coins: 300, xp: 200 },
+    description: 'Claim your first base.'
+  },
+  {
+    id: 'base_master',
+    name: 'Base Master',
+    emoji: '🏰',
+    requirement: { type: 'stat', key: 'basesClaimed', value: 5 },
+    reward: { coins: 1500, xp: 1000, item: 'base_master_badge', itemAmount: 1 },
+    description: 'Claim 5 bases.'
+  },
+  // Settlement Achievements
+  {
+    id: 'settlement_founder',
+    name: 'Settlement Founder',
+    emoji: '🏘️',
+    requirement: { type: 'stat', key: 'settlementsManaged', value: 1 },
+    reward: { coins: 400, xp: 300 },
+    description: 'Discover and manage your first settlement.'
+  },
+  {
+    id: 'settlement_tycoon',
+    name: 'Settlement Tycoon',
+    emoji: '🏛️',
+    requirement: { type: 'stat', key: 'settlementsManaged', value: 5 },
+    reward: { coins: 2000, xp: 1500, item: 'settlement_tycoon_crown', itemAmount: 1 },
+    description: 'Manage 5 settlements.'
   }
 ];
 
@@ -7189,10 +8548,66 @@ function randomBetween(min, max) {
   if (max < min) [min, max] = [max, min];
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+function getSkillTreeBonuses(player) {
+  if (!player?.skillTree?.class) return {};
+  
+  const skillTree = SKILL_TREE_LOOKUP[player.skillTree.class.toLowerCase()];
+  if (!skillTree) return {};
+  
+  const bonuses = {
+    damageMultiplier: 0,
+    defenseMultiplier: 0,
+    fireSpellDamage: 0,
+    iceSlowEffect: 0,
+    backstabMultiplier: 0,
+    rangedAccuracy: 0,
+    defenseFromMana: 0,
+    stunResistance: 0,
+    knockbackResistance: 0,
+    abilities: []
+  };
+  
+  const hpPercent = player.hp / player.maxHp;
+  
+  skillTree.branches.forEach(branch => {
+    const branchProgress = player.skillTree.branches[branch.id] || { skills: [] };
+    const learnedSkills = branchProgress.skills || [];
+    
+    branch.skills.forEach(skill => {
+      if (!learnedSkills.includes(skill.id)) return;
+      
+      if (skill.bonuses) {
+        Object.entries(skill.bonuses).forEach(([key, value]) => {
+          if (key === 'condition') return; // Skip condition, check it separately
+          
+          // Check conditional bonuses
+          if (skill.bonuses.condition === 'hp_below_50' && hpPercent > 0.5) return;
+          
+          if (key === 'damageMultiplier' || key === 'defenseMultiplier' || 
+              key === 'fireSpellDamage' || key === 'iceSlowEffect' || 
+              key === 'backstabMultiplier' || key === 'rangedAccuracy' ||
+              key === 'defenseFromMana' || key === 'stunResistance' || 
+              key === 'knockbackResistance') {
+            bonuses[key] = (bonuses[key] || 0) + (Number(value) || 0);
+          }
+        });
+      }
+      
+      if (skill.ability) {
+        bonuses.abilities.push(skill.ability);
+      }
+    });
+  });
+  
+  return bonuses;
+}
+
 function buildPlayerCombatProfile(player, options = {}) {
   const modifiers = options.modifiers || {};
   const baseAttributes = player.attributes || { power: 10, agility: 8, resilience: 8, focus: 6 };
   const { sets: activeSets, bonuses: setBonuses } = getActiveItemSetData(player);
+  const skillBonuses = getSkillTreeBonuses(player);
+  
   const effectiveAttributes = {
     power: (baseAttributes.power || 0) + (setBonuses.attributes.power || 0),
     agility: (baseAttributes.agility || 0) + (setBonuses.attributes.agility || 0),
@@ -7206,7 +8621,14 @@ function buildPlayerCombatProfile(player, options = {}) {
   const baseDamageMin = weapon?.damageMin || weapon?.damage || 5;
   const baseDamageMax = weapon?.damageMax || (weapon?.damage ? weapon.damage + 2 : 8);
   const damageBonus = Math.floor(effectiveAttributes.power * 0.3) + (modifiers.damageBonus || 0) + (setBonuses.damageBonus || 0);
-  const defenseBonus = Math.floor(effectiveAttributes.resilience * 0.5) + (modifiers.defenseBonus || 0) + (setBonuses.defenseBonus || 0);
+  
+  // Apply skill tree defense multiplier
+  const baseDefenseBonus = Math.floor(effectiveAttributes.resilience * 0.5) + (modifiers.defenseBonus || 0) + (setBonuses.defenseBonus || 0);
+  const defenseBonus = Math.floor(baseDefenseBonus * (1 + (skillBonuses.defenseMultiplier || 0)));
+  
+  // Apply defense from mana (Cryomancer skill)
+  const manaDefense = skillBonuses.defenseFromMana ? Math.floor((player.mana || 0) * skillBonuses.defenseFromMana) : 0;
+  
   const resistances = { ...(armor?.resistances || {}) };
   mergeResistances(resistances, setBonuses.resistances);
   Object.keys(resistances).forEach(key => {
@@ -7216,9 +8638,17 @@ function buildPlayerCombatProfile(player, options = {}) {
   const blockChance = Math.min(0.4, (armor?.blockChance || 0) + (setBonuses.blockChance || 0));
   const critChance = Math.min(0.6, (weapon?.critChance || 0.05) + effectiveAttributes.agility * 0.004 + (setBonuses.critChance || 0));
   const critMultiplier = Math.max(1.5, (weapon?.critMultiplier || 1.5) + effectiveAttributes.focus * 0.01 + (setBonuses.critMultiplier || 0));
-  const accuracy = Math.min(0.99, Math.max(0.1, (weapon?.accuracy || 0.9) + effectiveAttributes.focus * 0.002 + (setBonuses.accuracyBonus || 0)));
+  
+  // Apply ranged accuracy bonus (Ranger skill)
+  const baseAccuracy = (weapon?.accuracy || 0.9) + effectiveAttributes.focus * 0.002 + (setBonuses.accuracyBonus || 0);
+  const accuracy = Math.min(0.99, Math.max(0.1, skillBonuses.rangedAccuracy ? 1.0 : baseAccuracy));
+  
   const damageType = weapon?.damageType || 'physical';
-  const damageMultiplier = Math.max(0.1, 1 + (setBonuses.damageMultiplier || 0) + (modifiers.damageMultiplier || 0));
+  
+  // Apply skill tree damage multiplier
+  const baseDamageMultiplier = 1 + (setBonuses.damageMultiplier || 0) + (modifiers.damageMultiplier || 0);
+  const damageMultiplier = Math.max(0.1, baseDamageMultiplier + (skillBonuses.damageMultiplier || 0));
+  
   const flatDamageReduction = Math.max(0, (modifiers.enemyDamageReduction || 0) + (setBonuses.flatDamageReduction || 0));
 
   return {
@@ -7233,12 +8663,14 @@ function buildPlayerCombatProfile(player, options = {}) {
     critChance: Math.max(0, critChance),
     critMultiplier,
     accuracy,
-    defense: Math.max(0, (armor?.defense || 0) + defenseBonus),
+    defense: Math.max(0, (armor?.defense || 0) + defenseBonus + manaDefense),
     resistances,
     dodgeChance: Math.max(0, dodgeChance),
     blockChance: Math.max(0, blockChance),
     flatDamageReduction,
-    activeSets
+    activeSets,
+    skillBonuses,
+    playerRef: player
   };
 }
 
@@ -7274,6 +8706,100 @@ function buildEnemyCombatProfile(enemy) {
     flatDamageReduction: Math.max(0, Number(enemy.damageReduction || 0)),
     damageMultiplier: Math.max(0.1, Number(enemy.damageMultiplier || 1))
   };
+}
+
+function resolveSpell(spell, caster, target, skillBonuses = {}) {
+  if (!spell) return { type: 'error', message: 'Spell not found' };
+  
+  const player = caster.playerRef || caster;
+  if (!player) return { type: 'error', message: 'Caster not found' };
+  
+  // Check mana
+  if (player.mana < spell.manaCost) {
+    return { type: 'insufficient_mana', required: spell.manaCost, current: player.mana };
+  }
+  
+  // Check cooldown
+  if (!player.spells) player.spells = { cooldowns: {} };
+  const cooldown = player.spells.cooldowns[spell.id] || 0;
+  if (cooldown > Date.now()) {
+    const remaining = Math.ceil((cooldown - Date.now()) / 1000);
+    return { type: 'cooldown', remaining };
+  }
+  
+  // Consume mana
+  player.mana -= spell.manaCost;
+  player.spells.cooldowns[spell.id] = Date.now() + (spell.cooldown * 1000);
+  player.stats.spellsCast = (player.stats.spellsCast || 0) + 1;
+  
+  let result = {
+    type: 'spell',
+    spell: spell.id,
+    spellName: spell.name,
+    spellEmoji: spell.emoji,
+    damage: 0,
+    heal: 0,
+    shield: 0,
+    damageType: spell.school || 'magic'
+  };
+  
+  // Calculate spell damage
+  if (spell.damage) {
+    let damage = spell.damage;
+    
+    // Apply skill tree bonuses (e.g., Fire Mastery)
+    if (spell.school === 'fire' && skillBonuses.fireSpellDamage) {
+      damage = Math.floor(damage * (1 + skillBonuses.fireSpellDamage));
+    }
+    
+    // Apply spell damage multiplier from skill tree
+    if (skillBonuses.spellDamageMultiplier) {
+      damage = Math.floor(damage * (1 + skillBonuses.spellDamageMultiplier));
+    }
+    
+    // Apply resistances
+    const resistances = target.resistances || {};
+    const specificResistance = resistances[result.damageType] || 0;
+    const universalResistance = resistances.all || 0;
+    const totalResistance = Math.min(0.9, specificResistance + universalResistance);
+    if (totalResistance > 0) {
+      damage = Math.floor(damage * (1 - totalResistance));
+    }
+    
+    // Magic resistance applies to defense differently
+    const magicDefense = Math.floor((target.defense || 0) * 0.2); // Spells bypass more defense
+    damage -= magicDefense;
+    damage -= target.flatDamageReduction || 0;
+    
+    damage = Math.max(1, damage);
+    target.hpRef.hp = Math.max(0, target.hpRef.hp - damage);
+    result.damage = damage;
+  }
+  
+  // Calculate spell healing
+  if (spell.heal) {
+    const healAmount = Math.min(spell.heal, player.maxHp - player.hp);
+    player.hp = Math.min(player.maxHp, player.hp + spell.heal);
+    result.heal = healAmount;
+  }
+  
+  // Calculate spell shield
+  if (spell.shield) {
+    if (!player.activeShields) player.activeShields = [];
+    player.activeShields.push({
+      amount: spell.shield,
+      duration: spell.duration || 15,
+      expires: Date.now() + (spell.duration || 15) * 1000
+    });
+    result.shield = spell.shield;
+  }
+  
+  // Apply spell effects (e.g., slow from ice spells)
+  if (spell.school === 'ice' && skillBonuses.iceSlowEffect) {
+    result.slow = skillBonuses.iceSlowEffect;
+  }
+  
+  return result;
 }
 
 function resolveAttack(attacker, defender) {
@@ -7341,6 +8867,26 @@ function formatAttackResult(attackerLabel, defenderLabel, result, defenderHp, de
       const hpLine = defenderMaxHp ? ` (${remaining}/${defenderMaxHp} HP)` : '';
       return `⚔️ ${parts.join(' ')}${hpLine}`;
     }
+    case 'spell': {
+      const parts = [];
+      if (result.damage > 0) {
+        parts.push(`${attackerLabel} casts ${result.spellEmoji} **${result.spellName}** and deals ${result.damage} ${result.damageType} damage to ${defenderLabel}`);
+        const remaining = Math.max(0, defenderHp);
+        const hpLine = defenderMaxHp ? ` (${remaining}/${defenderMaxHp} HP)` : '';
+        return `🔮 ${parts.join(' ')}${hpLine}`;
+      }
+      if (result.heal > 0) {
+        return `💚 ${attackerLabel} casts ${result.spellEmoji} **${result.spellName}** and heals ${result.heal} HP!`;
+      }
+      if (result.shield > 0) {
+        return `🛡️ ${attackerLabel} casts ${result.spellEmoji} **${result.spellName}** and gains ${result.shield} shield!`;
+      }
+      return `🔮 ${attackerLabel} casts ${result.spellEmoji} **${result.spellName}**!`;
+    }
+    case 'insufficient_mana':
+      return `❌ ${attackerLabel} doesn't have enough mana! (Need ${result.required}, have ${result.current})`;
+    case 'cooldown':
+      return `⏳ ${attackerLabel}'s spell is on cooldown for ${result.remaining} more seconds.`;
     default:
       return `${attackerLabel} acts, but nothing happens.`;
   }
@@ -8509,6 +10055,160 @@ function getBiomeDefinition(biomeId) {
   return BIOME_LOOKUP[biomeId.toLowerCase()] || null;
 }
 
+function getZoneForBiome(biomeId) {
+  if (!biomeId) return null;
+  return BIOME_TO_ZONE[biomeId.toLowerCase()] || null;
+}
+
+function getZoneDefinition(zoneId) {
+  if (!zoneId) return null;
+  return ZONE_LOOKUP[zoneId.toLowerCase()] || null;
+}
+
+function canAccessZone(player, zoneId) {
+  if (!zoneId) return true; // No zone restriction
+  const zone = getZoneDefinition(zoneId);
+  if (!zone) return true; // Zone not found, allow access
+  
+  const exploration = ensureExplorationState(player);
+  if (!exploration.unlockedZones) {
+    exploration.unlockedZones = ['zone_1']; // Default to Zone 1 unlocked
+  }
+  
+  // Check if zone is unlocked
+  if (exploration.unlockedZones.includes(zoneId.toLowerCase())) {
+    return true;
+  }
+  
+  // Check if player has zone key in inventory
+  if (player.inventory && player.inventory['zone_2_key'] > 0) {
+    if (zoneId.toLowerCase() === 'zone_2') {
+      // Unlock zone when key is used
+      if (!exploration.unlockedZones.includes('zone_2')) {
+        exploration.unlockedZones.push('zone_2');
+      }
+      return true;
+    }
+  }
+  
+  return false;
+}
+
+function canAccessBiome(player, biomeId) {
+  const zoneId = getZoneForBiome(biomeId);
+  if (!zoneId) return true; // Biome not in a zone, allow access
+  return canAccessZone(player, zoneId);
+}
+
+function checkAdventureModeProgress(player, event) {
+  if (!player.adventureMode || !player.adventureMode.currentSection) return;
+  
+  const chapter = ADVENTURE_MODE_LOOKUP[player.adventureMode.currentChapter?.toLowerCase()];
+  if (!chapter) return;
+  
+  const section = chapter.chapters?.find(s => s.id === player.adventureMode.currentSection);
+  if (!section || !section.objectives) return;
+  
+  const progress = player.adventureMode.progress[chapter.id] || {};
+  const sectionProgress = progress[section.id] || { completed: false, objectives: {} };
+  
+  // Check if all objectives are complete
+  let allComplete = true;
+  section.objectives.forEach((objective, index) => {
+    const current = sectionProgress.objectives[index] || 0;
+    let updated = false;
+    
+    switch (objective.type) {
+      case 'gather':
+        if (event.type === 'gather' && event.itemId === objective.target) {
+          sectionProgress.objectives[index] = Math.min(objective.quantity, current + (event.count || 1));
+          updated = true;
+        }
+        break;
+      case 'defeat':
+        if (event.type === 'defeat' && event.enemyId === objective.target) {
+          sectionProgress.objectives[index] = Math.min(objective.quantity, current + (event.count || 1));
+          updated = true;
+        }
+        break;
+      case 'explore':
+        if (event.type === 'explore' && event.biomeId === objective.target) {
+          sectionProgress.objectives[index] = Math.min(objective.quantity, current + (event.count || 1));
+          updated = true;
+        }
+        break;
+      case 'complete':
+        if (event.type === objective.target && event.count) {
+          sectionProgress.objectives[index] = Math.min(objective.quantity, current + event.count);
+          updated = true;
+        }
+        break;
+      case 'level':
+        if (objective.target === 'level' && player.level >= objective.quantity) {
+          sectionProgress.objectives[index] = objective.quantity;
+          updated = true;
+        }
+        break;
+    }
+    
+    if (!updated && objective.type === 'level' && player.level >= objective.quantity) {
+      sectionProgress.objectives[index] = objective.quantity;
+    }
+    
+    if ((sectionProgress.objectives[index] || 0) < objective.quantity) {
+      allComplete = false;
+    }
+  });
+  
+  // Update progress
+  if (!progress[section.id]) {
+    progress[section.id] = sectionProgress;
+  }
+  player.adventureMode.progress[chapter.id] = progress;
+  
+  // If all objectives complete, mark section as complete and apply rewards
+  if (allComplete && !sectionProgress.completed) {
+    sectionProgress.completed = true;
+    
+    // Apply rewards
+    if (section.rewards) {
+      if (section.rewards.xp) {
+        addXp(player, section.rewards.xp);
+      }
+      if (section.rewards.coins) {
+        player.coins += section.rewards.coins;
+      }
+      if (section.rewards.items) {
+        section.rewards.items.forEach(itemReward => {
+          addItemToInventory(player, itemReward.item, itemReward.quantity);
+        });
+      }
+      
+      // Check for zone unlock
+      if (section.rewards.unlocks && section.rewards.unlocks.zone) {
+        const exploration = ensureExplorationState(player);
+        if (!exploration.unlockedZones.includes(section.rewards.unlocks.zone)) {
+          exploration.unlockedZones.push(section.rewards.unlocks.zone);
+          const zone = getZoneDefinition(section.rewards.unlocks.zone);
+          if (zone) {
+            // Notify player of zone unlock
+            if (message) {
+              message.reply(`🎉 **Zone Unlocked!** You have unlocked access to ${zone.emoji} **${zone.name}**! Use \`${PREFIX} travel\` to explore new biomes.`);
+            }
+          }
+        }
+      }
+    }
+    
+    // Move to next section
+    const currentIndex = chapter.chapters.findIndex(s => s.id === section.id);
+    if (currentIndex < chapter.chapters.length - 1) {
+      player.adventureMode.currentSection = chapter.chapters[currentIndex + 1].id;
+      progress.currentSection = player.adventureMode.currentSection;
+    }
+  }
+}
+
 function ensureExplorationState(player) {
   if (!player.exploration) {
     player.exploration = {
@@ -8517,11 +10217,15 @@ function ensureExplorationState(player) {
       status: 'idle',
       action: null,
       discoveredBiomes: ['emerald_grove'],
-      lastTick: Date.now()
+      lastTick: Date.now(),
+      unlockedZones: ['zone_1'] // Start with Zone 1 unlocked
     };
   }
   if (!Array.isArray(player.exploration.discoveredBiomes)) {
     player.exploration.discoveredBiomes = ['emerald_grove'];
+  }
+  if (!player.exploration.unlockedZones) {
+    player.exploration.unlockedZones = ['zone_1']; // Default to Zone 1 unlocked
   }
   player.exploration.lastTick = player.exploration.lastTick || Date.now();
   if (!Number.isFinite(player.exploration.consecutiveActionsSinceCombat)) {
@@ -9007,7 +10711,17 @@ function deductCost(player, cost = {}, options = {}) {
 }
 function startTravel(player, targetBiomeId) {
   const exploration = ensureExplorationState(player);
-  const duration = calculateTravelDuration(player, exploration.currentBiome, targetBiomeId);
+  let duration = calculateTravelDuration(player, exploration.currentBiome, targetBiomeId);
+  
+  // Apply pet travel speed bonus
+  if (player.pets?.active) {
+    const pet = PET_LOOKUP[player.pets.active.toLowerCase()];
+    if (pet?.travelSpeed) {
+      // travelSpeed is a multiplier (0.0 to 1.0) - 0.9 means 90% faster (10% of original time)
+      duration = Math.max(100, Math.floor(duration * (1 - pet.travelSpeed)));
+    }
+  }
+  
   const now = Date.now();
   const origin = exploration.currentBiome;
   exploration.status = 'traveling';
@@ -9062,12 +10776,26 @@ function resolveExplorationCombat(player, enemyId) {
   if (!enemy) {
     return { description: `Encountered unknown enemy **${enemyId}** but it fled before engaging.`, events: [] };
   }
+  
+  // Apply pet combat bonuses
+  let petDamage = 0;
+  let petText = '';
+  if (player.pets?.active) {
+    const pet = PET_LOOKUP[player.pets.active.toLowerCase()];
+    if (pet?.combat) {
+      petDamage = pet.combat.damage || 0;
+      if (petDamage > 0) {
+        petText = ` Your ${pet.emoji} **${pet.name}** assists, dealing ${petDamage} damage!`;
+      }
+    }
+  }
+  
   const xpGain = Math.max(20, enemy.xp || 40);
   const coins = enemy.coins || 25;
   const rewardLines = grantRewards(player, { xp: xpGain, coins }, null);
   processQuestEvent(null, player, { type: 'defeat', enemyId, count: 1 });
   return {
-    description: `⚔️ You battled ${enemy.name} during exploration and prevailed! Rewards: ${rewardLines.join(', ')}`,
+    description: `⚔️ You battled ${enemy.name} during exploration and prevailed!${petText} Rewards: ${rewardLines.join(', ')}`,
     events: rewardLines
   };
 }
@@ -9142,6 +10870,31 @@ function triggerExplorationEvent(player, biome, event, message) {
       const rewardText = rewards?.length ? ` Rewards: ${rewards.join(', ')}` : '';
       return { text: `✨ You encounter ${descriptor}. Unique opportunities await!${rewardText}` };
     }
+    case 'pet': {
+      // Pet discovery through exploration
+      const petId = event.pet || event.petId;
+      if (!petId) {
+        // Random pet discovery based on biome
+        const biomePets = PET_DEFINITIONS.filter(p => 
+          p.obtainMethods?.includes('exploration') && 
+          (!p.biome || p.biome === biome.id || p.biome === biome.id?.toLowerCase())
+        );
+        if (biomePets.length === 0) {
+          return { text: '🐾 You found signs of a creature, but it was too fast to catch.' };
+        }
+        const discoveredPet = weightedChoice(biomePets, 'rarity');
+        if (discoveredPet && addPetToPlayer(player, discoveredPet.id)) {
+          const pet = PET_LOOKUP[discoveredPet.id.toLowerCase()];
+          return { text: `🐾 You discovered and befriended ${pet.emoji} **${pet.name}**! Use \`${PREFIX} activatepet ${pet.id}\` to activate it.` };
+        }
+        return { text: '🐾 You found signs of a creature, but it was too fast to catch.' };
+      }
+      if (addPetToPlayer(player, petId)) {
+        const pet = PET_LOOKUP[petId.toLowerCase()];
+        return { text: `🐾 You discovered and befriended ${pet.emoji} **${pet.name}**! Use \`${PREFIX} activatepet ${pet.id}\` to activate it.` };
+      }
+      return { text: '🐾 You found signs of a creature, but it was too fast to catch.' };
+    }
     case 'settlement': {
       const template = SETTLEMENT_TEMPLATE_LOOKUP[event.template?.toLowerCase()];
       if (!template) return { text: 'Stumbled upon a settlement, but it vanished like a mirage.' };
@@ -9173,6 +10926,8 @@ function resolveExplorationAction(player, message) {
     exploration.travelHistory.push({ from: action.metadata?.from || exploration.currentBiome, to: action.biomeId, arrivedAt: now });
     exploration.consecutiveActionsSinceCombat = 0;
     responseText = `🚶 Arrived at **${biome?.name || action.biomeId}**.`;
+    // Track exploration for adventure mode
+    processQuestEvent(message, player, { type: 'explore', biomeId: action.biomeId, count: 1 });
     checkCosmeticUnlocks(message, player);
     return { text: responseText, fields: extraFields };
   }
@@ -9324,6 +11079,13 @@ async function handleExploreCommand(message, args = []) {
     return message.reply('❌ You are currently located in an unknown biome. Try traveling again.');
   }
 
+  const progressContext = {
+    message,
+    interaction: message.interaction || null,
+    ephemeral: message.ephemeral || false,
+    userId: message.author?.id
+  };
+
   const subcommand = (args[0] || '').toLowerCase();
   if (!subcommand || subcommand === 'status' || subcommand === 'info') {
     const embed = buildExplorationStatusEmbed(player, biome, exploration);
@@ -9354,6 +11116,7 @@ async function handleExploreCommand(message, args = []) {
     if (!result) {
       return message.reply('⏳ Nothing is ready to resolve yet. Check your timers with `!hy explore status`.');
     }
+    cancelExplorationProgressSession(progressContext.userId);
     const embed = new EmbedBuilder()
       .setColor('#1ABC9C')
       .setTitle('Exploration Complete')
@@ -9371,6 +11134,7 @@ async function handleExploreCommand(message, args = []) {
     exploration.action = null;
     exploration.status = 'idle';
     exploration.pendingChain = null;
+    cancelExplorationProgressSession(progressContext.userId);
     return message.reply('🛑 Current exploration action cancelled.');
   }
 
@@ -9389,7 +11153,21 @@ async function handleExploreCommand(message, args = []) {
       return message.reply(`❌ ${error}`);
     }
     const actionName = formatActionName(step.action);
-    return message.reply(`🧭 Chain **${chain.id}** initiated — Step 1/${chain.steps.length}: **${actionName}** (${formatDuration(durationMs)}). Use \`${PREFIX} explore resolve\` when the timer completes.`);
+    const introEmbed = new EmbedBuilder()
+      .setColor('#1ABC9C')
+      .setTitle(`🧭 Chain ${chain.id}`)
+      .setDescription(`Step 1/${chain.steps.length}: **${actionName}**\nEstimated duration: ${formatDuration(durationMs)}.\nChain steps will advance automatically when complete.`);
+    const styledIntro = applyVisualStyle(introEmbed, 'explore');
+    await startExplorationProgressSession(player, progressContext, {
+      action: exploration.action,
+      emoji: '🧭',
+      visualKey: 'explore',
+      label: `Chain ${chain.id}: ${actionName}`,
+      instructions: 'Chain progress and results will post here automatically.',
+      prependEmbeds: [styledIntro],
+      components: buildDashboardComponents()
+    });
+    return;
   }
 
   if (subcommand === 'activity') {
@@ -9422,7 +11200,27 @@ async function handleExploreCommand(message, args = []) {
       },
       { durationMinutes: duration }
     );
-    return message.reply(`🌿 Starting activity **${activity.name || activity.id}** (${formatDuration(durationMs)}). Use \`${PREFIX} explore resolve\` when complete.`);
+    const introEmbed = new EmbedBuilder()
+      .setColor('#16A085')
+      .setTitle(`🌿 Activity: ${activity.name || activity.id}`)
+      .setDescription(
+        [
+          activity.description || 'A bespoke biome activity has begun.',
+          `Estimated duration: ${formatDuration(durationMs)}.`,
+          'Progress updates will appear here automatically.'
+        ].join('\n')
+      );
+    const styledIntro = applyVisualStyle(introEmbed, 'explore');
+    await startExplorationProgressSession(player, progressContext, {
+      action: exploration.action,
+      emoji: '🌿',
+      visualKey: 'explore',
+      label: `Activity: ${activity.name || activity.id}`,
+      instructions: 'This activity resolves automatically; results will post here.',
+      prependEmbeds: [styledIntro],
+      components: buildDashboardComponents()
+    });
+    return;
   }
 
   // Default: treat as direct action request
@@ -9435,10 +11233,29 @@ async function handleExploreCommand(message, args = []) {
   }
 
   exploration.pendingChain = null;
-  const durationMinutes = getBiomeActionDuration(exploration.currentBiome, actionType);
   const durationMs = startExplorationAction(player, actionType, exploration.currentBiome);
   const actionLabel = formatActionName(actionType);
-  return message.reply(`🔁 Beginning **${actionLabel}** in ${biome.name || exploration.currentBiome} (${formatDuration(durationMs)}). Use \`${PREFIX} explore resolve\` when the timer completes.`);
+  const introEmbed = new EmbedBuilder()
+    .setColor('#1ABC9C')
+    .setTitle(`🔁 ${actionLabel}`)
+    .setDescription(
+      [
+        `Location: ${biome.name || exploration.currentBiome}`,
+        `Estimated duration: ${formatDuration(durationMs)}.`,
+        'Progress updates will appear here automatically.'
+      ].join('\n')
+    );
+  const styledIntro = applyVisualStyle(introEmbed, 'explore');
+  await startExplorationProgressSession(player, progressContext, {
+    action: exploration.action,
+    emoji: '⏳',
+    visualKey: 'explore',
+    label: `${actionLabel} — ${biome.name || exploration.currentBiome}`,
+    instructions: 'This action resolves automatically; results will post here.',
+    prependEmbeds: [styledIntro],
+    components: buildDashboardComponents()
+  });
+  return;
 }
 async function handleGatherCommand(message, args = []) {
   if (!Array.isArray(args)) {
@@ -9544,6 +11361,13 @@ async function handleTravelCommand(message, args = []) {
     return message.reply('❌ Unable to determine your current biome.');
   }
 
+  const progressContext = {
+    message,
+    interaction: message.interaction || null,
+    ephemeral: message.ephemeral || false,
+    userId: message.author?.id
+  };
+
   const joinedArg = args.join(' ').trim();
   const lowerArg = joinedArg.toLowerCase();
 
@@ -9557,6 +11381,7 @@ async function handleTravelCommand(message, args = []) {
     if (!result) {
       return message.reply('⏳ No travel to resolve right now.');
     }
+    cancelExplorationProgressSession(progressContext.userId);
     const embed = new EmbedBuilder()
       .setColor('#3498DB')
       .setTitle('Travel Complete')
@@ -9579,6 +11404,15 @@ async function handleTravelCommand(message, args = []) {
     return message.reply(`❌ Could not find biome "${joinedArg}". Try \`${PREFIX} travel\` to view neighbors.`);
   }
 
+  // Check zone access
+  if (!canAccessBiome(player, targetId)) {
+    const zoneId = getZoneForBiome(targetId);
+    const zone = getZoneDefinition(zoneId);
+    if (zone) {
+      return message.reply(`❌ You cannot access ${zone.emoji} **${zone.name}** yet! You need to reach level ${zone.level} and complete the Adventure Mode quest "${zone.unlockRequirement.quest}" to unlock this zone. Use \`${PREFIX} adventure\` to view your progress.`);
+    }
+  }
+
   const neighbors = Array.isArray(currentBiome.travel?.neighbors) ? currentBiome.travel.neighbors.map(n => n.toLowerCase()) : [];
   if (!neighbors.includes(targetId.toLowerCase())) {
     const neighborNames = formatNeighborList(currentBiome);
@@ -9586,9 +11420,27 @@ async function handleTravelCommand(message, args = []) {
   }
 
   exploration.pendingChain = null;
-  const durationMs = startTravel(player, targetId);
+  const result = startTravel(player, targetId, message);
+  if (result && result.error) {
+    return; // Error already replied
+  }
+  const durationMs = result || 0;
   const targetBiome = getBiomeDefinition(targetId);
-  return message.reply(`🧭 Departing for **${targetBiome?.name || targetId}**. Estimated travel time: ${formatDuration(durationMs)}. Use \`${PREFIX} explore resolve\` when the journey completes.`);
+  const introEmbed = new EmbedBuilder()
+    .setColor('#3498DB')
+    .setTitle(`🧭 Departing for ${targetBiome?.name || formatBiomeName(targetId)}`)
+    .setDescription(`Estimated travel time: ${formatDuration(durationMs)}.\nProgress updates will appear here.`);
+  const styledIntro = applyVisualStyle(introEmbed, 'travel');
+  await startExplorationProgressSession(player, progressContext, {
+    action: exploration.action,
+    emoji: '🚶',
+    visualKey: 'travel',
+    label: `Travel to ${targetBiome?.name || formatBiomeName(targetId)}`,
+    instructions: 'Arrival will be processed automatically. Results will post here upon completion.',
+    prependEmbeds: [styledIntro],
+    components: buildDashboardComponents()
+  });
+  return;
 }
 
 function resolveBiomeId(input) {
@@ -9601,12 +11453,20 @@ function resolveBiomeId(input) {
   return partial?.id || null;
 }
 function buildExplorationStatusEmbed(player, biome, exploration) {
+  const zoneId = getZoneForBiome(biome.id);
+  const zone = getZoneDefinition(zoneId);
+  
   const embed = new EmbedBuilder()
     .setColor('#1ABC9C')
     .setTitle(`🌍 ${biome.name || exploration.currentBiome}`)
     .setDescription(biome.description || 'No description recorded for this biome.')
     .setThumbnail(BIOME_ARTWORK[biome.id?.toLowerCase?.()] || EMBED_VISUALS.exploration)
     .setImage(BIOME_ARTWORK[biome.id?.toLowerCase?.()] || EMBED_VISUALS.exploration);
+  
+  // Add zone information
+  if (zone) {
+    embed.addFields({ name: `${zone.emoji} Zone`, value: `**${zone.name}**\n${zone.description}`, inline: false });
+  }
 
   let statusValue = 'Idle';
   if (exploration.action) {
@@ -9651,7 +11511,24 @@ function buildExplorationStatusEmbed(player, biome, exploration) {
     embed.addFields({ name: 'Gathering Gear', value: gatheringSummary, inline: false });
   }
 
-  embed.setFooter({ text: `Discovered biomes: ${exploration.discoveredBiomes.length}` });
+  // Add exploration discovery tips
+  const discoveryTips = [
+    '💡 **Zones & Progression**: Orbis is divided into zones! You start in Zone 1. Unlock Zone 2 by reaching level 15 and completing Adventure Mode Chapter 1.',
+    '💡 **Zone Access**: You cannot travel to biomes in locked zones. Check `/adventure` to see your zone unlock progress.',
+    '💡 **Discovering Settlements**: Do exploration activities (forage, mine, scavenge, or biome activities) to trigger random events. One event type is settlement discovery!',
+    '💡 **Event Discovery**: After completing activities, there\'s a chance (25-75%) to trigger random events including settlements, structures, camps, and rare encounters.',
+    '💡 **Survey Action**: Use `/explore survey` to increase the chance of future events in this biome.',
+    '💡 **Biome Activities**: Check `/explore activities` for unique activities that may have better discovery rates.'
+  ];
+  embed.addFields({ name: '🔍 Discovery Information', value: discoveryTips.join('\n\n'), inline: false });
+
+  // Show settlement count if player has any
+  const settlementCount = Object.keys(player.settlements || {}).length;
+  if (settlementCount > 0) {
+    embed.addFields({ name: '🏘️ Your Settlements', value: `You have discovered **${settlementCount}** settlement${settlementCount > 1 ? 's' : ''}. Use \`${PREFIX} settlement list\` to view them.`, inline: false });
+  }
+
+  embed.setFooter({ text: `Discovered biomes: ${exploration.discoveredBiomes.length} | Use ${PREFIX} explore activities to see all available activities` });
   return embed;
 }
 
@@ -9697,12 +11574,20 @@ function buildChainListEmbed() {
   return embed;
 }
 function buildTravelStatusEmbed(player, exploration, biome) {
+  const zoneId = getZoneForBiome(biome.id);
+  const zone = getZoneDefinition(zoneId);
+  
   const embed = new EmbedBuilder()
     .setColor('#3498DB')
     .setTitle(`Travel Planner — ${biome.name || biome.id}`)
     .setDescription(biome.description || 'No description recorded for this biome.')
     .setThumbnail(EMBED_VISUALS.travel)
     .setImage(BIOME_ARTWORK[biome.id?.toLowerCase?.()] || EMBED_VISUALS.travel);
+  
+  // Add zone information
+  if (zone) {
+    embed.addFields({ name: `${zone.emoji} Zone`, value: `**${zone.name}**\n${zone.description}`, inline: false });
+  }
 
   const action = exploration.action;
   if (action && action.type === 'travel') {
@@ -9714,7 +11599,12 @@ function buildTravelStatusEmbed(player, exploration, biome) {
   if (neighbors.length) {
     const lines = neighbors.map(neighborId => {
       const duration = formatDuration(calculateTravelDuration(player, exploration.currentBiome, neighborId));
-      return `• ${formatBiomeName(neighborId)} — ${duration}`;
+      const neighborZoneId = getZoneForBiome(neighborId);
+      const neighborZone = getZoneDefinition(neighborZoneId);
+      const canAccess = canAccessBiome(player, neighborId);
+      const zoneInfo = neighborZone ? ` (${neighborZone.emoji} ${neighborZone.name})` : '';
+      const accessIcon = canAccess ? '✅' : '🔒';
+      return `${accessIcon} ${formatBiomeName(neighborId)}${zoneInfo} — ${duration}`;
     });
     embed.addFields({ name: 'Reachable Neighbors', value: lines.join('\n'), inline: false });
   } else {
@@ -10840,7 +12730,7 @@ function normalizeInteractionResponse(payload, defaults = {}) {
 function createMessageAdapterFromInteraction(interaction, overrides = {}) {
   const { mentionUser = null, channel = null, ephemeral = false } = overrides;
   const defaultFlags = ephemeral ? MessageFlags.Ephemeral : undefined;
-  return {
+  const adapter = {
     author: interaction.user,
     guild: interaction.guild,
     channel: channel || interaction.channel,
@@ -10856,6 +12746,9 @@ function createMessageAdapterFromInteraction(interaction, overrides = {}) {
       }
     }
   };
+  adapter.interaction = interaction;
+  adapter.ephemeral = ephemeral;
+  return adapter;
 }
 function handleSlashAutocomplete(interaction) {
   const focused = interaction.options.getFocused(true);
@@ -10972,6 +12865,60 @@ function handleSlashAutocomplete(interaction) {
           return respond(activeExpeditionChoices(settlement));
         }
         break;
+      }
+      case 'codex': {
+        if (focused.name !== 'entry') break;
+        const categoryRaw = interaction.options.getString('category');
+        if (!categoryRaw) return respond([]);
+        const cat = categoryRaw.toLowerCase();
+
+        const makeChoice = (id, label, emoji) => {
+          const value = id != null ? String(id) : '';
+          const display = label || value || 'Unknown';
+          const name = `${emoji ? `${emoji} ` : ''}${display} (${value})`;
+          return { name: name.trim(), value };
+        };
+        const matches = choice => {
+          if (!lowerFocused) return true;
+          return choice.name.toLowerCase().includes(lowerFocused) || choice.value.toLowerCase().includes(lowerFocused);
+        };
+
+        let options = [];
+        if (cat === 'item' || cat === 'items') {
+          options = ITEM_LIST.map(item => makeChoice(item.id, item.name || item.id, item.emoji));
+        } else if (cat === 'enemy' || cat === 'enemies') {
+          options = ENEMY_LIST.map(enemy => makeChoice(enemy.id || enemy.name, enemy.name || enemy.id, enemy.emoji));
+        } else if (cat === 'faction' || cat === 'factions') {
+          options = FACTIONS.map(faction => makeChoice(faction.id, faction.name || faction.id, '🛡️'));
+        } else if (cat === 'biome' || cat === 'biomes') {
+          options = BIOMES.map(biome => makeChoice(biome.id, biome.name || biome.id, '🌍'));
+        } else if (cat === 'dungeon' || cat === 'dungeons') {
+          options = DUNGEON_DEFINITIONS.map(dungeon => makeChoice(dungeon.id, dungeon.name || dungeon.id, '🏰'));
+        }
+        if (!options.length) return respond([]);
+        return respond(options.filter(matches));
+      }
+      case 'equip': {
+        if (focused.name !== 'item') break;
+        // Only show items the player owns that can be equipped
+        const equippableTypes = ['weapon', 'helmet', 'chestplate', 'leggings', 'boots', 'accessory', 'tool', 'armor'];
+        const options = Object.entries(player.inventory || {})
+          .filter(([itemId, count]) => {
+            if (count <= 0) return false;
+            const item = ITEMS[itemId];
+            if (!item) return false;
+            return equippableTypes.includes(item.type);
+          })
+          .map(([itemId, count]) => {
+            const item = ITEMS[itemId];
+            const name = `${item.emoji || ''} ${item.name || itemId} (x${count})`.trim();
+            return { name, value: itemId };
+          })
+          .filter(choice => {
+            if (!lowerFocused) return true;
+            return choice.name.toLowerCase().includes(lowerFocused) || choice.value.toLowerCase().includes(lowerFocused);
+          });
+        return respond(options);
       }
       default:
         break;
@@ -11516,6 +13463,26 @@ async function handleButtonInteraction(interaction) {
         }
         break;
       }
+      case 'dungeon': {
+        const runId = rest[0];
+        return dungeonHandlers.handleDungeonButton(interaction, action, runId, { getPlayerFunc: getPlayer });
+      }
+      case 'inventory': {
+        if (action === 'filter') {
+          const category = rest[0] || 'all';
+          const message = createMessageAdapterFromInteraction(interaction, { ephemeral: true });
+          return showInventory(message, category);
+        }
+        break;
+      }
+      case 'codex': {
+        if (action === 'category') {
+          const category = rest[0] || 'items';
+          const message = createMessageAdapterFromInteraction(interaction, { ephemeral: true });
+          return showCodex(message, category, null);
+        }
+        break;
+      }
       default:
         break;
     }
@@ -11530,6 +13497,1128 @@ async function handleButtonInteraction(interaction) {
   if (!interaction.replied) {
     return interaction.reply({ ephemeral: true, content: '⚠️ That control is not active yet.' });
   }
+}
+
+// Pet Management Functions
+async function showPets(message, subcommand = null) {
+  const player = getPlayer(message.author.id);
+  if (!player.pets) player.pets = { owned: [], active: null, stabled: [] };
+  
+  const sub = (subcommand || '').toLowerCase();
+  if (sub === 'list' || sub === 'owned' || !sub) {
+    const owned = player.pets.owned || [];
+    if (owned.length === 0) {
+      return message.reply('🐾 You don\'t own any pets yet! Find them through exploration, buy them from shops, or raise them at your base.');
+    }
+    
+    const embed = new EmbedBuilder()
+      .setColor('#9B59B6')
+      .setTitle('🐾 Your Pets')
+      .setDescription(`You own ${owned.length} pet${owned.length !== 1 ? 's' : ''}.`);
+    
+    const petList = [];
+    owned.forEach(petId => {
+      const pet = PET_LOOKUP[petId.toLowerCase()];
+      if (!pet) return;
+      const isActive = player.pets.active === petId;
+      const status = isActive ? '⭐ **Active**' : '💤 Stabled';
+      const bonuses = pet.bonuses ? Object.entries(pet.bonuses).map(([k, v]) => `${k}+${v}`).join(', ') : 'No bonuses';
+      petList.push(`${pet.emoji} **${pet.name}** (${pet.rarity}) - ${status}\n   Bonuses: ${bonuses}`);
+    });
+    
+    embed.addFields({ name: 'Owned Pets', value: petList.join('\n\n') || 'None', inline: false });
+    
+    if (player.pets.active) {
+      const activePet = PET_LOOKUP[player.pets.active.toLowerCase()];
+      if (activePet) {
+        embed.addFields({ name: '⭐ Active Pet', value: `${activePet.emoji} **${activePet.name}**\n${activePet.description}`, inline: false });
+      }
+    }
+    
+    return sendStyledEmbed(message, embed, 'pets');
+  }
+  
+  return message.reply(`❌ Unknown pet subcommand. Use \`${PREFIX} pets\` to view your pets.`);
+}
+
+async function activatePet(message, petId) {
+  const player = getPlayer(message.author.id);
+  if (!player.pets) player.pets = { owned: [], active: null, stabled: [] };
+  
+  if (!petId) {
+    return message.reply(`❌ Please specify a pet ID. Use \`${PREFIX} pets\` to see your pets.`);
+  }
+  
+  const pet = PET_LOOKUP[petId.toLowerCase()];
+  if (!pet) {
+    return message.reply(`❌ Pet "${petId}" not found.`);
+  }
+  
+  if (!player.pets.owned.includes(pet.id)) {
+    return message.reply(`❌ You don't own this pet. You need to find, buy, or raise it first.`);
+  }
+  
+  player.pets.active = pet.id;
+  const bonuses = pet.bonuses ? Object.entries(pet.bonuses).map(([k, v]) => `${k}+${v}`).join(', ') : 'No bonuses';
+  
+  return message.reply(`✅ Activated ${pet.emoji} **${pet.name}**!\nBonuses: ${bonuses}`);
+}
+
+async function stablePet(message) {
+  const player = getPlayer(message.author.id);
+  if (!player.pets) player.pets = { owned: [], active: null, stabled: [], taskQueue: [] };
+  
+  if (!player.pets.active) {
+    return message.reply('❌ You don\'t have an active pet to stable.');
+  }
+  
+  const pet = PET_LOOKUP[player.pets.active.toLowerCase()];
+  const petId = player.pets.active;
+  player.pets.active = null;
+  
+  // Add to stabled if not already there
+  if (!player.pets.stabled.includes(petId)) {
+    player.pets.stabled.push(petId);
+  }
+  
+  return message.reply(`✅ Stabled ${pet?.emoji || ''} **${pet?.name || 'pet'}**. Use \`${PREFIX} petstable\` to view your stable.`);
+}
+
+async function buyPet(message, petId) {
+  const player = getPlayer(message.author.id);
+  if (!player.pets) player.pets = { owned: [], active: null, stabled: [] };
+  
+  if (!petId) {
+    const shopPets = PET_DEFINITIONS.filter(p => p.obtainMethods?.includes('shop'));
+    if (shopPets.length === 0) {
+      return message.reply('❌ No pets available in shops.');
+    }
+    
+    const embed = new EmbedBuilder()
+      .setColor('#9B59B6')
+      .setTitle('🐾 Pet Shop')
+      .setDescription('Available pets for purchase:');
+    
+    const petList = shopPets.map(pet => {
+      const owned = player.pets.owned.includes(pet.id) ? ' ✅ Owned' : '';
+      return `${pet.emoji} **${pet.name}** (${pet.rarity}) - ${pet.value} coins${owned}`;
+    });
+    
+    embed.addFields({ name: 'Pets', value: petList.join('\n') || 'None', inline: false });
+    return sendStyledEmbed(message, embed, 'pets');
+  }
+  
+  const pet = PET_LOOKUP[petId.toLowerCase()];
+  if (!pet) {
+    return message.reply(`❌ Pet "${petId}" not found.`);
+  }
+  
+  if (!pet.obtainMethods?.includes('shop')) {
+    return message.reply(`❌ This pet cannot be purchased. It can be obtained through: ${pet.obtainMethods?.join(', ') || 'unknown methods'}.`);
+  }
+  
+  if (player.pets.owned.includes(pet.id)) {
+    return message.reply(`❌ You already own this pet.`);
+  }
+  
+  if (player.coins < pet.value) {
+    return message.reply(`❌ You need ${pet.value} coins to buy this pet. You have ${player.coins} coins.`);
+  }
+  
+  player.coins -= pet.value;
+  if (!player.pets.owned.includes(pet.id)) {
+    player.pets.owned.push(pet.id);
+  }
+  
+  return message.reply(`✅ Purchased ${pet.emoji} **${pet.name}** for ${pet.value} coins! Use \`${PREFIX} activatepet ${pet.id}\` to activate it.`);
+}
+
+function addPetToPlayer(player, petId) {
+  if (!player.pets) player.pets = { owned: [], active: null, stabled: [] };
+  const pet = PET_LOOKUP[petId.toLowerCase()];
+  if (!pet) return false;
+  
+  if (!player.pets.owned.includes(pet.id)) {
+    player.pets.owned.push(pet.id);
+    player.stats.petsOwned = (player.stats.petsOwned || 0) + 1;
+  }
+  return true;
+}
+
+// Pet Task System
+async function assignPetTask(message, petId, taskType) {
+  const player = getPlayer(message.author.id);
+  if (!player.pets) player.pets = { owned: [], active: null, stabled: [], taskQueue: [] };
+  
+  if (!petId) {
+    return message.reply(`❌ Please specify a pet ID. Use \`${PREFIX} pets\` to see your pets.`);
+  }
+  
+  const pet = PET_LOOKUP[petId.toLowerCase()];
+  if (!pet) {
+    return message.reply(`❌ Pet "${petId}" not found.`);
+  }
+  
+  if (!player.pets.owned.includes(pet.id)) {
+    return message.reply(`❌ You don't own this pet.`);
+  }
+  
+  if (!pet.tasks) {
+    return message.reply(`❌ This pet cannot perform tasks.`);
+  }
+  
+  if (!taskType) {
+    const availableTasks = [];
+    if (pet.tasks.gathering) availableTasks.push('gathering');
+    if (pet.tasks.mining) availableTasks.push('mining');
+    if (pet.tasks.crafting) availableTasks.push('crafting');
+    if (pet.tasks.fishing) availableTasks.push('fishing');
+    if (pet.tasks.scavenging) availableTasks.push('scavenging');
+    
+    return message.reply(`❌ Please specify a task type. Available tasks: ${availableTasks.join(', ')}`);
+  }
+  
+  const task = taskType.toLowerCase();
+  if (!pet.tasks[task]) {
+    return message.reply(`❌ This pet cannot perform ${task} tasks.`);
+  }
+  
+  // Add task to queue
+  if (!player.pets.taskQueue) player.pets.taskQueue = [];
+  player.pets.taskQueue.push({
+    petId: pet.id,
+    taskType: task,
+    startedAt: Date.now(),
+    duration: Math.floor(300000 / (pet.tasks.speed || 1)) // 5 minutes base, modified by speed
+  });
+  
+  return message.reply(`✅ Assigned ${pet.emoji} **${pet.name}** to perform ${task} tasks. It will complete automatically.`);
+}
+
+// Pet Raising System
+async function raisePet(message, petId1, petId2) {
+  const player = getPlayer(message.author.id);
+  if (!player.pets) player.pets = { owned: [], active: null, stabled: [], taskQueue: [] };
+  
+  if (!petId1 || !petId2) {
+    return message.reply(`❌ Please specify two pet IDs to breed. Use \`${PREFIX} pets\` to see your pets.`);
+  }
+  
+  const pet1 = PET_LOOKUP[petId1.toLowerCase()];
+  const pet2 = PET_LOOKUP[petId2.toLowerCase()];
+  
+  if (!pet1 || !pet2) {
+    return message.reply(`❌ One or both pets not found.`);
+  }
+  
+  if (!player.pets.owned.includes(pet1.id) || !player.pets.owned.includes(pet2.id)) {
+    return message.reply(`❌ You don't own both pets.`);
+  }
+  
+  if (pet1.id === pet2.id) {
+    return message.reply(`❌ You cannot breed a pet with itself.`);
+  }
+  
+  // Check if player has a base or settlement
+  const exploration = ensureExplorationState(player);
+  const biome = getBiomeDefinition(exploration.currentBiome);
+  const base = player.bases?.[exploration.currentBiome];
+  const settlement = Object.values(player.settlements || {}).find(s => s.faction === biome?.faction);
+  
+  if (!base && !settlement) {
+    return message.reply(`❌ You need a base or settlement to raise pets. Use \`${PREFIX} base claim\` or discover a settlement.`);
+  }
+  
+  // Check breeding requirements (both pets must be stabled or in base)
+  if (!player.pets.stabled.includes(pet1.id) && player.pets.active !== pet1.id) {
+    return message.reply(`❌ ${pet1.emoji} **${pet1.name}** must be stabled or active to breed. Use \`${PREFIX} stablepet\` or \`${PREFIX} activatepet ${pet1.id}\`.`);
+  }
+  
+  if (!player.pets.stabled.includes(pet2.id) && player.pets.active !== pet2.id) {
+    return message.reply(`❌ ${pet2.emoji} **${pet2.name}** must be stabled or active to breed. Use \`${PREFIX} stablepet\` or \`${PREFIX} activatepet ${pet2.id}\`.`);
+  }
+  
+  // Breeding takes time and resources
+  const breedingCost = 500; // coins
+  if (player.coins < breedingCost) {
+    return message.reply(`❌ You need ${breedingCost} coins to breed pets. You have ${player.coins} coins.`);
+  }
+  
+  // Determine offspring based on parent rarities
+  const rarity1 = pet1.rarity || 'common';
+  const rarity2 = pet2.rarity || 'common';
+  const rarityOrder = { 'common': 1, 'uncommon': 2, 'rare': 3, 'epic': 4, 'legendary': 5 };
+  const maxRarity = Math.max(rarityOrder[rarity1] || 1, rarityOrder[rarity2] || 1);
+  const minRarity = Math.min(rarityOrder[rarity1] || 1, rarityOrder[rarity2] || 1);
+  
+  // Offspring can be same rarity as parents or one tier higher
+  const possibleRarities = [];
+  for (let i = minRarity; i <= Math.min(maxRarity + 1, 5); i++) {
+    possibleRarities.push(Object.keys(rarityOrder).find(r => rarityOrder[r] === i));
+  }
+  
+  const offspringRarity = possibleRarities[Math.floor(Math.random() * possibleRarities.length)];
+  const possibleOffspring = PET_DEFINITIONS.filter(p => p.rarity === offspringRarity && p.obtainMethods?.includes('breeding'));
+  
+  if (possibleOffspring.length === 0) {
+    return message.reply(`❌ No breedable pets available for this rarity combination.`);
+  }
+  
+  const offspring = possibleOffspring[Math.floor(Math.random() * possibleOffspring.length)];
+  
+  // Deduct cost
+  player.coins -= breedingCost;
+  
+  // Add offspring to owned pets
+  if (!player.pets.owned.includes(offspring.id)) {
+    player.pets.owned.push(offspring.id);
+    player.stats.petsOwned = (player.stats.petsOwned || 0) + 1;
+  }
+  
+  return message.reply(`✅ Successfully bred ${pet1.emoji} **${pet1.name}** and ${pet2.emoji} **${pet2.name}**!\n\n🐣 New pet: ${offspring.emoji} **${offspring.name}** (${offspring.rarity})!\nUse \`${PREFIX} activatepet ${offspring.id}\` to activate it.`);
+}
+
+async function showPetStable(message) {
+  const player = getPlayer(message.author.id);
+  if (!player.pets) player.pets = { owned: [], active: null, stabled: [], taskQueue: [] };
+  
+  const exploration = ensureExplorationState(player);
+  const biome = getBiomeDefinition(exploration.currentBiome);
+  const base = player.bases?.[exploration.currentBiome];
+  const settlement = Object.values(player.settlements || {}).find(s => s.faction === biome?.faction);
+  
+  if (!base && !settlement) {
+    return message.reply(`❌ You need a base or settlement to have a pet stable. Use \`${PREFIX} base claim\` or discover a settlement.`);
+  }
+  
+  const embed = new EmbedBuilder()
+    .setColor('#9B59B6')
+    .setTitle('🐾 Pet Stable')
+    .setDescription(`Your pet stable at ${base ? 'your base' : settlement?.name || 'settlement'}.`);
+  
+  const stabledPets = [];
+  player.pets.stabled.forEach(petId => {
+    const pet = PET_LOOKUP[petId.toLowerCase()];
+    if (pet) {
+      stabledPets.push(`${pet.emoji} **${pet.name}** (${pet.rarity})`);
+    }
+  });
+  
+  if (stabledPets.length === 0) {
+    embed.addFields({ name: 'Stabled Pets', value: 'No pets in stable. Use \`/stablepet\` to stable your active pet.', inline: false });
+  } else {
+    embed.addFields({ name: 'Stabled Pets', value: stabledPets.join('\n') || 'None', inline: false });
+  }
+  
+  // Show breeding info
+  if (player.pets.owned.length >= 2) {
+    embed.addFields({ name: 'Breeding', value: `Use \`${PREFIX} raisepet <pet1> <pet2>\` to breed two pets. Cost: 500 coins.`, inline: false });
+  }
+  
+  return sendStyledEmbed(message, embed, 'pets');
+}
+
+// Magic/Spells System
+async function showSpells(message, subcommand = null) {
+  const player = getPlayer(message.author.id);
+  if (!player.spells) player.spells = { known: [], equipped: [], cooldowns: {} };
+  
+  const sub = (subcommand || '').toLowerCase();
+  if (sub === 'known' || sub === 'list' || !sub) {
+    const known = player.spells.known || [];
+    if (known.length === 0) {
+      return message.reply('🔮 You don\'t know any spells yet! Learn them through quests, leveling, or spell tomes.');
+    }
+    
+    const embed = new EmbedBuilder()
+      .setColor('#9B59B6')
+      .setTitle('🔮 Your Spells')
+      .setDescription(`You know ${known.length} spell${known.length !== 1 ? 's' : ''}.`);
+    
+    const spellList = [];
+    known.forEach(spellId => {
+      const spell = SPELL_LOOKUP[spellId.toLowerCase()];
+      if (!spell) return;
+      const isEquipped = player.spells.equipped.includes(spell.id);
+      const status = isEquipped ? '⭐ **Equipped**' : '💤 Not equipped';
+      spellList.push(`${spell.emoji} **${spell.name}** (${spell.school}) - ${status}\n   Mana: ${spell.manaCost}, Cooldown: ${spell.cooldown}s`);
+    });
+    
+    embed.addFields({ name: 'Known Spells', value: spellList.join('\n\n') || 'None', inline: false });
+    
+    if (player.spells.equipped.length > 0) {
+      const equippedSpells = player.spells.equipped.map(id => {
+        const spell = SPELL_LOOKUP[id.toLowerCase()];
+        return spell ? `${spell.emoji} **${spell.name}**` : id;
+      }).join(', ');
+      embed.addFields({ name: '⭐ Equipped Spells', value: equippedSpells, inline: false });
+    }
+    
+    return sendStyledEmbed(message, embed, 'spells');
+  }
+  
+  return message.reply(`❌ Unknown spell subcommand. Use \`${PREFIX} spells\` to view your spells.`);
+}
+
+async function learnSpell(message, spellId) {
+  const player = getPlayer(message.author.id);
+  if (!player.spells) player.spells = { known: [], equipped: [], cooldowns: {} };
+  
+  if (!spellId) {
+    return message.reply(`❌ Please specify a spell ID.`);
+  }
+  
+  const spell = SPELL_LOOKUP[spellId.toLowerCase()];
+  if (!spell) {
+    return message.reply(`❌ Spell "${spellId}" not found.`);
+  }
+  
+  if (player.spells.known.includes(spell.id)) {
+    return message.reply(`❌ You already know this spell.`);
+  }
+  
+  // Check unlock requirements
+  if (spell.unlockMethod === 'level' && player.level < spell.unlockRequirement) {
+    return message.reply(`❌ You need to be level ${spell.unlockRequirement} to learn this spell.`);
+  }
+  
+  if (spell.unlockMethod === 'quest' && !player.completedQuests.includes(spell.unlockRequirement)) {
+    return message.reply(`❌ You need to complete the quest "${spell.unlockRequirement}" to learn this spell.`);
+  }
+  
+  player.spells.known.push(spell.id);
+  player.stats.spellsLearned = (player.stats.spellsLearned || 0) + 1;
+  return message.reply(`✅ Learned ${spell.emoji} **${spell.name}**! Use \`${PREFIX} equipspell ${spell.id}\` to equip it.`);
+}
+
+async function equipSpell(message, spellId) {
+  const player = getPlayer(message.author.id);
+  if (!player.spells) player.spells = { known: [], equipped: [], cooldowns: {} };
+  
+  if (!spellId) {
+    return message.reply(`❌ Please specify a spell ID. Use \`${PREFIX} spells\` to see your spells.`);
+  }
+  
+  const spell = SPELL_LOOKUP[spellId.toLowerCase()];
+  if (!spell) {
+    return message.reply(`❌ Spell "${spellId}" not found.`);
+  }
+  
+  if (!player.spells.known.includes(spell.id)) {
+    return message.reply(`❌ You don't know this spell. Learn it first with \`${PREFIX} learnspell ${spell.id}\`.`);
+  }
+  
+  if (player.spells.equipped.includes(spell.id)) {
+    // Unequip
+    player.spells.equipped = player.spells.equipped.filter(id => id !== spell.id);
+    return message.reply(`✅ Unequipped ${spell.emoji} **${spell.name}**.`);
+  }
+  
+  // Equip (max 4 spells)
+  if (player.spells.equipped.length >= 4) {
+    return message.reply(`❌ You can only equip 4 spells at once. Unequip one first.`);
+  }
+  
+  player.spells.equipped.push(spell.id);
+  return message.reply(`✅ Equipped ${spell.emoji} **${spell.name}**! Use \`${PREFIX} cast ${spell.id}\` to cast it.`);
+}
+
+async function castSpell(message, spellId, target = null) {
+  const player = getPlayer(message.author.id);
+  if (!player.spells) player.spells = { known: [], equipped: [], cooldowns: {} };
+  
+  if (!spellId) {
+    return message.reply(`❌ Please specify a spell ID. Use \`${PREFIX} spells\` to see your equipped spells.`);
+  }
+  
+  const spell = SPELL_LOOKUP[spellId.toLowerCase()];
+  if (!spell) {
+    return message.reply(`❌ Spell "${spellId}" not found.`);
+  }
+  
+  if (!player.spells.equipped.includes(spell.id)) {
+    return message.reply(`❌ This spell is not equipped. Equip it first with \`${PREFIX} equipspell ${spell.id}\`.`);
+  }
+  
+  // Check cooldown
+  const cooldown = player.spells.cooldowns[spell.id] || 0;
+  if (cooldown > Date.now()) {
+    const remaining = Math.ceil((cooldown - Date.now()) / 1000);
+    return message.reply(`❌ This spell is on cooldown for ${remaining} more seconds.`);
+  }
+  
+  // Check mana
+  if (player.mana < spell.manaCost) {
+    return message.reply(`❌ You don't have enough mana. You need ${spell.manaCost} mana, but you have ${player.mana}.`);
+  }
+  
+  // Cast spell
+  player.mana -= spell.manaCost;
+  player.spells.cooldowns[spell.id] = Date.now() + (spell.cooldown * 1000);
+  player.stats.spellsCast = (player.stats.spellsCast || 0) + 1;
+  
+  let result = `✅ Cast ${spell.emoji} **${spell.name}**!`;
+  if (spell.damage) {
+    result += ` Dealt ${spell.damage} damage.`;
+  }
+  if (spell.heal) {
+    const healAmount = Math.min(spell.heal, player.maxHp - player.hp);
+    player.hp = Math.min(player.maxHp, player.hp + spell.heal);
+    result += ` Healed ${healAmount} HP.`;
+  }
+  
+  return message.reply(result);
+}
+
+// PvP Arena System
+const PVP_CHALLENGES = new Map(); // challengerId -> { challenger, target, timestamp }
+const PVP_MATCHES = new Map(); // matchId -> { player1, player2, status, turn }
+
+async function showPvP(message, subcommand = null) {
+  const player = getPlayer(message.author.id);
+  if (!player.pvp) player.pvp = { rating: 1000, wins: 0, losses: 0, streak: 0, rank: "unranked" };
+  
+  const sub = (subcommand || '').toLowerCase();
+  if (sub === 'stats' || sub === 'stat' || !sub) {
+    const embed = new EmbedBuilder()
+      .setColor('#E74C3C')
+      .setTitle('⚔️ PvP Arena')
+      .addFields(
+        { name: 'Rating', value: `${player.pvp.rating}`, inline: true },
+        { name: 'Rank', value: player.pvp.rank, inline: true },
+        { name: 'Wins', value: `${player.pvp.wins}`, inline: true },
+        { name: 'Losses', value: `${player.pvp.losses}`, inline: true },
+        { name: 'Win Streak', value: `${player.pvp.streak}`, inline: true },
+        { name: 'Win Rate', value: player.pvp.wins + player.pvp.losses > 0 ? `${Math.round((player.pvp.wins / (player.pvp.wins + player.pvp.losses)) * 100)}%` : '0%', inline: true }
+      );
+    
+    return sendStyledEmbed(message, embed, 'pvp');
+  }
+  
+  return message.reply(`❌ Unknown PvP subcommand. Use \`${PREFIX} pvp\` to view your stats.`);
+}
+
+async function challengePlayer(message, targetId) {
+  const player = getPlayer(message.author.id);
+  if (!player.pvp) player.pvp = { rating: 1000, wins: 0, losses: 0, streak: 0, rank: "unranked" };
+  
+  if (!targetId) {
+    return message.reply(`❌ Please specify a player to challenge. Mention them or use their user ID.`);
+  }
+  
+  // Extract user ID from mention
+  const userId = targetId.replace(/[<@!>]/g, '');
+  const target = getPlayer(userId);
+  
+  if (!target) {
+    return message.reply(`❌ Player not found.`);
+  }
+  
+  if (userId === message.author.id) {
+    return message.reply(`❌ You cannot challenge yourself.`);
+  }
+  
+  // Create challenge
+  PVP_CHALLENGES.set(message.author.id, {
+    challenger: message.author.id,
+    target: userId,
+    timestamp: Date.now()
+  });
+  
+  return message.reply(`⚔️ Challenge sent to <@${userId}>! They can accept with \`${PREFIX} acceptchallenge\`.`);
+}
+
+async function acceptChallenge(message, challengerId = null) {
+  const player = getPlayer(message.author.id);
+  if (!player.pvp) player.pvp = { rating: 1000, wins: 0, losses: 0, streak: 0, rank: "unranked" };
+  
+  // Find challenge
+  let challenge = null;
+  if (challengerId) {
+    challenge = PVP_CHALLENGES.get(challengerId.replace(/[<@!>]/g, ''));
+  } else {
+    // Find any challenge targeting this player
+    for (const [challenger, ch] of PVP_CHALLENGES.entries()) {
+      if (ch.target === message.author.id) {
+        challenge = ch;
+        break;
+      }
+    }
+  }
+  
+  if (!challenge) {
+    return message.reply(`❌ No challenge found.`);
+  }
+  
+  if (challenge.target !== message.author.id) {
+    return message.reply(`❌ This challenge is not for you.`);
+  }
+  
+  // Start match
+  const matchId = `${challenge.challenger}_${challenge.target}_${Date.now()}`;
+  const challenger = getPlayer(challenge.challenger);
+  const target = getPlayer(challenge.target);
+  
+  PVP_MATCHES.set(matchId, {
+    player1: challenge.challenger,
+    player2: challenge.target,
+    status: 'active',
+    turn: challenge.challenger,
+    hp1: challenger.hp,
+    hp2: target.hp,
+    maxHp1: challenger.maxHp,
+    maxHp2: target.maxHp
+  });
+  
+  PVP_CHALLENGES.delete(challenge.challenger);
+  
+  return message.reply(`⚔️ Match started! Use \`${PREFIX} attackboss ${matchId}\` to attack.`);
+}
+
+async function showPvPStats(message) {
+  return showPvP(message, 'stats');
+}
+
+// Skill Tree System
+async function showSkillTree(message, classId = null) {
+  const player = getPlayer(message.author.id);
+  if (!player.skillTree) player.skillTree = { class: null, branches: {}, totalPoints: 0 };
+  
+  if (!classId) {
+    if (!player.skillTree.class) {
+      return message.reply(`❌ You haven't chosen a class yet. Use \`${PREFIX} chooseclass <class>\` to choose one. Available classes: warrior, mage, rogue`);
+    }
+    classId = player.skillTree.class;
+  }
+  
+  const skillTree = SKILL_TREE_LOOKUP[classId.toLowerCase()];
+  if (!skillTree) {
+    return message.reply(`❌ Class "${classId}" not found. Available classes: warrior, mage, rogue`);
+  }
+  
+  const embed = new EmbedBuilder()
+    .setColor('#3498DB')
+    .setTitle(`${skillTree.emoji} ${skillTree.name} Skill Tree`)
+    .setDescription(skillTree.description);
+  
+  const branchInfo = [];
+  skillTree.branches.forEach(branch => {
+    const branchProgress = player.skillTree.branches[branch.id] || { skills: [], points: 0 };
+    const learnedSkills = branchProgress.skills || [];
+    branchInfo.push(`**${branch.name}** (${branchProgress.points || 0} points)\n${branch.description}\nLearned: ${learnedSkills.length}/${branch.skills.length}`);
+  });
+  
+  embed.addFields({ name: 'Branches', value: branchInfo.join('\n\n') || 'None', inline: false });
+  embed.addFields({ name: 'Total Skill Points', value: `${player.skillTree.totalPoints || 0}`, inline: true });
+  embed.addFields({ name: 'Available Points', value: `${Math.max(0, player.level - (player.skillTree.totalPoints || 0))}`, inline: true });
+  
+  return sendStyledEmbed(message, embed, 'skilltree');
+}
+
+async function chooseClass(message, classId) {
+  const player = getPlayer(message.author.id);
+  if (!player.skillTree) player.skillTree = { class: null, branches: {}, totalPoints: 0 };
+  
+  if (!classId) {
+    return message.reply(`❌ Please specify a class. Available classes: warrior, mage, rogue`);
+  }
+  
+  const skillTree = SKILL_TREE_LOOKUP[classId.toLowerCase()];
+  if (!skillTree) {
+    return message.reply(`❌ Class "${classId}" not found. Available classes: warrior, mage, rogue`);
+  }
+  
+  if (player.skillTree.class && player.skillTree.class !== classId.toLowerCase()) {
+    return message.reply(`❌ You have already chosen a class. You cannot change it.`);
+  }
+  
+  player.skillTree.class = classId.toLowerCase();
+  // Check for achievement
+  handleAchievementCheck(message, player);
+  return message.reply(`✅ Chosen class: ${skillTree.emoji} **${skillTree.name}**! Use \`${PREFIX} skilltree\` to view your skill tree.`);
+}
+
+async function learnSkill(message, branchId, skillId) {
+  const player = getPlayer(message.author.id);
+  if (!player.skillTree) player.skillTree = { class: null, branches: {}, totalPoints: 0 };
+  
+  if (!player.skillTree.class) {
+    return message.reply(`❌ You haven't chosen a class yet. Use \`${PREFIX} chooseclass <class>\` to choose one.`);
+  }
+  
+  if (!branchId || !skillId) {
+    return message.reply(`❌ Please specify both branch ID and skill ID. Use \`${PREFIX} skilltree\` to see available skills.`);
+  }
+  
+  const skillTree = SKILL_TREE_LOOKUP[player.skillTree.class];
+  if (!skillTree) {
+    return message.reply(`❌ Your class skill tree not found.`);
+  }
+  
+  const branch = skillTree.branches.find(b => b.id === branchId.toLowerCase());
+  if (!branch) {
+    return message.reply(`❌ Branch "${branchId}" not found.`);
+  }
+  
+  const skill = branch.skills.find(s => s.id === skillId.toLowerCase());
+  if (!skill) {
+    return message.reply(`❌ Skill "${skillId}" not found in this branch.`);
+  }
+  
+  // Check level requirement
+  if (player.level < skill.level) {
+    return message.reply(`❌ You need to be level ${skill.level} to learn this skill.`);
+  }
+  
+  // Check if already learned
+  const branchProgress = player.skillTree.branches[branch.id] || { skills: [], points: 0 };
+  if (branchProgress.skills.includes(skill.id)) {
+    return message.reply(`❌ You have already learned this skill.`);
+  }
+  
+  // Check prerequisites
+  const requiredPoints = (skill.level - 1) * 2;
+  if (branchProgress.points < requiredPoints) {
+    return message.reply(`❌ You need ${requiredPoints} points in this branch to learn this skill.`);
+  }
+  
+  // Check available skill points
+  const availablePoints = player.level - (player.skillTree.totalPoints || 0);
+  if (availablePoints < skill.cost) {
+    return message.reply(`❌ You don't have enough skill points. You need ${skill.cost}, but you have ${availablePoints}.`);
+  }
+  
+  // Learn skill
+  if (!player.skillTree.branches[branch.id]) {
+    player.skillTree.branches[branch.id] = { skills: [], points: 0 };
+  }
+  player.skillTree.branches[branch.id].skills.push(skill.id);
+  player.skillTree.branches[branch.id].points += skill.cost;
+  player.skillTree.totalPoints = (player.skillTree.totalPoints || 0) + skill.cost;
+  player.stats.skillsLearned = (player.stats.skillsLearned || 0) + 1;
+  
+  return message.reply(`✅ Learned skill: **${skill.name}**! ${skill.description}`);
+}
+
+// Adventure Mode System
+async function showAdventureMode(message, chapterId = null) {
+  const player = getPlayer(message.author.id);
+  if (!player.adventureMode) player.adventureMode = { currentChapter: null, currentSection: null, progress: {}, choices: [] };
+  
+  if (!chapterId) {
+    if (!player.adventureMode.currentChapter) {
+      return message.reply(`❌ You haven't started Adventure Mode yet. Use \`${PREFIX} startadventure chapter_1\` to begin.`);
+    }
+    chapterId = player.adventureMode.currentChapter;
+  }
+  
+  const chapter = ADVENTURE_MODE_LOOKUP[chapterId.toLowerCase()];
+  if (!chapter) {
+    return message.reply(`❌ Chapter "${chapterId}" not found.`);
+  }
+  
+  const embed = new EmbedBuilder()
+    .setColor('#8E44AD')
+    .setTitle(`${chapter.emoji} ${chapter.name}`)
+    .setDescription(chapter.description);
+  
+  const progress = player.adventureMode.progress[chapter.id] || {};
+  const sections = chapter.chapters || [];
+  
+  const sectionInfo = sections.map((section, index) => {
+    const sectionProgress = progress[section.id] || { completed: false, objectives: {} };
+    const status = sectionProgress.completed ? '✅' : progress.currentSection === section.id ? '⏳' : '❌';
+    return `${status} **${section.name}**\n${section.description}`;
+  });
+  
+  embed.addFields({ name: 'Sections', value: sectionInfo.join('\n\n') || 'None', inline: false });
+  
+  if (player.adventureMode.currentSection) {
+    const currentSection = sections.find(s => s.id === player.adventureMode.currentSection);
+    if (currentSection) {
+      embed.addFields({ name: 'Current Section', value: `**${currentSection.name}**\n${currentSection.description}`, inline: false });
+    }
+  }
+  
+  return sendStyledEmbed(message, embed, 'adventure');
+}
+
+async function startAdventureMode(message, chapterId) {
+  const player = getPlayer(message.author.id);
+  if (!player.adventureMode) player.adventureMode = { currentChapter: null, currentSection: null, progress: {}, choices: [] };
+  
+  if (!chapterId) {
+    return message.reply(`❌ Please specify a chapter. Use \`${PREFIX} adventure\` to see available chapters.`);
+  }
+  
+  const chapter = ADVENTURE_MODE_LOOKUP[chapterId.toLowerCase()];
+  if (!chapter) {
+    return message.reply(`❌ Chapter "${chapterId}" not found.`);
+  }
+  
+  // Check level requirement
+  if (player.level < chapter.level) {
+    return message.reply(`❌ You need to be level ${chapter.level} to start this chapter.`);
+  }
+  
+  // Start chapter
+  player.adventureMode.currentChapter = chapter.id;
+  if (chapter.chapters && chapter.chapters.length > 0) {
+    player.adventureMode.currentSection = chapter.chapters[0].id;
+    if (!player.adventureMode.progress[chapter.id]) {
+      player.adventureMode.progress[chapter.id] = { currentSection: chapter.chapters[0].id, objectives: {} };
+    }
+  }
+  
+  return message.reply(`✅ Started ${chapter.emoji} **${chapter.name}**! Use \`${PREFIX} adventure\` to view your progress.`);
+}
+
+async function makeAdventureChoice(message, choiceId) {
+  const player = getPlayer(message.author.id);
+  if (!player.adventureMode) player.adventureMode = { currentChapter: null, currentSection: null, progress: {}, choices: [] };
+  
+  if (!player.adventureMode.currentSection) {
+    return message.reply(`❌ You are not in an active adventure section.`);
+  }
+  
+  // Find current section and choice
+  const chapter = ADVENTURE_MODE_LOOKUP[player.adventureMode.currentChapter?.toLowerCase()];
+  if (!chapter) {
+    return message.reply(`❌ Current chapter not found.`);
+  }
+  
+  const section = chapter.chapters?.find(s => s.id === player.adventureMode.currentSection);
+  if (!section || !section.choices) {
+    return message.reply(`❌ No choices available in this section.`);
+  }
+  
+  const choice = section.choices.find(c => c.id === choiceId.toLowerCase());
+  if (!choice) {
+    return message.reply(`❌ Choice "${choiceId}" not found.`);
+  }
+  
+  // Record choice
+  player.adventureMode.choices.push({
+    chapter: chapter.id,
+    section: section.id,
+    choice: choice.id,
+    timestamp: Date.now()
+  });
+  
+  // Apply consequences
+  if (choice.rewards) {
+    if (choice.rewards.xp) {
+      addXp(player, choice.rewards.xp);
+    }
+    if (choice.rewards.coins) {
+      player.coins += choice.rewards.coins;
+    }
+    if (choice.rewards.reputation) {
+      Object.entries(choice.rewards.reputation).forEach(([faction, amount]) => {
+        adjustFactionReputation(player, faction, amount);
+      });
+    }
+  }
+  
+  return message.reply(`✅ Made choice: **${choice.text}**! ${choice.consequence || ''}`);
+}
+
+// Daily Challenges System
+async function showDailyChallenges(message) {
+  const player = getPlayer(message.author.id);
+  if (!player.dailyChallenges) player.dailyChallenges = { active: [], completed: [], streak: 0, lastReset: null };
+  
+  // Reset daily challenges if needed
+  const now = Date.now();
+  const lastReset = player.dailyChallenges.lastReset || 0;
+  const resetTime = 24 * 60 * 60 * 1000; // 24 hours
+  if (now - lastReset > resetTime) {
+    player.dailyChallenges.active = DAILY_CHALLENGE_DEFINITIONS.map(c => c.id);
+    player.dailyChallenges.completed = [];
+    player.dailyChallenges.lastReset = now;
+  }
+  
+  const embed = new EmbedBuilder()
+    .setColor('#F39C12')
+    .setTitle('📅 Daily Challenges')
+    .setDescription(`Complete challenges to earn rewards! Streak: ${player.dailyChallenges.streak} days`);
+  
+  const challengeList = [];
+  player.dailyChallenges.active.forEach(challengeId => {
+    const challenge = DAILY_CHALLENGE_LOOKUP[challengeId.toLowerCase()];
+    if (!challenge) return;
+    const isCompleted = player.dailyChallenges.completed.includes(challenge.id);
+    const status = isCompleted ? '✅' : '⏳';
+    challengeList.push(`${status} ${challenge.emoji} **${challenge.name}**\n${challenge.description}\nRewards: ${challenge.rewards.xp} XP, ${challenge.rewards.coins} coins`);
+  });
+  
+  embed.addFields({ name: 'Challenges', value: challengeList.join('\n\n') || 'None', inline: false });
+  
+  return sendStyledEmbed(message, embed, 'challenges');
+}
+
+async function claimDailyChallenge(message, challengeId) {
+  const player = getPlayer(message.author.id);
+  if (!player.dailyChallenges) player.dailyChallenges = { active: [], completed: [], streak: 0, lastReset: null };
+  
+  if (!challengeId) {
+    return message.reply(`❌ Please specify a challenge ID. Use \`${PREFIX} dailychallenges\` to see available challenges.`);
+  }
+  
+  const challenge = DAILY_CHALLENGE_LOOKUP[challengeId.toLowerCase()];
+  if (!challenge) {
+    return message.reply(`❌ Challenge "${challengeId}" not found.`);
+  }
+  
+  if (!player.dailyChallenges.active.includes(challenge.id)) {
+    return message.reply(`❌ This challenge is not active.`);
+  }
+  
+  if (player.dailyChallenges.completed.includes(challenge.id)) {
+    return message.reply(`❌ You have already completed this challenge today.`);
+  }
+  
+  // Check if challenge is actually completed (this would need to be tracked in player data)
+  // For now, we'll just mark it as completed when claimed
+  
+  player.dailyChallenges.completed.push(challenge.id);
+  addXp(player, challenge.rewards.xp);
+  player.coins += challenge.rewards.coins;
+  player.stats.dailyChallengesCompleted = (player.stats.dailyChallengesCompleted || 0) + 1;
+  
+  // Update streak
+  const now = Date.now();
+  const lastReset = player.dailyChallenges.lastReset || 0;
+  const resetTime = 24 * 60 * 60 * 1000; // 24 hours
+  if (now - lastReset < resetTime) {
+    // Same day, maintain streak
+  } else {
+    // New day, check if streak continues
+    if (now - lastReset < resetTime * 2) {
+      player.dailyChallenges.streak = (player.dailyChallenges.streak || 0) + 1;
+    } else {
+      player.dailyChallenges.streak = 1;
+    }
+    player.dailyChallenges.lastReset = now;
+  }
+  
+  // Check for achievement
+  handleAchievementCheck(message, player);
+  
+  return message.reply(`✅ Completed ${challenge.emoji} **${challenge.name}**! Rewards: ${challenge.rewards.xp} XP, ${challenge.rewards.coins} coins`);
+}
+
+// World Boss System
+const ACTIVE_WORLD_BOSSES = new Map(); // bossId -> { boss, players: [], hp, phase, startedAt }
+
+async function showWorldBoss(message, bossId = null) {
+  if (!bossId) {
+    const embed = new EmbedBuilder()
+      .setColor('#E67E22')
+      .setTitle('🐉 World Bosses')
+      .setDescription('Fight powerful world bosses with other players!');
+    
+    const bossList = WORLD_BOSS_DEFINITIONS.map(boss => {
+      const active = ACTIVE_WORLD_BOSSES.has(boss.id);
+      const status = active ? '⚔️ **Active**' : '💤 Defeated';
+      return `${boss.emoji} **${boss.name}** (Level ${boss.level}) - ${status}\n${boss.description}`;
+    });
+    
+    embed.addFields({ name: 'Bosses', value: bossList.join('\n\n') || 'None', inline: false });
+    return sendStyledEmbed(message, embed, 'worldboss');
+  }
+  
+  const boss = WORLD_BOSS_LOOKUP[bossId.toLowerCase()];
+  if (!boss) {
+    return message.reply(`❌ Boss "${bossId}" not found.`);
+  }
+  
+  const activeBoss = ACTIVE_WORLD_BOSSES.get(boss.id);
+  if (!activeBoss) {
+    return message.reply(`❌ This boss is not currently active.`);
+  }
+  
+  const embed = new EmbedBuilder()
+    .setColor('#E67E22')
+    .setTitle(`${boss.emoji} ${boss.name}`)
+    .setDescription(`HP: ${activeBoss.hp}/${boss.maxHp} (${Math.round((activeBoss.hp / boss.maxHp) * 100)}%)\nPlayers: ${activeBoss.players.length}/${boss.maxPlayers}`);
+  
+  return sendStyledEmbed(message, embed, 'worldboss');
+}
+
+async function joinWorldBoss(message, bossId) {
+  const player = getPlayer(message.author.id);
+  if (!player.worldBosses) player.worldBosses = { participated: [], lastDamage: {}, rewards: [] };
+  
+  if (!bossId) {
+    return message.reply(`❌ Please specify a boss ID. Use \`${PREFIX} worldboss\` to see available bosses.`);
+  }
+  
+  const boss = WORLD_BOSS_LOOKUP[bossId.toLowerCase()];
+  if (!boss) {
+    return message.reply(`❌ Boss "${bossId}" not found.`);
+  }
+  
+  // Check level requirement
+  if (player.level < boss.level) {
+    return message.reply(`❌ You need to be level ${boss.level} to fight this boss.`);
+  }
+  
+  // Check if boss is active, if not spawn it
+  if (!ACTIVE_WORLD_BOSSES.has(boss.id)) {
+    ACTIVE_WORLD_BOSSES.set(boss.id, {
+      boss: boss,
+      players: [],
+      hp: boss.maxHp,
+      phase: 1,
+      startedAt: Date.now()
+    });
+  }
+  
+  const activeBoss = ACTIVE_WORLD_BOSSES.get(boss.id);
+  
+  if (activeBoss.players.includes(message.author.id)) {
+    return message.reply(`❌ You are already in this boss fight.`);
+  }
+  
+  if (activeBoss.players.length >= boss.maxPlayers) {
+    return message.reply(`❌ This boss fight is full (${boss.maxPlayers} players).`);
+  }
+  
+  activeBoss.players.push(message.author.id);
+  return message.reply(`✅ Joined ${boss.emoji} **${boss.name}** fight! Use \`${PREFIX} attackboss ${boss.id}\` to attack.`);
+}
+
+async function attackWorldBoss(message, bossId) {
+  const player = getPlayer(message.author.id);
+  if (!player.worldBosses) player.worldBosses = { participated: [], lastDamage: {}, rewards: [] };
+  
+  if (!bossId) {
+    return message.reply(`❌ Please specify a boss ID.`);
+  }
+  
+  const boss = WORLD_BOSS_LOOKUP[bossId.toLowerCase()];
+  if (!boss) {
+    return message.reply(`❌ Boss "${bossId}" not found.`);
+  }
+  
+  const activeBoss = ACTIVE_WORLD_BOSSES.get(boss.id);
+  if (!activeBoss) {
+    return message.reply(`❌ This boss is not currently active. Use \`${PREFIX} joinboss ${boss.id}\` to join.`);
+  }
+  
+  if (!activeBoss.players.includes(message.author.id)) {
+    return message.reply(`❌ You are not in this boss fight. Use \`${PREFIX} joinboss ${boss.id}\` to join.`);
+  }
+  
+  // Calculate damage
+  const weapon = ITEMS[player.equipped.weapon];
+  const baseDamage = weapon?.damage || 10;
+  const playerDamage = Math.floor(baseDamage * (1 + (player.attributes.power || 10) / 100));
+  const actualDamage = Math.max(1, Math.floor(playerDamage * (0.8 + Math.random() * 0.4))); // 80-120% damage variance
+  
+  activeBoss.hp = Math.max(0, activeBoss.hp - actualDamage);
+  player.worldBosses.lastDamage[boss.id] = (player.worldBosses.lastDamage[boss.id] || 0) + actualDamage;
+  
+  let result = `⚔️ You dealt ${actualDamage} damage to ${boss.emoji} **${boss.name}**!`;
+  result += `\nBoss HP: ${activeBoss.hp}/${boss.maxHp} (${Math.round((activeBoss.hp / boss.maxHp) * 100)}%)`;
+  
+  // Check if boss is defeated
+  if (activeBoss.hp <= 0) {
+    // Distribute rewards
+    const rewards = boss.rewards;
+    activeBoss.players.forEach(playerId => {
+      const p = getPlayer(playerId);
+      if (!p.worldBosses) p.worldBosses = { participated: [], lastDamage: {}, rewards: [] };
+      addXp(p, rewards.xp);
+      p.coins += rewards.coins;
+      p.worldBosses.participated.push(boss.id);
+      p.stats.worldBossesDefeated = (p.stats.worldBossesDefeated || 0) + 1;
+      
+      // Distribute items based on damage dealt
+      rewards.items.forEach(itemReward => {
+        if (Math.random() < itemReward.chance) {
+          addItemToInventory(p, itemReward.item, itemReward.quantity);
+        }
+      });
+      
+      // Check for achievement
+      handleAchievementCheck(null, p);
+    });
+    
+    ACTIVE_WORLD_BOSSES.delete(boss.id);
+    result += `\n\n🎉 **${boss.name} has been defeated!** All participants receive rewards!`;
+  }
+  
+  return message.reply(result);
+}
+
+// World Events System
+async function showWorldEvent(message, eventId = null) {
+  if (!eventId) {
+    const embed = new EmbedBuilder()
+      .setColor('#16A085')
+      .setTitle('🌍 World Events')
+      .setDescription('Participate in global events for rewards!');
+    
+    const eventList = [];
+    ACTIVE_WORLD_EVENTS_NEW.forEach((activeEvent, id) => {
+      const event = activeEvent.event;
+      const timeRemaining = Math.max(0, activeEvent.endsAt - Date.now());
+      eventList.push(`${event.emoji} **${event.name}**\n${event.description}\nTime remaining: ${formatDuration(timeRemaining)}\nParticipants: ${activeEvent.participants.length}`);
+    });
+    
+    if (eventList.length === 0) {
+      eventList.push('No active world events. Check back later!');
+    }
+    
+    embed.addFields({ name: 'Active Events', value: eventList.join('\n\n') || 'None', inline: false });
+    return sendStyledEmbed(message, embed, 'worldevent');
+  }
+  
+  const activeEvent = ACTIVE_WORLD_EVENTS_NEW.get(eventId.toLowerCase());
+  if (!activeEvent) {
+    return message.reply(`❌ Event "${eventId}" is not currently active.`);
+  }
+  
+  const event = activeEvent.event;
+  const embed = new EmbedBuilder()
+    .setColor('#16A085')
+    .setTitle(`${event.emoji} ${event.name}`)
+    .setDescription(event.description)
+    .addFields(
+      { name: 'Time Remaining', value: formatDuration(Math.max(0, activeEvent.endsAt - Date.now())), inline: true },
+      { name: 'Participants', value: `${activeEvent.participants.length}`, inline: true }
+    );
+  
+  return sendStyledEmbed(message, embed, 'worldevent');
+}
+
+async function joinWorldEvent(message, eventId) {
+  const player = getPlayer(message.author.id);
+  if (!player.worldEvents) player.worldEvents = { active: [], participation: {}, rewards: [] };
+  
+  if (!eventId) {
+    return message.reply(`❌ Please specify an event ID. Use \`${PREFIX} worldevent\` to see available events.`);
+  }
+  
+  const activeEvent = ACTIVE_WORLD_EVENTS_NEW.get(eventId.toLowerCase());
+  if (!activeEvent) {
+    return message.reply(`❌ Event "${eventId}" is not currently active.`);
+  }
+  
+  if (activeEvent.participants.includes(message.author.id)) {
+    return message.reply(`❌ You are already participating in this event.`);
+  }
+  
+  activeEvent.participants.push(message.author.id);
+  player.worldEvents.active.push(eventId.toLowerCase());
+  player.stats.eventsParticipated = (player.stats.eventsParticipated || 0) + 1;
+  
+  // Check for achievement
+  handleAchievementCheck(message, player);
+  
+  return message.reply(`✅ Joined ${activeEvent.event.emoji} **${activeEvent.event.name}**! Participate in the event objectives to earn rewards.`);
 }
 
 function buildPlayerOverviewEmbed(player, exploration) {

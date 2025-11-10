@@ -1,0 +1,65 @@
+[
+  {
+    "id": "zone_1",
+    "name": "Zone 1: Emerald Grove",
+    "emoji": "🌿",
+    "element": "earth",
+    "level": 1,
+    "description": "The starting zone of Orbis, characterized by lush forests, rolling hills, and abundant wildlife. This is where your adventure begins.",
+    "unlockRequirement": {
+      "type": "default",
+      "level": 1
+    },
+    "biomes": [
+      "emerald_grove",
+      "gale_cliffs",
+      "shadow_depths",
+      "wyrmroot_hollow",
+      "scarlet_forest",
+      "crystal_meadows",
+      "azure_cove",
+      "emberfen_bog",
+      "ancient_ruins"
+    ],
+    "features": [
+      "Basic gathering resources",
+      "Starter dungeons",
+      "Kweebec settlements",
+      "Forest creatures",
+      "Ancient ruins"
+    ]
+  },
+  {
+    "id": "zone_2",
+    "name": "Zone 2: Howling Sands",
+    "emoji": "🏜️",
+    "element": "wind",
+    "level": 15,
+    "description": "A vast desert environment featuring large sand temples and savannahs. The wind element dominates this harsh landscape.",
+    "unlockRequirement": {
+      "type": "adventure",
+      "quest": "chapter_1_complete",
+      "level": 15
+    },
+    "biomes": [
+      "howling_sands",
+      "sunset_dunes",
+      "dune_sepulcher",
+      "wind_temple",
+      "sandstorm_plains",
+      "oasis_springs",
+      "mirage_canyon"
+    ],
+    "features": [
+      "Advanced gathering resources",
+      "Desert dungeons",
+      "Nomad settlements",
+      "Sand creatures",
+      "Wind magic",
+      "Sand temples",
+      "Better loot drops",
+      "Higher level enemies"
+    ]
+  }
+]
+

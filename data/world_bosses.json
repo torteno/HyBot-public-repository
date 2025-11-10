@@ -1,0 +1,285 @@
+[
+  {
+    "id": "ancient_dragon",
+    "name": "Ancient Dragon",
+    "emoji": "🐉",
+    "rarity": "legendary",
+    "level": 50,
+    "hp": 10000,
+    "maxHp": 10000,
+    "damage": 150,
+    "defense": 80,
+    "spawnBiome": "volcanic_peaks",
+    "spawnChance": 0.01,
+    "respawnHours": 24,
+    "minPlayers": 4,
+    "maxPlayers": 8,
+    "phases": [
+      {
+        "phase": 1,
+        "hpThreshold": 1.0,
+        "abilities": ["fire_breath", "wing_beat"],
+        "description": "The dragon breathes fire and beats its wings."
+      },
+      {
+        "phase": 2,
+        "hpThreshold": 0.5,
+        "abilities": ["meteor_rain", "dragon_roar"],
+        "description": "The dragon calls meteors and roars, stunning players."
+      },
+      {
+        "phase": 3,
+        "hpThreshold": 0.25,
+        "abilities": ["dragon_fury", "enrage"],
+        "description": "The dragon enters a berserker rage, attacking faster."
+      }
+    ],
+    "rewards": {
+      "xp": 5000,
+      "coins": 2000,
+      "items": [
+        { "item": "dragon_scale", "quantity": 5, "chance": 1.0 },
+        { "item": "dragon_heart", "quantity": 1, "chance": 0.5 },
+        { "item": "ancient_dragon_sword", "quantity": 1, "chance": 0.1 }
+      ]
+    }
+  },
+  {
+    "id": "void_lord",
+    "name": "Void Lord",
+    "emoji": "👹",
+    "rarity": "legendary",
+    "level": 45,
+    "hp": 8000,
+    "maxHp": 8000,
+    "damage": 120,
+    "defense": 70,
+    "spawnBiome": "shadow_realm",
+    "spawnChance": 0.015,
+    "respawnHours": 18,
+    "minPlayers": 3,
+    "maxPlayers": 6,
+    "phases": [
+      {
+        "phase": 1,
+        "hpThreshold": 1.0,
+        "abilities": ["void_bolt", "shadow_clone"],
+        "description": "The void lord launches dark energy and creates clones."
+      },
+      {
+        "phase": 2,
+        "hpThreshold": 0.4,
+        "abilities": ["void_rift", "darkness_aura"],
+        "description": "The void lord opens rifts and darkens the area."
+      }
+    ],
+    "rewards": {
+      "xp": 4000,
+      "coins": 1500,
+      "items": [
+        { "item": "void_crystal", "quantity": 3, "chance": 1.0 },
+        { "item": "void_lord_crown", "quantity": 1, "chance": 0.3 }
+      ]
+    }
+  },
+  {
+    "id": "storm_giant",
+    "name": "Storm Giant",
+    "emoji": "⛈️",
+    "rarity": "epic",
+    "level": 40,
+    "hp": 6000,
+    "maxHp": 6000,
+    "damage": 100,
+    "defense": 60,
+    "spawnBiome": "gale_cliffs",
+    "spawnChance": 0.02,
+    "respawnHours": 12,
+    "minPlayers": 2,
+    "maxPlayers": 4,
+    "phases": [
+      {
+        "phase": 1,
+        "hpThreshold": 1.0,
+        "abilities": ["lightning_strike", "thunder_clap"],
+        "description": "The giant calls lightning and creates thunder."
+      }
+    ],
+    "rewards": {
+      "xp": 3000,
+      "coins": 1000,
+      "items": [
+        { "item": "storm_core", "quantity": 2, "chance": 1.0 },
+        { "item": "storm_giant_hammer", "quantity": 1, "chance": 0.2 }
+      ]
+    }
+  },
+  {
+    "id": "crystal_titan",
+    "name": "Crystal Titan",
+    "emoji": "💎",
+    "rarity": "epic",
+    "level": 30,
+    "hp": 5000,
+    "maxHp": 5000,
+    "damage": 80,
+    "defense": 50,
+    "spawnBiome": "crystal_meadows",
+    "spawnChance": 0.02,
+    "respawnHours": 12,
+    "minPlayers": 2,
+    "maxPlayers": 4,
+    "phases": [
+      {
+        "phase": 1,
+        "hpThreshold": 1.0,
+        "abilities": ["crystal_spike", "reflection"],
+        "description": "The titan launches crystal spikes and reflects attacks."
+      }
+    ],
+    "rewards": {
+      "xp": 2000,
+      "coins": 800,
+      "items": [
+        { "item": "crystal_shard", "quantity": 20, "chance": 1.0 },
+        { "item": "rune_crystal", "quantity": 3, "chance": 0.5 },
+        { "item": "crystal_amulet", "quantity": 1, "chance": 0.3 }
+      ]
+    },
+    "zone": "zone_1"
+  },
+  {
+    "id": "ancient_colossus",
+    "name": "Ancient Colossus",
+    "emoji": "🗿",
+    "rarity": "epic",
+    "level": 35,
+    "hp": 6000,
+    "maxHp": 6000,
+    "damage": 90,
+    "defense": 60,
+    "spawnBiome": "ancient_ruins",
+    "spawnChance": 0.015,
+    "respawnHours": 18,
+    "minPlayers": 3,
+    "maxPlayers": 5,
+    "phases": [
+      {
+        "phase": 1,
+        "hpThreshold": 1.0,
+        "abilities": ["rune_barrage", "ancient_curse"],
+        "description": "The colossus launches rune attacks and curses players."
+      },
+      {
+        "phase": 2,
+        "hpThreshold": 0.4,
+        "abilities": ["ancient_rage", "time_slow"],
+        "description": "The colossus enters a rage and slows time."
+      }
+    ],
+    "rewards": {
+      "xp": 2500,
+      "coins": 1000,
+      "items": [
+        { "item": "ancient_relic", "quantity": 1, "chance": 1.0 },
+        { "item": "rune_weapon", "quantity": 1, "chance": 0.4 },
+        { "item": "rune_crystal", "quantity": 5, "chance": 0.6 }
+      ]
+    },
+    "zone": "zone_1"
+  },
+  {
+    "id": "sand_pharaoh",
+    "name": "Sand Pharaoh",
+    "emoji": "👑",
+    "rarity": "legendary",
+    "level": 45,
+    "hp": 8000,
+    "maxHp": 8000,
+    "damage": 120,
+    "defense": 70,
+    "spawnBiome": "dune_sepulcher",
+    "spawnChance": 0.01,
+    "respawnHours": 24,
+    "minPlayers": 4,
+    "maxPlayers": 6,
+    "phases": [
+      {
+        "phase": 1,
+        "hpThreshold": 1.0,
+        "abilities": ["sand_tomb", "mummy_army"],
+        "description": "The pharaoh traps players in sand and summons mummies."
+      },
+      {
+        "phase": 2,
+        "hpThreshold": 0.5,
+        "abilities": ["desert_storm", "pharaoh_curse"],
+        "description": "The pharaoh creates a desert storm and curses players."
+      },
+      {
+        "phase": 3,
+        "hpThreshold": 0.25,
+        "abilities": ["eternal_rage", "sand_apocalypse"],
+        "description": "The pharaoh enters eternal rage and unleashes sand apocalypse."
+      }
+    ],
+    "rewards": {
+      "xp": 4000,
+      "coins": 2000,
+      "items": [
+        { "item": "pharaoh_crown", "quantity": 1, "chance": 1.0 },
+        { "item": "pharaoh_stone", "quantity": 5, "chance": 0.8 },
+        { "item": "pharaoh_weapon", "quantity": 1, "chance": 0.3 }
+      ]
+    },
+    "zone": "zone_2"
+  },
+  {
+    "id": "tempest_king",
+    "name": "Tempest King",
+    "emoji": "🌪️",
+    "rarity": "legendary",
+    "level": 50,
+    "hp": 10000,
+    "maxHp": 10000,
+    "damage": 150,
+    "defense": 80,
+    "spawnBiome": "wind_temple",
+    "spawnChance": 0.008,
+    "respawnHours": 36,
+    "minPlayers": 5,
+    "maxPlayers": 8,
+    "phases": [
+      {
+        "phase": 1,
+        "hpThreshold": 1.0,
+        "abilities": ["wind_blast", "storm_call"],
+        "description": "The king blasts wind and calls storms."
+      },
+      {
+        "phase": 2,
+        "hpThreshold": 0.6,
+        "abilities": ["tornado_swarm", "wind_barrier"],
+        "description": "The king creates tornadoes and wind barriers."
+      },
+      {
+        "phase": 3,
+        "hpThreshold": 0.3,
+        "abilities": ["tempest_rage", "wind_apocalypse"],
+        "description": "The king enters tempest rage and unleashes wind apocalypse."
+      }
+    ],
+    "rewards": {
+      "xp": 5000,
+      "coins": 2500,
+      "items": [
+        { "item": "wind_core", "quantity": 2, "chance": 1.0 },
+        { "item": "wind_storm_staff", "quantity": 1, "chance": 0.5 },
+        { "item": "tempest_armor", "quantity": 1, "chance": 0.4 },
+        { "item": "wind_crystal", "quantity": 15, "chance": 0.8 }
+      ]
+    },
+    "zone": "zone_2"
+  }
+]
+

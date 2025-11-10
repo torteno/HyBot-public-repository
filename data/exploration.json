@@ -6909,5 +6909,860 @@
         }
       ]
     }
+  },
+  {
+    "id": "howling_sands",
+    "name": "Howling Sands",
+    "description": "A vast desert environment featuring large sand temples and savannahs. The wind element dominates this harsh landscape.",
+    "travel": {
+      "baseMinutes": 15,
+      "neighbors": [
+        "sunset_dunes",
+        "dune_sepulcher",
+        "wind_temple",
+        "sandstorm_plains"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "desert_bloom",
+          "min": 1,
+          "max": 3,
+          "chance": 0.6
+        },
+        {
+          "item": "wind_crystal",
+          "min": 1,
+          "max": 2,
+          "chance": 0.35
+        },
+        {
+          "item": "sandstone_core",
+          "min": 1,
+          "max": 1,
+          "chance": 0.15
+        }
+      ],
+      "mine": [
+        {
+          "item": "desert_iron",
+          "min": 1,
+          "max": 3,
+          "chance": 0.45
+        },
+        {
+          "item": "wind_essence",
+          "min": 1,
+          "max": 2,
+          "chance": 0.25
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "nomad_scimitar",
+          "min": 1,
+          "max": 1,
+          "chance": 0.08
+        },
+        {
+          "item": "desert_robes",
+          "min": 1,
+          "max": 1,
+          "chance": 0.06
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "sand_raider",
+          "chance": 0.4
+        },
+        {
+          "enemy": "dune_colossus",
+          "chance": 0.15
+        },
+        {
+          "enemy": "wind_elemental",
+          "chance": 0.2
+        }
+      ],
+      "events": [
+        {
+          "id": "sand_temple",
+          "type": "structure",
+          "structure": "sand_temple",
+          "chance": 0.2
+        },
+        {
+          "id": "nomad_caravan",
+          "type": "story",
+          "reward": {
+            "coins": 200,
+            "reputation": {
+              "nomad": 15
+            },
+            "items": [
+              {
+                "item": "desert_bloom",
+                "quantity": 3
+              }
+            ]
+          },
+          "chance": 0.15
+        },
+        {
+          "id": "wind_shrine",
+          "type": "puzzle",
+          "structure": "wind_shrine",
+          "chance": 0.12
+        }
+      ]
+    }
+  },
+  {
+    "id": "dune_sepulcher",
+    "name": "Dune Sepulcher",
+    "description": "Ancient burial grounds hidden beneath shifting sands, guarded by restless spirits.",
+    "travel": {
+      "baseMinutes": 18,
+      "neighbors": [
+        "howling_sands",
+        "wind_temple",
+        "sandstorm_plains"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "ancient_scarab",
+          "min": 1,
+          "max": 2,
+          "chance": 0.4
+        },
+        {
+          "item": "mummy_wrappings",
+          "min": 1,
+          "max": 3,
+          "chance": 0.3
+        }
+      ],
+      "mine": [
+        {
+          "item": "cursed_gold",
+          "min": 1,
+          "max": 2,
+          "chance": 0.25
+        },
+        {
+          "item": "pharaoh_stone",
+          "min": 1,
+          "max": 1,
+          "chance": 0.12
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "ancient_amulet",
+          "min": 1,
+          "max": 1,
+          "chance": 0.05
+        },
+        {
+          "item": "pharaoh_crown",
+          "min": 1,
+          "max": 1,
+          "chance": 0.03
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "mummy_guardian",
+          "chance": 0.35
+        },
+        {
+          "enemy": "sand_wraith",
+          "chance": 0.25
+        },
+        {
+          "enemy": "pharaoh_lich",
+          "chance": 0.08
+        }
+      ],
+      "events": [
+        {
+          "id": "ancient_tomb",
+          "type": "structure",
+          "structure": "ancient_tomb",
+          "chance": 0.18
+        },
+        {
+          "id": "cursed_treasure",
+          "type": "story",
+          "reward": {
+            "coins": 300,
+            "xp": 250,
+            "items": [
+              {
+                "item": "cursed_gold",
+                "quantity": 5
+              }
+            ]
+          },
+          "chance": 0.1
+        }
+      ]
+    }
+  },
+  {
+    "id": "wind_temple",
+    "name": "Wind Temple",
+    "description": "A towering temple dedicated to the wind element, where powerful storms gather.",
+    "travel": {
+      "baseMinutes": 20,
+      "neighbors": [
+        "howling_sands",
+        "dune_sepulcher",
+        "sandstorm_plains"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "storm_petal",
+          "min": 1,
+          "max": 2,
+          "chance": 0.35
+        },
+        {
+          "item": "wind_essence",
+          "min": 1,
+          "max": 3,
+          "chance": 0.4
+        }
+      ],
+      "mine": [
+        {
+          "item": "tempest_crystal",
+          "min": 1,
+          "max": 2,
+          "chance": 0.3
+        },
+        {
+          "item": "wind_core",
+          "min": 1,
+          "max": 1,
+          "chance": 0.15
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "wind_mage_staff",
+          "min": 1,
+          "max": 1,
+          "chance": 0.06
+        },
+        {
+          "item": "tempest_robes",
+          "min": 1,
+          "max": 1,
+          "chance": 0.04
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "wind_mage",
+          "chance": 0.3
+        },
+        {
+          "enemy": "storm_guardian",
+          "chance": 0.25
+        },
+        {
+          "enemy": "tempest_lord",
+          "chance": 0.1
+        }
+      ],
+      "events": [
+        {
+          "id": "wind_temple_chamber",
+          "type": "structure",
+          "structure": "wind_temple_chamber",
+          "chance": 0.2
+        },
+        {
+          "id": "wind_mastery_trial",
+          "type": "puzzle",
+          "structure": "wind_mastery_trial",
+          "chance": 0.15
+        },
+        {
+          "id": "storm_blessing",
+          "type": "story",
+          "reward": {
+            "xp": 300,
+            "items": [
+              {
+                "item": "wind_core",
+                "quantity": 1
+              }
+            ]
+          },
+          "chance": 0.12
+        }
+      ]
+    }
+  },
+  {
+    "id": "sandstorm_plains",
+    "name": "Sandstorm Plains",
+    "description": "Endless plains where constant sandstorms rage, hiding ancient secrets.",
+    "travel": {
+      "baseMinutes": 16,
+      "neighbors": [
+        "howling_sands",
+        "dune_sepulcher",
+        "wind_temple"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "storm_grass",
+          "min": 1,
+          "max": 3,
+          "chance": 0.5
+        },
+        {
+          "item": "sand_pearl",
+          "min": 1,
+          "max": 2,
+          "chance": 0.3
+        }
+      ],
+      "mine": [
+        {
+          "item": "storm_vein_ore",
+          "min": 1,
+          "max": 3,
+          "chance": 0.4
+        },
+        {
+          "item": "desert_iron",
+          "min": 1,
+          "max": 2,
+          "chance": 0.35
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "storm_rider_boots",
+          "min": 1,
+          "max": 1,
+          "chance": 0.07
+        },
+        {
+          "item": "sandstorm_cloak",
+          "min": 1,
+          "max": 1,
+          "chance": 0.05
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "sandstorm_elemental",
+          "chance": 0.35
+        },
+        {
+          "enemy": "dune_stalker",
+          "chance": 0.28
+        },
+        {
+          "enemy": "storm_beast",
+          "chance": 0.15
+        }
+      ],
+      "events": [
+        {
+          "id": "storm_ruins",
+          "type": "structure",
+          "structure": "storm_ruins",
+          "chance": 0.18
+        },
+        {
+          "id": "lost_caravan",
+          "type": "story",
+          "reward": {
+            "coins": 250,
+            "items": [
+              {
+                "item": "sand_pearl",
+                "quantity": 2
+              }
+            ]
+          },
+          "chance": 0.12
+        }
+      ]
+    }
+  },
+  {
+    "id": "crystal_meadows",
+    "name": "Crystal Meadows",
+    "description": "Lush meadows filled with crystalline formations that glow with inner light. A peaceful zone 1 biome.",
+    "travel": {
+      "baseMinutes": 6,
+      "neighbors": [
+        "emerald_grove",
+        "gale_cliffs",
+        "azure_cove"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "crystal_flower",
+          "min": 1,
+          "max": 3,
+          "chance": 0.6
+        },
+        {
+          "item": "luminous_petal",
+          "min": 1,
+          "max": 2,
+          "chance": 0.35
+        }
+      ],
+      "mine": [
+        {
+          "item": "crystal_shard",
+          "min": 1,
+          "max": 3,
+          "chance": 0.45
+        },
+        {
+          "item": "sunstone_shard",
+          "min": 1,
+          "max": 2,
+          "chance": 0.3
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "crystal_amulet",
+          "min": 1,
+          "max": 1,
+          "chance": 0.06
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "crystal_golem",
+          "chance": 0.3
+        },
+        {
+          "enemy": "luminous_sprite",
+          "chance": 0.2
+        }
+      ],
+      "events": [
+        {
+          "id": "crystal_grove",
+          "type": "structure",
+          "structure": "crystal_grove",
+          "chance": 0.18
+        }
+      ]
+    }
+  },
+  {
+    "id": "azure_cove",
+    "name": "Azure Cove",
+    "description": "A tranquil cove where azure waters meet emerald shores. Perfect for fishing and gathering coastal resources.",
+    "travel": {
+      "baseMinutes": 7,
+      "neighbors": [
+        "emerald_grove",
+        "crystal_meadows",
+        "tidal_reach"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "seaweed",
+          "min": 1,
+          "max": 4,
+          "chance": 0.65
+        },
+        {
+          "item": "coastal_herb",
+          "min": 1,
+          "max": 2,
+          "chance": 0.4
+        }
+      ],
+      "mine": [
+        {
+          "item": "sea_salt",
+          "min": 1,
+          "max": 3,
+          "chance": 0.5
+        },
+        {
+          "item": "pearl",
+          "min": 1,
+          "max": 1,
+          "chance": 0.15
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "driftwood",
+          "min": 1,
+          "max": 3,
+          "chance": 0.5
+        },
+        {
+          "item": "shell_necklace",
+          "min": 1,
+          "max": 1,
+          "chance": 0.08
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "coastal_crab",
+          "chance": 0.35
+        },
+        {
+          "enemy": "tide_wraith",
+          "chance": 0.15
+        }
+      ],
+      "events": [
+        {
+          "id": "beached_treasure",
+          "type": "story",
+          "reward": {
+            "coins": 100,
+            "items": [
+              {
+                "item": "pearl",
+                "quantity": 1
+              }
+            ]
+          },
+          "chance": 0.12
+        }
+      ]
+    }
+  },
+  {
+    "id": "emberfen_bog",
+    "name": "Emberfen Bog",
+    "description": "A murky bog where ember-like fungi glow in the darkness. Dangerous but resource-rich.",
+    "travel": {
+      "baseMinutes": 8,
+      "neighbors": [
+        "emerald_grove",
+        "shadow_depths",
+        "wyrmroot_hollow"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "ember_mushroom",
+          "min": 1,
+          "max": 3,
+          "chance": 0.55
+        },
+        {
+          "item": "bog_herb",
+          "min": 1,
+          "max": 2,
+          "chance": 0.4
+        }
+      ],
+      "mine": [
+        {
+          "item": "peat",
+          "min": 1,
+          "max": 4,
+          "chance": 0.6
+        },
+        {
+          "item": "bog_iron",
+          "min": 1,
+          "max": 2,
+          "chance": 0.3
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "preserved_remains",
+          "min": 1,
+          "max": 1,
+          "chance": 0.05
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "bog_wraith",
+          "chance": 0.3
+        },
+        {
+          "enemy": "ember_fiend",
+          "chance": 0.2
+        }
+      ],
+      "events": [
+        {
+          "id": "ancient_bog_ruins",
+          "type": "structure",
+          "structure": "ancient_bog_ruins",
+          "chance": 0.15
+        }
+      ]
+    }
+  },
+  {
+    "id": "ancient_ruins",
+    "name": "Ancient Ruins",
+    "description": "Crumbling ruins of an ancient civilization. Filled with secrets and guarded by constructs.",
+    "travel": {
+      "baseMinutes": 10,
+      "neighbors": [
+        "emerald_grove",
+        "gale_cliffs",
+        "shadow_depths"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "ancient_scroll",
+          "min": 1,
+          "max": 2,
+          "chance": 0.3
+        },
+        {
+          "item": "rune_fragment",
+          "min": 1,
+          "max": 3,
+          "chance": 0.45
+        }
+      ],
+      "mine": [
+        {
+          "item": "ancient_stone",
+          "min": 1,
+          "max": 3,
+          "chance": 0.5
+        },
+        {
+          "item": "rune_crystal",
+          "min": 1,
+          "max": 1,
+          "chance": 0.2
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "ancient_relic",
+          "min": 1,
+          "max": 1,
+          "chance": 0.04
+        },
+        {
+          "item": "rune_weapon",
+          "min": 1,
+          "max": 1,
+          "chance": 0.03
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "ancient_golem",
+          "chance": 0.35
+        },
+        {
+          "enemy": "rune_guardian",
+          "chance": 0.25
+        }
+      ],
+      "events": [
+        {
+          "id": "ancient_library",
+          "type": "structure",
+          "structure": "ancient_library",
+          "chance": 0.18
+        },
+        {
+          "id": "rune_puzzle",
+          "type": "puzzle",
+          "structure": "rune_puzzle",
+          "chance": 0.12
+        }
+      ]
+    }
+  },
+  {
+    "id": "oasis_springs",
+    "name": "Oasis Springs",
+    "description": "A rare oasis in the desert where life flourishes around crystal-clear springs. A zone 2 biome connecting to zone 1.",
+    "travel": {
+      "baseMinutes": 14,
+      "neighbors": [
+        "howling_sands",
+        "sunset_dunes",
+        "wind_temple"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "oasis_palm_fruit",
+          "min": 1,
+          "max": 3,
+          "chance": 0.6
+        },
+        {
+          "item": "spring_water",
+          "min": 1,
+          "max": 2,
+          "chance": 0.5
+        }
+      ],
+      "mine": [
+        {
+          "item": "spring_crystal",
+          "min": 1,
+          "max": 2,
+          "chance": 0.4
+        },
+        {
+          "item": "desert_iron",
+          "min": 1,
+          "max": 2,
+          "chance": 0.35
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "oasis_treasure",
+          "min": 1,
+          "max": 1,
+          "chance": 0.07
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "oasis_guardian",
+          "chance": 0.3
+        },
+        {
+          "enemy": "desert_nomad",
+          "chance": 0.25
+        }
+      ],
+      "events": [
+        {
+          "id": "oasis_shrine",
+          "type": "structure",
+          "structure": "oasis_shrine",
+          "chance": 0.2
+        }
+      ]
+    }
+  },
+  {
+    "id": "mirage_canyon",
+    "name": "Mirage Canyon",
+    "description": "A deep canyon where mirages dance in the heat. Hidden treasures and dangerous creatures await.",
+    "travel": {
+      "baseMinutes": 16,
+      "neighbors": [
+        "howling_sands",
+        "sandstorm_plains",
+        "dune_sepulcher"
+      ]
+    },
+    "resources": {
+      "forage": [
+        {
+          "item": "canyon_herb",
+          "min": 1,
+          "max": 2,
+          "chance": 0.4
+        },
+        {
+          "item": "mirage_flower",
+          "min": 1,
+          "max": 1,
+          "chance": 0.25
+        }
+      ],
+      "mine": [
+        {
+          "item": "canyon_stone",
+          "min": 1,
+          "max": 3,
+          "chance": 0.5
+        },
+        {
+          "item": "wind_essence",
+          "min": 1,
+          "max": 2,
+          "chance": 0.3
+        }
+      ],
+      "scavenge": [
+        {
+          "item": "lost_caravan_treasure",
+          "min": 1,
+          "max": 1,
+          "chance": 0.05
+        }
+      ]
+    },
+    "encounters": {
+      "combat": [
+        {
+          "enemy": "canyon_scorpion",
+          "chance": 0.35
+        },
+        {
+          "enemy": "mirage_phantom",
+          "chance": 0.2
+        }
+      ],
+      "events": [
+        {
+          "id": "hidden_canyon_cave",
+          "type": "structure",
+          "structure": "hidden_canyon_cave",
+          "chance": 0.15
+        }
+      ]
+    }
   }
 ]

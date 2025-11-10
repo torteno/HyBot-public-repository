@@ -1563,5 +1563,737 @@
         "max": 1
       }
     ]
+  },
+  {
+    "id": "sand_raider",
+    "name": "Sand Raider",
+    "emoji": "🏜️",
+    "hp": 100,
+    "damage": 15,
+    "xp": 80,
+    "coins": 50,
+    "faction": "nomad",
+    "biome": "desert",
+    "rarity": "common",
+    "tags": [
+      "melee",
+      "aggressive",
+      "zone_2"
+    ],
+    "loot": [
+      {
+        "item": "desert_bloom",
+        "chance": 0.4,
+        "min": 1,
+        "max": 2
+      },
+      {
+        "item": "desert_iron",
+        "chance": 0.3,
+        "min": 1,
+        "max": 2
+      }
+    ]
+  },
+  {
+    "id": "dune_colossus",
+    "name": "Dune Colossus",
+    "emoji": "🗿",
+    "hp": 250,
+    "damage": 30,
+    "xp": 200,
+    "coins": 150,
+    "faction": "neutral",
+    "biome": "desert",
+    "rarity": "rare",
+    "tags": [
+      "boss",
+      "heavy",
+      "zone_2"
+    ],
+    "loot": [
+      {
+        "item": "sandstone_core",
+        "chance": 0.5,
+        "min": 1,
+        "max": 1
+      },
+      {
+        "item": "wind_crystal",
+        "chance": 0.35,
+        "min": 1,
+        "max": 2
+      }
+    ]
+  },
+  {
+    "id": "wind_elemental",
+    "name": "Wind Elemental",
+    "emoji": "💨",
+    "hp": 120,
+    "damage": 18,
+    "xp": 100,
+    "coins": 70,
+    "faction": "neutral",
+    "biome": "desert",
+    "rarity": "uncommon",
+    "tags": [
+      "magic",
+      "ranged",
+      "zone_2"
+    ],
+    "loot": [
+      {
+        "item": "wind_essence",
+        "chance": 0.45,
+        "min": 1,
+        "max": 2
+      },
+      {
+        "item": "wind_crystal",
+        "chance": 0.3,
+        "min": 1,
+        "max": 1
+      }
+    ]
+  },
+  {
+    "id": "mummy_guardian",
+    "name": "Mummy Guardian",
+    "emoji": "🧟",
+    "hp": 150,
+    "damage": 20,
+    "xp": 120,
+    "coins": 90,
+    "faction": "neutral",
+    "biome": "desert",
+    "rarity": "uncommon",
+    "tags": [
+      "undead",
+      "melee",
+      "zone_2"
+    ],
+    "loot": [
+      {
+        "item": "mummy_wrappings",
+        "chance": 0.5,
+        "min": 1,
+        "max": 3
+      },
+      {
+        "item": "ancient_scarab",
+        "chance": 0.3,
+        "min": 1,
+        "max": 2
+      }
+    ]
+  },
+  {
+    "id": "sand_wraith",
+    "name": "Sand Wraith",
+    "emoji": "👻",
+    "hp": 180,
+    "damage": 22,
+    "xp": 150,
+    "coins": 110,
+    "faction": "neutral",
+    "biome": "desert",
+    "rarity": "rare",
+    "tags": [
+      "undead",
+      "magic",
+      "zone_2"
+    ],
+    "loot": [
+      {
+        "item": "cursed_gold",
+        "chance": 0.4,
+        "min": 1,
+        "max": 2
+      },
+      {
+        "item": "ancient_amulet",
+        "chance": 0.15,
+        "min": 1,
+        "max": 1
+      }
+    ]
+  },
+  {
+    "id": "pharaoh_lich",
+    "name": "Pharaoh Lich",
+    "emoji": "👑",
+    "hp": 350,
+    "damage": 40,
+    "xp": 350,
+    "coins": 300,
+    "faction": "neutral",
+    "biome": "desert",
+    "rarity": "boss",
+    "tags": [
+      "boss",
+      "undead",
+      "magic",
+      "zone_2"
+    ],
+    "loot": [
+      {
+        "item": "pharaoh_stone",
+        "chance": 0.6,
+        "min": 1,
+        "max": 1
+      },
+      {
+        "item": "pharaoh_crown",
+        "chance": 0.3,
+        "min": 1,
+        "max": 1
+      },
+      {
+        "item": "cursed_gold",
+        "chance": 0.5,
+        "min": 3,
+        "max": 5
+      }
+    ]
+  },
+  {
+    "id": "wind_mage",
+    "name": "Wind Mage",
+    "emoji": "🧙",
+    "hp": 130,
+    "damage": 20,
+    "xp": 110,
+    "coins": 80,
+    "faction": "skysong",
+    "biome": "desert",
+    "rarity": "uncommon",
+    "tags": [
+      "magic",
+      "ranged",
+      "zone_2"
+    ],
+    "loot": [
+      {
+        "item": "wind_essence",
+        "chance": 0.5,
+        "min": 1,
+        "max": 3
+      },
+      {
+        "item": "tempest_crystal",
+        "chance": 0.25,
+        "min": 1,
+        "max": 1
+      }
+    ]
+  },
+  {
+    "id": "storm_guardian",
+    "name": "Storm Guardian",
+    "emoji": "⚡",
+    "hp": 200,
+    "damage": 28,
+    "xp": 180,
+    "coins": 130,
+    "faction": "neutral",
+    "biome": "desert",
+    "rarity": "rare",
+    "tags": [
+      "magic",
+      "elite",
+      "zone_2"
+    ],
+    "loot": [
+      {
+        "item": "tempest_crystal",
+        "chance": 0.4,
+        "min": 1,
+        "max": 2
+      },
+      {
+        "item": "wind_core",
+        "chance": 0.2,
+        "min": 1,
+        "max": 1
+      }
+    ]
+  },
+  {
+    "id": "tempest_lord",
+    "name": "Tempest Lord",
+    "emoji": "🌪️",
+    "hp": 400,
+    "damage": 45,
+    "xp": 400,
+    "coins": 350,
+    "faction": "neutral",
+    "biome": "desert",
+    "rarity": "boss",
+    "tags": [
+      "boss",
+      "magic",
+      "zone_2"
+    ],
+    "loot": [
+      {
+        "item": "wind_core",
+        "chance": 0.7,
+        "min": 1,
+        "max": 1
+      },
+      {
+        "item": "wind_mage_staff",
+        "chance": 0.4,
+        "min": 1,
+        "max": 1
+      },
+      {
+        "item": "tempest_robes",
+        "chance": 0.3,
+        "min": 1,
+        "max": 1
+      }
+    ]
+  },
+  {
+    "id": "sandstorm_elemental",
+    "name": "Sandstorm Elemental",
+    "emoji": "🌪️",
+    "hp": 160,
+    "damage": 24,
+    "xp": 140,
+    "coins": 100,
+    "faction": "neutral",
+    "biome": "desert",
+    "rarity": "uncommon",
+    "tags": [
+      "magic",
+      "elemental",
+      "zone_2"
+    ],
+    "loot": [
+      {
+        "item": "wind_essence",
+        "chance": 0.45,
+        "min": 1,
+        "max": 2
+      },
+      {
+        "item": "storm_vein_ore",
+        "chance": 0.35,
+        "min": 1,
+        "max": 2
+      }
+    ]
+  },
+  {
+    "id": "dune_stalker",
+    "name": "Dune Stalker",
+    "emoji": "🐺",
+    "hp": 110,
+    "damage": 16,
+    "xp": 90,
+    "coins": 60,
+    "faction": "beast",
+    "biome": "desert",
+    "rarity": "common",
+    "tags": [
+      "melee",
+      "aggressive",
+      "zone_2"
+    ],
+    "loot": [
+      {
+        "item": "desert_bloom",
+        "chance": 0.35,
+        "min": 1,
+        "max": 2
+      },
+      {
+        "item": "storm_grass",
+        "chance": 0.4,
+        "min": 1,
+        "max": 3
+      }
+    ]
+  },
+  {
+    "id": "storm_beast",
+    "name": "Storm Beast",
+    "emoji": "🐉",
+    "hp": 280,
+    "damage": 35,
+    "xp": 250,
+    "coins": 200,
+    "faction": "beast",
+    "biome": "desert",
+    "rarity": "rare",
+    "tags": [
+      "boss",
+      "magic",
+      "zone_2"
+    ],
+    "loot": [
+      {
+        "item": "wind_core",
+        "chance": 0.5,
+        "min": 1,
+        "max": 1
+      },
+      {
+        "item": "tempest_crystal",
+        "chance": 0.4,
+        "min": 2,
+        "max": 3
+      },
+      {
+        "item": "sandstorm_cloak",
+        "chance": 0.25,
+        "min": 1,
+        "max": 1
+      }
+    ]
+  },
+  {
+    "id": "crystal_golem",
+    "name": "Crystal Golem",
+    "emoji": "🗿",
+    "hp": 90,
+    "damage": 12,
+    "xp": 70,
+    "coins": 50,
+    "faction": "neutral",
+    "biome": "crystal",
+    "rarity": "common",
+    "tags": [
+      "construct",
+      "melee",
+      "zone_1"
+    ],
+    "loot": [
+      {
+        "item": "crystal_shard",
+        "chance": 0.5,
+        "min": 1,
+        "max": 3
+      },
+      {
+        "item": "sunstone_shard",
+        "chance": 0.3,
+        "min": 1,
+        "max": 2
+      }
+    ]
+  },
+  {
+    "id": "luminous_sprite",
+    "name": "Luminous Sprite",
+    "emoji": "✨",
+    "hp": 60,
+    "damage": 8,
+    "xp": 45,
+    "coins": 30,
+    "faction": "neutral",
+    "biome": "crystal",
+    "rarity": "common",
+    "tags": [
+      "magic",
+      "ranged",
+      "zone_1"
+    ],
+    "loot": [
+      {
+        "item": "luminous_petal",
+        "chance": 0.5,
+        "min": 1,
+        "max": 2
+      },
+      {
+        "item": "crystal_flower",
+        "chance": 0.4,
+        "min": 1,
+        "max": 3
+      }
+    ]
+  },
+  {
+    "id": "coastal_crab",
+    "name": "Coastal Crab",
+    "emoji": "🦀",
+    "hp": 70,
+    "damage": 10,
+    "xp": 55,
+    "coins": 40,
+    "faction": "neutral",
+    "biome": "coastal",
+    "rarity": "common",
+    "tags": [
+      "melee",
+      "aggressive",
+      "zone_1"
+    ],
+    "loot": [
+      {
+        "item": "seaweed",
+        "chance": 0.5,
+        "min": 1,
+        "max": 4
+      },
+      {
+        "item": "sea_salt",
+        "chance": 0.4,
+        "min": 1,
+        "max": 3
+      }
+    ]
+  },
+  {
+    "id": "tide_wraith",
+    "name": "Tide Wraith",
+    "emoji": "👻",
+    "hp": 100,
+    "damage": 14,
+    "xp": 80,
+    "coins": 60,
+    "faction": "neutral",
+    "biome": "coastal",
+    "rarity": "uncommon",
+    "tags": [
+      "undead",
+      "magic",
+      "zone_1"
+    ],
+    "loot": [
+      {
+        "item": "pearl",
+        "chance": 0.3,
+        "min": 1,
+        "max": 1
+      },
+      {
+        "item": "driftwood",
+        "chance": 0.5,
+        "min": 1,
+        "max": 3
+      }
+    ]
+  },
+  {
+    "id": "bog_wraith",
+    "name": "Bog Wraith",
+    "emoji": "👻",
+    "hp": 110,
+    "damage": 15,
+    "xp": 90,
+    "coins": 70,
+    "faction": "neutral",
+    "biome": "bog",
+    "rarity": "uncommon",
+    "tags": [
+      "undead",
+      "magic",
+      "zone_1"
+    ],
+    "loot": [
+      {
+        "item": "peat",
+        "chance": 0.5,
+        "min": 1,
+        "max": 4
+      },
+      {
+        "item": "bog_iron",
+        "chance": 0.3,
+        "min": 1,
+        "max": 2
+      }
+    ]
+  },
+  {
+    "id": "ember_fiend",
+    "name": "Ember Fiend",
+    "emoji": "🔥",
+    "hp": 130,
+    "damage": 18,
+    "xp": 110,
+    "coins": 90,
+    "faction": "neutral",
+    "biome": "bog",
+    "rarity": "rare",
+    "tags": [
+      "fire",
+      "magic",
+      "zone_1"
+    ],
+    "loot": [
+      {
+        "item": "ember_mushroom",
+        "chance": 0.5,
+        "min": 1,
+        "max": 3
+      },
+      {
+        "item": "preserved_remains",
+        "chance": 0.15,
+        "min": 1,
+        "max": 1
+      }
+    ]
+  },
+  {
+    "id": "rune_guardian",
+    "name": "Rune Guardian",
+    "emoji": "🛡️",
+    "hp": 150,
+    "damage": 20,
+    "xp": 130,
+    "coins": 100,
+    "faction": "neutral",
+    "biome": "ruins",
+    "rarity": "rare",
+    "tags": [
+      "construct",
+      "elite",
+      "zone_1"
+    ],
+    "loot": [
+      {
+        "item": "rune_fragment",
+        "chance": 0.5,
+        "min": 1,
+        "max": 3
+      },
+      {
+        "item": "rune_crystal",
+        "chance": 0.25,
+        "min": 1,
+        "max": 1
+      }
+    ]
+  },
+  {
+    "id": "oasis_guardian",
+    "name": "Oasis Guardian",
+    "emoji": "🌴",
+    "hp": 140,
+    "damage": 19,
+    "xp": 120,
+    "coins": 95,
+    "faction": "neutral",
+    "biome": "desert",
+    "rarity": "uncommon",
+    "tags": [
+      "nature",
+      "melee",
+      "zone_2"
+    ],
+    "loot": [
+      {
+        "item": "oasis_palm_fruit",
+        "chance": 0.5,
+        "min": 1,
+        "max": 3
+      },
+      {
+        "item": "spring_water",
+        "chance": 0.4,
+        "min": 1,
+        "max": 2
+      }
+    ]
+  },
+  {
+    "id": "desert_nomad",
+    "name": "Desert Nomad",
+    "emoji": "🏜️",
+    "hp": 120,
+    "damage": 17,
+    "xp": 100,
+    "coins": 80,
+    "faction": "nomad",
+    "biome": "desert",
+    "rarity": "common",
+    "tags": [
+      "melee",
+      "aggressive",
+      "zone_2"
+    ],
+    "loot": [
+      {
+        "item": "desert_bloom",
+        "chance": 0.4,
+        "min": 1,
+        "max": 2
+      },
+      {
+        "item": "desert_iron",
+        "chance": 0.35,
+        "min": 1,
+        "max": 2
+      }
+    ]
+  },
+  {
+    "id": "canyon_scorpion",
+    "name": "Canyon Scorpion",
+    "emoji": "🦂",
+    "hp": 130,
+    "damage": 18,
+    "xp": 110,
+    "coins": 85,
+    "faction": "beast",
+    "biome": "desert",
+    "rarity": "uncommon",
+    "tags": [
+      "poison",
+      "melee",
+      "zone_2"
+    ],
+    "loot": [
+      {
+        "item": "canyon_herb",
+        "chance": 0.4,
+        "min": 1,
+        "max": 2
+      },
+      {
+        "item": "canyon_stone",
+        "chance": 0.5,
+        "min": 1,
+        "max": 3
+      }
+    ]
+  },
+  {
+    "id": "mirage_phantom",
+    "name": "Mirage Phantom",
+    "emoji": "👻",
+    "hp": 160,
+    "damage": 22,
+    "xp": 140,
+    "coins": 110,
+    "faction": "neutral",
+    "biome": "desert",
+    "rarity": "rare",
+    "tags": [
+      "undead",
+      "magic",
+      "zone_2"
+    ],
+    "loot": [
+      {
+        "item": "mirage_flower",
+        "chance": 0.4,
+        "min": 1,
+        "max": 1
+      },
+      {
+        "item": "wind_essence",
+        "chance": 0.35,
+        "min": 1,
+        "max": 2
+      }
+    ]
   }
 ]
