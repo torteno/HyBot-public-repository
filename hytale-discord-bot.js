@@ -7882,6 +7882,7 @@ async function showCodex(message, category, entryIdentifier) {
         .setStyle(lowerCat === 'settlements' || lowerCat === 'settlement' ? ButtonStyle.Primary : ButtonStyle.Secondary)
     );
   
+  // Split navigation buttons into two rows (max 5 buttons per row)
   const navButtons2 = new ActionRowBuilder()
     .addComponents(
       new ButtonBuilder()
