@@ -2566,7 +2566,10 @@ const LEGACY_SLASH_COMMANDS = [
   { name: 'accept', description: 'Accept the pending duel challenge.' },
   { name: 'decline', description: 'Decline the pending duel challenge.' },
   { name: 'teamqueue', description: 'Join the team duel queue.' },
-  { name: 'leaveteam', description: 'Leave the team duel queue.' }
+  { name: 'leaveteam', description: 'Leave the team duel queue.' },
+  { name: 'adventure', description: 'View Adventure Mode progress and unlock new zones.', options: [{ type: 3, name: 'chapter', description: 'Chapter identifier', required: false, autocomplete: true }] },
+  { name: 'startadventure', description: 'Start an Adventure Mode chapter.', options: [{ type: 3, name: 'chapter', description: 'Chapter identifier', required: true, autocomplete: true }] },
+  { name: 'adventurechoice', description: 'Make a choice in Adventure Mode.', options: [{ type: 3, name: 'choice', description: 'Choice identifier', required: true }] }
 ];
 
 SLASH_COMMAND_DEFINITIONS.push(...LEGACY_SLASH_COMMANDS);
@@ -4743,6 +4746,15 @@ async function executeCommand(message, command, args) {
   }
   else if (command === 'hy') {
     await handleHyCommand(message, args);
+  }
+  else if (command === 'adventure' || command === 'story') {
+    await showAdventureMode(message, args[0]);
+  }
+  else if (command === 'startadventure' || command === 'startstory') {
+    await startAdventureMode(message, args[0]);
+  }
+  else if (command === 'adventurechoice' || command === 'choice') {
+    await makeAdventureChoice(message, args[0]);
   }
 }
 // ==================== COMMAND HANDLER ====================
@@ -11136,6 +11148,7 @@ async function handleExploreCommand(message, args = []) {
   if (!subcommand || subcommand === 'status' || subcommand === 'info') {
     const embed = buildExplorationStatusEmbed(player, biome, exploration);
     const components = [
+      ...buildExplorationActionComponents(message.author.id, exploration, biome),
       ...buildGatheringActionComponents(message.author.id, exploration),
       ...buildDashboardComponents()
     ];
@@ -12313,6 +12326,40 @@ function summarizeBiomeGatheringResources(biome, limitPerType = 3) {
   return lines.length ? lines.join('\n') : 'No dedicated harvesting nodes discovered here yet.';
 }
 
+function buildExplorationActionComponents(userId, exploration, biome) {
+  const rows = [];
+  const disabled = Boolean(exploration?.action);
+  const hasActiveAction = Boolean(exploration?.action);
+  
+  // Primary exploration actions row
+  const primaryRow = new ActionRowBuilder().addComponents(
+    new ButtonBuilder().setCustomId('explore|forage').setLabel('Forage').setStyle(ButtonStyle.Primary).setEmoji('🌿').setDisabled(disabled),
+    new ButtonBuilder().setCustomId('explore|mine').setLabel('Mine').setStyle(ButtonStyle.Secondary).setEmoji('⛏️').setDisabled(disabled),
+    new ButtonBuilder().setCustomId('explore|scavenge').setLabel('Scavenge').setStyle(ButtonStyle.Secondary).setEmoji('🔍').setDisabled(disabled),
+    new ButtonBuilder().setCustomId('explore|survey').setLabel('Survey').setStyle(ButtonStyle.Success).setEmoji('📊').setDisabled(disabled)
+  );
+  rows.push(primaryRow);
+  
+  // Secondary actions row
+  const secondaryRow = new ActionRowBuilder().addComponents(
+    new ButtonBuilder().setCustomId('explore|activities').setLabel('Activities').setStyle(ButtonStyle.Primary).setEmoji('🎯'),
+    new ButtonBuilder().setCustomId('explore|chains').setLabel('Chains').setStyle(ButtonStyle.Secondary).setEmoji('🔗'),
+    new ButtonBuilder().setCustomId('explore|resolve').setLabel('Resolve').setStyle(ButtonStyle.Success).setEmoji('✅').setDisabled(!hasActiveAction),
+    new ButtonBuilder().setCustomId('explore|cancel').setLabel('Cancel').setStyle(ButtonStyle.Danger).setEmoji('❌').setDisabled(!hasActiveAction)
+  );
+  rows.push(secondaryRow);
+  
+  // Utility row
+  const utilityRow = new ActionRowBuilder().addComponents(
+    new ButtonBuilder().setCustomId('command|travel').setLabel('Travel').setStyle(ButtonStyle.Primary).setEmoji('🛣️'),
+    new ButtonBuilder().setCustomId('command|adventure').setLabel('Adventure').setStyle(ButtonStyle.Secondary).setEmoji('📖'),
+    new ButtonBuilder().setCustomId('command|gather').setLabel('Gather Menu').setStyle(ButtonStyle.Success).setEmoji('🌱')
+  );
+  rows.push(utilityRow);
+  
+  return rows;
+}
+
 function buildGatheringActionComponents(userId, exploration) {
   const rows = [];
   const disabled = ACTIVE_GATHER_SESSIONS.has(userId) || Boolean(exploration?.action);
@@ -13005,6 +13052,7 @@ async function handleSlashCommand(interaction) {
       if (sub === 'status') {
         const biome = getBiomeDefinition(exploration.currentBiome);
         const components = [
+          ...buildExplorationActionComponents(interaction.user.id, exploration, biome),
           ...buildGatheringActionComponents(interaction.user.id, exploration),
           ...buildDashboardComponents()
         ];
@@ -13386,6 +13434,27 @@ async function handleButtonInteraction(interaction) {
         }
         return;
       }
+      case 'explore': {
+        const actionType = action?.toLowerCase();
+        const message = createMessageAdapterFromInteraction(interaction, { ephemeral: true });
+        
+        if (actionType === 'forage' || actionType === 'mine' || actionType === 'scavenge' || actionType === 'survey') {
+          return handleExploreCommand(message, [actionType]);
+        }
+        if (actionType === 'activities') {
+          return handleExploreCommand(message, ['activities']);
+        }
+        if (actionType === 'chains') {
+          return handleExploreCommand(message, ['chains']);
+        }
+        if (actionType === 'resolve') {
+          return handleExploreCommand(message, ['resolve']);
+        }
+        if (actionType === 'cancel') {
+          return handleExploreCommand(message, ['cancel']);
+        }
+        break;
+      }
       case 'gather': {
         const gatherType = action?.toLowerCase();
         if (!GATHERING_SET_TYPES.includes(gatherType)) {
@@ -13403,6 +13472,7 @@ async function handleButtonInteraction(interaction) {
         if (action === 'explore') {
           const embed = buildExplorationStatusEmbed(player, biome, exploration);
           const components = [
+            ...buildExplorationActionComponents(interaction.user.id, exploration, biome),
             ...buildGatheringActionComponents(interaction.user.id, exploration),
             ...buildDashboardComponents()
           ];
