@@ -1760,6 +1760,9 @@ QUESTS.forEach(quest => {
 const MAX_ACTIVE_QUESTS = 3;
 
 function formatObjectiveLabel(objective) {
+  if (objective.type === 'command') {
+    return `Use ${objective.target} command`;
+  }
   if (!objective) return '';
   if (objective.description) return objective.description;
   switch (objective.type) {
