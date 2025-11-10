@@ -3792,6 +3792,7 @@ function getPlayer(userId) {
       quests: [],
       completedQuests: [],
       questProgress: {},
+      tutorialStarted: false,
       achievements: { claimed: [], notified: [] },
       attributes: { power: 10, agility: 8, resilience: 8, focus: 6 },
       stats: {
@@ -3883,6 +3884,22 @@ function getPlayer(userId) {
     });
   }
   const player = playerData.get(userId);
+  
+  // Auto-start tutorial quest for new players
+  if (!player.tutorialStarted && !player.completedQuests?.includes(0)) {
+    const tutorialQuest = resolveQuest(0);
+    if (tutorialQuest && !player.quests.includes(0)) {
+      player.quests.push(0);
+      initializeQuestProgress(player, tutorialQuest);
+      refreshQuestProgress(player, tutorialQuest);
+      player.tutorialStarted = true;
+      player.stats.questsStarted = (player.stats.questsStarted || 0) + 1;
+      
+      // Send welcome message for tutorial quest (will be sent when player first uses a command)
+      // The welcome message is sent when the quest is explicitly started via startQuest
+    }
+  }
+  
   if (!player.achievements) player.achievements = { claimed: [], notified: [] };
   if (!player.attributes) player.attributes = { power: 10, agility: 8, resilience: 8, focus: 6 };
   if (!player.stats) player.stats = {
@@ -4226,6 +4243,10 @@ function initializeQuestProgress(player, quest) {
       const current = player.stats?.factionsAssisted?.[obj.faction] || 0;
       return Math.min(obj.quantity, current);
     }
+    if (obj.type === 'command') {
+      // Track command usage for tutorial
+      return 0;
+    }
     if (obj.type === 'brew') {
       return 0;
     }
@@ -4261,6 +4282,10 @@ function refreshQuestProgress(player, quest) {
     if (obj.type === 'faction') {
       const assisted = player.stats?.factionsAssisted?.[obj.faction] || 0;
       progress.objectives[idx] = Math.min(obj.quantity, Math.max(progress.objectives[idx] || 0, assisted));
+    }
+    if (obj.type === 'command') {
+      // Command objectives are tracked via processQuestEvent
+      // Keep current progress
     }
   });
   const complete = quest.objectives.every((obj, idx) => (progress.objectives[idx] || 0) >= obj.quantity);
@@ -4346,6 +4371,13 @@ function updateQuestProgress(player, event) {
           }
           break;
         }
+        case 'command': {
+          if (event.type === 'command' && objective.target && objective.target === event.command) {
+            progress.objectives[index] = Math.min(objective.quantity, current + count);
+            updated = true;
+          }
+          break;
+        }
         default:
           break;
       }
@@ -4371,6 +4403,13 @@ function notifyQuestReady(message, quests) {
     }
   });
   if (unique.length === 0) return;
+  
+  // Special handling for tutorial quest with NPC dialogue
+  const tutorialQuest = unique.find(q => q.id === 0);
+  if (tutorialQuest && tutorialQuest.npc) {
+    sendTutorialNPCMessage(message, tutorialQuest, 'objective_complete');
+  }
+  
   const embed = new EmbedBuilder()
     .setColor('#F1C40F')
     .setTitle('📜 Quest Update')
@@ -4378,6 +4417,64 @@ function notifyQuestReady(message, quests) {
     .setFooter({ text: `Use ${PREFIX} completequest <id> to claim rewards.` });
   const payload = buildStyledPayload(embed, 'quests', { components: buildSystemComponents('quests') });
   message.channel.send(payload).catch(() => {});
+}
+
+// Tutorial NPC Dialogue System
+const TUTORIAL_NPC_DIALOGUE = {
+  mentor_aldric: {
+    welcome: [
+      "👋 **Mentor Aldric**: Welcome, traveler! I'm Mentor Aldric, and I'll guide you through your first steps in Orbis.",
+      "🌿 The world of Orbis is vast and full of adventure. Let me teach you the basics so you can survive and thrive here.",
+      "📋 I've prepared a tutorial quest for you. Complete each objective, and I'll be here to help you along the way!"
+    ],
+    objective_complete: [
+      "✅ **Mentor Aldric**: Excellent work! You're learning quickly.",
+      "💡 **Mentor Aldric**: Keep going! You're making great progress.",
+      "🎯 **Mentor Aldric**: Well done! Continue with the next objective."
+    ],
+    objective_hint: {
+      profile: "💡 **Mentor Aldric**: Check your profile with `/profile` or `/hy profile` to see your stats and equipment!",
+      explore: "💡 **Mentor Aldric**: View your exploration status with `/explore` or `/explore status` to see your current biome!",
+      travel: "💡 **Mentor Aldric**: Check the travel menu with `/travel` or `/travel status` to see neighboring biomes!",
+      shop: "💡 **Mentor Aldric**: Visit the shop with `/shop` or `/hy shop` to see available items for purchase!",
+      gather: "💡 **Mentor Aldric**: Use `/gather` or the gather buttons to start foraging for Ancient Bark!"
+    },
+    quest_complete: [
+      "🎉 **Mentor Aldric**: Congratulations! You've completed the tutorial!",
+      "🏆 **Mentor Aldric**: You've learned the basics of Orbis. You're ready to explore on your own now!",
+      "🌟 **Mentor Aldric**: Remember what you've learned, and may your adventures be legendary!"
+    ]
+  }
+};
+
+function sendTutorialNPCMessage(message, quest, dialogueType, objectiveType = null) {
+  if (!quest || !quest.npc || !message) return;
+  const npcDialogue = TUTORIAL_NPC_DIALOGUE[quest.npc];
+  if (!npcDialogue) return;
+  
+  let dialogue = null;
+  if (dialogueType === 'objective_complete') {
+    dialogue = npcDialogue.objective_complete?.[Math.floor(Math.random() * npcDialogue.objective_complete.length)];
+  } else if (dialogueType === 'objective_hint' && objectiveType) {
+    dialogue = npcDialogue.objective_hint?.[objectiveType];
+  } else if (dialogueType === 'quest_complete') {
+    dialogue = npcDialogue.quest_complete?.[Math.floor(Math.random() * npcDialogue.quest_complete.length)];
+  } else if (dialogueType === 'welcome') {
+    dialogue = npcDialogue.welcome?.[Math.floor(Math.random() * npcDialogue.welcome.length)];
+  }
+  
+  if (dialogue) {
+    const embed = new EmbedBuilder()
+      .setColor('#3498DB')
+      .setDescription(dialogue)
+      .setFooter({ text: quest.name });
+    
+    if (message.reply) {
+      message.reply({ embeds: [embed] }).catch(() => {});
+    } else if (message.channel) {
+      message.channel.send({ embeds: [embed] }).catch(() => {});
+    }
+  }
 }
 function processQuestEvent(message, player, event) {
   const ready = updateQuestProgress(player, event) || [];
@@ -4524,6 +4621,13 @@ async function handleAchievementCheck(message, player) {
   await message.channel.send(payload);
 }
 async function executeCommand(message, command, args) {
+  const player = getPlayer(message.author.id);
+  
+  // Track command usage for tutorial quest
+  if (player.quests && player.quests.includes(0)) {
+    processQuestEvent(message, player, { type: 'command', command: command, count: 1 });
+  }
+  
   // Profile & Stats Commands
   if (command === 'profile' || command === 'p') {
     const targetId = extractUserId(args[0]) || args[0];
@@ -6294,7 +6398,12 @@ async function startQuest(message, questIdentifier) {
   
   if (!quest) return message.reply('❌ Quest not found!');
 
-  if (player.quests.length >= MAX_ACTIVE_QUESTS) {
+  // Check if tutorial quest can't be abandoned
+  if (quest.cannotAbandon && player.completedQuests?.includes(quest.id)) {
+    return message.reply('✅ You have already completed the tutorial!');
+  }
+
+  if (player.quests.length >= MAX_ACTIVE_QUESTS && !quest.cannotAbandon) {
     return message.reply(`❌ You can only track ${MAX_ACTIVE_QUESTS} quests at a time. Complete or abandon one first.`);
   }
 
@@ -6329,6 +6438,12 @@ async function startQuest(message, questIdentifier) {
     .setFooter({ text: `Use ${PREFIX} completequest ${quest.id} when finished.` });
 
   await message.reply({ embeds: [embed] });
+  
+  // Send NPC welcome message for tutorial quest
+  if (quest.npc && quest.id === 0) {
+    sendTutorialNPCMessage(message, quest, 'welcome');
+  }
+  
   await handleAchievementCheck(message, player);
 }
 async function completeQuest(message, questIdentifier) {
@@ -6387,13 +6502,18 @@ async function completeQuest(message, questIdentifier) {
     });
   }
   
+  // Send NPC completion message for tutorial quest
+  if (quest.npc && quest.id === 0) {
+    sendTutorialNPCMessage(message, quest, 'quest_complete');
+  }
+  
   const embed = new EmbedBuilder()
     .setColor('#00FF00')
     .setTitle('🏆 Quest Completed!')
     .setDescription(`**${quest.name}**\n${quest.desc}`)
     .addFields(
       { name: '🎁 Rewards', value: rewardLines.join(' | ') },
-      { name: 'Next Steps', value: 'Check the quest board for new opportunities!' }
+      { name: 'Next Steps', value: quest.id === 0 ? 'You\'ve completed the tutorial! Check the quest board for new adventures!' : 'Check the quest board for new opportunities!' }
     )
     .setFooter({ text: leveled ? `⭐ Level up! You are now level ${player.level}!` : `Level ${player.level}` });
   

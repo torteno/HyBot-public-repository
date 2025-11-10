@@ -1,5 +1,34 @@
 [
   {
+    "id": 0,
+    "slug": "tutorial-guide",
+    "name": "Welcome to Orbis",
+    "description": "Follow your guide, Mentor Aldric, as he teaches you the basics of survival in Orbis.",
+    "faction": "neutral",
+    "region": "Emerald Grove",
+    "req": { "level": 1 },
+    "mandatory": true,
+    "cannotAbandon": true,
+    "npc": "mentor_aldric",
+    "objectives": [
+      { "type": "command", "target": "profile", "quantity": 1, "description": "Check your profile to see your stats and equipment." },
+      { "type": "command", "target": "explore", "quantity": 1, "description": "View your exploration status to see your current biome." },
+      { "type": "gather", "item": "ancient_bark", "quantity": 3, "description": "Gather 3 Ancient Bark by foraging in your biome." },
+      { "type": "command", "target": "travel", "quantity": 1, "description": "Check the travel menu to see neighboring biomes." },
+      { "type": "defeat", "enemy": "feral_trork", "quantity": 1, "description": "Defeat a Feral Trork in combat to learn battle mechanics." },
+      { "type": "command", "target": "shop", "quantity": 1, "description": "Visit the shop to see available items." }
+    ],
+    "reward": {
+      "xp": 200,
+      "coins": 150,
+      "items": [
+        { "item": "wooden_sword", "quantity": 1 },
+        { "item": "leather_armor", "quantity": 1 }
+      ],
+      "flags": ["tutorial_complete"]
+    }
+  },
+  {
     "id": 1,
     "slug": "sapling-supplies",
     "name": "Sapling Supplies",
