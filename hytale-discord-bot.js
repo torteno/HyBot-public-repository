@@ -2873,6 +2873,18 @@ const SIMPLE_SLASH_EXECUTORS = {
     const item = interaction.options.getString('item', true);
     return { command: 'trade', args: [user.id, item] };
   },
+  adventure: interaction => {
+    const chapter = interaction.options.getString('chapter');
+    return { command: 'adventure', args: chapter ? [chapter] : [] };
+  },
+  startadventure: interaction => {
+    const chapter = interaction.options.getString('chapter', true);
+    return { command: 'startadventure', args: [chapter] };
+  },
+  adventurechoice: interaction => {
+    const choice = interaction.options.getString('choice', true);
+    return { command: 'adventurechoice', args: [choice] };
+  },
   help: interaction => {
     const category = interaction.options.getString('category');
     return { command: 'help', args: category ? [category] : [] };
