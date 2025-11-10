@@ -7062,10 +7062,10 @@ async function showHelp(message, category) {
   const renderCategory = (key, data) => {
     if (!data || !data.commands || !Array.isArray(data.commands)) return;
     try {
+      // Discord embed field value limit is 1024 characters
+      const maxLength = 1024;
       const rows = data.commands.map(([cmd, desc]) => `\`${PREFIX} ${cmd}\` — ${desc || 'No description'}`).join('\n');
       if (rows && rows.length > 0) {
-        // Discord embed field value limit is 1024 characters
-        const maxLength = 1024;
         if (rows.length > maxLength) {
           const truncated = rows.substring(0, maxLength - 3) + '...';
           embed.addFields({ name: `**${data.title || key}**`, value: truncated, inline: false });
