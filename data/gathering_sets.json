@@ -1,0 +1,218 @@
+[
+  {
+    "type": "mining",
+    "label": "Prospector Harness",
+    "tiers": [
+      {
+        "id": "mining_trailbreaker",
+        "name": "Trailbreaker Kit",
+        "tier": 0,
+        "bonuses": { "speed": 0.0, "quantity": 0.0, "rarity": 0.0, "extraRolls": 0.0 },
+        "perks": [
+          "Baseline miner's satchel and reinforced pick.",
+          "No passive bonuses — meant for new delvers."
+        ]
+      },
+      {
+        "id": "mining_stormdelver",
+        "name": "Stormdelver Rig",
+        "tier": 1,
+        "bonuses": { "speed": 0.18, "quantity": 0.25, "rarity": 0.12, "extraRolls": 0.25 },
+        "requirements": {
+          "coins": 2500,
+          "items": {
+            "stormvein_ore": 15,
+            "tempest_core": 1
+          }
+        },
+        "perks": [
+          "+18% faster mining actions.",
+          "+25% yield and small chance at bonus strikes.",
+          "Stormglass stabilizers increase rare ore finds."
+        ]
+      },
+      {
+        "id": "mining_auric_excavator",
+        "name": "Auric Excavator Suit",
+        "tier": 2,
+        "bonuses": { "speed": 0.35, "quantity": 0.55, "rarity": 0.28, "extraRolls": 0.6 },
+        "requirements": {
+          "coins": 6200,
+          "items": {
+            "stormvein_ore": 35,
+            "obsidian_heart": 4,
+            "skyrazor_plume": 6
+          }
+        },
+        "perks": [
+          "+35% mining speed and major yield boost.",
+          "Large chance to uncover rare veins and bonus ore rolls.",
+          "Leyline anchors shield against cave-ins."
+        ]
+      }
+    ]
+  },
+  {
+    "type": "foraging",
+    "label": "Grove Ranger Attire",
+    "tiers": [
+      {
+        "id": "foraging_wayfarer",
+        "name": "Wayfarer Wraps",
+        "tier": 0,
+        "bonuses": { "speed": 0.0, "quantity": 0.05, "rarity": 0.05, "extraRolls": 0.0 },
+        "perks": [
+          "+5% yield and rare discover chance.",
+          "Lightweight satchel for long treks."
+        ]
+      },
+      {
+        "id": "foraging_bloomkeeper",
+        "name": "Bloomkeeper Weave",
+        "tier": 1,
+        "bonuses": { "speed": 0.22, "quantity": 0.35, "rarity": 0.18, "extraRolls": 0.3 },
+        "requirements": {
+          "coins": 2100,
+          "items": {
+            "ancient_bark": 20,
+            "wildvine_bloom": 12,
+            "grove_tonic": 4
+          }
+        },
+        "perks": [
+          "+22% faster foraging routes.",
+          "+35% harvest size and improved rare blooms.",
+          "Unlocks a 30% chance for bonus bundles."
+        ]
+      },
+      {
+        "id": "foraging_harmonist",
+        "name": "Harmonist's Battledress",
+        "tier": 2,
+        "bonuses": { "speed": 0.42, "quantity": 0.6, "rarity": 0.32, "extraRolls": 0.8 },
+        "requirements": {
+          "coins": 5400,
+          "items": {
+            "grove_tonic": 12,
+            "nightpetal_blossom": 6,
+            "gloomdew_extract": 8
+          }
+        },
+        "perks": [
+          "+42% speed with adaptive routefinding.",
+          "+60% yield and high rare flora discovery.",
+          "Grant an 80% chance at an additional rare-roll bundle."
+        ]
+      }
+    ]
+  },
+  {
+    "type": "farming",
+    "label": "Harvestwright Ensemble",
+    "tiers": [
+      {
+        "id": "farming_apprentice",
+        "name": "Apprentice Fieldwear",
+        "tier": 0,
+        "bonuses": { "speed": 0.05, "quantity": 0.1, "rarity": 0.0, "extraRolls": 0.0 },
+        "perks": [
+          "+5% planting speed and +10% crop output.",
+          "Keeps tools organized for quick rotations."
+        ]
+      },
+      {
+        "id": "farming_seedcaller",
+        "name": "Seedcaller Regalia",
+        "tier": 1,
+        "bonuses": { "speed": 0.25, "quantity": 0.4, "rarity": 0.16, "extraRolls": 0.35 },
+        "requirements": {
+          "coins": 2400,
+          "items": {
+            "verdant_pollen": 16,
+            "fen_root": 18,
+            "cinder_resin": 8
+          }
+        },
+        "perks": [
+          "+25% farming speed and +40% harvest volume.",
+          "Invokes rare crop sprouting with gentle song.",
+          "Adds a 35% chance to pull an extra harvest bundle."
+        ]
+      },
+      {
+        "id": "farming_planar_steward",
+        "name": "Planar Steward Harness",
+        "tier": 2,
+        "bonuses": { "speed": 0.48, "quantity": 0.68, "rarity": 0.34, "extraRolls": 1.0 },
+        "requirements": {
+          "coins": 5800,
+          "items": {
+            "verdant_pollen": 28,
+            "obsidian_fragment": 10,
+            "gloomdew_extract": 8
+          }
+        },
+        "perks": [
+          "+48% farming speed with planar irrigation.",
+          "Massive +68% output and high-grade crop chance.",
+          "Guaranteed bonus harvest roll with each cycle."
+        ]
+      }
+    ]
+  },
+  {
+    "type": "fishing",
+    "label": "Tidebound Angler Gear",
+    "tiers": [
+      {
+        "id": "fishing_adept",
+        "name": "Waders of the Adept",
+        "tier": 0,
+        "bonuses": { "speed": 0.0, "quantity": 0.12, "rarity": 0.08, "extraRolls": 0.15 },
+        "perks": [
+          "Steady footing grants +12% catch volume.",
+          "Slightly increases odds of rare fish schools."
+        ]
+      },
+      {
+        "id": "fishing_tidecaller",
+        "name": "Tidecaller Netcloak",
+        "tier": 1,
+        "bonuses": { "speed": 0.22, "quantity": 0.38, "rarity": 0.24, "extraRolls": 0.55 },
+        "requirements": {
+          "coins": 2600,
+          "items": {
+            "skywhisper_koi": 6,
+            "emberfin_eel": 10,
+            "frostgill_trout": 14
+          }
+        },
+        "perks": [
+          "+22% recast speed reduces downtime.",
+          "+38% haul size and strong rare catch bonus.",
+          "55% chance to snag an additional catch."
+        ]
+      },
+      {
+        "id": "fishing_moonlure",
+        "name": "Moonlure Navigator Rig",
+        "tier": 2,
+        "bonuses": { "speed": 0.4, "quantity": 0.7, "rarity": 0.42, "extraRolls": 1.2 },
+        "requirements": {
+          "coins": 6400,
+          "items": {
+            "moonlure_jelly": 4,
+            "gloomscale_piranha": 8,
+            "mycelial_shrimp": 12
+          }
+        },
+        "perks": [
+          "+40% fishing speed with enchanted reels.",
+          "Massive +70% haul and heavy rare find boost.",
+          "120% chance translates to guaranteed extra catch and chance for a second."
+        ]
+      }
+    ]
+  }
+]
+

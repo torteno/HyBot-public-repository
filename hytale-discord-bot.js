@@ -14,7 +14,7 @@ const {
   ButtonBuilder,
   ButtonStyle,
   StringSelectMenuBuilder,
-  InteractionResponseFlags
+  MessageFlags
 } = require('discord.js');
 const axios = require('axios');
 const cron = require('node-cron');
@@ -81,9 +81,15 @@ const fallbackItemDefinitions = [
   { id: 'frostblossom_petals', type: 'material', value: 24, emoji: '❄️', description: 'Crystalline petals that never melt.' }
 ];
 
-const ITEM_DEFINITIONS = loadDataFile('items.json', fallbackItemDefinitions);
+const ITEM_FILES = [
+  { file: 'items.json', fallback: fallbackItemDefinitions },
+  { file: 'items_gathering.json', fallback: [] }
+];
 const ITEMS = {};
-const ITEM_LIST = ITEM_DEFINITIONS.map(def => {
+const ITEM_LIST = [];
+
+function registerItemDefinition(def) {
+  if (!def || !def.id) return;
   const baseDamage = Number.isFinite(def.damage) ? def.damage : Number(def.damage || def.stats?.damage || 0);
   const damageMin = Number.isFinite(def.damageMin) ? def.damageMin : (baseDamage ? Math.max(1, baseDamage - 2) : 0);
   const damageMax = Number.isFinite(def.damageMax) ? def.damageMax : (baseDamage ? Math.max(damageMin, baseDamage + 2) : 0);
@@ -130,8 +136,1027 @@ const ITEM_LIST = ITEM_DEFINITIONS.map(def => {
     tags: Array.isArray(def.tags) ? def.tags : []
   };
   ITEMS[normalized.id] = normalized;
-  return normalized;
+  ITEM_LIST.push(normalized);
+}
+
+ITEM_FILES.forEach(({ file, fallback }) => {
+  const definitions = loadDataFile(file, fallback);
+  if (Array.isArray(definitions)) {
+    definitions.forEach(def => registerItemDefinition(def));
+  }
 });
+const ITEM_SET_DEFINITIONS = loadDataFile('item_sets.json', []);
+const ITEM_SET_LOOKUP = {};
+ITEM_SET_DEFINITIONS.forEach(set => {
+  if (set?.id) ITEM_SET_LOOKUP[set.id.toLowerCase()] = set;
+});
+const GATHERING_SET_DEFINITIONS = loadDataFile('gathering_sets.json', []);
+const GATHERING_SET_TYPES = ['mining', 'foraging', 'farming', 'fishing'];
+const GATHERING_SET_LOOKUP = new Map();
+GATHERING_SET_DEFINITIONS.forEach(def => {
+  if (!def?.type || !Array.isArray(def.tiers)) return;
+  const key = def.type.toLowerCase();
+  const tiers = def.tiers
+    .filter(tier => tier && tier.id)
+    .map((tier, index) => ({
+      ...tier,
+      id: String(tier.id),
+      tier: Number.isFinite(tier.tier) ? tier.tier : index,
+      bonuses: {
+        speed: Number(tier.bonuses?.speed || 0),
+        quantity: Number(tier.bonuses?.quantity || 0),
+        rarity: Number(tier.bonuses?.rarity || 0),
+        extraRolls: Number(tier.bonuses?.extraRolls || tier.extraRolls || 0)
+      },
+      requirements: tier.requirements ? JSON.parse(JSON.stringify(tier.requirements)) : null,
+      perks: Array.isArray(tier.perks) ? tier.perks.map(String) : []
+    }))
+    .sort((a, b) => a.tier - b.tier);
+  GATHERING_SET_LOOKUP.set(key, { ...def, tiers });
+});
+const GATHERING_RESOURCE_CONFIG = loadDataFile('gathering_resources.json', { defaults: {}, biomes: [], dungeons: [] });
+const GATHERING_RESOURCE_DEFAULTS = GATHERING_RESOURCE_CONFIG.defaults || {};
+const GATHERING_RESOURCE_BIOMES = new Map();
+const GATHERING_RESOURCE_DUNGEONS = new Map();
+(Array.isArray(GATHERING_RESOURCE_CONFIG.biomes) ? GATHERING_RESOURCE_CONFIG.biomes : []).forEach(entry => {
+  if (!entry?.id) return;
+  GATHERING_RESOURCE_BIOMES.set(entry.id.toLowerCase(), JSON.parse(JSON.stringify(entry)));
+});
+(Array.isArray(GATHERING_RESOURCE_CONFIG.dungeons) ? GATHERING_RESOURCE_CONFIG.dungeons : []).forEach(entry => {
+  if (!entry?.id) return;
+  GATHERING_RESOURCE_DUNGEONS.set(entry.id.toLowerCase(), JSON.parse(JSON.stringify(entry)));
+});
+const GATHERING_TYPE_LABELS = {
+  mining: 'Mining',
+  foraging: 'Foraging',
+  farming: 'Farming',
+  fishing: 'Fishing'
+};
+const GATHERING_BASELINE_SECONDS = {
+  mining: 12,
+  foraging: 11,
+  farming: 15,
+  fishing: 30
+};
+const GATHERING_BASE_ROLLS = {
+  mining: 2,
+  foraging: 3,
+  farming: 2,
+  fishing: 1
+};
+const GATHERING_PROGRESS_UPDATE_MS = 2000;
+const GATHERING_RARITY_WEIGHTS = {
+  common: 6,
+  uncommon: 4,
+  rare: 2.4,
+  epic: 1.2,
+  legendary: 0.6,
+  mythic: 0.35
+};
+const GATHERING_RARITY_INDEX = {
+  common: 1,
+  uncommon: 1.2,
+  rare: 1.6,
+  epic: 2.1,
+  legendary: 2.6,
+  mythic: 3.1
+};
+const GATHERING_RESOURCE_KEYS = {
+  mining: ['mining', 'mine'],
+  foraging: ['foraging', 'forage'],
+  farming: ['farming', 'harvest'],
+  fishing: ['fishing']
+};
+const ACTIVE_GATHER_SESSIONS = new Map();
+const GATHERING_SLASH_CHOICES = GATHERING_SET_TYPES.map(type => ({
+  name: GATHERING_TYPE_LABELS[type],
+  value: type
+}));
+
+const fallbackShopItems = [
+  { id: 'health_potion', name: 'Health Potion', price: 50, emoji: '🧪', description: 'Restores 30 HP on use.' },
+  { id: 'mana_potion', name: 'Mana Potion', price: 45, emoji: '🔮', description: 'Restores 20 Mana on use.' },
+  { id: 'iron_sword', name: 'Iron Sword', price: 200, emoji: '⚔️', description: 'Sturdy blade favored by Borea guards.' },
+  { id: 'leather_armor', name: 'Leather Armor', price: 150, emoji: '🛡️', description: 'Basic armor offering modest protection.' },
+  { id: 'focus_elixir', name: 'Focus Elixir', price: 120, emoji: '✨', description: 'Temporarily boosts spellcasting efficiency.' }
+];
+const SHOP_ITEMS = loadDataFile('shop.json', fallbackShopItems);
+
+function createEmptySetBonus() {
+  return {
+    attributes: { power: 0, agility: 0, resilience: 0, focus: 0 },
+    resistances: {},
+    damageBonus: 0,
+    damageMultiplier: 0,
+    defenseBonus: 0,
+    accuracyBonus: 0,
+    dodgeChance: 0,
+    blockChance: 0,
+    critChance: 0,
+    critMultiplier: 0,
+    flatDamageReduction: 0,
+    gathering: createEmptyGatheringBonuses()
+  };
+}
+
+function createEmptyGatheringBonuses() {
+  const template = { speed: 0, quantity: 0, rarity: 0, extraRolls: 0 };
+  const bonuses = { global: { ...template } };
+  GATHERING_SET_TYPES.forEach(type => {
+    bonuses[type] = { ...template };
+  });
+  return bonuses;
+}
+
+function mergeResistances(target = {}, source = {}) {
+  if (!source || typeof source !== 'object') return target;
+  Object.entries(source).forEach(([key, value]) => {
+    if (value == null) return;
+    const normalizedKey = key.toLowerCase();
+    const current = Number(target[normalizedKey] || 0);
+    target[normalizedKey] = current + (Number(value) || 0);
+  });
+  return target;
+}
+
+function getEquippedItemIds(player) {
+  if (!player?.equipped) return [];
+  return Object.values(player.equipped)
+    .filter(Boolean)
+    .map(itemId => itemId.toLowerCase());
+}
+
+function getActiveItemSetData(player) {
+  const equippedItems = new Set(getEquippedItemIds(player));
+  const bonuses = createEmptySetBonus();
+  const activeSets = [];
+
+  if (!equippedItems.size) {
+    return { sets: activeSets, bonuses };
+  }
+
+  ITEM_SET_DEFINITIONS.forEach(set => {
+    if (!set?.pieces || !set.pieces.length) return;
+    const hasAllPieces = set.pieces.every(piece => piece && equippedItems.has(piece.toLowerCase()));
+    if (!hasAllPieces) return;
+
+    activeSets.push({
+      id: set.id,
+      name: set.name || set.id,
+      pieces: [...set.pieces]
+    });
+
+    const setBonuses = set.bonuses || {};
+    if (setBonuses.attributes && typeof setBonuses.attributes === 'object') {
+      Object.entries(setBonuses.attributes).forEach(([attribute, value]) => {
+        const key = attribute.toLowerCase();
+        bonuses.attributes[key] = (bonuses.attributes[key] || 0) + (Number(value) || 0);
+      });
+    }
+
+    mergeResistances(bonuses.resistances, setBonuses.resistances);
+
+    const numericKeys = [
+      'damageBonus',
+      'damageMultiplier',
+      'defenseBonus',
+      'accuracyBonus',
+      'dodgeChance',
+      'blockChance',
+      'critChance',
+      'critMultiplier',
+      'flatDamageReduction'
+    ];
+    numericKeys.forEach(key => {
+      if (setBonuses[key] != null) {
+        bonuses[key] = (bonuses[key] || 0) + (Number(setBonuses[key]) || 0);
+      }
+    });
+
+    if (setBonuses.gathering) {
+      mergeGatheringBonuses(bonuses.gathering, setBonuses.gathering);
+    }
+  });
+
+  return { sets: activeSets, bonuses };
+}
+
+function applyGatheringBonusBucket(targetBucket, enhancements) {
+  if (!enhancements || typeof enhancements !== 'object') return;
+  Object.entries(enhancements).forEach(([bonusKey, value]) => {
+    if (value == null) return;
+    if (bonusKey === 'extraRolls') {
+      targetBucket.extraRolls = (targetBucket.extraRolls || 0) + Number(value || 0);
+    } else if (bonusKey in targetBucket) {
+      targetBucket[bonusKey] = (targetBucket[bonusKey] || 0) + Number(value || 0);
+    }
+  });
+}
+
+function mergeGatheringBonuses(target, source) {
+  if (!source || typeof source !== 'object') return;
+  Object.entries(source).forEach(([scope, bonuses]) => {
+    if (!bonuses || typeof bonuses !== 'object') return;
+    const key = scope.toLowerCase();
+    if (key === 'global') {
+      applyGatheringBonusBucket(target.global, bonuses);
+    } else if (GATHERING_SET_TYPES.includes(key)) {
+      applyGatheringBonusBucket(target[key], bonuses);
+    }
+  });
+}
+
+function ensureGatheringGear(player) {
+  if (!player.gatheringGear) {
+    player.gatheringGear = { current: {}, unlocked: {} };
+  }
+  if (!player.gatheringGear.current) player.gatheringGear.current = {};
+  if (!player.gatheringGear.unlocked) player.gatheringGear.unlocked = {};
+
+  GATHERING_SET_TYPES.forEach(type => {
+    const definition = GATHERING_SET_LOOKUP.get(type);
+    if (!definition || !definition.tiers.length) return;
+    const defaultTier = definition.tiers[0];
+    const unlocked = player.gatheringGear.unlocked[type] || (player.gatheringGear.unlocked[type] = {});
+    if (defaultTier) {
+      if (!unlocked[defaultTier.id]) unlocked[defaultTier.id] = true;
+      if (!player.gatheringGear.current[type]) {
+        player.gatheringGear.current[type] = defaultTier.id;
+      }
+    }
+  });
+
+  return player.gatheringGear;
+}
+
+function getGatheringTierDefinition(type, tierId) {
+  if (!type) return null;
+  const definition = GATHERING_SET_LOOKUP.get(type.toLowerCase());
+  if (!definition) return null;
+  if (!tierId) return definition.tiers[0] || null;
+  return definition.tiers.find(tier => tier.id === tierId) || definition.tiers[0] || null;
+}
+
+function getGatheringTierIndex(type, tierId) {
+  const definition = GATHERING_SET_LOOKUP.get(type.toLowerCase());
+  if (!definition) return 0;
+  return Math.max(0, definition.tiers.findIndex(tier => tier.id === tierId));
+}
+
+function buildGatheringBonusSummary() {
+  return createEmptyGatheringBonuses();
+}
+
+function aggregateGatheringBonuses(target, additions, scope) {
+  if (!additions) return;
+  if (scope && GATHERING_SET_TYPES.includes(scope)) {
+    applyGatheringBonusBucket(target[scope], additions);
+  } else {
+    applyGatheringBonusBucket(target.global, additions);
+  }
+}
+
+function getGatheringBonuses(player) {
+  ensureGatheringGear(player);
+  const totals = buildGatheringBonusSummary();
+  const gear = player.gatheringGear || { current: {}, unlocked: {} };
+  const activeSets = getActiveItemSetData(player);
+  if (activeSets?.bonuses?.gathering) {
+    mergeGatheringBonuses(totals, activeSets.bonuses.gathering);
+  }
+
+  GATHERING_SET_TYPES.forEach(type => {
+    const currentTierId = gear.current?.[type];
+    const tier = getGatheringTierDefinition(type, currentTierId);
+    if (tier?.bonuses) {
+      aggregateGatheringBonuses(totals, tier.bonuses, type);
+    }
+    if (tier?.globalBonuses) {
+      aggregateGatheringBonuses(totals, tier.globalBonuses, 'global');
+    }
+  });
+
+  return { totals, gear, itemSets: activeSets };
+}
+
+function cloneGatheringBonuses(bonuses = createEmptyGatheringBonuses()) {
+  const clone = { global: { ...bonuses.global } };
+  GATHERING_SET_TYPES.forEach(type => {
+    clone[type] = { ...bonuses[type] };
+  });
+  return clone;
+}
+
+function getEquippedGatheringTool(player, gatherType) {
+  const toolId = player?.equipped?.tool;
+  if (!toolId) return null;
+  const definition = ITEMS[toolId];
+  if (!definition?.type || definition.type !== 'tool') return null;
+  const gather = definition.gathering || {};
+  const supportedTypes = Array.isArray(gather.types)
+    ? gather.types.map(type => String(type).toLowerCase())
+    : gather.type
+      ? [String(gather.type).toLowerCase()]
+      : ['all'];
+  if (!supportedTypes.includes('all') && !supportedTypes.includes(gatherType)) return null;
+  return {
+    id: toolId,
+    definition,
+    bonuses: { ...(gather.bonuses || {}) },
+    types: supportedTypes
+  };
+}
+
+function applyToolBonusesToTotals(totals, tool, gatherType) {
+  if (!tool?.bonuses || !totals) return totals;
+  const scopes = tool.types?.includes('all') ? [...GATHERING_SET_TYPES] : tool.types || [];
+  applyGatheringBonusBucket(totals.global, tool.bonuses);
+  scopes.forEach(type => {
+    if (totals[type]) applyGatheringBonusBucket(totals[type], tool.bonuses);
+  });
+  if (totals[gatherType]) applyGatheringBonusBucket(totals[gatherType], tool.bonuses);
+  return totals;
+}
+
+function shouldSendGatherNotifications(player) {
+  return player?.settings?.gatherNotifications !== false;
+}
+
+function setGatherNotifications(player, enabled) {
+  player.settings = player.settings || {};
+  player.settings.gatherNotifications = !!enabled;
+}
+
+function buildGatheringTutorialEmbed(biomeName) {
+  const embed = new EmbedBuilder()
+    .setColor('#2ECC71')
+    .setTitle('🌱 Gathering Tutorial')
+    .setDescription('Harvesting actions run on short timers, roll for biome-specific loot, and can trigger events or ambushes.')
+    .addFields(
+      {
+        name: 'How It Works',
+        value: [
+          '• Pick a category (Mine, Forage, Farm, Fish) to begin.',
+          '• Progress bars update every few seconds until the haul completes.',
+          '• Gear sets and tools stack bonuses to speed, yield, rare finds, and extra rolls.'
+        ].join('\n'),
+        inline: false
+      },
+      {
+        name: 'Tips',
+        value: [
+          '• Upgrade gathering gear and craft advanced tools for huge boosts.',
+          '• Bases can automate gathering with extractor modules — don’t let storage fill!',
+          '• Watch the completion notification for combat encounters and chained events.'
+        ].join('\n'),
+        inline: false
+      }
+    )
+    .setFooter({ text: `Current biome: ${biomeName || 'Unknown'}` });
+  return embed;
+}
+
+function sendGatheringTutorial(target, biomeName, options = {}) {
+  const embed = buildGatheringTutorialEmbed(biomeName);
+  if (target?.reply) {
+    return target.reply({ embeds: [embed], ephemeral: options.ephemeral });
+  }
+  if (target?.deferred || target?.replied) {
+    return target.followUp({ embeds: [embed], ephemeral: true });
+  }
+  if (target?.reply) {
+    return target.reply({ embeds: [embed], ephemeral: true });
+  }
+  return Promise.resolve();
+}
+
+function buildGatheringNotificationEmbed(user, biome, type, drops, durationSeconds, tool) {
+  const emojiMap = { mining: '⛏️', foraging: '🌿', farming: '🌾', fishing: '🎣' };
+  const emoji = emojiMap[type] || '✨';
+  const actorName = user?.username || user?.globalName || 'Adventurer';
+  const embed = new EmbedBuilder()
+    .setColor('#27AE60')
+    .setTitle(`${emoji} Harvest Complete`)
+    .setDescription(`**${actorName}** finished gathering in **${biome?.name || biome || 'Unknown Biome'}**.`)
+    .addFields(
+      {
+        name: 'Rewards',
+        value: drops.length
+          ? drops.map(drop => `• ${formatItemName(drop.item)} x${drop.quantity}`).join('\n')
+          : 'No notable loot this time.',
+        inline: false
+      }
+    )
+    .setFooter({ text: `Elapsed: ${durationSeconds}s${tool ? ` | Tool: ${tool.definition.name}` : ''}` });
+  return embed;
+}
+
+function formatGatheringToolSummary(toolDef) {
+  if (!toolDef) {
+    return 'None equipped. Craft or loot gathering tools to gain powerful harvest bonuses.';
+  }
+  const gather = toolDef.gathering || {};
+  const types = Array.isArray(gather.types)
+    ? gather.types.map(type => GATHERING_TYPE_LABELS[type.toLowerCase?.()] || type).join(', ')
+    : gather.type
+      ? GATHERING_TYPE_LABELS[gather.type.toLowerCase?.()] || gather.type
+      : 'All Gathering';
+  const bonuses = gather.bonuses || {};
+  const segments = [];
+  if (bonuses.speed) segments.push(`Speed +${Math.round(bonuses.speed * 100)}%`);
+  if (bonuses.quantity) segments.push(`Yield +${Math.round(bonuses.quantity * 100)}%`);
+  if (bonuses.rarity) segments.push(`Rare +${Math.round(bonuses.rarity * 100)}%`);
+  if (bonuses.extraRolls) segments.push(`Extra Rolls +${bonuses.extraRolls}`);
+  const bonusText = segments.length ? segments.join(', ') : 'No bonuses listed.';
+  return `${formatItemName(toolDef.id)} (${types}) — ${bonusText}`;
+}
+
+function buildGatherStatusEmbed(player, biome, exploration, options = {}) {
+  const embed = new EmbedBuilder()
+    .setColor('#2ECC71')
+    .setTitle('🌾 Harvest Overview')
+    .setDescription(`Current biome: **${biome?.name || exploration.currentBiome}**`)
+    .setThumbnail(BIOME_ARTWORK[biome?.id?.toLowerCase?.()] || EMBED_VISUALS.exploration)
+    .setImage(EMBED_VISUALS.exploration);
+
+  const gearSummary = buildGatheringGearSummary(player) || 'Gathering gear not yet unlocked.';
+  embed.addFields({ name: 'Gear Loadout', value: gearSummary, inline: false });
+
+  const toolDef = player.equipped?.tool ? ITEMS[player.equipped.tool] : null;
+  embed.addFields({ name: 'Equipped Tool', value: formatGatheringToolSummary(toolDef), inline: false });
+
+  const notificationsEnabled = shouldSendGatherNotifications(player);
+  embed.addFields({
+    name: 'Notifications',
+    value: notificationsEnabled
+      ? '🔔 Enabled — you will receive channel updates when a harvest finishes.\nUse `!hy gather notifications off` to disable.'
+      : '🔕 Disabled — toggle back on with `!hy gather notifications on`.',
+    inline: false
+  });
+
+  if (exploration?.gathering) {
+    const remaining = Math.max(0, exploration.gathering.endsAt - Date.now());
+    embed.addFields({
+      name: 'Active Session',
+      value: `Gathering **${formatActionName(exploration.gathering.type)}** — ${formatDuration(remaining)} remaining`,
+      inline: false
+    });
+  } else {
+    embed.addFields({
+      name: 'Active Session',
+      value: 'None. Use the buttons below or `!hy gather <type>` to begin harvesting.',
+      inline: false
+    });
+  }
+
+  if (options.includeTutorial) {
+    embed.addFields({
+      name: 'Tutorial Tips',
+      value: [
+        '• Harvesting rolls for biome-specific loot and can trigger bonus events or ambushes.',
+        '• Upgrade gathering gear and craft tools to stack speed, yield, rare find, and extra-roll bonuses.',
+        '• Bases with extractor modules automate resource collection — keep storage clear!'
+      ].join('\n'),
+      inline: false
+    });
+  }
+
+  return embed;
+}
+
+function getNextGatheringTier(type, currentTierId) {
+  const definition = GATHERING_SET_LOOKUP.get(type.toLowerCase());
+  if (!definition || !definition.tiers.length) return null;
+  const currentIndex = Math.max(0, definition.tiers.findIndex(tier => tier.id === currentTierId));
+  if (currentIndex < 0) return definition.tiers[0];
+  return definition.tiers[currentIndex + 1] || null;
+}
+
+function convertGatheringRequirements(tier) {
+  if (!tier?.requirements) return null;
+  const requirements = tier.requirements;
+  const cost = {};
+  if (Number.isFinite(requirements.coins)) cost.coins = requirements.coins;
+  if (requirements.items && typeof requirements.items === 'object') {
+    cost.materials = { ...requirements.items };
+  }
+  return cost;
+}
+
+function canAffordGatheringTier(player, tier) {
+  const cost = convertGatheringRequirements(tier);
+  if (!cost) return true;
+  return canAffordCost(player, cost);
+}
+
+function applyGatheringTierCost(player, tier) {
+  const cost = convertGatheringRequirements(tier);
+  if (!cost) return;
+  deductCost(player, cost);
+}
+
+function formatGatheringRequirements(tier) {
+  if (!tier) return 'Unavailable';
+  const cost = convertGatheringRequirements(tier);
+  if (!cost) return 'No cost';
+  const parts = [];
+  if (cost.coins) parts.push(`${cost.coins} coins`);
+  if (cost.materials) {
+    Object.entries(cost.materials).forEach(([item, qty]) => {
+      parts.push(`${formatItemName(item)} x${qty}`);
+    });
+  }
+  return parts.join(' • ') || 'No cost';
+}
+
+function normalizeResourceEntry(entry = {}) {
+  if (!entry.item) return null;
+  const rarity = (entry.rarity || 'common').toLowerCase();
+  const weight = Number(entry.weight || entry.chance || GATHERING_RARITY_WEIGHTS[rarity] || 1);
+  const min = Math.max(1, Number(entry.min || entry.quantityMin || 1));
+  const max = Math.max(min, Number(entry.max || entry.quantityMax || min));
+  return {
+    item: entry.item,
+    rarity,
+    tier: Number(entry.tier || entry.level || 1),
+    chance: weight,
+    min,
+    max,
+    source: entry.source || 'default'
+  };
+}
+
+function convertMaterialsToResources(materials = []) {
+  const pool = [];
+  materials.forEach(material => {
+    if (!material?.item) return;
+    const rarity = (material.rarity || 'common').toLowerCase();
+    const tier = Number(material.tier || 1);
+    const min = Math.max(1, Number(material.min || Math.max(1, Math.round(tier / 1.5))));
+    const max = Math.max(min, Number(material.max || Math.max(min, Math.round(min + Math.max(1, tier)))));
+    const baseWeight = Number(material.weight || GATHERING_RARITY_WEIGHTS[rarity] || 1);
+    pool.push({
+      item: material.item,
+      rarity,
+      tier,
+      min,
+      max,
+      chance: baseWeight,
+      source: material.source || 'materials'
+    });
+  });
+  return pool;
+}
+
+function buildGatheringPoolFromConfig(configEntries = [], source = 'config') {
+  const pool = [];
+  if (!Array.isArray(configEntries)) return pool;
+  configEntries.forEach(entry => {
+    const normalized = normalizeResourceEntry({ ...entry, source });
+    if (normalized) pool.push(normalized);
+  });
+  return pool;
+}
+
+function buildGatheringPoolFromResources(entries = [], source = 'biome') {
+  const pool = [];
+  if (!Array.isArray(entries)) return pool;
+  entries.forEach(entry => {
+    if (!entry?.item) return;
+    const rarity = (entry.rarity || 'common').toLowerCase();
+    const min = Math.max(1, Number(entry.min || entry.quantityMin || 1));
+    const max = Math.max(min, Number(entry.max || entry.quantityMax || min));
+    const weight = Number(entry.chance || entry.weight || GATHERING_RARITY_WEIGHTS[rarity] || 1);
+    pool.push({
+      item: entry.item,
+      rarity,
+      tier: Number(entry.tier || 1),
+      min,
+      max,
+      chance: weight,
+      source
+    });
+  });
+  return pool;
+}
+
+function buildGatheringResourcePool(biome, type, options = {}) {
+  const pool = [];
+  const typeKey = type?.toLowerCase();
+  if (!typeKey) return pool;
+  const biomeId = biome?.id?.toLowerCase?.() || options?.biomeId?.toLowerCase?.();
+
+  const defaults = buildGatheringPoolFromConfig(GATHERING_RESOURCE_DEFAULTS[typeKey], 'defaults');
+  pool.push(...defaults);
+
+  if (biomeId && GATHERING_RESOURCE_BIOMES.has(biomeId)) {
+    const configBiome = GATHERING_RESOURCE_BIOMES.get(biomeId);
+    if (configBiome?.[typeKey]) {
+      pool.push(...buildGatheringPoolFromConfig(configBiome[typeKey], `biome:${biomeId}`));
+    }
+  }
+
+  const resourceKeys = GATHERING_RESOURCE_KEYS[typeKey] || [typeKey];
+  resourceKeys.forEach(key => {
+    const entries = biome?.resources?.[key];
+    if (Array.isArray(entries) && entries.length) {
+      pool.push(...buildGatheringPoolFromResources(entries, `resources:${key}`));
+    }
+  });
+
+  if (biome?.materials?.[typeKey]) {
+    pool.push(...convertMaterialsToResources(biome.materials[typeKey]));
+  }
+
+  if (typeKey !== 'fishing' && biome?.materials?.special) {
+    pool.push(...convertMaterialsToResources(biome.materials.special));
+  }
+
+  if (options?.dungeonId) {
+    const dungeonKey = options.dungeonId.toLowerCase();
+    const dungeonConfig = GATHERING_RESOURCE_DUNGEONS.get(dungeonKey);
+    if (dungeonConfig?.[typeKey]) {
+      pool.push(...buildGatheringPoolFromConfig(dungeonConfig[typeKey], `dungeon:${dungeonKey}`));
+    }
+  }
+
+  if (!pool.length && defaults.length) {
+    return defaults;
+  }
+  return pool;
+}
+
+function resolveGatheringRewards(player, pool, type, modifiers, options = {}) {
+  const drops = [];
+  const logs = [];
+  if (!Array.isArray(pool) || pool.length === 0) {
+    return { drops, logs };
+  }
+
+  const totals = modifiers?.totals || createEmptyGatheringBonuses();
+  const globalBonus = totals.global || { speed: 0, quantity: 0, rarity: 0, extraRolls: 0 };
+  const typeBonus = totals[type] || { speed: 0, quantity: 0, rarity: 0, extraRolls: 0 };
+  const quantityBonus = (globalBonus.quantity || 0) + (typeBonus.quantity || 0);
+  const rarityBonus = (globalBonus.rarity || 0) + (typeBonus.rarity || 0);
+  const extraRolls = (globalBonus.extraRolls || 0) + (typeBonus.extraRolls || 0);
+  const baseRolls = GATHERING_BASE_ROLLS[type] || 1;
+  let totalRolls = baseRolls + Math.max(0, Math.floor(extraRolls));
+  const fractional = extraRolls % 1;
+  if (fractional > 0 && Math.random() < fractional) {
+    totalRolls += 1;
+  }
+
+  const adjustedPool = pool.map(entry => {
+    const rarityIndex = GATHERING_RARITY_INDEX[entry.rarity] || 1;
+    const adjustedChance = Math.max(0.0001, entry.chance * (1 + rarityBonus * rarityIndex));
+    return { ...entry, chance: adjustedChance };
+  });
+
+  for (let i = 0; i < totalRolls; i++) {
+    const entry = weightedChoice(adjustedPool, 'chance');
+    if (!entry) continue;
+    const baseQty = randomBetween(entry.min, entry.max);
+    const quantity = Math.max(1, Math.round(baseQty * (1 + quantityBonus)));
+    drops.push({ item: entry.item, quantity, rarity: entry.rarity, source: entry.source || type });
+    addItemToInventory(player, entry.item, quantity);
+    processQuestEvent(null, player, { type: 'gather', itemId: entry.item, count: quantity });
+  }
+
+  if (!drops.length && pool.length) {
+    // pity roll ensures something
+    const pityEntry = weightedChoice(adjustedPool, 'chance');
+    if (pityEntry) {
+      const qty = Math.max(1, randomBetween(pityEntry.min, pityEntry.max));
+      drops.push({ item: pityEntry.item, quantity: qty, rarity: pityEntry.rarity, source: pityEntry.source || type, pity: true });
+      addItemToInventory(player, pityEntry.item, qty);
+      processQuestEvent(null, player, { type: 'gather', itemId: pityEntry.item, count: qty });
+    }
+  }
+
+  return { drops, logs };
+}
+
+function buildProgressBar(percent, length = 18) {
+  const normalized = Math.min(1, Math.max(0, percent));
+  const filled = Math.round(normalized * length);
+  const empty = Math.max(0, length - filled);
+  return `${'█'.repeat(filled)}${'░'.repeat(empty)}`;
+}
+
+async function startGatheringSession(player, type, context = {}) {
+  const userId = context.userId || context.interaction?.user?.id || context.message?.author?.id;
+  if (!userId) {
+    return { error: 'Unable to determine user for gathering session.' };
+  }
+  if (!GATHERING_SET_TYPES.includes(type)) {
+    return { error: `Unsupported gathering type "${type}".` };
+  }
+  if (ACTIVE_GATHER_SESSIONS.has(userId)) {
+    return { error: 'You already have an active gathering session.' };
+  }
+
+  const exploration = ensureExplorationState(player);
+  if (exploration.action) {
+    return { error: 'Finish or resolve your current exploration action before gathering.' };
+  }
+  if (exploration.gathering) {
+    return { error: 'Gathering already in progress. Please wait for it to finish.' };
+  }
+
+  const biome = context.biome || getBiomeDefinition(exploration.currentBiome);
+  if (!biome) {
+    return { error: 'Unable to determine your current biome.' };
+  }
+
+  const modifiers = getGatheringBonuses(player);
+  const pool = buildGatheringResourcePool(biome, type, { biomeId: exploration.currentBiome, dungeonId: context.dungeonId });
+  if (!pool.length) {
+    return { error: 'No harvestable resources found here for that gathering type.' };
+  }
+
+  const baseTotals = modifiers.totals || createEmptyGatheringBonuses();
+  const sessionTotals = cloneGatheringBonuses(baseTotals);
+  const equippedTool = getEquippedGatheringTool(player, type);
+  applyToolBonusesToTotals(sessionTotals, equippedTool, type);
+  const speedBonus = (sessionTotals.global?.speed || 0) + (sessionTotals[type]?.speed || 0);
+  const baseSeconds = GATHERING_BASELINE_SECONDS[type] || 15;
+  const adjustedSeconds = Math.max(5, Math.round(baseSeconds * Math.max(0.25, 1 - speedBonus)));
+  const durationMs = adjustedSeconds * 1000;
+  const startedAt = Date.now();
+  const endsAt = startedAt + durationMs;
+
+  const gear = modifiers.gear || ensureGatheringGear(player);
+  const tierId = gear.current?.[type];
+  const tier = getGatheringTierDefinition(type, tierId);
+
+  const yieldBonus = ((sessionTotals.global?.quantity || 0) + (sessionTotals[type]?.quantity || 0)) * 100;
+  const rareBonus = ((sessionTotals.global?.rarity || 0) + (sessionTotals[type]?.rarity || 0)) * 100;
+  const extraRolls = (sessionTotals.global?.extraRolls || 0) + (sessionTotals[type]?.extraRolls || 0);
+
+  const emojiMap = { mining: '⛏️', foraging: '🌿', farming: '🌾', fishing: '🎣' };
+  const emoji = emojiMap[type] || '✨';
+
+  const buildProgressPayload = (percent, remainingMs) => {
+    const bar = buildProgressBar(percent);
+    const remainingSeconds = Math.max(0, remainingMs / 1000);
+    const lines = [
+      `${emoji} Gathering — **${GATHERING_TYPE_LABELS[type]}** in **${biome.name || exploration.currentBiome}**`,
+      `Gear: ${tier?.name || 'Standard Kit'}${equippedTool ? ` | Tool: ${equippedTool.definition.name}` : ''}`,
+      `Bonuses: Yield +${yieldBonus.toFixed(0)}% | Rare +${rareBonus.toFixed(0)}% | Extra Rolls +${extraRolls.toFixed(2)}`,
+      `Progress: \`${bar}\` ${(percent * 100).toFixed(0)}% (${remainingSeconds.toFixed(1)}s remaining)`
+    ];
+    return { content: lines.join('\n') };
+  };
+
+  if (context.message && !player.tutorials.gathering?.intro) {
+    player.tutorials.gathering.intro = true;
+    sendGatheringTutorial(context.message, biome.name).catch(() => {});
+  }
+
+  const sendInitialResponse = async () => {
+    if (context.interaction) {
+      const flags = context.ephemeral ? { flags: MessageFlags.Ephemeral } : {};
+      if (!context.interaction.deferred && !context.interaction.replied) {
+        await context.interaction.deferReply(flags);
+      }
+      await context.interaction.editReply(buildProgressPayload(0, durationMs));
+      return null;
+    }
+    return context.message.reply(buildProgressPayload(0, durationMs));
+  };
+
+  let progressMessage = null;
+  try {
+    progressMessage = await sendInitialResponse();
+  } catch (error) {
+    console.error('Failed to send gathering progress message:', error);
+    return { error: 'Could not send progress update. Try again later.' };
+  }
+
+  const updateReply = payload => {
+    if (context.interaction) {
+      return context.interaction.editReply(payload);
+    }
+    if (progressMessage) {
+      return progressMessage.edit(payload);
+    }
+    return Promise.resolve();
+  };
+
+  const session = {
+    userId,
+    type,
+    startedAt,
+    endsAt,
+    durationMs,
+    active: true,
+    biomeId: exploration.currentBiome,
+    cancel() {
+      this.active = false;
+      if (this.timeout) clearTimeout(this.timeout);
+      if (this.updateTimer) clearTimeout(this.updateTimer);
+      ACTIVE_GATHER_SESSIONS.delete(userId);
+      exploration.gathering = null;
+      if (!exploration.action) exploration.status = 'idle';
+    }
+  };
+
+  ACTIVE_GATHER_SESSIONS.set(userId, session);
+  exploration.gathering = { type, startedAt, endsAt, biomeId: exploration.currentBiome };
+  exploration.status = 'gathering';
+
+  const scheduleUpdate = () => {
+    if (!session.active) return;
+    const now = Date.now();
+    const percent = Math.min(1, (now - startedAt) / durationMs);
+    const remaining = Math.max(0, endsAt - now);
+    updateReply(buildProgressPayload(percent, remaining)).catch(error => {
+      console.error('Gathering progress update failed:', error);
+    });
+    if (percent < 1) {
+      session.updateTimer = setTimeout(scheduleUpdate, GATHERING_PROGRESS_UPDATE_MS);
+    }
+  };
+  session.updateTimer = setTimeout(scheduleUpdate, GATHERING_PROGRESS_UPDATE_MS);
+
+  session.timeout = setTimeout(async () => {
+    session.active = false;
+    ACTIVE_GATHER_SESSIONS.delete(userId);
+    if (session.updateTimer) clearTimeout(session.updateTimer);
+
+    const sessionModifiers = { ...modifiers, totals: sessionTotals, tool: equippedTool };
+    const results = resolveGatheringRewards(player, pool, type, sessionModifiers);
+    const drops = results.drops || [];
+    let summaryLines = [
+      `${emoji} **${GATHERING_TYPE_LABELS[type]} Complete** — ${biome.name || exploration.currentBiome}`,
+      `Gear: ${tier?.name || 'Standard Kit'}`
+    ];
+    if (equippedTool) {
+      summaryLines.push(`Tool: ${equippedTool.definition.name}`);
+    }
+
+    if (drops.length) {
+      const dropLines = drops.map(drop => `${formatItemName(drop.item)} x${drop.quantity}${drop.pity ? ' (pity)' : ''}`);
+      summaryLines.push('', 'Rewards:', dropLines.map(line => `• ${line}`).join('\n'));
+    } else {
+      summaryLines.push('', 'No notable materials were recovered this time.');
+    }
+
+    const explorationEventFields = [];
+    let combatTriggered = false;
+    const biomeData = biome;
+    const eventEntries = Array.isArray(biomeData?.encounters?.events) ? biomeData.encounters.events : null;
+    if (eventEntries && eventEntries.length && Math.random() < 0.2) {
+      const event = weightedChoice(eventEntries, 'chance');
+      if (event) {
+        const outcome = triggerExplorationEvent(player, biomeData, event, null);
+        if (outcome?.text) explorationEventFields.push(outcome.text);
+      }
+    }
+    if (Array.isArray(biomeData?.encounters?.combat) && biomeData.encounters.combat.length && shouldTriggerSuddenCombat(exploration)) {
+      const encounter = weightedChoice(biomeData.encounters.combat, 'chance');
+      if (encounter?.enemy) {
+        const combatOutcome = resolveExplorationCombat(player, encounter.enemy);
+        explorationEventFields.push(combatOutcome.description);
+        combatTriggered = true;
+      }
+    }
+
+    if (!combatTriggered) {
+      exploration.consecutiveActionsSinceCombat = (exploration.consecutiveActionsSinceCombat || 0) + 1;
+    }
+
+    exploration.gathering = null;
+    if (!exploration.action) exploration.status = 'idle';
+
+    if (explorationEventFields.length) {
+      summaryLines.push('', 'Events:', explorationEventFields.map(line => `• ${line}`).join('\n'));
+    }
+
+    summaryLines.push('', `⏱️ Elapsed: ${adjustedSeconds}s`);
+    if (!player.tutorials.gathering?.completionHint) {
+      summaryLines.push('', '💡 Tip: Toggle harvest notifications with `!hy gather notifications off`.');
+      player.tutorials.gathering.completionHint = true;
+    }
+
+    await updateReply({ content: summaryLines.join('\n') }).catch(error => console.error('Failed to send gathering completion message:', error));
+    const notifyChannel = context.message?.channel || context.interaction?.channel || null;
+    const notifyUser = context.message?.author || context.interaction?.user || null;
+    if (notifyChannel && shouldSendGatherNotifications(player)) {
+      const notificationEmbed = buildGatheringNotificationEmbed(
+        notifyUser,
+        biomeData,
+        type,
+        drops,
+        adjustedSeconds,
+        equippedTool
+      );
+      sendStyledChannelMessage(notifyChannel, notificationEmbed, 'gather').catch(() => {});
+    }
+    checkCosmeticUnlocks(null, player);
+    const achievementTarget = context.message
+      ? context.message
+      : context.interaction
+        ? createMessageAdapterFromInteraction(context.interaction, { ephemeral: context.ephemeral })
+        : null;
+    await handleAchievementCheck(achievementTarget, player);
+  }, durationMs);
+
+  return { success: true, durationMs };
+}
+
+const STARTUP_COMMAND_TESTS = [
+  { name: 'profile', command: 'profile', args: () => [] },
+  { name: 'inventory', command: 'inventory', args: () => [] },
+  { name: 'stats', command: 'stats', args: () => [] },
+  { name: 'explore status', command: 'explore', args: () => ['status'] },
+  { name: 'travel status', command: 'travel', args: () => ['status'] },
+  { name: 'gather status', command: 'gather', args: () => ['status'] },
+  { name: 'base list', command: 'base', args: () => ['list'] },
+  { name: 'settlement list', command: 'settlement', args: () => ['list'] },
+  { name: 'daily reward', command: 'daily', args: () => [] },
+  { name: 'tutorial', command: 'tutorial', args: () => [] },
+  { name: 'quests list', command: 'quests', args: () => [] },
+  { name: 'achievements list', command: 'achievements', args: () => [] },
+  { name: 'shop browse', command: 'shop', args: () => [] },
+  { name: 'codex factions', command: 'codex', args: () => ['factions'] },
+  { name: 'lore kweebec', command: 'lore', args: () => ['kweebec'] },
+  { name: 'help overview', command: 'help', args: () => [] },
+  { name: 'info panel', command: 'info', args: () => [] },
+  { name: 'reputation summary', command: 'reputation', args: () => [] },
+  { name: 'vendor overview', command: 'vendor', args: () => [] },
+  { name: 'contracts overview', command: 'contracts', args: () => [] },
+  { name: 'brews list', command: 'brews', args: () => [] },
+  { name: 'recipes list', command: 'recipes', args: () => [] },
+  { name: 'event status', command: 'eventstatus', args: () => [] }
+];
+
+function createSelfTestMessage(userId = `SELF_TEST_${Date.now()}_${Math.floor(Math.random() * 1e6)}`) {
+  const outputs = [];
+  const message = {
+    author: { id: userId, username: 'SelfTestUser', bot: false },
+    guild: { id: 'SELF_TEST_GUILD', name: 'Self Test Guild' },
+    channel: {
+      id: 'SELF_TEST_CHANNEL',
+      send: payload => {
+        outputs.push(payload);
+        return Promise.resolve(payload);
+      }
+    },
+    member: { user: { id: userId } },
+    mentions: {
+      users: {
+        first: () => null
+      }
+    },
+    reply: payload => {
+      outputs.push(payload);
+      return Promise.resolve(payload);
+    },
+    selfTestOutputs: outputs
+  };
+  return message;
+}
+
+async function runStartupSelfTest() {
+  if (process.env.DISABLE_STARTUP_SELF_TEST) {
+    console.log('🧪 Startup self-test skipped (DISABLE_STARTUP_SELF_TEST set).');
+    return;
+  }
+
+  console.log('🧪 Running startup self-test...');
+  const results = [];
+
+  const selfTestUserId = client?.user?.id || '0';
+  for (const test of STARTUP_COMMAND_TESTS) {
+    const message = createSelfTestMessage(selfTestUserId);
+    try {
+      const argsFactory = typeof test.args === 'function' ? test.args : () => test.args || [];
+      const args = argsFactory();
+      await executeCommand(message, test.command, Array.isArray(args) ? args : []);
+      results.push({ name: test.name, ok: true });
+    } catch (error) {
+      results.push({ name: test.name, ok: false, error });
+    } finally {
+      playerData.delete(message.author.id);
+    }
+  }
+
+  const failures = results.filter(result => !result.ok);
+  results.forEach(result => {
+    if (result.ok) {
+      console.log(`   ✅ ${result.name}`);
+    } else {
+      console.error(`   ❌ ${result.name}: ${result.error?.message || result.error}`);
+    }
+  });
+
+  if (failures.length === 0) {
+    console.log('🧪 Startup self-test completed successfully.');
+  } else {
+    console.error(`🧪 Startup self-test completed with ${failures.length} failure(s).`);
+  }
+}
 
 const fallbackRecipeDefinitions = [
   {
@@ -621,7 +1646,6 @@ const fallbackBiomes = [
   { id: 'emerald_grove', name: 'Emerald Grove', climate: 'temperate' },
   { id: 'borea', name: 'Borea', climate: 'tundra' }
 ];
-
 const fallbackBrews = [
   {
     id: 'ember_ale',
@@ -808,6 +1832,53 @@ const SLASH_COMMAND_DEFINITIONS = [
     ]
   },
   {
+    name: 'gather',
+    description: 'Harvest resources using specialized gear.',
+    options: [
+      { type: 1, name: 'status', description: 'View harvesting bonuses and nearby resource highlights.' },
+      {
+        type: 1,
+        name: 'start',
+        description: 'Begin gathering a resource type.',
+        options: [
+          { type: 3, name: 'type', description: 'Gathering type', required: true, choices: GATHERING_SLASH_CHOICES }
+        ]
+      },
+      {
+        type: 1,
+        name: 'gear',
+        description: 'Inspect or upgrade your gathering gear.',
+        options: [
+          {
+            type: 3,
+            name: 'action',
+            description: 'Choose to view status or upgrade gear.',
+            required: true,
+            choices: [
+              { name: 'Status', value: 'status' },
+              { name: 'Upgrade', value: 'upgrade' }
+            ]
+          },
+          {
+            type: 3,
+            name: 'type',
+            description: 'Gathering type to target when upgrading.',
+            required: false,
+            choices: GATHERING_SLASH_CHOICES
+          }
+        ]
+      },
+      {
+        type: 1,
+        name: 'notifications',
+        description: 'Toggle harvest completion notifications.',
+        options: [
+          { type: 5, name: 'enabled', description: 'Enable notifications?', required: true }
+        ]
+      }
+    ]
+  },
+  {
     name: 'travel',
     description: 'Manage travel between biomes.',
     options: [
@@ -947,6 +2018,14 @@ const LEGACY_SLASH_COMMANDS = [
   { name: 'inventory', description: 'View your inventory.' },
   { name: 'equip', description: 'Equip an item from your inventory.', options: [{ type: 3, name: 'item', description: 'Item identifier', required: true }] },
   { name: 'use', description: 'Use a consumable item.', options: [{ type: 3, name: 'item', description: 'Item identifier', required: true }] },
+  {
+    name: 'gather',
+    description: 'Harvest resources or manage gathering gear.',
+    options: [
+      { type: 3, name: 'action', description: 'status | gear | notifications | mining | foraging | farming | fishing', required: false },
+      { type: 3, name: 'target', description: 'Optional secondary argument (module, biome, etc.)', required: false }
+    ]
+  },
   { name: 'stats', description: 'Show your combat statistics.' },
   { name: 'hunt', description: 'Start a battle against a random enemy.' },
   { name: 'raid', description: 'Start a raid encounter.' },
@@ -967,6 +2046,7 @@ const LEGACY_SLASH_COMMANDS = [
   { name: 'daily', description: 'Claim your daily coin reward.' },
   { name: 'give', description: 'Give coins to another player.', options: [{ type: 6, name: 'user', description: 'Recipient', required: true }, { type: 4, name: 'amount', description: 'Amount of coins', required: true }] },
   { name: 'vendor', description: 'Browse a faction vendor.', options: [{ type: 3, name: 'faction', description: 'Faction identifier', required: false }] },
+  { name: 'tutorial', description: 'Walk through the getting-started tutorial.' },
   { name: 'buyrep', description: 'Purchase an item from a faction vendor.', options: [{ type: 3, name: 'faction', description: 'Faction identifier', required: true }, { type: 3, name: 'item', description: 'Item identifier', required: true }, { type: 4, name: 'amount', description: 'Quantity to buy', required: false }] },
   { name: 'contracts', description: 'View available contracts.', options: [{ type: 3, name: 'faction', description: 'Faction identifier', required: false }] },
   { name: 'acceptcontract', description: 'Accept a faction contract.', options: [{ type: 3, name: 'faction', description: 'Faction identifier', required: true }, { type: 3, name: 'id', description: 'Contract identifier', required: true }] },
@@ -986,8 +2066,23 @@ const LEGACY_SLASH_COMMANDS = [
   { name: 'trade', description: 'Initiate a trade with another player.', options: [{ type: 6, name: 'user', description: 'Trade partner', required: true }, { type: 3, name: 'item', description: 'Item identifier', required: true }] },
   { name: 'help', description: 'Show bot help categories.', options: [{ type: 3, name: 'category', description: 'Help category', required: false }] },
   { name: 'info', description: 'Show bot information.' },
-  { name: 'lore', description: 'Read a lore entry.', options: [{ type: 3, name: 'topic', description: 'Lore topic', required: true }] },
-  { name: 'codex', description: 'Browse the Orbis codex.', options: [{ type: 3, name: 'category', description: 'Codex category', required: true }, { type: 3, name: 'entry', description: 'Entry identifier', required: false }] },
+  { name: 'lore', description: 'Read a lore entry.', options: [{ type: 3, name: 'topic', description: 'Lore topic', required: true, choices: [{ name: 'Kweebec', value: 'kweebec' }, { name: 'Trork', value: 'trork' }, { name: 'Varyn', value: 'varyn' }, { name: 'Orbis', value: 'orbis' }] }] },
+  { name: 'codex', description: 'Browse the Orbis codex.', options: [
+    {
+      type: 3,
+      name: 'category',
+      description: 'Codex category',
+      required: true,
+      choices: [
+        { name: 'Items', value: 'items' },
+        { name: 'Enemies', value: 'enemies' },
+        { name: 'Factions', value: 'factions' },
+        { name: 'Biomes', value: 'biomes' },
+        { name: 'Dungeons', value: 'dungeons' }
+      ]
+    },
+    { type: 3, name: 'entry', description: 'Entry identifier', required: false }
+  ] },
   { name: 'reputation', description: 'Check faction reputation.', options: [{ type: 3, name: 'faction', description: 'Faction identifier', required: false }] },
   { name: 'eventsub', description: 'Subscribe the current channel to world events.', options: [{ type: 3, name: 'event', description: 'Event identifier or "off"', required: false }] },
   { name: 'eventstatus', description: 'Show the active world event.' },
@@ -1014,7 +2109,7 @@ SLASH_COMMAND_DEFINITIONS.length = 0;
 SLASH_COMMAND_DEFINITIONS.push(...SLASH_COMMAND_DEDUP.values());
 
 const HY_SLASH_SUBCOMMAND_SET = new Set([
-  'inventory','equip','use','stats','shop','buy','sell','recipes','craft','brews','brew','drink','buffs','daily','give','vendor','buyrep','contracts','acceptcontract','turnincontract','abandoncontract','quests','startquest','completequest','claimachievement'
+  'inventory','equip','use','stats','shop','buy','sell','recipes','craft','brews','brew','drink','buffs','daily','give','vendor','tutorial','buyrep','contracts','acceptcontract','turnincontract','abandoncontract','quests','startquest','completequest','claimachievement','gather'
 ]);
 const HY_SLASH_OPTIONS = [];
 
@@ -1045,7 +2140,6 @@ function applyVisualStyle(embed, key) {
   }
   return embed;
 }
-
 const SYSTEM_COMPONENTS = {
   profile: [
     { command: 'inventory', label: 'Inventory', emoji: '🎒', style: ButtonStyle.Primary },
@@ -1252,10 +2346,19 @@ const SIMPLE_SLASH_EXECUTORS = {
     const amount = interaction.options.getInteger('amount', true);
     return { command: 'give', args: [user.id, String(amount)] };
   },
+  gather: interaction => {
+    const action = interaction.options.getString('action');
+    const target = interaction.options.getString('target');
+    const args = [];
+    if (action) args.push(action);
+    if (target) args.push(target);
+    return { command: 'gather', args };
+  },
   vendor: interaction => {
     const faction = interaction.options.getString('faction');
     return { command: 'vendor', args: faction ? [faction] : [] };
   },
+  tutorial: () => ({ command: 'tutorial', args: [] }),
   buyrep: interaction => {
     const args = [interaction.options.getString('faction', true), interaction.options.getString('item', true)];
     const amount = interaction.options.getInteger('amount');
@@ -1337,13 +2440,13 @@ const SIMPLE_SLASH_EXECUTORS = {
   accept: () => ({ command: 'accept', args: [] }),
   decline: () => ({ command: 'decline', args: [] }),
   teamqueue: () => ({ command: 'teamqueue', args: [] }),
-  leaveteam: () => ({ command: 'leaveteam', args: [] }),
+  leaveteam: () => ({ command: 'leaveteam', args: [] })
 };
 
 async function runLegacySlashCommand(interaction, command, args = [], overrides = {}) {
   const ephemeral = Boolean(overrides.ephemeral);
   if (!interaction.deferred && !interaction.replied) {
-    const deferOptions = ephemeral ? { flags: InteractionResponseFlags.Ephemeral } : {};
+    const deferOptions = ephemeral ? { flags: MessageFlags.Ephemeral } : {};
     await interaction.deferReply(deferOptions);
   }
   const message = createMessageAdapterFromInteraction(interaction, { ...overrides, ephemeral });
@@ -1354,7 +2457,7 @@ async function runLegacySlashCommand(interaction, command, args = [], overrides 
     if (!interaction.replied) {
       await interaction.followUp({
         content: '❌ An error occurred while executing that command.',
-        flags: InteractionResponseFlags.Ephemeral
+        flags: MessageFlags.Ephemeral
       }).catch(() => {});
     }
   }
@@ -2179,7 +3282,7 @@ function getPlayer(userId) {
       mana: 50,
       maxMana: 50,
       coins: 100,
-      inventory: { 'wooden_sword': 1, 'health_potion': 2 },
+      inventory: { 'wooden_sword': 1, 'health_potion': 2, 'rusty_multi_tool': 1 },
       equipped: { weapon: 'wooden_sword', armor: null, accessory: null },
       quests: [],
       completedQuests: [],
@@ -2293,6 +3396,7 @@ function getPlayer(userId) {
     lastTick: Date.now()
   };
   if (!player.exploration.discoveredBiomes) player.exploration.discoveredBiomes = ['emerald_grove'];
+  if (player.exploration.gathering === undefined) player.exploration.gathering = null;
   if (!player.bases) player.bases = {};
   if (!player.settlements) player.settlements = {};
   if (!player.travelHistory) player.travelHistory = [];
@@ -2300,7 +3404,13 @@ function getPlayer(userId) {
   if (player.equipped.weapon === undefined) player.equipped.weapon = 'wooden_sword';
   if (player.equipped.armor === undefined) player.equipped.armor = null;
   if (player.equipped.accessory === undefined) player.equipped.accessory = null;
+  if (player.equipped.tool === undefined) player.equipped.tool = 'rusty_multi_tool';
+  if (!player.settings) player.settings = {};
+  if (player.settings.gatherNotifications === undefined) player.settings.gatherNotifications = true;
+  if (!player.tutorials) player.tutorials = {};
+  if (!player.tutorials.gathering) player.tutorials.gathering = { intro: false, completionHint: false };
   cleanupExpiredBuffs(player);
+  ensureGatheringGear(player);
   return player;
 }
 function xpForLevel(level) {
@@ -2330,7 +3440,6 @@ function getItemDamage(player) {
   const max = weapon.damageMax || weapon.damage || min;
   return Math.round((min + max) / 2);
 }
-
 function getItemDefense(player) {
   const armorId = player.equipped.armor;
   const armor = armorId && ITEMS[armorId] ? ITEMS[armorId] : null;
@@ -2722,7 +3831,6 @@ function isAchievementComplete(player, achievement) {
       return false;
   }
 }
-
 function getAchievementProgress(player, achievement) {
   const { requirement } = achievement;
   switch (requirement.type) {
@@ -2768,7 +3876,7 @@ async function handleAchievementCheck(message, player) {
     .setTitle('🏆 Achievement Unlocked!')
     .setDescription(newlyUnlocked.map(a => `${a.emoji} **${a.name}** — ${a.description}`).join('\n'))
     .setFooter({ text: `Use ${PREFIX} achievements to review and claim rewards.` });
- 
+
   const payload = buildStyledPayload(embed, 'achievements');
   await message.channel.send(payload);
 }
@@ -2846,6 +3954,9 @@ async function executeCommand(message, command, args) {
   }
   else if (command === 'daily') {
     await claimDaily(message);
+  }
+  else if (command === 'tutorial') {
+    await showTutorial(message);
   }
   else if (command === 'give') {
     await giveCoins(message, args[0], args[1]);
@@ -2992,6 +4103,9 @@ async function executeCommand(message, command, args) {
   }
   else if (command === 'explore') {
     await handleExploreCommand(message, args);
+  }
+  else if (command === 'gather') {
+    await handleGatherCommand(message, args);
   }
   else if (command === 'base') {
     await handleBaseCommand(message, args);
@@ -3267,11 +4381,12 @@ async function showProfile(message, userId = message.author.id) {
     .setFooter({ text: 'Hytale RPG System' })
     .setTimestamp();
   
-  if (player.equipped.weapon || player.equipped.armor || player.equipped.accessory) {
+  if (player.equipped.weapon || player.equipped.armor || player.equipped.accessory || player.equipped.tool) {
     const equipped = [];
     if (player.equipped.weapon) equipped.push(`Weapon: ${player.equipped.weapon}`);
     if (player.equipped.armor) equipped.push(`Armor: ${player.equipped.armor}`);
     if (player.equipped.accessory) equipped.push(`Accessory: ${player.equipped.accessory}`);
+    if (player.equipped.tool) equipped.push(`Tool: ${player.equipped.tool}`);
     embed.addFields({ name: '⚔️ Equipped', value: equipped.join('\n') || 'Nothing' });
   }
 
@@ -3350,6 +4465,21 @@ async function equipItem(message, itemName) {
     if (item.luck) bonuses.push(`Luck +${item.luck}`);
     const bonusText = bonuses.length ? ` (${bonuses.join(', ')})` : '';
     responseMessage = `📿 Equipped **${itemName}**${bonusText}!`;
+  } else if (item.type === 'tool') {
+    player.equipped.tool = itemName;
+    const gather = item.gathering || {};
+    const types = Array.isArray(gather.types)
+      ? gather.types.map(entry => GATHERING_TYPE_LABELS[entry.toLowerCase?.()] || entry).join(', ')
+      : gather.type
+        ? GATHERING_TYPE_LABELS[gather.type.toLowerCase?.()] || gather.type
+        : 'All Gathering';
+    const bonuses = gather.bonuses || {};
+    const bonusSegments = [];
+    if (bonuses.speed) bonusSegments.push(`Speed +${Math.round(bonuses.speed * 100)}%`);
+    if (bonuses.quantity) bonusSegments.push(`Yield +${Math.round(bonuses.quantity * 100)}%`);
+    if (bonuses.rarity) bonusSegments.push(`Rare +${Math.round(bonuses.rarity * 100)}%`);
+    if (bonuses.extraRolls) bonusSegments.push(`Extra Rolls +${bonuses.extraRolls}`);
+    responseMessage = `🛠️ Equipped **${itemName}**! (${types})${bonusSegments.length ? ` — ${bonusSegments.join(', ')}` : ''}`;
   } else {
     return message.reply('❌ This item cannot be equipped!');
   }
@@ -3521,7 +4651,6 @@ async function startBattle(message) {
   await message.reply({ embeds: [embed] });
   await handleAchievementCheck(message, player);
 }
-
 async function startRaid(message) {
   if (activeGames.has(message.channel.id)) {
     return message.reply('❌ A game is already active in this channel!');
@@ -4591,141 +5720,138 @@ async function initiateTrade(message, targetUser, itemName) {
 }
 // ==================== INFO COMMANDS ====================
 async function showHelp(message, category) {
-  const commands = {
-    profile: {
-      '**Profile & Stats**': [
-        '`profile/p [@user]` - View player profile',
-        '`inventory/inv` - View your items',
-        '`equip <item>` - Equip weapon/armor',
-        '`use <item>` - Use consumable item',
-        '`stats` - View your statistics'
-      ]
-    },
-    combat: {
-      '**Combat**': [
-        '`hunt/battle` - Fight a random enemy',
-        '`raid` - Start a boss raid (multiplayer)',
-        '`attack` - Attack during raid',
-        '`heal` - Restore HP and Mana (50 coins)',
-        '`dungeon` - Begin a multi-floor dungeon crawl',
-        '`descend` - Progress to the next dungeon floor',
-        '`retreat` - Exit an active dungeon early'
-      ],
-      '**PvP Combat**': [
-        '`duel @user [wager]` - Challenge another player',
-        '`accept` - Accept a pending duel',
-        '`decline` - Decline a duel challenge',
-        '`teamqueue` - Queue for a team arena match',
-        '`leaveteam` - Leave the team duel queue'
-      ]
-    },
-    economy: {
-      '**Economy**': [
-        '`shop` - View item shop',
-        '`buy <item> [amount]` - Purchase items',
-        '`sell <item> [amount]` - Sell items',
-        '`daily` - Claim daily reward',
-        '`give @user <amount>` - Give coins to player'
-      ]
-    },
-    crafting: {
-      '**Crafting**': [
-        '`recipes [item]` - View available crafting recipes',
-        '`craft <item> [amount]` - Craft an item using ingredients'
-      ]
-    },
-    brewing: {
-      '**Brewing & Buffs**': [
-        '`brews [station]` - List brew recipes',
-        '`brew <id> [amount]` - Brew a consumable',
-        '`drink <id>` - Drink a brew (alias for use)',
-        '`buffs` - Show active brew buffs'
-      ]
-    },
-    factions: {
-      '**Faction Services**': [
-        '`vendor [faction]` - Browse faction vendors',
-        '`buyrep <faction> <item> [amount]` - Purchase faction gear',
-        '`contracts [faction]` - View available contracts',
-        '`acceptcontract <faction> <id>` - Take on a faction contract',
-        '`turnincontract <faction>` - Turn in a completed contract',
-        '`abandoncontract <faction>` - Abandon the active contract',
-        '`cosmetics` - View unlocked titles',
-        '`equiptitle <id>` - Equip an unlocked title'
-      ]
-    },
-    quests: {
-      '**Quests**': [
-        '`quests/q` - View available quests',
-        '`startquest/sq <id>` - Accept a quest',
-        '`completequest/cq <id>` - Complete quest'
-      ]
-    },
-    games: {
-      '**Mini-Games**': [
-        '`scramble` - Word scramble game',
-        '`trivia` - Hytale trivia quiz',
-        '`guess` - Number guessing game',
-        '`rps <choice>` - Rock paper scissors',
-        '`coinflip/cf <heads/tails>` - Flip a coin'
-      ]
-    },
-    social: {
-      '**Social**': [
-        '`leaderboard/lb [level|coins|kills|pvp|team]` - View rankings',
-        '`trade @user <item>` - Trade with player (coming soon)'
-      ]
-    },
-    info: {
-      '**Info & Utility**': [
-        '`help [category]` - Show commands',
-        '`info` - Bot information',
-        '`lore [topic]` - Hytale lore',
-        '`codex [category] [id]` - Browse the Orbis codex',
-        '`reputation/rep [faction]` - View faction standings',
-        '`setuptweets` - Setup tweet tracker (Admin)',
-        '`checktweets` - Check latest Hytale tweets',
-        '`achievements/achs` - View achievement progress',
-        '`claimach <id>` - Claim an unlocked achievement'
-      ]
-    },
-    events: {
-      '**World Events**': [
-        '`eventsub [eventId/off]` - Configure automated world events (Admin)',
-        '`eventstatus/event` - View the active world event',
-        '`participate <eventId>` - Claim rewards from the current event'
+  const categories = {
+    general: {
+      title: 'General & Progression',
+      commands: [
+        ['profile', 'Show your character profile.'],
+        ['stats', 'Full stat block, growth, multipliers.'],
+        ['inventory', 'Inspect your bag contents.'],
+        ['daily', 'Claim daily coins & XP.'],
+        ['tutorial', 'Five-step onboarding walkthrough.'],
+        ['dashboard', 'All systems overview with quick buttons.']
       ]
     },
     exploration: {
-      '**Exploration**': [
-        '`travel [biome]` - Travel to a biome',
-        '`explore [action]` - Explore the current biome',
-        '`dashboard` - Overview of exploration, bases, settlements',
-        '`base [subcommand]` - Manage your base',
-        '`settlement [id] [subcommand]` - Manage a settlement'
+      title: 'Exploration & Travel',
+      commands: [
+        ['explore status', 'Current biome, timers, highlights.'],
+        ['explore activity', 'Start a biome-specific activity.'],
+        ['explore action', 'Perform mine / forage / survey / scavenge.'],
+        ['travel start <biome>', 'Move to a neighboring biome.'],
+        ['travel resolve', 'Finish travel timers.'],
+        ['base claim', 'Establish a base in the current biome.'],
+        ['base upgrade', 'Upgrade base modules & automation.']
+      ]
+    },
+    settlements: {
+      title: 'Settlements & Governance',
+      commands: [
+        ['settlement list', 'Show owned settlements.'],
+        ['settlement info <id>', 'Inspect morale, wealth, army.'],
+        ['settlement expeditions <id>', 'List expedition templates.'],
+        ['settlement expedition <id> <template>', 'Launch villager expedition.'],
+        ['settlement decisions <id>', 'Resolve crises, festivals, policies.'],
+        ['contracts [faction]', 'Accept faction contracts.'],
+        ['vendor [faction]', 'View faction vendor inventory.'],
+        ['reputation [faction]', 'Check faction standings.']
+      ]
+    },
+    combat: {
+      title: 'Combat & Dungeons',
+      commands: [
+        ['hunt', 'Fight a random enemy.'],
+        ['raid', 'Start a raid encounter.'],
+        ['heal', 'Restore HP & Mana for coins.'],
+        ['dungeon <id>', 'Begin a multi-floor dungeon run.'],
+        ['descend', 'Advance to the next floor.'],
+        ['retreat', 'Exit the dungeon safely.'],
+        ['duel @user [wager]', 'Challenge another player (PvP).'],
+        ['accept / decline', 'Respond to duel challenges.'],
+        ['teamqueue', 'Queue for team PvP arena.'],
+        ['leaveteam', 'Leave the team queue.']
+      ]
+    },
+    economy: {
+      title: 'Economy, Crafting & Brews',
+      commands: [
+        ['shop [category]', 'Browse shop stock.'],
+        ['buy <item> [amount]', 'Purchase shop goods.'],
+        ['sell <item> [amount]', 'Sell items for coins.'],
+        ['recipes [item]', 'View crafting recipes.'],
+        ['craft <item> [amount]', 'Craft gear and materials.'],
+        ['brews [station]', 'List brewing options.'],
+        ['brew <id> [amount]', 'Brew potions & tonics.'],
+        ['drink <id>', 'Consume a brew for buffs.'],
+        ['give @user <amount>', 'Gift coins to a friend.']
+      ]
+    },
+    codex: {
+      title: 'Lore & Codex',
+      commands: [
+        ['codex <category> [entry]', 'Browse items, enemies, biomes, etc.'],
+        ['lore <topic>', 'Read lore snippets.'],
+        ['info', 'Bot stats & tracked data.'],
+        ['tutorial', 'Re-open the onboarding guide.']
+      ]
+    },
+    events: {
+      title: 'Events & Live Systems',
+      commands: [
+        ['eventstatus', 'Active global event summary.'],
+        ['eventsub [event]', 'Subscribe this channel to event updates.'],
+        ['participate <event>', 'Turn in event objectives.'],
+        ['checktweets', 'Fetch latest official tweets.'],
+        ['setuptweets [channel]', 'Configure tweet relay channel.']
+      ]
+    },
+    misc: {
+      title: 'Miscellaneous & Social',
+      commands: [
+        ['leaderboard [category]', 'View level, coin, kill, PvP rankings.'],
+        ['achievements', 'Review achievement progress.'],
+        ['claimachievement <id>', 'Claim unlocked achievement rewards.'],
+        ['help <category>', 'Drill into a specific section.'],
+        ['hy <command>', 'Slash entry point for legacy commands.']
       ]
     }
   };
-  
-  if (category && commands[category]) {
-    const embed = new EmbedBuilder()
-      .setColor('#00D4FF')
-      .setTitle(`📚 ${Object.keys(commands[category])[0]}`)
-      .setDescription(Object.values(commands[category])[0].join('\n'))
-      .setFooter({ text: `Prefix: ${PREFIX}` });
-    return sendStyledEmbed(message, embed, 'info');
+
+  const selectedKey = category ? category.toLowerCase() : null;
+  const categoryKeys = Object.keys(categories);
+
+  if (selectedKey && !categories[selectedKey]) {
+    return message.reply(
+      `❌ Unknown help category. Try one of: ${categoryKeys.map(key => `\`${key}\``).join(', ')}`
+    );
   }
-  
-  const allCategories = Object.keys(commands).map(cat => `\`${cat}\``).join(', ');
+
   const embed = new EmbedBuilder()
     .setColor('#00D4FF')
-    .setTitle('📚 Hytale Bot - Command Help')
-    .setDescription(`**Command Categories:**\n${allCategories}\n\nUse \`${PREFIX} help <category>\` for detailed commands!\n\nExample: \`${PREFIX} help combat\``)
-    .addFields(
-      { name: '🎮 Quick Start', value: `\`${PREFIX} profile\` - View your profile\n\`${PREFIX} hunt\` - Start hunting!\n\`${PREFIX} shop\` - Browse items` }
-    )
-    .setFooter({ text: `Prefix: ${PREFIX} | 30+ Commands Available` });
-  
+    .setTitle('🆘 Hytale Bot Command Reference')
+    .setThumbnail(EMBED_VISUALS.info)
+    .setFooter({ text: `Prefix: ${PREFIX} | Slash mirror available via /hy …` });
+
+  const renderCategory = (key, data) => {
+    const rows = data.commands.map(([cmd, desc]) => `\`${PREFIX} ${cmd}\` — ${desc}`).join('\n');
+    embed.addFields({ name: `**${data.title}**`, value: rows, inline: false });
+  };
+
+  if (selectedKey) {
+    renderCategory(selectedKey, categories[selectedKey]);
+  } else {
+    categoryKeys.forEach(key => renderCategory(key, categories[key]));
+    embed.addFields({
+      name: '🎮 Quick Start',
+      value: `\`${PREFIX} profile\` — check your stats\n\`${PREFIX} tutorial\` — onboarding guide\n\`${PREFIX} hunt\` — jump into combat\n\`${PREFIX} shop\` — restock and gear up`
+    });
+  }
+
+  const overview = selectedKey
+    ? `Categories: ${categoryKeys.map(key => key === selectedKey ? `**${key}**` : key).join(' • ')}`
+    : `Categories: ${categoryKeys.map(key => `\`${key}\``).join(' • ')}`;
+  embed.setDescription(`${overview}\nUse \`${PREFIX} help <category>\` or \`/help <category>\` to drill down.`);
+
   return sendStyledEmbed(message, embed, 'info');
 }
 
@@ -5420,13 +6546,18 @@ async function addCoinsAdmin(message, targetUser, amount) {
 }
 
 // ==================== BOT READY ====================
-client.once('ready', () => {
+client.once('ready', async () => {
   console.log(`✅ Hytale Bot is online as ${client.user.tag}!`);
   console.log(`📊 Serving ${client.guilds.cache.size} servers`);
   
   client.user.setActivity('Hytale | !hy help', { type: 'PLAYING' });
   triggerWorldEvents();
-  registerSlashCommands(client);
+  await registerSlashCommands(client);
+  try {
+    await runStartupSelfTest();
+  } catch (error) {
+    console.error('🧪 Startup self-test encountered an unexpected error:', error);
+  }
 });
 
 client.on('interactionCreate', interaction => {
@@ -7244,6 +8375,9 @@ function ensureExplorationState(player) {
   if (player.exploration.pendingChain && typeof player.exploration.pendingChain !== 'object') {
     player.exploration.pendingChain = null;
   }
+  if (player.exploration.gathering === undefined) {
+    player.exploration.gathering = null;
+  }
   return player.exploration;
 }
 
@@ -8037,7 +9171,11 @@ async function handleExploreCommand(message, args = []) {
   const subcommand = (args[0] || '').toLowerCase();
   if (!subcommand || subcommand === 'status' || subcommand === 'info') {
     const embed = buildExplorationStatusEmbed(player, biome, exploration);
-    return sendStyledEmbed(message, embed, 'explore', { components: buildDashboardComponents() });
+    const components = [
+      ...buildGatheringActionComponents(message.author.id, exploration),
+      ...buildDashboardComponents()
+    ];
+    return sendStyledEmbed(message, embed, 'explore', { components });
   }
 
   if (subcommand === 'actions') {
@@ -8146,6 +9284,99 @@ async function handleExploreCommand(message, args = []) {
   const actionLabel = formatActionName(actionType);
   return message.reply(`🔁 Beginning **${actionLabel}** in ${biome.name || exploration.currentBiome} (${formatDuration(durationMs)}). Use \`${PREFIX} explore resolve\` when the timer completes.`);
 }
+async function handleGatherCommand(message, args = []) {
+  if (!Array.isArray(args)) {
+    args = typeof args === 'string' ? args.split(/\s+/).filter(Boolean) : [];
+  }
+  const player = getPlayer(message.author.id);
+  const exploration = ensureExplorationState(player);
+  const biome = getBiomeDefinition(exploration.currentBiome);
+  if (!biome) {
+    return message.reply('❌ Unable to determine your current biome.');
+  }
+
+  const sub = (args[0] || '').toLowerCase();
+  if (!sub || sub === 'status' || sub === 'info') {
+    const includeTutorial = !player.tutorials.gathering?.intro;
+    const embed = buildGatherStatusEmbed(player, biome, exploration, { includeTutorial });
+    player.tutorials.gathering.intro = true;
+    embed.addFields({
+      name: 'Resource Highlights',
+      value: summarizeBiomeGatheringResources(biome),
+      inline: false
+    });
+    const components = [
+      ...buildGatheringActionComponents(message.author.id, exploration),
+      ...buildDashboardComponents()
+    ];
+    return sendStyledEmbed(message, embed, 'gather', { components });
+  }
+
+  if (sub === 'gear') {
+    const actionType = (args[1] || '').toLowerCase();
+    if (!actionType || actionType === 'status' || actionType === 'info') {
+      const embed = buildGatheringGearEmbed(player);
+      const components = [
+        ...buildGatheringActionComponents(message.author.id, exploration),
+        ...buildDashboardComponents()
+      ];
+      return sendStyledEmbed(message, embed, 'gather', { components });
+    }
+    if (actionType === 'upgrade') {
+      const targetType = (args[2] || '').toLowerCase();
+      if (!GATHERING_SET_TYPES.includes(targetType)) {
+        return message.reply(`❌ Specify a gathering type to upgrade: ${GATHERING_SET_TYPES.join(', ')}`);
+      }
+      const gear = ensureGatheringGear(player);
+      const currentId = gear.current?.[targetType];
+      const nextTier = getNextGatheringTier(targetType, currentId);
+      if (!nextTier) {
+        return message.reply('⭐ You already have the best gear for that gathering type.');
+      }
+      if (!canAffordGatheringTier(player, nextTier)) {
+        return message.reply(`❌ Missing materials. Cost: ${formatGatheringRequirements(nextTier)}.`);
+      }
+      applyGatheringTierCost(player, nextTier);
+      gear.unlocked[targetType] = gear.unlocked[targetType] || {};
+      gear.current[targetType] = nextTier.id;
+      gear.unlocked[targetType][nextTier.id] = true;
+      const embed = buildGatheringGearEmbed(player);
+      embed.setDescription(`✅ Upgraded **${GATHERING_TYPE_LABELS[targetType]}** gear to **${nextTier.name}**!\nSpeed +${(nextTier.bonuses.speed * 100).toFixed(0)}%, Yield +${(nextTier.bonuses.quantity * 100).toFixed(0)}%, Rare +${(nextTier.bonuses.rarity * 100).toFixed(0)}%.`);
+      const components = [
+        ...buildGatheringActionComponents(message.author.id, exploration),
+        ...buildDashboardComponents()
+      ];
+      return sendStyledEmbed(message, embed, 'gather', { components });
+    }
+    return message.reply('❌ Unknown gear subcommand. Try `status` or `upgrade <type>`.');
+  }
+
+  if (sub === 'notifications') {
+    const option = (args[1] || '').toLowerCase();
+    let enabled;
+    if (!option) {
+      enabled = !shouldSendGatherNotifications(player);
+    } else if (['on', 'enable', 'enabled', 'true', 'yes'].includes(option)) {
+      enabled = true;
+    } else if (['off', 'disable', 'disabled', 'false', 'no'].includes(option)) {
+      enabled = false;
+    } else {
+      return message.reply('❌ Use `!hy gather notifications on` or `!hy gather notifications off`.');
+    }
+    setGatherNotifications(player, enabled);
+    return message.reply(`🔔 Harvest notifications ${enabled ? 'enabled' : 'disabled'}.`);
+  }
+
+  if (GATHERING_SET_TYPES.includes(sub)) {
+    const result = await startGatheringSession(player, sub, { message, biome });
+    if (result?.error) {
+      return message.reply(`❌ ${result.error}`);
+    }
+    return;
+  }
+
+  return message.reply(`❌ Unknown gather option "${sub}". Try \`${PREFIX} gather status\` or \`${PREFIX} gather gear\`.`);
+}
 async function handleTravelCommand(message, args = []) {
   if (!Array.isArray(args)) {
     args = typeof args === 'string' ? args.split(/\s+/).filter(Boolean) : [];
@@ -8221,9 +9452,13 @@ function buildExplorationStatusEmbed(player, biome, exploration) {
     .setThumbnail(BIOME_ARTWORK[biome.id?.toLowerCase?.()] || EMBED_VISUALS.exploration)
     .setImage(BIOME_ARTWORK[biome.id?.toLowerCase?.()] || EMBED_VISUALS.exploration);
 
-  const statusValue = exploration.action
-    ? `${formatActionName(exploration.action.type)} — ${formatDuration(Math.max(0, exploration.action.endsAt - Date.now()))}`
-    : 'Idle';
+  let statusValue = 'Idle';
+  if (exploration.action) {
+    statusValue = `${formatActionName(exploration.action.type)} — ${formatDuration(Math.max(0, exploration.action.endsAt - Date.now()))}`;
+  } else if (exploration.gathering) {
+    const remaining = Math.max(0, exploration.gathering.endsAt - Date.now());
+    statusValue = `Gathering ${formatActionName(exploration.gathering.type)} — ${formatDuration(remaining)}`;
+  }
   embed.addFields({ name: 'Status', value: statusValue, inline: false });
 
   const neighbors = formatNeighborList(biome);
@@ -8253,6 +9488,11 @@ function buildExplorationStatusEmbed(player, biome, exploration) {
       value: `${chain.id} — Step ${Math.min(chain.index + 1, chain.steps.length)}/${chain.steps.length}`,
       inline: false
     });
+  }
+
+  const gatheringSummary = buildGatheringGearSummary(player);
+  if (gatheringSummary) {
+    embed.addFields({ name: 'Gathering Gear', value: gatheringSummary, inline: false });
   }
 
   embed.setFooter({ text: `Discovered biomes: ${exploration.discoveredBiomes.length}` });
@@ -8911,6 +10151,95 @@ function buildSettlementExpeditionOptionsEmbed(player, settlement) {
   return embed;
 }
 
+function buildGatheringGearSummary(player) {
+  const { totals, gear } = getGatheringBonuses(player);
+  const lines = [];
+  GATHERING_SET_TYPES.forEach(type => {
+    const tierId = gear.current?.[type];
+    const tier = getGatheringTierDefinition(type, tierId);
+    const speed = ((totals.global.speed || 0) + (totals[type]?.speed || 0)) * 100;
+    const quantity = ((totals.global.quantity || 0) + (totals[type]?.quantity || 0)) * 100;
+    const rarity = ((totals.global.rarity || 0) + (totals[type]?.rarity || 0)) * 100;
+    const extra = (totals.global.extraRolls || 0) + (totals[type]?.extraRolls || 0);
+    lines.push(`${GATHERING_TYPE_LABELS[type]}: ${tier?.name || 'Standard Kit'} — Speed +${speed.toFixed(0)}%, Yield +${quantity.toFixed(0)}%, Rare +${rarity.toFixed(0)}%, Extra Rolls +${extra.toFixed(2)}`);
+  });
+  return lines.join('\n');
+}
+
+function buildGatheringGearEmbed(player) {
+  const { gear } = getGatheringBonuses(player);
+  const embed = new EmbedBuilder()
+    .setColor('#27AE60')
+    .setTitle('🛠️ Gathering Gear')
+    .setDescription('Manage your harvesting outfits to improve speed, yield, and rare find chances.')
+    .setThumbnail(EMBED_VISUALS.exploration)
+    .setImage(EMBED_VISUALS.dashboard);
+
+  GATHERING_SET_TYPES.forEach(type => {
+    const definition = GATHERING_SET_LOOKUP.get(type);
+    if (!definition) return;
+    const currentId = gear.current?.[type];
+    const currentTier = getGatheringTierDefinition(type, currentId);
+    const nextTier = getNextGatheringTier(type, currentId);
+    const lines = [];
+    if (currentTier) {
+      lines.push(`Current: **${currentTier.name}** — Speed +${(currentTier.bonuses.speed * 100).toFixed(0)}%, Yield +${(currentTier.bonuses.quantity * 100).toFixed(0)}%, Rare +${(currentTier.bonuses.rarity * 100).toFixed(0)}%`);
+      if (currentTier.perks?.length) {
+        currentTier.perks.slice(0, 3).forEach(perk => lines.push(`• ${perk}`));
+      }
+    } else {
+      lines.push('Current: Standard Kit');
+    }
+    if (nextTier) {
+      lines.push('');
+      lines.push(`Next: **${nextTier.name}** — Speed +${(nextTier.bonuses.speed * 100).toFixed(0)}%, Yield +${(nextTier.bonuses.quantity * 100).toFixed(0)}%, Rare +${(nextTier.bonuses.rarity * 100).toFixed(0)}%`);
+      lines.push(`Cost: ${formatGatheringRequirements(nextTier)}`);
+    } else {
+      lines.push('');
+      lines.push('Next: Max tier reached.');
+    }
+    embed.addFields({
+      name: `${GATHERING_TYPE_LABELS[type]} Gear`,
+      value: lines.join('\n'),
+      inline: false
+    });
+  });
+
+  embed.setFooter({ text: `Use ${PREFIX} gather gear upgrade <type> to enhance your equipment.` });
+  return embed;
+}
+
+function summarizeBiomeGatheringResources(biome, limitPerType = 3) {
+  if (!biome) return 'Unknown biome.';
+  const lines = [];
+  GATHERING_SET_TYPES.forEach(type => {
+    const pool = buildGatheringResourcePool(biome, type, { biomeId: biome.id }).slice(0, limitPerType);
+    if (!pool.length) return;
+    const resources = pool.map(entry => `${formatItemName(entry.item)} (${entry.rarity})`).join(', ');
+    lines.push(`${GATHERING_TYPE_LABELS[type]}: ${resources}`);
+  });
+  return lines.length ? lines.join('\n') : 'No dedicated harvesting nodes discovered here yet.';
+}
+
+function buildGatheringActionComponents(userId, exploration) {
+  const rows = [];
+  const disabled = ACTIVE_GATHER_SESSIONS.has(userId) || Boolean(exploration?.action);
+  const primaryRow = new ActionRowBuilder().addComponents(
+    new ButtonBuilder().setCustomId('gather|mining').setLabel('Mine').setStyle(ButtonStyle.Primary).setEmoji('⛏️').setDisabled(disabled),
+    new ButtonBuilder().setCustomId('gather|foraging').setLabel('Forage').setStyle(ButtonStyle.Secondary).setEmoji('🌿').setDisabled(disabled),
+    new ButtonBuilder().setCustomId('gather|farming').setLabel('Farm').setStyle(ButtonStyle.Secondary).setEmoji('🌾').setDisabled(disabled),
+    new ButtonBuilder().setCustomId('gather|fishing').setLabel('Fish').setStyle(ButtonStyle.Success).setEmoji('🎣').setDisabled(disabled)
+  );
+  rows.push(primaryRow);
+  const utilityRow = new ActionRowBuilder().addComponents(
+    new ButtonBuilder().setCustomId('command|gather').setLabel('Status').setStyle(ButtonStyle.Secondary).setEmoji('📊'),
+    new ButtonBuilder().setCustomId('command|gather|gear').setLabel('Gear & Upgrades').setStyle(ButtonStyle.Success).setEmoji('🛠️'),
+    new ButtonBuilder().setCustomId('command|gather|notifications').setLabel('Toggle Notifications').setStyle(ButtonStyle.Primary).setEmoji('🔔')
+  );
+  rows.push(utilityRow);
+  return rows;
+}
+
 function buildDashboardComponents() {
   const rows = [];
   const navigationRow = new ActionRowBuilder().addComponents(
@@ -8997,7 +10326,6 @@ function buildSettlementExpeditionComponents(settlement) {
   rows.push(primaryRow);
   return rows;
 }
-
 function buildSettlementExpeditionSelectRow(settlement) {
   const template = SETTLEMENT_TEMPLATE_LOOKUP[settlement.templateId?.toLowerCase()];
   const profiles = template?.expeditionProfiles;
@@ -9346,7 +10674,7 @@ function normalizeInteractionResponse(payload, defaults = {}) {
   if (Object.prototype.hasOwnProperty.call(merged, 'ephemeral')) {
     const isEphemeral = Boolean(merged.ephemeral);
     if (isEphemeral) {
-      merged.flags = InteractionResponseFlags.Ephemeral;
+      merged.flags = (merged.flags || 0) | MessageFlags.Ephemeral;
     }
     delete merged.ephemeral;
   }
@@ -9355,14 +10683,14 @@ function normalizeInteractionResponse(payload, defaults = {}) {
 
 function createMessageAdapterFromInteraction(interaction, overrides = {}) {
   const { mentionUser = null, channel = null, ephemeral = false } = overrides;
-  const defaultFlags = ephemeral ? InteractionResponseFlags.Ephemeral : undefined;
+  const defaultFlags = ephemeral ? MessageFlags.Ephemeral : undefined;
   return {
     author: interaction.user,
     guild: interaction.guild,
     channel: channel || interaction.channel,
     member: interaction.member,
     reply: payload => {
-      const response = normalizeInteractionResponse(payload, defaultFlags ? { flags: defaultFlags } : {});
+      const response = normalizeInteractionResponse(payload, defaultFlags !== undefined ? { flags: defaultFlags } : {});
       if (interaction.deferred || interaction.replied) return interaction.followUp(response);
       return interaction.reply(response);
     },
@@ -9527,7 +10855,11 @@ async function handleSlashCommand(interaction) {
       const sub = interaction.options.getSubcommand();
       if (sub === 'status') {
         const biome = getBiomeDefinition(exploration.currentBiome);
-        return interaction.reply({ embeds: [buildExplorationStatusEmbed(player, biome, exploration)], components: buildDashboardComponents() });
+        const components = [
+          ...buildGatheringActionComponents(interaction.user.id, exploration),
+          ...buildDashboardComponents()
+        ];
+        return interaction.reply({ embeds: [buildExplorationStatusEmbed(player, biome, exploration)], components });
       }
       if (sub === 'resolve') {
         const message = createMessageAdapterFromInteraction(interaction);
@@ -9547,6 +10879,80 @@ async function handleSlashCommand(interaction) {
         const actionId = interaction.options.getString('action_id', true);
         const message = createMessageAdapterFromInteraction(interaction);
         return handleExploreCommand(message, [actionId]);
+      }
+      break;
+    }
+    case 'gather': {
+      const sub = interaction.options.getSubcommand();
+      const biome = getBiomeDefinition(exploration.currentBiome);
+      if (!biome) {
+        return interaction.reply({ ephemeral: true, content: '❌ Unable to determine your current biome.' });
+      }
+      if (sub === 'status') {
+        const includeTutorial = !player.tutorials.gathering?.intro;
+        const embed = buildGatherStatusEmbed(player, biome, exploration, { includeTutorial });
+        player.tutorials.gathering.intro = true;
+        embed.addFields({ name: 'Resource Highlights', value: summarizeBiomeGatheringResources(biome), inline: false });
+        const components = [
+          ...buildGatheringActionComponents(interaction.user.id, exploration),
+          ...buildDashboardComponents()
+        ];
+        return interaction.reply({ embeds: [embed], components });
+      }
+      if (sub === 'start') {
+        const gatherType = interaction.options.getString('type', true).toLowerCase();
+        if (!GATHERING_SET_TYPES.includes(gatherType)) {
+          return interaction.reply({ ephemeral: true, content: '❌ Unknown gathering type.' });
+        }
+        const result = await startGatheringSession(player, gatherType, { interaction, biome, ephemeral: true });
+        if (result?.error && !interaction.replied) {
+          return interaction.reply({ ephemeral: true, content: `❌ ${result.error}` });
+        }
+        return;
+      }
+      if (sub === 'gear') {
+        const actionType = interaction.options.getString('action', true);
+        if (actionType === 'status') {
+          const embed = buildGatheringGearEmbed(player);
+          const components = [
+            ...buildGatheringActionComponents(interaction.user.id, exploration),
+            ...buildDashboardComponents()
+          ];
+          return interaction.reply({ embeds: [embed], components, ephemeral: true });
+        }
+        if (actionType === 'upgrade') {
+          const targetType = interaction.options.getString('type');
+          if (!targetType || !GATHERING_SET_TYPES.includes(targetType.toLowerCase())) {
+            return interaction.reply({ ephemeral: true, content: `❌ Specify a gathering type to upgrade: ${GATHERING_SET_TYPES.join(', ')}` });
+          }
+          const normalizedType = targetType.toLowerCase();
+          const gear = ensureGatheringGear(player);
+          const currentId = gear.current?.[normalizedType];
+          const nextTier = getNextGatheringTier(normalizedType, currentId);
+          if (!nextTier) {
+            return interaction.reply({ ephemeral: true, content: '⭐ You already have the best gear for that gathering type.' });
+          }
+          if (!canAffordGatheringTier(player, nextTier)) {
+            return interaction.reply({ ephemeral: true, content: `❌ Missing materials. Cost: ${formatGatheringRequirements(nextTier)}.` });
+          }
+          applyGatheringTierCost(player, nextTier);
+          gear.unlocked[normalizedType] = gear.unlocked[normalizedType] || {};
+          gear.current[normalizedType] = nextTier.id;
+          gear.unlocked[normalizedType][nextTier.id] = true;
+          const embed = buildGatheringGearEmbed(player);
+          embed.setDescription(`✅ Upgraded **${GATHERING_TYPE_LABELS[normalizedType]}** gear to **${nextTier.name}**!\nSpeed +${(nextTier.bonuses.speed * 100).toFixed(0)}%, Yield +${(nextTier.bonuses.quantity * 100).toFixed(0)}%, Rare +${(nextTier.bonuses.rarity * 100).toFixed(0)}%.`);
+          const components = [
+            ...buildGatheringActionComponents(interaction.user.id, exploration),
+            ...buildDashboardComponents()
+          ];
+          return interaction.reply({ embeds: [embed], components, ephemeral: true });
+        }
+        return interaction.reply({ ephemeral: true, content: '❌ Unknown gear action.' });
+      }
+      if (sub === 'notifications') {
+        const enabled = interaction.options.getBoolean('enabled', true);
+        setGatherNotifications(player, enabled);
+        return interaction.reply({ ephemeral: true, content: `🔔 Harvest notifications ${enabled ? 'enabled' : 'disabled'}.` });
       }
       break;
     }
@@ -9815,6 +11221,7 @@ async function handleButtonInteraction(interaction) {
   const [scope, action, ...rest] = interaction.customId.split('|');
   const player = getPlayer(interaction.user.id);
   const exploration = ensureExplorationState(player);
+  const biome = getBiomeDefinition(exploration.currentBiome);
 
   try {
     switch ((scope || '').toLowerCase()) {
@@ -9830,11 +11237,27 @@ async function handleButtonInteraction(interaction) {
         }
         return;
       }
+      case 'gather': {
+        const gatherType = action?.toLowerCase();
+        if (!GATHERING_SET_TYPES.includes(gatherType)) {
+          return interaction.reply({ ephemeral: true, content: '❌ That harvesting option is not available yet.' });
+        }
+        const result = await startGatheringSession(player, gatherType, { interaction, ephemeral: true, biome });
+        if (result?.error) {
+          if (!interaction.replied) {
+            return interaction.reply({ ephemeral: true, content: `❌ ${result.error}` });
+          }
+        }
+        return;
+      }
       case 'dashboard': {
-        const biome = getBiomeDefinition(exploration.currentBiome);
         if (action === 'explore') {
           const embed = buildExplorationStatusEmbed(player, biome, exploration);
-          return interaction.reply({ ephemeral: true, embeds: [embed], components: buildDashboardComponents() });
+          const components = [
+            ...buildGatheringActionComponents(interaction.user.id, exploration),
+            ...buildDashboardComponents()
+          ];
+          return interaction.reply({ ephemeral: true, embeds: [embed], components });
         }
         if (action === 'travel') {
           const embed = buildTravelStatusEmbed(player, exploration, biome);

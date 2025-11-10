@@ -167,5 +167,167 @@
     },
     "durationSeconds": 150,
     "description": "Molten draught that ignites melee strikes with volcanic fury."
+  },
+  {
+    "id": "glacier_resilience_draught",
+    "name": "Glacier Resilience Draught",
+    "rarity": "rare",
+    "station": "brewery",
+    "ingredients": {
+      "glacier_ore": 1,
+      "frostpine_resin": 2,
+      "snowmelt_barley": 2,
+      "icefin_perch": 1
+    },
+    "effects": {
+      "heal": 35,
+      "buff": "frost_resist"
+    },
+    "durationSeconds": 180,
+    "description": "Mineral-rich draught that shields against polar chill."
+  },
+  {
+    "id": "dunesilk_tonic",
+    "name": "Dunesilk Tonic",
+    "rarity": "rare",
+    "station": "brewery",
+    "ingredients": {
+      "sunspire_glass": 1,
+      "dune_silk": 2,
+      "mirage_grain": 2,
+      "sandray_skate": 1
+    },
+    "effects": {
+      "heal": 30,
+      "buff": "heat_resist"
+    },
+    "durationSeconds": 180,
+    "description": "A cooling tonic stitched with dunesilk to ward desert scorch."
+  },
+  {
+    "id": "stormwake_ampoule",
+    "name": "Stormwake Ampoule",
+    "rarity": "epic",
+    "station": "brewery",
+    "ingredients": {
+      "windhollow_shard": 1,
+      "skyroot_bark": 1,
+      "cliffgrain_seed": 2,
+      "stormwake_tuna": 1
+    },
+    "effects": {
+      "mana": 40,
+      "buff": "haste"
+    },
+    "durationSeconds": 150,
+    "description": "Distilled gale energy accelerates reflexes and storm sense."
+  },
+  {
+    "id": "thornvine_elixir",
+    "name": "Thornvine Elixir",
+    "rarity": "rare",
+    "station": "brewery",
+    "ingredients": {
+      "thornvine_pod": 1,
+      "bloodoak_sap": 2,
+      "scarlet_clover": 2,
+      "crimson_pike": 1
+    },
+    "effects": {
+      "heal": 28,
+      "buff": "bleed"
+    },
+    "durationSeconds": 160,
+    "description": "Scarlet essences inspire biting strikes and crimson fervor."
+  },
+  {
+    "id": "sporeglass_philter",
+    "name": "Sporeglass Philter",
+    "rarity": "epic",
+    "station": "brewery",
+    "ingredients": {
+      "sporeglass_cluster": 1,
+      "venom_bulb": 2,
+      "wyrmroot_tuber": 2,
+      "gloomlamp_catfish": 1
+    },
+    "effects": {
+      "heal": 32,
+      "buff": "poison_resist"
+    },
+    "durationSeconds": 200,
+    "description": "Bioluminescent philter that neutralizes toxins and glows softly."
+  },
+  {
+    "id": "voidveil_serum",
+    "name": "Voidveil Serum",
+    "rarity": "epic",
+    "station": "brewery",
+    "ingredients": {
+      "voidblack_ore": 1,
+      "nightveil_leaf": 2,
+      "nether_sporegrain": 2,
+      "abyssal_lamprey": 1
+    },
+    "effects": {
+      "mana": 30,
+      "buff": "stealth"
+    },
+    "durationSeconds": 210,
+    "description": "Shadow-bound serum that cloaks movements in voidsilence."
+  },
+  {
+    "id": "pyreheart_brew",
+    "name": "Pyreheart Brew",
+    "rarity": "rare",
+    "station": "brewery",
+    "ingredients": {
+      "ashglass_core": 1,
+      "magma_lichen": 2,
+      "pyrebloom_seed": 2,
+      "searing_lanternfish": 1
+    },
+    "effects": {
+      "heal": 25,
+      "buff": "fire_power"
+    },
+    "durationSeconds": 180,
+    "description": "Volcanic brew that channels molten courage into every strike."
+  },
+  {
+    "id": "tideglass_elixir",
+    "name": "Tideglass Elixir",
+    "rarity": "epic",
+    "station": "brewery",
+    "ingredients": {
+      "tideglass_pearl": 1,
+      "kelpweave_fiber": 2,
+      "choral_marrow": 1,
+      "deepcurrent_salmon": 1
+    },
+    "effects": {
+      "mana": 35,
+      "buff": "water_affinity"
+    },
+    "durationSeconds": 200,
+    "description": "Brine-infused elixir that harmonizes breathing with tidal flows."
+  },
+  {
+    "id": "prismatic_essence",
+    "name": "Prismatic Essence",
+    "rarity": "epic",
+    "station": "brewery",
+    "ingredients": {
+      "prismatic_shard": 1,
+      "glimmerdew_petals": 2,
+      "auroral_grain": 2,
+      "spectral_ribbonfish": 1
+    },
+    "effects": {
+      "mana": 45,
+      "buff": "clarity"
+    },
+    "durationSeconds": 210,
+    "description": "Crystalline draught that sharpens focus with prism-spun light."
   }
 ]

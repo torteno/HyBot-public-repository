@@ -1,0 +1,727 @@
+[
+  {
+    "id": "skywhisper_koi",
+    "name": "Skywhisper Koi",
+    "emoji": "🐟",
+    "type": "material",
+    "rarity": "rare",
+    "value": 65,
+    "description": "Alpine koi that glide through the charged rivers of the Howling Peaks. Their scales hum with static energy."
+  },
+  {
+    "id": "emberfin_eel",
+    "name": "Emberfin Eel",
+    "emoji": "🐠",
+    "type": "material",
+    "rarity": "uncommon",
+    "value": 55,
+    "description": "Molten caverns breed these eels whose fins glow with emberlight. Popular with pyromancers and chefs alike."
+  },
+  {
+    "id": "gloomscale_piranha",
+    "name": "Gloomscale Piranha",
+    "emoji": "🐡",
+    "type": "material",
+    "rarity": "rare",
+    "value": 70,
+    "description": "A razor-toothed predator from the shadowed pools of the Gloomwild. Its scales refract ambient light into violet sheens."
+  },
+  {
+    "id": "frostgill_trout",
+    "name": "Frostgill Trout",
+    "emoji": "🐟",
+    "type": "material",
+    "rarity": "common",
+    "value": 35,
+    "description": "Hardy river trout that thrive in glacial runoffs. Favored by settlers for hearty stews."
+  },
+  {
+    "id": "mycelial_shrimp",
+    "name": "Mycelial Shrimp",
+    "emoji": "🦐",
+    "type": "material",
+    "rarity": "uncommon",
+    "value": 48,
+    "description": "Bioluminescent crustaceans that feed on subterranean fungi. Their shells pulse softly in the dark."
+  },
+  {
+    "id": "moonlure_jelly",
+    "name": "Moonlure Jelly",
+    "emoji": "🪼",
+    "type": "material",
+    "rarity": "epic",
+    "value": 120,
+    "description": "A spectral jellyfish attracted to leyline tides. Distilling its essence boosts alchemical potency."
+  },
+  {
+    "id": "rusty_multi_tool",
+    "name": "Rusty Multi-Tool",
+    "emoji": "🛠️",
+    "type": "tool",
+    "rarity": "common",
+    "value": 25,
+    "description": "A battered bundle of implements barely held together. Better than bare hands, but only just.",
+    "gathering": {
+      "types": ["all"],
+      "bonuses": { "speed": 0.02, "quantity": 0.05, "rarity": 0.0, "extraRolls": 0.0 }
+    }
+  },
+  {
+    "id": "stone_pickaxe",
+    "name": "Stone Pickaxe",
+    "emoji": "⛏️",
+    "type": "tool",
+    "rarity": "common",
+    "value": 90,
+    "description": "A reliable stone pickaxe reinforced with mosswoven bindings.",
+    "gathering": {
+      "types": ["mining"],
+      "bonuses": { "speed": 0.08, "quantity": 0.12, "rarity": 0.05, "extraRolls": 0.1 }
+    }
+  },
+  {
+    "id": "stormforged_pickaxe",
+    "name": "Stormforged Pickaxe",
+    "emoji": "⚡",
+    "type": "tool",
+    "rarity": "legendary",
+    "value": 960,
+    "description": "Forged in Tempest Forges, this pick cleaves ore veins and channels lightning into every strike.",
+    "gathering": {
+      "types": ["mining"],
+      "bonuses": { "speed": 0.25, "quantity": 0.38, "rarity": 0.3, "extraRolls": 0.85 }
+    }
+  },
+  {
+    "id": "kweebec_hatchet",
+    "name": "Kweebec Hatchet",
+    "emoji": "🪓",
+    "type": "tool",
+    "rarity": "common",
+    "value": 80,
+    "description": "Lightweight hatchet carved from ancient bark, perfect for trimming grove growth.",
+    "gathering": {
+      "types": ["foraging"],
+      "bonuses": { "speed": 0.07, "quantity": 0.15, "rarity": 0.06, "extraRolls": 0.1 }
+    }
+  },
+  {
+    "id": "gloomreaper_sickle",
+    "name": "Gloomreaper Sickle",
+    "emoji": "🔪",
+    "type": "tool",
+    "rarity": "legendary",
+    "value": 880,
+    "description": "Veil-steeped sickle that glides through shadow flora, coaxing rare reagents from the dark.",
+    "gathering": {
+      "types": ["foraging", "farming"],
+      "bonuses": { "speed": 0.22, "quantity": 0.4, "rarity": 0.34, "extraRolls": 0.9 }
+    }
+  },
+  {
+    "id": "harvesters_scythe",
+    "name": "Harvester's Scythe",
+    "emoji": "🌾",
+    "type": "tool",
+    "rarity": "rare",
+    "value": 340,
+    "description": "Balanced scythe used by frontier farmers to slice wide swaths of enchanted grain.",
+    "gathering": {
+      "types": ["farming"],
+      "bonuses": { "speed": 0.14, "quantity": 0.28, "rarity": 0.12, "extraRolls": 0.35 }
+    }
+  },
+  {
+    "id": "planar_cultivator",
+    "name": "Planar Cultivator",
+    "emoji": "🪴",
+    "type": "tool",
+    "rarity": "mythic",
+    "value": 1020,
+    "description": "An ornate cultivator that channels ley harmonics to supercharge crop cycles.",
+    "gathering": {
+      "types": ["farming"],
+      "bonuses": { "speed": 0.3, "quantity": 0.48, "rarity": 0.36, "extraRolls": 1.1 }
+    }
+  },
+  {
+    "id": "makeshift_fishing_rod",
+    "name": "Makeshift Fishing Rod",
+    "emoji": "🎣",
+    "type": "tool",
+    "rarity": "common",
+    "value": 70,
+    "description": "A simple rod fashioned from grove timber and woven fibers. Humble but dependable.",
+    "gathering": {
+      "types": ["fishing"],
+      "bonuses": { "speed": 0.06, "quantity": 0.1, "rarity": 0.05, "extraRolls": 0.15 }
+    }
+  },
+  {
+    "id": "skysong_harpoon",
+    "name": "Skysong Harpoon",
+    "emoji": "🪝",
+    "type": "tool",
+    "rarity": "rare",
+    "value": 420,
+    "description": "Charged harpoon that rides ambient resonance to reel in aerial and aquatic catches.",
+    "gathering": {
+      "types": ["fishing"],
+      "bonuses": { "speed": 0.18, "quantity": 0.32, "rarity": 0.22, "extraRolls": 0.55 }
+    }
+  },
+  {
+    "id": "abyssal_reel",
+    "name": "Abyssal Reel",
+    "emoji": "🌀",
+    "type": "tool",
+    "rarity": "legendary",
+    "value": 980,
+    "description": "Mystic reel woven with lunar jellies that tempts even eldritch denizens of the deep.",
+    "gathering": {
+      "types": ["fishing"],
+      "bonuses": { "speed": 0.24, "quantity": 0.5, "rarity": 0.4, "extraRolls": 1.2 }
+    }
+  },
+  {
+    "id": "whisperroot_sap",
+    "name": "Whisperroot Sap",
+    "emoji": "🧴",
+    "type": "material",
+    "rarity": "uncommon",
+    "value": 42,
+    "description": "Syrupy sap tapped from whisperroots; hums softly when exposed to moonlight."
+  },
+  {
+    "id": "mosswoven_fiber",
+    "name": "Mosswoven Fiber",
+    "emoji": "🧶",
+    "type": "material",
+    "rarity": "common",
+    "value": 28,
+    "description": "Springy fiber spun from moss blankets. A staple thread for Kweebec artisans."
+  },
+  {
+    "id": "luster_seed",
+    "name": "Luster Seed",
+    "emoji": "🌱",
+    "type": "material",
+    "rarity": "uncommon",
+    "value": 38,
+    "description": "Seed pods that glow gently; prized for accelerating greenhouse sprouting."
+  },
+  {
+    "id": "bloomcap_spore",
+    "name": "Bloomcap Spore",
+    "emoji": "🍄",
+    "type": "material",
+    "rarity": "common",
+    "value": 24,
+    "description": "Fluffy spores shaken loose from towering bloomcaps. Useful for fermentations."
+  },
+  {
+    "id": "kweebec_honey",
+    "name": "Kweebec Honey",
+    "emoji": "🍯",
+    "type": "material",
+    "rarity": "uncommon",
+    "value": 46,
+    "description": "Sweet, resinous honey harvested from grove hives. A natural energizer."
+  },
+  {
+    "id": "sylvan_thread",
+    "name": "Sylvan Thread",
+    "emoji": "🧵",
+    "type": "material",
+    "rarity": "rare",
+    "value": 72,
+    "description": "Thread spun from bark-veins and enchanted dew, famed for its resilience."
+  },
+  {
+    "id": "tempest_thread",
+    "name": "Tempest Thread",
+    "emoji": "🪢",
+    "type": "material",
+    "rarity": "rare",
+    "value": 84,
+    "description": "Charged filament collected from the Howling Peaks. Flexible, conductive, and coveted."
+  },
+  {
+    "id": "skycarved_quartz",
+    "name": "Skycarved Quartz",
+    "emoji": "💎",
+    "type": "material",
+    "rarity": "rare",
+    "value": 96,
+    "description": "Crystalline shards etched by gale currents. Stores static energy within each facet."
+  },
+  {
+    "id": "stormfeather_bundle",
+    "name": "Stormfeather Bundle",
+    "emoji": "🪶",
+    "type": "material",
+    "rarity": "uncommon",
+    "value": 58,
+    "description": "A wrap of aviary feathers crackling with latent charge."
+  },
+  {
+    "id": "galevine",
+    "name": "Galevine",
+    "emoji": "🌿",
+    "type": "material",
+    "rarity": "common",
+    "value": 32,
+    "description": "Wind-twisted vine that never stops swaying. Ideal for flexible lashings."
+  },
+  {
+    "id": "lightning_resin",
+    "name": "Lightning Resin",
+    "emoji": "⚡",
+    "type": "material",
+    "rarity": "epic",
+    "value": 140,
+    "description": "Viscous resin that stores storm charges. Used to supercharge engines and tools."
+  },
+  {
+    "id": "aetheric_ore",
+    "name": "Aetheric Ore",
+    "emoji": "🔷",
+    "type": "material",
+    "rarity": "epic",
+    "value": 150,
+    "description": "Dense ore that oscillates between phases. Essential for planar stabilizers."
+  },
+  {
+    "id": "slagheart_fragment",
+    "name": "Slagheart Fragment",
+    "emoji": "🪨",
+    "type": "material",
+    "rarity": "uncommon",
+    "value": 52,
+    "description": "Heat-shielded shard chipped from molten slaghearts, still warm to the touch."
+  },
+  {
+    "id": "lavafern_leaf",
+    "name": "Lavafern Leaf",
+    "emoji": "🔥",
+    "type": "material",
+    "rarity": "common",
+    "value": 30,
+    "description": "A hardy leaf that thrives beside lavafalls, infused with ember spores."
+  },
+  {
+    "id": "smoldering_pearl",
+    "name": "Smoldering Pearl",
+    "emoji": "🔮",
+    "type": "material",
+    "rarity": "rare",
+    "value": 110,
+    "description": "Pearls forged within magma eddies, radiating gentle heat."
+  },
+  {
+    "id": "cinder_bloom",
+    "name": "Cinder Bloom",
+    "emoji": "🌺",
+    "type": "material",
+    "rarity": "uncommon",
+    "value": 44,
+    "description": "Ash-tipped petals that combust when crushed. Used in incendiary brews."
+  },
+  {
+    "id": "igneous_powder",
+    "name": "Igneous Powder",
+    "emoji": "🧪",
+    "type": "material",
+    "rarity": "rare",
+    "value": 92,
+    "description": "Finely ground volcanic powder that sparks when exposed to air."
+  },
+  {
+    "id": "embered_seed",
+    "name": "Embered Seed",
+    "emoji": "🌰",
+    "type": "material",
+    "rarity": "common",
+    "value": 36,
+    "description": "Seed kernels that glow like coals. Favored by ember farmers for resilient crops."
+  },
+  {
+    "id": "shadeleaf",
+    "name": "Shadeleaf",
+    "emoji": "🍃",
+    "type": "material",
+    "rarity": "uncommon",
+    "value": 48,
+    "description": "Silky leaves that drink in light. Ground into tonics for night vision."
+  },
+  {
+    "id": "midnight_truffle",
+    "name": "Midnight Truffle",
+    "emoji": "🍄",
+    "type": "material",
+    "rarity": "rare",
+    "value": 95,
+    "description": "A rare truffle that glows with inner starlight. Revered by Gloomwild chefs."
+  },
+  {
+    "id": "veilvine",
+    "name": "Veilvine",
+    "emoji": "🪴",
+    "type": "material",
+    "rarity": "common",
+    "value": 34,
+    "description": "Shadow-creeping vine that clings to twilight groves. Used for stealth charms."
+  },
+  {
+    "id": "phantom_pollen",
+    "name": "Phantom Pollen",
+    "emoji": "✨",
+    "type": "material",
+    "rarity": "rare",
+    "value": 104,
+    "description": "Gossamer pollen that vanishes on touch. Harnessed in planar rituals."
+  },
+  {
+    "id": "lumishroom",
+    "name": "Lumishroom",
+    "emoji": "💡",
+    "type": "material",
+    "rarity": "uncommon",
+    "value": 60,
+    "description": "Bioluminescent fungus that lights the deepest groves."
+  },
+  {
+    "id": "nocturne_sap",
+    "name": "Nocturne Sap",
+    "emoji": "🩸",
+    "type": "material",
+    "rarity": "epic",
+    "value": 130,
+    "description": "Inky sap that resonates with moon phases. Essential for high-tier alchemy."
+  },
+  {
+    "id": "glacier_ore",
+    "name": "Glacier Ore",
+    "emoji": "🧊",
+    "type": "material",
+    "rarity": "uncommon",
+    "value": 64,
+    "description": "Frostbound ore pried from Borea's glacier walls. Brittle until tempered with resin."
+  },
+  {
+    "id": "frostpine_resin",
+    "name": "Frostpine Resin",
+    "emoji": "🪵",
+    "type": "material",
+    "rarity": "uncommon",
+    "value": 46,
+    "description": "Sap harvested from frostpine trees, thick and bitter with tundra chill."
+  },
+  {
+    "id": "snowmelt_barley",
+    "name": "Snowmelt Barley",
+    "emoji": "🌾",
+    "type": "material",
+    "rarity": "common",
+    "value": 32,
+    "description": "Cold-resistant grain cultivated beneath ice shelters in Borea."
+  },
+  {
+    "id": "icefin_perch",
+    "name": "Icefin Perch",
+    "emoji": "🐟",
+    "type": "material",
+    "rarity": "uncommon",
+    "value": 58,
+    "description": "A chillwater fish whose fins grow crystalline ridges. Valued for hearty stews."
+  },
+  {
+    "id": "sunspire_glass",
+    "name": "Sunspire Glass",
+    "emoji": "🔶",
+    "type": "material",
+    "rarity": "rare",
+    "value": 88,
+    "description": "Desert-forged glass that refracts mirage light into usable energy."
+  },
+  {
+    "id": "dune_silk",
+    "name": "Dune Silk",
+    "emoji": "🪡",
+    "type": "material",
+    "rarity": "uncommon",
+    "value": 44,
+    "description": "Fine silk spun by dune spiders, resilient against sandstorms."
+  },
+  {
+    "id": "mirage_grain",
+    "name": "Mirage Grain",
+    "emoji": "🥣",
+    "type": "material",
+    "rarity": "common",
+    "value": 30,
+    "description": "Golden grain irrigated by dew harvesters; shimmers when heated."
+  },
+  {
+    "id": "sandray_skate",
+    "name": "Sandray Skate",
+    "emoji": "🐠",
+    "type": "material",
+    "rarity": "rare",
+    "value": 82,
+    "description": "A gliding desert ray that dives into mirage pools. Its fins dry into potent spices."
+  },
+  {
+    "id": "windhollow_shard",
+    "name": "Windhollow Shard",
+    "emoji": "💠",
+    "type": "material",
+    "rarity": "rare",
+    "value": 90,
+    "description": "Shards carved by cliffside vortices, humming with stored gale energy."
+  },
+  {
+    "id": "skyroot_bark",
+    "name": "Skyroot Bark",
+    "emoji": "🌳",
+    "type": "material",
+    "rarity": "uncommon",
+    "value": 48,
+    "description": "Resilient bark from trees clinging to Gale Cliff ledges, braided by constant winds."
+  },
+  {
+    "id": "cliffgrain_seed",
+    "name": "Cliffgrain Seed",
+    "emoji": "🌰",
+    "type": "material",
+    "rarity": "common",
+    "value": 35,
+    "description": "Hardy grain cultivated in terraced cliff farms, rich in mineral salts."
+  },
+  {
+    "id": "stormwake_tuna",
+    "name": "Stormwake Tuna",
+    "emoji": "🐡",
+    "type": "material",
+    "rarity": "rare",
+    "value": 96,
+    "description": "Deepwater tuna that surface during tempests along Gale Cliffs."
+  },
+  {
+    "id": "voidblack_ore",
+    "name": "Voidblack Ore",
+    "emoji": "⚫",
+    "type": "material",
+    "rarity": "epic",
+    "value": 140,
+    "description": "A dense ore steeped in shadow energy, quarried from the Shadow Realm."
+  },
+  {
+    "id": "nightveil_leaf",
+    "name": "Nightveil Leaf",
+    "emoji": "🍂",
+    "type": "material",
+    "rarity": "rare",
+    "value": 84,
+    "description": "Leaves that bloom only in voidlight, prized for cloaking brews."
+  },
+  {
+    "id": "nether_sporegrain",
+    "name": "Nether Sporegrain",
+    "emoji": "🍞",
+    "type": "material",
+    "rarity": "uncommon",
+    "value": 52,
+    "description": "Spores cultivated in shadow loams, ground into nourishing but eerie flour."
+  },
+  {
+    "id": "abyssal_lamprey",
+    "name": "Abyssal Lamprey",
+    "emoji": "🪱",
+    "type": "material",
+    "rarity": "rare",
+    "value": 94,
+    "description": "A void-resonant eel that clings to ley tides. Distilled for shadow tonics."
+  },
+  {
+    "id": "ashglass_core",
+    "name": "Ashglass Core",
+    "emoji": "🧱",
+    "type": "material",
+    "rarity": "rare",
+    "value": 92,
+    "description": "A glassy core formed where ash cyclones meet magma vents."
+  },
+  {
+    "id": "magma_lichen",
+    "name": "Magma Lichen",
+    "emoji": "🪴",
+    "type": "material",
+    "rarity": "uncommon",
+    "value": 48,
+    "description": "Heat-loving lichen that clings to basalt and glows with ember spores."
+  },
+  {
+    "id": "pyrebloom_seed",
+    "name": "Pyrebloom Seed",
+    "emoji": "🔥",
+    "type": "material",
+    "rarity": "uncommon",
+    "value": 42,
+    "description": "Seed pods that ignite when cracked, essential for fire-infused crops."
+  },
+  {
+    "id": "searing_lanternfish",
+    "name": "Searing Lanternfish",
+    "emoji": "🐟",
+    "type": "material",
+    "rarity": "rare",
+    "value": 98,
+    "description": "Lava-tide fish whose bioluminescence burns bright crimson."
+  },
+  {
+    "id": "tideglass_pearl",
+    "name": "Tideglass Pearl",
+    "emoji": "🔮",
+    "type": "material",
+    "rarity": "epic",
+    "value": 150,
+    "description": "A radiant pearl grown within reef altars, amplifying tidecaller songs."
+  },
+  {
+    "id": "kelpweave_fiber",
+    "name": "Kelpweave Fiber",
+    "emoji": "🪢",
+    "type": "material",
+    "rarity": "common",
+    "value": 36,
+    "description": "Braided kelp strands hardened by salt currents, ideal for waterproof cloth."
+  },
+  {
+    "id": "choral_marrow",
+    "name": "Choral Marrow",
+    "emoji": "🧫",
+    "type": "material",
+    "rarity": "rare",
+    "value": 86,
+    "description": "Resonant marrow extracted from living coral columns."
+  },
+  {
+    "id": "deepcurrent_salmon",
+    "name": "Deepcurrent Salmon",
+    "emoji": "🐠",
+    "type": "material",
+    "rarity": "uncommon",
+    "value": 62,
+    "description": "A muscular salmon that swims the submarine rivers of Tidecaller depths."
+  },
+  {
+    "id": "bloodoak_sap",
+    "name": "Bloodoak Sap",
+    "emoji": "🩸",
+    "type": "material",
+    "rarity": "uncommon",
+    "value": 54,
+    "description": "Resin tapped from scarlet oaks, thick and iron-rich."
+  },
+  {
+    "id": "scarlet_clover",
+    "name": "Scarlet Clover",
+    "emoji": "🍀",
+    "type": "material",
+    "rarity": "common",
+    "value": 34,
+    "description": "A hardy clover that nourishes scarlet forest soils and glows at dusk."
+  },
+  {
+    "id": "thornvine_pod",
+    "name": "Thornvine Pod",
+    "emoji": "🌶️",
+    "type": "material",
+    "rarity": "rare",
+    "value": 88,
+    "description": "Seed pods bristling with venomous thorns, used in potent poisons."
+  },
+  {
+    "id": "crimson_pike",
+    "name": "Crimson Pike",
+    "emoji": "🐟",
+    "type": "material",
+    "rarity": "uncommon",
+    "value": 60,
+    "description": "Predatory river fish whose scales stain red from iron-rich waters."
+  },
+  {
+    "id": "wyrmroot_tuber",
+    "name": "Wyrmroot Tuber",
+    "emoji": "🥔",
+    "type": "material",
+    "rarity": "common",
+    "value": 38,
+    "description": "A dense tuber entwined with wyrmroot veins, packed with restorative essences."
+  },
+  {
+    "id": "sporeglass_cluster",
+    "name": "Sporeglass Cluster",
+    "emoji": "🧫",
+    "type": "material",
+    "rarity": "rare",
+    "value": 102,
+    "description": "Translucent fungal clusters that refract bioluminescent spores."
+  },
+  {
+    "id": "venom_bulb",
+    "name": "Venom Bulb",
+    "emoji": "🧪",
+    "type": "material",
+    "rarity": "uncommon",
+    "value": 56,
+    "description": "Bulbous pods containing potent paralytic sap from Wyrmroot Hollow."
+  },
+  {
+    "id": "gloomlamp_catfish",
+    "name": "Gloomlamp Catfish",
+    "emoji": "🐡",
+    "type": "material",
+    "rarity": "rare",
+    "value": 92,
+    "description": "A bioluminescent catfish that navigates toxic pools with glowing barbels."
+  },
+  {
+    "id": "prismatic_shard",
+    "name": "Prismatic Shard",
+    "emoji": "🔷",
+    "type": "material",
+    "rarity": "epic",
+    "value": 160,
+    "description": "Crystal splinters suffused with refracted aurora light."
+  },
+  {
+    "id": "glimmerdew_petals",
+    "name": "Glimmerdew Petals",
+    "emoji": "🌸",
+    "type": "material",
+    "rarity": "rare",
+    "value": 88,
+    "description": "Petals soaked in dew that fluoresces under moonlight."
+  },
+  {
+    "id": "auroral_grain",
+    "name": "Auroral Grain",
+    "emoji": "🌾",
+    "type": "material",
+    "rarity": "uncommon",
+    "value": 48,
+    "description": "Grain cultivated in prism greenhouses, storing aurora energy."
+  },
+  {
+    "id": "spectral_ribbonfish",
+    "name": "Spectral Ribbonfish",
+    "emoji": "🐠",
+    "type": "material",
+    "rarity": "rare",
+    "value": 104,
+    "description": "A translucent fish that trails bands of light through the Prismatic Refuge."
+  }
+]
+

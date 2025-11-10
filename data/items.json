@@ -9100,19 +9100,6 @@
     ]
   },
   {
-    "id": "dreadroot_bark",
-    "name": "Dreadroot Bark",
-    "type": "material",
-    "rarity": "uncommon",
-    "value": 42,
-    "emoji": "\ud83e\udeb5",
-    "description": "Dark bark that whispers curses when carved incorrectly.",
-    "tags": [
-      "material",
-      "swamp"
-    ]
-  },
-  {
     "id": "silverfin_silk",
     "name": "Silverfin Silk",
     "type": "material",
@@ -10374,19 +10361,6 @@
     ]
   },
   {
-    "id": "dreadroot_bark",
-    "name": "Dreadroot Bark",
-    "type": "material",
-    "rarity": "uncommon",
-    "value": 42,
-    "emoji": "\ud83e\udeb5",
-    "description": "Dark bark that whispers curses when carved incorrectly.",
-    "tags": [
-      "material",
-      "swamp"
-    ]
-  },
-  {
     "id": "silverfin_silk",
     "name": "Silverfin Silk",
     "type": "material",
@@ -10394,19 +10368,6 @@
     "value": 82,
     "emoji": "\ud83e\udea1",
     "description": "Waterlight silk woven from the threads of Silverfin depths.",
-    "tags": [
-      "material",
-      "ocean"
-    ]
-  },
-  {
-    "id": "bluehaven_pearl",
-    "name": "Bluehaven Pearl",
-    "type": "material",
-    "rarity": "rare",
-    "value": 94,
-    "emoji": "\ud83d\udd35",
-    "description": "An immaculate pearl traded in the Bluehaven lagoons.",
     "tags": [
       "material",
       "ocean"
@@ -11011,19 +10972,6 @@
     ]
   },
   {
-    "id": "dreadroot_bark",
-    "name": "Dreadroot Bark",
-    "type": "material",
-    "rarity": "uncommon",
-    "value": 42,
-    "emoji": "\u00f0\u0178\u00aa\u00b5",
-    "description": "Dark bark that whispers curses when carved incorrectly.",
-    "tags": [
-      "material",
-      "swamp"
-    ]
-  },
-  {
     "id": "silverfin_silk",
     "name": "Silverfin Silk",
     "type": "material",
@@ -11044,19 +10992,6 @@
     "value": 94,
     "emoji": "\u00f0\u0178\u201d\u00b5",
     "description": "An immaculate pearl traded in the Bluehaven lagoons.",
-    "tags": [
-      "material",
-      "ocean"
-    ]
-  },
-  {
-    "id": "stormbreak_shell",
-    "name": "Stormbreak Shell",
-    "type": "material",
-    "rarity": "common",
-    "value": 30,
-    "emoji": "\u00f0\u0178\u0090\u0161",
-    "description": "Shell hardened by countless breakers along the Stormbreak isles.",
     "tags": [
       "material",
       "ocean"
@@ -13152,6 +13087,276 @@
       "material",
       "ember",
       "crafting"
+    ]
+  },
+  {
+    "id": "polar_barley_stew",
+    "name": "Polar Barley Stew",
+    "type": "consumable",
+    "rarity": "uncommon",
+    "value": 70,
+    "emoji": "\ud83c\udf5c",
+    "heal": 55,
+    "buff": "frost_resist",
+    "description": "Hearty tundra stew brewed from snowmelt barley and icefin perch.",
+    "tags": [
+      "food",
+      "borea"
+    ]
+  },
+  {
+    "id": "dune_spiced_skate",
+    "name": "Dune-Spiced Skate",
+    "type": "consumable",
+    "rarity": "uncommon",
+    "value": 72,
+    "emoji": "\ud83c\udf61",
+    "heal": 50,
+    "buff": "heat_resist",
+    "description": "Pan-seared sandray skate wrapped in dunesilk with mirage grain.",
+    "tags": [
+      "food",
+      "howling_sands"
+    ]
+  },
+  {
+    "id": "stormwake_risotto",
+    "name": "Stormwake Risotto",
+    "type": "consumable",
+    "rarity": "rare",
+    "value": 88,
+    "emoji": "\ud83c\udf5a",
+    "heal": 60,
+    "buff": "haste",
+    "description": "Cliffgrain and stormwake tuna folded into a gust-quickened risotto.",
+    "tags": [
+      "food",
+      "gale_cliffs"
+    ]
+  },
+  {
+    "id": "crimson_thornhot",
+    "name": "Crimson Thornhot",
+    "type": "consumable",
+    "rarity": "rare",
+    "value": 95,
+    "emoji": "\ud83c\udf72",
+    "heal": 65,
+    "buff": "bleed",
+    "description": "Bloodoak sap stew steeped with thornvine pods and crimson pike.",
+    "tags": [
+      "food",
+      "scarlet_forest"
+    ]
+  },
+  {
+    "id": "wyrmroot_gratin",
+    "name": "Wyrmroot Gratin",
+    "type": "consumable",
+    "rarity": "rare",
+    "value": 98,
+    "emoji": "\ud83c\udf5f",
+    "heal": 70,
+    "buff": "poison_resist",
+    "description": "Baked wyrmroot layered with venom bulb glaze and catfish jus.",
+    "tags": [
+      "food",
+      "wyrmroot_hollow"
+    ]
+  },
+  {
+    "id": "voidshroud_broth",
+    "name": "Voidshroud Broth",
+    "type": "consumable",
+    "rarity": "epic",
+    "value": 110,
+    "emoji": "\ud83c\udf75",
+    "mana": 30,
+    "buff": "stealth",
+    "description": "Shadow-thick broth that softens footfalls and dims presence.",
+    "tags": [
+      "food",
+      "shadow_realm"
+    ]
+  },
+  {
+    "id": "pyrebloom_chili",
+    "name": "Pyrebloom Chili",
+    "type": "consumable",
+    "rarity": "uncommon",
+    "value": 76,
+    "emoji": "\ud83c\udf36",
+    "heal": 45,
+    "buff": "fire_power",
+    "description": "Lanternfish chili that channels volcanic spice into fiery strikes.",
+    "tags": [
+      "food",
+      "volcanic_expanse"
+    ]
+  },
+  {
+    "id": "tideglass_sushi",
+    "name": "Tideglass Sushi",
+    "type": "consumable",
+    "rarity": "rare",
+    "value": 90,
+    "emoji": "\ud83c\udf63",
+    "mana": 35,
+    "buff": "water_affinity",
+    "description": "Kelpweave-wrapped deepcurrent salmon imbued with choraled marrow.",
+    "tags": [
+      "food",
+      "tidecaller_depths"
+    ]
+  },
+  {
+    "id": "prismatic_souffle",
+    "name": "Prismatic Soufflé",
+    "type": "consumable",
+    "rarity": "epic",
+    "value": 118,
+    "emoji": "\ud83c\udf70",
+    "mana": 40,
+    "buff": "clarity",
+    "description": "Airy soufflé that refracts auroral grains into sharpened insight.",
+    "tags": [
+      "food",
+      "prismatic_refuge"
+    ]
+  },
+  {
+    "id": "glacier_resilience_draught",
+    "name": "Glacier Resilience Draught",
+    "type": "consumable",
+    "rarity": "rare",
+    "value": 120,
+    "emoji": "\ud83e\udd76",
+    "heal": 35,
+    "buff": "frost_resist",
+    "description": "Mineral-rich draught that wards against polar squalls.",
+    "tags": [
+      "brew",
+      "borea"
+    ]
+  },
+  {
+    "id": "dunesilk_tonic",
+    "name": "Dunesilk Tonic",
+    "type": "consumable",
+    "rarity": "rare",
+    "value": 110,
+    "emoji": "\ud83c\udfd5\ufe0f",
+    "heal": 30,
+    "buff": "heat_resist",
+    "description": "Cooling tonic stitched with dunesilk to weather desert heat.",
+    "tags": [
+      "brew",
+      "howling_sands"
+    ]
+  },
+  {
+    "id": "stormwake_ampoule",
+    "name": "Stormwake Ampoule",
+    "type": "consumable",
+    "rarity": "epic",
+    "value": 140,
+    "emoji": "\u26a1",
+    "mana": 40,
+    "buff": "haste",
+    "description": "Ampoule of gale-charged essences that jolts reflexes.",
+    "tags": [
+      "brew",
+      "gale_cliffs"
+    ]
+  },
+  {
+    "id": "thornvine_elixir",
+    "name": "Thornvine Elixir",
+    "type": "consumable",
+    "rarity": "rare",
+    "value": 115,
+    "emoji": "\ud83e\ude78",
+    "heal": 28,
+    "buff": "bleed",
+    "description": "Scarlet infusion that sharpens strikes with thornvine venom.",
+    "tags": [
+      "brew",
+      "scarlet_forest"
+    ]
+  },
+  {
+    "id": "sporeglass_philter",
+    "name": "Sporeglass Philter",
+    "type": "consumable",
+    "rarity": "epic",
+    "value": 145,
+    "emoji": "\ud83e\uddea",
+    "heal": 32,
+    "buff": "poison_resist",
+    "description": "Glittering philter that neutralizes toxins with sporeglass prisms.",
+    "tags": [
+      "brew",
+      "wyrmroot_hollow"
+    ]
+  },
+  {
+    "id": "voidveil_serum",
+    "name": "Voidveil Serum",
+    "type": "consumable",
+    "rarity": "epic",
+    "value": 150,
+    "emoji": "\ud83c\udf0c",
+    "mana": 30,
+    "buff": "stealth",
+    "description": "Void-kissed serum that bends light around the imbiber.",
+    "tags": [
+      "brew",
+      "shadow_realm"
+    ]
+  },
+  {
+    "id": "pyreheart_brew",
+    "name": "Pyreheart Brew",
+    "type": "consumable",
+    "rarity": "rare",
+    "value": 105,
+    "emoji": "\ud83d\udd25",
+    "heal": 25,
+    "buff": "fire_power",
+    "description": "Volcanic brew that fuels molten determination.",
+    "tags": [
+      "brew",
+      "volcanic_expanse"
+    ]
+  },
+  {
+    "id": "tideglass_elixir",
+    "name": "Tideglass Elixir",
+    "type": "consumable",
+    "rarity": "epic",
+    "value": 148,
+    "emoji": "\ud83d\udca7",
+    "mana": 35,
+    "buff": "water_affinity",
+    "description": "Resonant elixir that synchronizes breath with tidal hymns.",
+    "tags": [
+      "brew",
+      "tidecaller_depths"
+    ]
+  },
+  {
+    "id": "prismatic_essence",
+    "name": "Prismatic Essence",
+    "type": "consumable",
+    "rarity": "epic",
+    "value": 160,
+    "emoji": "\ud83c\udf08",
+    "mana": 45,
+    "buff": "clarity",
+    "description": "Concentrated prismlight that sharpens focus and perception.",
+    "tags": [
+      "brew",
+      "prismatic_refuge"
     ]
   }
 ]

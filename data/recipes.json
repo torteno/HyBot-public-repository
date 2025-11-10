@@ -971,5 +971,274 @@
       "stormcore_shard": 2
     },
     "description": "Charge a reusable capacitor with stormlash power."
+  },
+  {
+    "id": "tempest_capacitor_reforge",
+    "result": "tempest_capacitor",
+    "name": "Reforge Tempest Capacitor",
+    "level": 10,
+    "coins": 250,
+    "station": "forge",
+    "ingredients": {
+      "tempest_thread": 2,
+      "lightning_resin": 2,
+      "aetheric_ore": 2
+    },
+    "description": "Reforge the capacitor with high-grade storm components for improved output."
+  },
+  {
+    "id": "craft_stone_pickaxe",
+    "result": "stone_pickaxe",
+    "name": "Craft Stone Pickaxe",
+    "level": 2,
+    "coins": 70,
+    "station": "forge",
+    "ingredients": {
+      "stormvein_ore": 3,
+      "mosswoven_fiber": 2,
+      "ancient_bark": 2
+    },
+    "description": "Shape a sturdy moss-bound pickaxe for novice miners."
+  },
+  {
+    "id": "craft_stormforged_pickaxe",
+    "result": "stormforged_pickaxe",
+    "name": "Forge Stormforged Pickaxe",
+    "level": 6,
+    "coins": 320,
+    "station": "forge",
+    "ingredients": {
+      "aetheric_ore": 3,
+      "lightning_resin": 2,
+      "stormcore_shard": 2
+    },
+    "description": "Channel tempest energy into a pickaxe that blitzes through ore veins."
+  },
+  {
+    "id": "craft_kweebec_hatchet",
+    "result": "kweebec_hatchet",
+    "name": "Carve Kweebec Hatchet",
+    "level": 2,
+    "coins": 55,
+    "station": "carpentry",
+    "ingredients": {
+      "ancient_bark": 3,
+      "kweebec_honey": 1,
+      "mosswoven_fiber": 2
+    },
+    "description": "Carve a lightweight hatchet that keeps pace with grove foragers."
+  },
+  {
+    "id": "craft_gloomreaper_sickle",
+    "result": "gloomreaper_sickle",
+    "name": "Forge Gloomreaper Sickle",
+    "level": 6,
+    "coins": 310,
+    "station": "forge",
+    "ingredients": {
+      "shadeleaf": 3,
+      "phantom_pollen": 2,
+      "gloomdew_extract": 1
+    },
+    "description": "Imbue a sickle with veil energies to flourish in shadowed groves."
+  },
+  {
+    "id": "craft_harvesters_scythe",
+    "result": "harvesters_scythe",
+    "name": "Forge Harvester's Scythe",
+    "level": 3,
+    "coins": 120,
+    "station": "forge",
+    "ingredients": {
+      "verdant_pollen": 3,
+      "mosswoven_fiber": 2,
+      "kweebec_honey": 1
+    },
+    "description": "Forge a balanced scythe that sweeps wide swaths of enchanted grains."
+  },
+  {
+    "id": "craft_planar_cultivator",
+    "result": "planar_cultivator",
+    "name": "Assemble Planar Cultivator",
+    "level": 7,
+    "coins": 360,
+    "station": "arcane_table",
+    "ingredients": {
+      "aetheric_ore": 2,
+      "nocturne_sap": 1,
+      "lightning_resin": 1,
+      "phantom_pollen": 2
+    },
+    "description": "Fuse planar alloys and nocturne sap into a cultivator that harmonises with leyfields."
+  },
+  {
+    "id": "craft_makeshift_fishing_rod",
+    "result": "makeshift_fishing_rod",
+    "name": "Build Makeshift Fishing Rod",
+    "level": 1,
+    "coins": 45,
+    "station": "carpentry",
+    "ingredients": {
+      "mosswoven_fiber": 3,
+      "ancient_bark": 2,
+      "luster_seed": 1
+    },
+    "description": "Lash together bark, fiber, and seeds to craft a reliable starter rod."
+  },
+  {
+    "id": "craft_skysong_harpoon",
+    "result": "skysong_harpoon",
+    "name": "Forge Skysong Harpoon",
+    "level": 5,
+    "coins": 220,
+    "station": "forge",
+    "ingredients": {
+      "tempest_thread": 2,
+      "skycarved_quartz": 2,
+      "stormfeather_bundle": 2
+    },
+    "description": "Temper a harpoon that resonates with the winds, perfect for high-altitude catches."
+  },
+  {
+    "id": "craft_abyssal_reel",
+    "result": "abyssal_reel",
+    "name": "Assemble Abyssal Reel",
+    "level": 7,
+    "coins": 330,
+    "station": "arcane_table",
+    "ingredients": {
+      "gloomscale_piranha": 2,
+      "moonlure_jelly": 1,
+      "nocturne_sap": 1,
+      "lumishroom": 2
+    },
+    "description": "Bind abyssal materials into a reel that tempts even eldritch creatures."
+  },
+  {
+    "id": "cook_polar_barley_stew",
+    "result": "polar_barley_stew",
+    "name": "Simmer Polar Barley Stew",
+    "level": 3,
+    "coins": 85,
+    "station": "cookpot",
+    "ingredients": {
+      "snowmelt_barley": 3,
+      "icefin_perch": 2,
+      "frostpine_resin": 1
+    },
+    "description": "Slow simmer barley and icefin fillets into a hearty tundra stew."
+  },
+  {
+    "id": "cook_dune_spiced_skate",
+    "result": "dune_spiced_skate",
+    "name": "Grill Dune-Spiced Skate",
+    "level": 4,
+    "coins": 95,
+    "station": "cookpot",
+    "ingredients": {
+      "sandray_skate": 2,
+      "mirage_grain": 3,
+      "dune_silk": 1
+    },
+    "description": "Pan-sear sandray skate with mirage grains and dune silk ribbons."
+  },
+  {
+    "id": "cook_stormwake_risotto",
+    "result": "stormwake_risotto",
+    "name": "Stir Stormwake Risotto",
+    "level": 5,
+    "coins": 110,
+    "station": "cookpot",
+    "ingredients": {
+      "stormwake_tuna": 1,
+      "cliffgrain_seed": 4,
+      "skyroot_bark": 2
+    },
+    "description": "Fold tender cliffgrain into stormwake tuna with wind-seasoned bark."
+  },
+  {
+    "id": "cook_crimson_thornhot",
+    "result": "crimson_thornhot",
+    "name": "Stew Crimson Thornhot",
+    "level": 5,
+    "coins": 120,
+    "station": "cookpot",
+    "ingredients": {
+      "crimson_pike": 2,
+      "scarlet_clover": 3,
+      "bloodoak_sap": 1,
+      "thornvine_pod": 1
+    },
+    "description": "Simmer crimson pike in bloodoak sap for a crimson-hot forest stew."
+  },
+  {
+    "id": "cook_wyrmroot_gratin",
+    "result": "wyrmroot_gratin",
+    "name": "Bake Wyrmroot Gratin",
+    "level": 6,
+    "coins": 125,
+    "station": "cookpot",
+    "ingredients": {
+      "wyrmroot_tuber": 3,
+      "venom_bulb": 1,
+      "gloomlamp_catfish": 1
+    },
+    "description": "Layer wyrmroot slices with venom bulb glaze and catfish reductions."
+  },
+  {
+    "id": "cook_voidshroud_broth",
+    "result": "voidshroud_broth",
+    "name": "Steep Voidshroud Broth",
+    "level": 6,
+    "coins": 135,
+    "station": "cookpot",
+    "ingredients": {
+      "abyssal_lamprey": 1,
+      "nether_sporegrain": 3,
+      "nightveil_leaf": 2
+    },
+    "description": "Brew a shadow-rich broth with lamprey essence and nightveil infusions."
+  },
+  {
+    "id": "cook_pyrebloom_chili",
+    "result": "pyrebloom_chili",
+    "name": "Simmer Pyrebloom Chili",
+    "level": 4,
+    "coins": 100,
+    "station": "cookpot",
+    "ingredients": {
+      "searing_lanternfish": 1,
+      "pyrebloom_seed": 3,
+      "magma_lichen": 2
+    },
+    "description": "Stew lanternfish with pyrebloom peppers for a volcanic blaze."
+  },
+  {
+    "id": "cook_tideglass_sushi",
+    "result": "tideglass_sushi",
+    "name": "Assemble Tideglass Sushi",
+    "level": 5,
+    "coins": 115,
+    "station": "cookpot",
+    "ingredients": {
+      "deepcurrent_salmon": 2,
+      "kelpweave_fiber": 3,
+      "choral_marrow": 1
+    },
+    "description": "Roll deepcurrent salmon with kelpweave fiber and coral marrow."
+  },
+  {
+    "id": "cook_prismatic_souffle",
+    "result": "prismatic_souffle",
+    "name": "Whisk Prismatic Soufflé",
+    "level": 6,
+    "coins": 140,
+    "station": "cookpot",
+    "ingredients": {
+      "spectral_ribbonfish": 1,
+      "auroral_grain": 3,
+      "glimmerdew_petals": 2
+    },
+    "description": "Whip auroral grains and ribbonfish glaze into a luminescent soufflé."
   }
 ]

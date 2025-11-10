@@ -8,6 +8,317 @@
     "enemy_drop",
     "exploration_mine"
   ],
+  "mosswoven_fiber": [
+    "gathering_foraging",
+    "gathering_farming",
+    "crafting_recipe"
+  ],
+  "whisperroot_sap": [
+    "gathering_foraging",
+    "brew_recipe",
+    "crafting_recipe"
+  ],
+  "bloomcap_spore": [
+    "gathering_foraging",
+    "cook_recipe"
+  ],
+  "kweebec_honey": [
+    "gathering_farming",
+    "gathering_foraging",
+    "brew_recipe",
+    "crafting_recipe"
+  ],
+  "sylvan_thread": [
+    "gathering_mining",
+    "loom_recipe"
+  ],
+  "tempest_thread": [
+    "gathering_foraging",
+    "crafting_recipe",
+    "forge_recipe"
+  ],
+  "stormfeather_bundle": [
+    "gathering_foraging",
+    "crafting_recipe"
+  ],
+  "galevine": [
+    "gathering_foraging",
+    "crafting_recipe"
+  ],
+  "lightning_resin": [
+    "gathering_mining",
+    "gathering_farming",
+    "forge_recipe"
+  ],
+  "aetheric_ore": [
+    "gathering_mining",
+    "forge_recipe"
+  ],
+  "slagheart_fragment": [
+    "gathering_mining",
+    "crafting_recipe"
+  ],
+  "lavafern_leaf": [
+    "gathering_foraging",
+    "cook_recipe"
+  ],
+  "smoldering_pearl": [
+    "gathering_mining",
+    "gathering_fishing",
+    "crafting_recipe"
+  ],
+  "cinder_bloom": [
+    "gathering_foraging",
+    "brew_recipe"
+  ],
+  "igneous_powder": [
+    "gathering_mining",
+    "forge_recipe"
+  ],
+  "embered_seed": [
+    "gathering_farming",
+    "cook_recipe"
+  ],
+  "shadeleaf": [
+    "gathering_foraging",
+    "brew_recipe"
+  ],
+  "midnight_truffle": [
+    "gathering_foraging",
+    "cook_recipe"
+  ],
+  "veilvine": [
+    "gathering_foraging",
+    "gathering_farming",
+    "crafting_recipe"
+  ],
+  "phantom_pollen": [
+    "gathering_mining",
+    "gathering_foraging",
+    "arcane_recipe"
+  ],
+  "lumishroom": [
+    "gathering_foraging",
+    "cook_recipe",
+    "brew_recipe"
+  ],
+  "nocturne_sap": [
+    "gathering_mining",
+    "gathering_farming",
+    "arcane_recipe"
+  ],
+  "glacier_ore": [
+    "gathering_mining",
+    "crafting_recipe",
+    "forge_recipe"
+  ],
+  "frostpine_resin": [
+    "gathering_foraging",
+    "brew_recipe",
+    "crafting_recipe"
+  ],
+  "snowmelt_barley": [
+    "gathering_farming",
+    "cook_recipe",
+    "brew_recipe"
+  ],
+  "icefin_perch": [
+    "gathering_fishing",
+    "cook_recipe",
+    "crafting_recipe"
+  ],
+  "sunspire_glass": [
+    "gathering_mining",
+    "crafting_recipe",
+    "forge_recipe"
+  ],
+  "dune_silk": [
+    "gathering_foraging",
+    "loom_recipe",
+    "crafting_recipe"
+  ],
+  "mirage_grain": [
+    "gathering_farming",
+    "cook_recipe",
+    "brew_recipe"
+  ],
+  "sandray_skate": [
+    "gathering_fishing",
+    "cook_recipe",
+    "crafting_recipe"
+  ],
+  "windhollow_shard": [
+    "gathering_mining",
+    "forge_recipe",
+    "arcane_recipe"
+  ],
+  "skyroot_bark": [
+    "gathering_foraging",
+    "crafting_recipe",
+    "brew_recipe"
+  ],
+  "cliffgrain_seed": [
+    "gathering_farming",
+    "cook_recipe",
+    "brew_recipe"
+  ],
+  "stormwake_tuna": [
+    "gathering_fishing",
+    "cook_recipe",
+    "crafting_recipe"
+  ],
+  "voidblack_ore": [
+    "gathering_mining",
+    "forge_recipe",
+    "arcane_recipe"
+  ],
+  "nightveil_leaf": [
+    "gathering_foraging",
+    "brew_recipe",
+    "crafting_recipe"
+  ],
+  "nether_sporegrain": [
+    "gathering_farming",
+    "cook_recipe",
+    "brew_recipe"
+  ],
+  "abyssal_lamprey": [
+    "gathering_fishing",
+    "brew_recipe",
+    "crafting_recipe"
+  ],
+  "ashglass_core": [
+    "gathering_mining",
+    "forge_recipe",
+    "crafting_recipe"
+  ],
+  "magma_lichen": [
+    "gathering_foraging",
+    "brew_recipe",
+    "crafting_recipe"
+  ],
+  "pyrebloom_seed": [
+    "gathering_farming",
+    "cook_recipe",
+    "brew_recipe"
+  ],
+  "searing_lanternfish": [
+    "gathering_fishing",
+    "cook_recipe",
+    "crafting_recipe"
+  ],
+  "tideglass_pearl": [
+    "gathering_fishing",
+    "forge_recipe",
+    "arcane_recipe"
+  ],
+  "kelpweave_fiber": [
+    "gathering_foraging",
+    "loom_recipe",
+    "crafting_recipe"
+  ],
+  "choral_marrow": [
+    "gathering_mining",
+    "brew_recipe",
+    "crafting_recipe"
+  ],
+  "deepcurrent_salmon": [
+    "gathering_fishing",
+    "cook_recipe",
+    "crafting_recipe"
+  ],
+  "bloodoak_sap": [
+    "gathering_foraging",
+    "brew_recipe",
+    "crafting_recipe"
+  ],
+  "scarlet_clover": [
+    "gathering_farming",
+    "cook_recipe",
+    "brew_recipe"
+  ],
+  "thornvine_pod": [
+    "gathering_foraging",
+    "crafting_recipe",
+    "arcane_recipe"
+  ],
+  "crimson_pike": [
+    "gathering_fishing",
+    "cook_recipe",
+    "crafting_recipe"
+  ],
+  "wyrmroot_tuber": [
+    "gathering_farming",
+    "cook_recipe",
+    "brew_recipe"
+  ],
+  "sporeglass_cluster": [
+    "gathering_mining",
+    "arcane_recipe",
+    "crafting_recipe"
+  ],
+  "venom_bulb": [
+    "gathering_foraging",
+    "brew_recipe",
+    "crafting_recipe"
+  ],
+  "gloomlamp_catfish": [
+    "gathering_fishing",
+    "cook_recipe",
+    "crafting_recipe"
+  ],
+  "prismatic_shard": [
+    "gathering_mining",
+    "forge_recipe",
+    "arcane_recipe"
+  ],
+  "glimmerdew_petals": [
+    "gathering_foraging",
+    "brew_recipe",
+    "crafting_recipe"
+  ],
+  "auroral_grain": [
+    "gathering_farming",
+    "cook_recipe",
+    "brew_recipe"
+  ],
+  "spectral_ribbonfish": [
+    "gathering_fishing",
+    "cook_recipe",
+    "crafting_recipe"
+  ],
+  "stone_pickaxe": [
+    "crafting_recipe"
+  ],
+  "stormforged_pickaxe": [
+    "crafting_recipe",
+    "forge_recipe"
+  ],
+  "kweebec_hatchet": [
+    "crafting_recipe"
+  ],
+  "gloomreaper_sickle": [
+    "crafting_recipe",
+    "forge_recipe"
+  ],
+  "harvesters_scythe": [
+    "crafting_recipe"
+  ],
+  "planar_cultivator": [
+    "crafting_recipe",
+    "arcane_recipe"
+  ],
+  "makeshift_fishing_rod": [
+    "crafting_recipe"
+  ],
+  "skysong_harpoon": [
+    "crafting_recipe",
+    "forge_recipe"
+  ],
+  "abyssal_reel": [
+    "crafting_recipe",
+    "arcane_recipe"
+  ],
   "arcane_staff": [
     "crafting_recipe"
   ],

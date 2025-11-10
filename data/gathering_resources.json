@@ -1,0 +1,487 @@
+{
+  "defaults": {
+    "mining": [
+      { "item": "sunstone_shard", "min": 1, "max": 2, "weight": 6.0, "rarity": "common" },
+      { "item": "stormvein_ore", "min": 1, "max": 1, "weight": 4.5, "rarity": "uncommon" },
+      { "item": "obsidian_fragment", "min": 1, "max": 2, "weight": 3.5, "rarity": "uncommon" },
+      { "item": "glacier_ore", "min": 1, "max": 2, "weight": 3.2, "rarity": "uncommon" },
+      { "item": "sunspire_glass", "min": 1, "max": 1, "weight": 2.4, "rarity": "rare" },
+      { "item": "windhollow_shard", "min": 1, "max": 1, "weight": 1.8, "rarity": "rare" }
+    ],
+    "foraging": [
+      { "item": "ancient_bark", "min": 1, "max": 3, "weight": 7.0, "rarity": "common" },
+      { "item": "wildvine_bloom", "min": 1, "max": 2, "weight": 4.8, "rarity": "uncommon" },
+      { "item": "mosswoven_fiber", "min": 1, "max": 3, "weight": 4.2, "rarity": "common" },
+      { "item": "frostpine_resin", "min": 1, "max": 2, "weight": 3.5, "rarity": "uncommon" },
+      { "item": "dune_silk", "min": 1, "max": 2, "weight": 3.2, "rarity": "uncommon" },
+      { "item": "skyroot_bark", "min": 1, "max": 2, "weight": 2.6, "rarity": "uncommon" }
+    ],
+    "farming": [
+      { "item": "verdant_pollen", "min": 1, "max": 2, "weight": 5.5, "rarity": "uncommon" },
+      { "item": "fen_root", "min": 2, "max": 3, "weight": 6.2, "rarity": "common" },
+      { "item": "luster_seed", "min": 1, "max": 2, "weight": 3.4, "rarity": "uncommon" },
+      { "item": "snowmelt_barley", "min": 1, "max": 2, "weight": 4.0, "rarity": "common" },
+      { "item": "mirage_grain", "min": 1, "max": 2, "weight": 3.8, "rarity": "common" },
+      { "item": "auroral_grain", "min": 1, "max": 2, "weight": 2.6, "rarity": "uncommon" }
+    ],
+    "fishing": [
+      { "item": "frostgill_trout", "min": 1, "max": 2, "weight": 6.5, "rarity": "common" },
+      { "item": "emberfin_eel", "min": 1, "max": 2, "weight": 4.8, "rarity": "uncommon" },
+      { "item": "icefin_perch", "min": 1, "max": 2, "weight": 3.5, "rarity": "uncommon" },
+      { "item": "sandray_skate", "min": 1, "max": 1, "weight": 2.6, "rarity": "rare" },
+      { "item": "stormwake_tuna", "min": 1, "max": 1, "weight": 2.2, "rarity": "rare" },
+      { "item": "spectral_ribbonfish", "min": 1, "max": 1, "weight": 1.4, "rarity": "rare" }
+    ]
+  },
+  "biomes": [
+    {
+      "id": "emerald_grove",
+      "mining": [
+        { "item": "sunstone_shard", "min": 1, "max": 2, "weight": 6.8, "rarity": "common" },
+        { "item": "stormvein_ore", "min": 1, "max": 1, "weight": 4.0, "rarity": "uncommon" },
+        { "item": "obsidian_fragment", "min": 1, "max": 2, "weight": 3.4, "rarity": "uncommon" },
+        { "item": "mosswoven_fiber", "min": 1, "max": 2, "weight": 4.2, "rarity": "common" },
+        { "item": "sylvan_thread", "min": 1, "max": 1, "weight": 2.2, "rarity": "rare" },
+        { "item": "glacier_ore", "min": 1, "max": 1, "weight": 1.4, "rarity": "uncommon" }
+      ],
+      "foraging": [
+        { "item": "ancient_bark", "min": 1, "max": 3, "weight": 7.0, "rarity": "common" },
+        { "item": "wildvine_bloom", "min": 1, "max": 2, "weight": 5.0, "rarity": "uncommon" },
+        { "item": "whisperroot_sap", "min": 1, "max": 2, "weight": 3.6, "rarity": "uncommon" },
+        { "item": "bloomcap_spore", "min": 1, "max": 3, "weight": 4.4, "rarity": "common" },
+        { "item": "kweebec_honey", "min": 1, "max": 1, "weight": 2.8, "rarity": "uncommon" },
+        { "item": "mosswoven_fiber", "min": 1, "max": 2, "weight": 4.0, "rarity": "common" },
+        { "item": "scarlet_clover", "min": 1, "max": 2, "weight": 2.2, "rarity": "common" }
+      ],
+      "farming": [
+        { "item": "verdant_pollen", "min": 1, "max": 2, "weight": 6.0, "rarity": "uncommon" },
+        { "item": "fen_root", "min": 2, "max": 3, "weight": 5.0, "rarity": "common" },
+        { "item": "luster_seed", "min": 1, "max": 2, "weight": 3.4, "rarity": "uncommon" },
+        { "item": "snowmelt_barley", "min": 1, "max": 2, "weight": 3.2, "rarity": "common" },
+        { "item": "kweebec_honey", "min": 1, "max": 1, "weight": 2.6, "rarity": "uncommon" },
+        { "item": "mosswoven_fiber", "min": 1, "max": 2, "weight": 3.8, "rarity": "common" }
+      ],
+      "fishing": [
+        { "item": "frostgill_trout", "min": 1, "max": 2, "weight": 6.5, "rarity": "common" },
+        { "item": "skywhisper_koi", "min": 1, "max": 1, "weight": 1.8, "rarity": "rare" },
+        { "item": "mycelial_shrimp", "min": 1, "max": 2, "weight": 3.2, "rarity": "uncommon" },
+        { "item": "icefin_perch", "min": 1, "max": 2, "weight": 3.6, "rarity": "uncommon" },
+        { "item": "moonlure_jelly", "min": 1, "max": 1, "weight": 0.9, "rarity": "epic" },
+        { "item": "deepcurrent_salmon", "min": 1, "max": 2, "weight": 2.4, "rarity": "uncommon" }
+      ]
+    },
+    {
+      "id": "borea",
+      "mining": [
+        { "item": "glacier_ore", "min": 1, "max": 2, "weight": 6.2, "rarity": "uncommon" },
+        { "item": "sunstone_shard", "min": 1, "max": 2, "weight": 3.5, "rarity": "common" },
+        { "item": "stormcore_shard", "min": 1, "max": 1, "weight": 2.4, "rarity": "rare" },
+        { "item": "windhollow_shard", "min": 1, "max": 2, "weight": 2.8, "rarity": "rare" },
+        { "item": "prismatic_shard", "min": 1, "max": 1, "weight": 1.4, "rarity": "epic" }
+      ],
+      "foraging": [
+        { "item": "frostpine_resin", "min": 1, "max": 2, "weight": 5.6, "rarity": "uncommon" },
+        { "item": "ancient_bark", "min": 1, "max": 2, "weight": 3.0, "rarity": "common" },
+        { "item": "mosswoven_fiber", "min": 1, "max": 2, "weight": 3.4, "rarity": "common" },
+        { "item": "glimmerdew_petals", "min": 1, "max": 2, "weight": 2.2, "rarity": "rare" },
+        { "item": "nightveil_leaf", "min": 1, "max": 1, "weight": 1.8, "rarity": "rare" }
+      ],
+      "farming": [
+        { "item": "snowmelt_barley", "min": 1, "max": 3, "weight": 5.4, "rarity": "common" },
+        { "item": "auroral_grain", "min": 1, "max": 2, "weight": 3.4, "rarity": "uncommon" },
+        { "item": "luster_seed", "min": 1, "max": 2, "weight": 2.8, "rarity": "uncommon" },
+        { "item": "verdant_pollen", "min": 1, "max": 2, "weight": 2.4, "rarity": "uncommon" }
+      ],
+      "fishing": [
+        { "item": "icefin_perch", "min": 1, "max": 2, "weight": 5.0, "rarity": "uncommon" },
+        { "item": "stormwake_tuna", "min": 1, "max": 1, "weight": 2.6, "rarity": "rare" },
+        { "item": "deepcurrent_salmon", "min": 1, "max": 2, "weight": 3.4, "rarity": "uncommon" },
+        { "item": "spectral_ribbonfish", "min": 1, "max": 1, "weight": 1.8, "rarity": "rare" },
+        { "item": "frostgill_trout", "min": 1, "max": 2, "weight": 4.0, "rarity": "common" }
+      ]
+    },
+    {
+      "id": "howling_sands",
+      "mining": [
+        { "item": "sunspire_glass", "min": 1, "max": 2, "weight": 5.8, "rarity": "rare" },
+        { "item": "obsidian_fragment", "min": 1, "max": 2, "weight": 3.8, "rarity": "uncommon" },
+        { "item": "stormvein_ore", "min": 1, "max": 1, "weight": 3.0, "rarity": "uncommon" },
+        { "item": "ashglass_core", "min": 1, "max": 2, "weight": 2.6, "rarity": "rare" },
+        { "item": "sunstone_shard", "min": 1, "max": 2, "weight": 2.8, "rarity": "common" }
+      ],
+      "foraging": [
+        { "item": "dune_silk", "min": 1, "max": 2, "weight": 5.4, "rarity": "uncommon" },
+        { "item": "cinder_bloom", "min": 1, "max": 2, "weight": 3.2, "rarity": "uncommon" },
+        { "item": "galevine", "min": 1, "max": 2, "weight": 2.8, "rarity": "common" },
+        { "item": "stormfeather_bundle", "min": 1, "max": 2, "weight": 2.4, "rarity": "uncommon" },
+        { "item": "mosswoven_fiber", "min": 1, "max": 2, "weight": 2.6, "rarity": "common" }
+      ],
+      "farming": [
+        { "item": "mirage_grain", "min": 1, "max": 3, "weight": 5.8, "rarity": "common" },
+        { "item": "pyrebloom_seed", "min": 1, "max": 2, "weight": 3.6, "rarity": "uncommon" },
+        { "item": "embered_seed", "min": 1, "max": 2, "weight": 3.4, "rarity": "common" },
+        { "item": "luster_seed", "min": 1, "max": 2, "weight": 2.4, "rarity": "uncommon" },
+        { "item": "auroral_grain", "min": 1, "max": 2, "weight": 1.8, "rarity": "uncommon" }
+      ],
+      "fishing": [
+        { "item": "sandray_skate", "min": 1, "max": 2, "weight": 5.0, "rarity": "rare" },
+        { "item": "emberfin_eel", "min": 1, "max": 2, "weight": 3.0, "rarity": "uncommon" },
+        { "item": "stormwake_tuna", "min": 1, "max": 1, "weight": 1.6, "rarity": "rare" },
+        { "item": "spectral_ribbonfish", "min": 1, "max": 1, "weight": 1.2, "rarity": "rare" },
+        { "item": "mycelial_shrimp", "min": 1, "max": 2, "weight": 1.4, "rarity": "uncommon" }
+      ]
+    },
+    {
+      "id": "gale_cliffs",
+      "mining": [
+        { "item": "windhollow_shard", "min": 1, "max": 2, "weight": 5.6, "rarity": "rare" },
+        { "item": "skycarved_quartz", "min": 1, "max": 2, "weight": 4.2, "rarity": "rare" },
+        { "item": "sunspire_glass", "min": 1, "max": 1, "weight": 3.0, "rarity": "rare" },
+        { "item": "stormvein_ore", "min": 1, "max": 1, "weight": 2.8, "rarity": "uncommon" },
+        { "item": "prismatic_shard", "min": 1, "max": 1, "weight": 1.2, "rarity": "epic" }
+      ],
+      "foraging": [
+        { "item": "skyroot_bark", "min": 1, "max": 3, "weight": 5.0, "rarity": "uncommon" },
+        { "item": "stormfeather_bundle", "min": 1, "max": 2, "weight": 4.0, "rarity": "uncommon" },
+        { "item": "galevine", "min": 1, "max": 3, "weight": 3.6, "rarity": "common" },
+        { "item": "tempest_thread", "min": 1, "max": 2, "weight": 2.6, "rarity": "rare" },
+        { "item": "dune_silk", "min": 1, "max": 2, "weight": 1.8, "rarity": "uncommon" }
+      ],
+      "farming": [
+        { "item": "cliffgrain_seed", "min": 1, "max": 3, "weight": 5.4, "rarity": "common" },
+        { "item": "auroral_grain", "min": 1, "max": 2, "weight": 3.0, "rarity": "uncommon" },
+        { "item": "snowmelt_barley", "min": 1, "max": 2, "weight": 2.6, "rarity": "common" },
+        { "item": "mirage_grain", "min": 1, "max": 2, "weight": 2.4, "rarity": "common" }
+      ],
+      "fishing": [
+        { "item": "stormwake_tuna", "min": 1, "max": 2, "weight": 5.2, "rarity": "rare" },
+        { "item": "skywhisper_koi", "min": 1, "max": 1, "weight": 2.0, "rarity": "rare" },
+        { "item": "spectral_ribbonfish", "min": 1, "max": 1, "weight": 2.6, "rarity": "rare" },
+        { "item": "icefin_perch", "min": 1, "max": 2, "weight": 2.8, "rarity": "uncommon" },
+        { "item": "sandray_skate", "min": 1, "max": 2, "weight": 1.8, "rarity": "rare" }
+      ]
+    },
+    {
+      "id": "scarlet_forest",
+      "mining": [
+        { "item": "obsidian_fragment", "min": 1, "max": 2, "weight": 4.6, "rarity": "uncommon" },
+        { "item": "sunstone_shard", "min": 1, "max": 2, "weight": 3.6, "rarity": "common" },
+        { "item": "stormvein_ore", "min": 1, "max": 1, "weight": 3.2, "rarity": "uncommon" },
+        { "item": "sporeglass_cluster", "min": 1, "max": 2, "weight": 2.0, "rarity": "rare" },
+        { "item": "glacier_ore", "min": 1, "max": 1, "weight": 2.4, "rarity": "uncommon" }
+      ],
+      "foraging": [
+        { "item": "bloodoak_sap", "min": 1, "max": 2, "weight": 5.8, "rarity": "uncommon" },
+        { "item": "scarlet_clover", "min": 1, "max": 3, "weight": 4.2, "rarity": "common" },
+        { "item": "thornvine_pod", "min": 1, "max": 1, "weight": 2.4, "rarity": "rare" },
+        { "item": "ancient_bark", "min": 1, "max": 3, "weight": 3.5, "rarity": "common" },
+        { "item": "wildvine_bloom", "min": 1, "max": 2, "weight": 3.1, "rarity": "uncommon" }
+      ],
+      "farming": [
+        { "item": "scarlet_clover", "min": 1, "max": 3, "weight": 5.4, "rarity": "common" },
+        { "item": "auroral_grain", "min": 1, "max": 2, "weight": 2.8, "rarity": "uncommon" },
+        { "item": "mirage_grain", "min": 1, "max": 2, "weight": 2.6, "rarity": "common" },
+        { "item": "venom_bulb", "min": 1, "max": 2, "weight": 2.2, "rarity": "uncommon" },
+        { "item": "fen_root", "min": 2, "max": 3, "weight": 3.4, "rarity": "common" }
+      ],
+      "fishing": [
+        { "item": "crimson_pike", "min": 1, "max": 2, "weight": 5.0, "rarity": "uncommon" },
+        { "item": "gloomlamp_catfish", "min": 1, "max": 2, "weight": 2.6, "rarity": "rare" },
+        { "item": "icefin_perch", "min": 1, "max": 2, "weight": 2.4, "rarity": "uncommon" },
+        { "item": "stormwake_tuna", "min": 1, "max": 1, "weight": 1.6, "rarity": "rare" },
+        { "item": "deepcurrent_salmon", "min": 1, "max": 2, "weight": 2.0, "rarity": "uncommon" }
+      ]
+    },
+    {
+      "id": "wyrmroot_hollow",
+      "mining": [
+        { "item": "sporeglass_cluster", "min": 1, "max": 2, "weight": 4.8, "rarity": "rare" },
+        { "item": "obsidian_fragment", "min": 1, "max": 2, "weight": 3.8, "rarity": "uncommon" },
+        { "item": "voidblack_ore", "min": 1, "max": 1, "weight": 2.4, "rarity": "epic" },
+        { "item": "phantom_pollen", "min": 1, "max": 2, "weight": 2.0, "rarity": "rare" }
+      ],
+      "foraging": [
+        { "item": "venom_bulb", "min": 1, "max": 2, "weight": 5.2, "rarity": "uncommon" },
+        { "item": "shadeleaf", "min": 1, "max": 3, "weight": 4.0, "rarity": "uncommon" },
+        { "item": "lumishroom", "min": 1, "max": 2, "weight": 3.2, "rarity": "uncommon" },
+        { "item": "veilvine", "min": 1, "max": 3, "weight": 3.0, "rarity": "common" },
+        { "item": "nightpetal_blossom", "min": 1, "max": 2, "weight": 2.4, "rarity": "rare" }
+      ],
+      "farming": [
+        { "item": "wyrmroot_tuber", "min": 1, "max": 3, "weight": 5.6, "rarity": "common" },
+        { "item": "venom_bulb", "min": 1, "max": 2, "weight": 3.6, "rarity": "uncommon" },
+        { "item": "veilvine", "min": 1, "max": 2, "weight": 3.2, "rarity": "common" },
+        { "item": "nether_sporegrain", "min": 1, "max": 2, "weight": 2.4, "rarity": "uncommon" }
+      ],
+      "fishing": [
+        { "item": "gloomlamp_catfish", "min": 1, "max": 2, "weight": 4.4, "rarity": "rare" },
+        { "item": "gloomscale_piranha", "min": 1, "max": 1, "weight": 3.0, "rarity": "rare" },
+        { "item": "abyssal_lamprey", "min": 1, "max": 1, "weight": 2.2, "rarity": "rare" },
+        { "item": "moonlure_jelly", "min": 1, "max": 1, "weight": 1.0, "rarity": "epic" }
+      ]
+    },
+    {
+      "id": "howling_peaks",
+      "mining": [
+        { "item": "stormcore_shard", "min": 1, "max": 2, "weight": 5.0, "rarity": "rare" },
+        { "item": "stormglass_splinter", "min": 1, "max": 2, "weight": 4.2, "rarity": "uncommon" },
+        { "item": "skyrazor_plume", "min": 1, "max": 1, "weight": 1.6, "rarity": "epic" },
+        { "item": "aetheric_ore", "min": 1, "max": 2, "weight": 1.8, "rarity": "epic" },
+        { "item": "lightning_resin", "min": 1, "max": 1, "weight": 1.2, "rarity": "epic" },
+        { "item": "glacier_ore", "min": 1, "max": 2, "weight": 3.2, "rarity": "uncommon" },
+        { "item": "windhollow_shard", "min": 1, "max": 2, "weight": 2.4, "rarity": "rare" }
+      ],
+      "foraging": [
+        { "item": "stormfeather_bundle", "min": 1, "max": 2, "weight": 4.4, "rarity": "uncommon" },
+        { "item": "tempest_thread", "min": 1, "max": 2, "weight": 3.2, "rarity": "rare" },
+        { "item": "galevine", "min": 1, "max": 3, "weight": 3.0, "rarity": "common" },
+        { "item": "skyroot_bark", "min": 1, "max": 2, "weight": 2.6, "rarity": "uncommon" },
+        { "item": "glimmerdew_petals", "min": 1, "max": 2, "weight": 1.8, "rarity": "rare" }
+      ],
+      "farming": [
+        { "item": "verdant_pollen", "min": 1, "max": 2, "weight": 4.0, "rarity": "uncommon" },
+        { "item": "snowmelt_barley", "min": 1, "max": 2, "weight": 2.8, "rarity": "common" },
+        { "item": "tempest_thread", "min": 1, "max": 1, "weight": 2.6, "rarity": "rare" },
+        { "item": "lightning_resin", "min": 1, "max": 1, "weight": 1.0, "rarity": "epic" },
+        { "item": "auroral_grain", "min": 1, "max": 2, "weight": 2.2, "rarity": "uncommon" }
+      ],
+      "fishing": [
+        { "item": "skywhisper_koi", "min": 1, "max": 1, "weight": 3.2, "rarity": "rare" },
+        { "item": "frostgill_trout", "min": 1, "max": 2, "weight": 4.0, "rarity": "common" },
+        { "item": "stormwake_tuna", "min": 1, "max": 1, "weight": 2.8, "rarity": "rare" },
+        { "item": "moonlure_jelly", "min": 1, "max": 1, "weight": 1.2, "rarity": "epic" },
+        { "item": "sandray_skate", "min": 1, "max": 1, "weight": 1.8, "rarity": "rare" },
+        { "item": "spectral_ribbonfish", "min": 1, "max": 1, "weight": 1.0, "rarity": "rare" }
+      ]
+    },
+    {
+      "id": "ember_depths",
+      "mining": [
+        { "item": "magma_pearl", "min": 1, "max": 2, "weight": 5.5, "rarity": "rare" },
+        { "item": "obsidian_fragment", "min": 1, "max": 3, "weight": 4.0, "rarity": "uncommon" },
+        { "item": "obsidian_heart", "min": 1, "max": 1, "weight": 1.1, "rarity": "epic" },
+        { "item": "slagheart_fragment", "min": 1, "max": 2, "weight": 2.8, "rarity": "uncommon" },
+        { "item": "igneous_powder", "min": 1, "max": 2, "weight": 2.4, "rarity": "rare" },
+        { "item": "ashglass_core", "min": 1, "max": 2, "weight": 2.6, "rarity": "rare" }
+      ],
+      "foraging": [
+        { "item": "cinder_resin", "min": 1, "max": 2, "weight": 4.8, "rarity": "uncommon" },
+        { "item": "emberfen_resin", "min": 1, "max": 2, "weight": 4.0, "rarity": "uncommon" },
+        { "item": "lavafern_leaf", "min": 1, "max": 3, "weight": 3.6, "rarity": "common" },
+        { "item": "cinder_bloom", "min": 1, "max": 2, "weight": 3.2, "rarity": "uncommon" },
+        { "item": "magma_lichen", "min": 1, "max": 2, "weight": 2.6, "rarity": "uncommon" },
+        { "item": "pyrebloom_seed", "min": 1, "max": 2, "weight": 2.4, "rarity": "uncommon" }
+      ],
+      "farming": [
+        { "item": "fen_root", "min": 2, "max": 3, "weight": 3.8, "rarity": "common" },
+        { "item": "cinder_resin", "min": 1, "max": 2, "weight": 3.4, "rarity": "uncommon" },
+        { "item": "embered_seed", "min": 1, "max": 3, "weight": 3.6, "rarity": "common" },
+        { "item": "pyrebloom_seed", "min": 1, "max": 2, "weight": 2.8, "rarity": "uncommon" },
+        { "item": "slagheart_fragment", "min": 1, "max": 1, "weight": 2.0, "rarity": "uncommon" }
+      ],
+      "fishing": [
+        { "item": "emberfin_eel", "min": 1, "max": 2, "weight": 5.2, "rarity": "uncommon" },
+        { "item": "mycelial_shrimp", "min": 1, "max": 2, "weight": 2.6, "rarity": "rare" },
+        { "item": "smoldering_pearl", "min": 1, "max": 1, "weight": 1.5, "rarity": "rare" },
+        { "item": "searing_lanternfish", "min": 1, "max": 1, "weight": 2.2, "rarity": "rare" },
+        { "item": "sandray_skate", "min": 1, "max": 1, "weight": 1.4, "rarity": "rare" }
+      ]
+    },
+    {
+      "id": "volcanic_expanse",
+      "mining": [
+        { "item": "ashglass_core", "min": 1, "max": 2, "weight": 5.2, "rarity": "rare" },
+        { "item": "magma_pearl", "min": 1, "max": 2, "weight": 3.6, "rarity": "rare" },
+        { "item": "igneous_powder", "min": 1, "max": 2, "weight": 3.0, "rarity": "rare" },
+        { "item": "obsidian_fragment", "min": 1, "max": 2, "weight": 3.4, "rarity": "uncommon" },
+        { "item": "voidblack_ore", "min": 1, "max": 1, "weight": 1.6, "rarity": "epic" }
+      ],
+      "foraging": [
+        { "item": "magma_lichen", "min": 1, "max": 2, "weight": 5.0, "rarity": "uncommon" },
+        { "item": "cinder_bloom", "min": 1, "max": 2, "weight": 3.6, "rarity": "uncommon" },
+        { "item": "lavafern_leaf", "min": 1, "max": 3, "weight": 3.2, "rarity": "common" },
+        { "item": "pyrebloom_seed", "min": 1, "max": 2, "weight": 3.0, "rarity": "uncommon" },
+        { "item": "venom_bulb", "min": 1, "max": 2, "weight": 1.6, "rarity": "uncommon" }
+      ],
+      "farming": [
+        { "item": "pyrebloom_seed", "min": 1, "max": 2, "weight": 4.4, "rarity": "uncommon" },
+        { "item": "embered_seed", "min": 1, "max": 3, "weight": 4.0, "rarity": "common" },
+        { "item": "mirage_grain", "min": 1, "max": 2, "weight": 2.4, "rarity": "common" },
+        { "item": "snowmelt_barley", "min": 1, "max": 2, "weight": 1.6, "rarity": "common" },
+        { "item": "slagheart_fragment", "min": 1, "max": 1, "weight": 2.2, "rarity": "uncommon" }
+      ],
+      "fishing": [
+        { "item": "searing_lanternfish", "min": 1, "max": 2, "weight": 4.8, "rarity": "rare" },
+        { "item": "emberfin_eel", "min": 1, "max": 2, "weight": 4.0, "rarity": "uncommon" },
+        { "item": "smoldering_pearl", "min": 1, "max": 1, "weight": 2.2, "rarity": "rare" },
+        { "item": "sandray_skate", "min": 1, "max": 1, "weight": 1.6, "rarity": "rare" },
+        { "item": "gloomlamp_catfish", "min": 1, "max": 1, "weight": 1.4, "rarity": "rare" }
+      ]
+    },
+    {
+      "id": "gloomwild_thicket",
+      "mining": [
+        { "item": "obsidian_fragment", "min": 1, "max": 2, "weight": 4.8, "rarity": "uncommon" },
+        { "item": "veilhorn_antler", "min": 1, "max": 1, "weight": 1.4, "rarity": "rare" },
+        { "item": "nocturne_sap", "min": 1, "max": 1, "weight": 1.2, "rarity": "epic" },
+        { "item": "phantom_pollen", "min": 1, "max": 2, "weight": 2.4, "rarity": "rare" },
+        { "item": "sporeglass_cluster", "min": 1, "max": 2, "weight": 2.2, "rarity": "rare" }
+      ],
+      "foraging": [
+        { "item": "nightpetal_blossom", "min": 1, "max": 2, "weight": 5.2, "rarity": "rare" },
+        { "item": "gloomdew_extract", "min": 1, "max": 1, "weight": 2.4, "rarity": "epic" },
+        { "item": "shadeleaf", "min": 1, "max": 3, "weight": 4.0, "rarity": "uncommon" },
+        { "item": "midnight_truffle", "min": 1, "max": 2, "weight": 3.0, "rarity": "rare" },
+        { "item": "veilvine", "min": 1, "max": 3, "weight": 3.2, "rarity": "common" },
+        { "item": "lumishroom", "min": 1, "max": 2, "weight": 2.6, "rarity": "uncommon" },
+        { "item": "venom_bulb", "min": 1, "max": 2, "weight": 2.4, "rarity": "uncommon" }
+      ],
+      "farming": [
+        { "item": "verdant_pollen", "min": 1, "max": 2, "weight": 3.8, "rarity": "uncommon" },
+        { "item": "nightpetal_blossom", "min": 1, "max": 1, "weight": 2.6, "rarity": "rare" },
+        { "item": "veilvine", "min": 1, "max": 2, "weight": 3.2, "rarity": "common" },
+        { "item": "nocturne_sap", "min": 1, "max": 1, "weight": 1.4, "rarity": "epic" },
+        { "item": "nether_sporegrain", "min": 1, "max": 2, "weight": 2.4, "rarity": "uncommon" },
+        { "item": "wyrmroot_tuber", "min": 1, "max": 2, "weight": 2.8, "rarity": "common" }
+      ],
+      "fishing": [
+        { "item": "gloomscale_piranha", "min": 1, "max": 1, "weight": 3.4, "rarity": "rare" },
+        { "item": "moonlure_jelly", "min": 1, "max": 1, "weight": 1.0, "rarity": "epic" },
+        { "item": "mycelial_shrimp", "min": 1, "max": 2, "weight": 2.2, "rarity": "rare" },
+        { "item": "gloomlamp_catfish", "min": 1, "max": 2, "weight": 2.6, "rarity": "rare" },
+        { "item": "abyssal_lamprey", "min": 1, "max": 1, "weight": 1.8, "rarity": "rare" }
+      ]
+    },
+    {
+      "id": "shadow_realm",
+      "mining": [
+        { "item": "voidblack_ore", "min": 1, "max": 2, "weight": 4.8, "rarity": "epic" },
+        { "item": "sporeglass_cluster", "min": 1, "max": 2, "weight": 2.8, "rarity": "rare" },
+        { "item": "phantom_pollen", "min": 1, "max": 2, "weight": 2.6, "rarity": "rare" },
+        { "item": "nocturne_sap", "min": 1, "max": 1, "weight": 1.6, "rarity": "epic" }
+      ],
+      "foraging": [
+        { "item": "nightveil_leaf", "min": 1, "max": 2, "weight": 4.4, "rarity": "rare" },
+        { "item": "shadeleaf", "min": 1, "max": 3, "weight": 3.2, "rarity": "uncommon" },
+        { "item": "lumishroom", "min": 1, "max": 2, "weight": 3.0, "rarity": "uncommon" },
+        { "item": "venom_bulb", "min": 1, "max": 2, "weight": 2.4, "rarity": "uncommon" },
+        { "item": "veilvine", "min": 1, "max": 2, "weight": 2.2, "rarity": "common" }
+      ],
+      "farming": [
+        { "item": "nether_sporegrain", "min": 1, "max": 2, "weight": 4.2, "rarity": "uncommon" },
+        { "item": "venom_bulb", "min": 1, "max": 2, "weight": 3.0, "rarity": "uncommon" },
+        { "item": "veilvine", "min": 1, "max": 2, "weight": 2.8, "rarity": "common" },
+        { "item": "wyrmroot_tuber", "min": 1, "max": 2, "weight": 2.0, "rarity": "common" }
+      ],
+      "fishing": [
+        { "item": "abyssal_lamprey", "min": 1, "max": 1, "weight": 3.6, "rarity": "rare" },
+        { "item": "gloomscale_piranha", "min": 1, "max": 1, "weight": 3.0, "rarity": "rare" },
+        { "item": "moonlure_jelly", "min": 1, "max": 1, "weight": 1.4, "rarity": "epic" },
+        { "item": "spectral_ribbonfish", "min": 1, "max": 1, "weight": 1.2, "rarity": "rare" },
+        { "item": "gloomlamp_catfish", "min": 1, "max": 1, "weight": 2.0, "rarity": "rare" }
+      ]
+    },
+    {
+      "id": "tidecaller_depths",
+      "mining": [
+        { "item": "choral_marrow", "min": 1, "max": 2, "weight": 4.6, "rarity": "rare" },
+        { "item": "tideglass_pearl", "min": 1, "max": 1, "weight": 3.2, "rarity": "epic" },
+        { "item": "smoldering_pearl", "min": 1, "max": 1, "weight": 2.4, "rarity": "rare" },
+        { "item": "sunspire_glass", "min": 1, "max": 1, "weight": 2.0, "rarity": "rare" },
+        { "item": "prismatic_shard", "min": 1, "max": 1, "weight": 1.2, "rarity": "epic" }
+      ],
+      "foraging": [
+        { "item": "kelpweave_fiber", "min": 1, "max": 3, "weight": 5.0, "rarity": "common" },
+        { "item": "stormfeather_bundle", "min": 1, "max": 2, "weight": 3.0, "rarity": "uncommon" },
+        { "item": "tempest_thread", "min": 1, "max": 2, "weight": 2.6, "rarity": "rare" },
+        { "item": "mosswoven_fiber", "min": 1, "max": 2, "weight": 2.4, "rarity": "common" },
+        { "item": "glimmerdew_petals", "min": 1, "max": 2, "weight": 1.8, "rarity": "rare" }
+      ],
+      "farming": [
+        { "item": "kelpweave_fiber", "min": 1, "max": 3, "weight": 4.2, "rarity": "common" },
+        { "item": "auroral_grain", "min": 1, "max": 2, "weight": 2.6, "rarity": "uncommon" },
+        { "item": "mirage_grain", "min": 1, "max": 2, "weight": 2.4, "rarity": "common" },
+        { "item": "snowmelt_barley", "min": 1, "max": 2, "weight": 2.0, "rarity": "common" }
+      ],
+      "fishing": [
+        { "item": "deepcurrent_salmon", "min": 1, "max": 2, "weight": 4.6, "rarity": "uncommon" },
+        { "item": "spectral_ribbonfish", "min": 1, "max": 1, "weight": 3.2, "rarity": "rare" },
+        { "item": "stormwake_tuna", "min": 1, "max": 1, "weight": 3.0, "rarity": "rare" },
+        { "item": "sandray_skate", "min": 1, "max": 1, "weight": 2.2, "rarity": "rare" },
+        { "item": "tideglass_pearl", "min": 1, "max": 1, "weight": 1.2, "rarity": "epic" }
+      ]
+    },
+    {
+      "id": "prismatic_refuge",
+      "mining": [
+        { "item": "prismatic_shard", "min": 1, "max": 2, "weight": 4.8, "rarity": "epic" },
+        { "item": "windhollow_shard", "min": 1, "max": 2, "weight": 3.4, "rarity": "rare" },
+        { "item": "glacier_ore", "min": 1, "max": 2, "weight": 3.0, "rarity": "uncommon" },
+        { "item": "sunspire_glass", "min": 1, "max": 1, "weight": 2.2, "rarity": "rare" },
+        { "item": "stormcore_shard", "min": 1, "max": 1, "weight": 1.6, "rarity": "rare" }
+      ],
+      "foraging": [
+        { "item": "glimmerdew_petals", "min": 1, "max": 2, "weight": 4.6, "rarity": "rare" },
+        { "item": "nightveil_leaf", "min": 1, "max": 1, "weight": 2.4, "rarity": "rare" },
+        { "item": "frostpine_resin", "min": 1, "max": 2, "weight": 2.2, "rarity": "uncommon" },
+        { "item": "auroral_grain", "min": 1, "max": 2, "weight": 2.8, "rarity": "uncommon" },
+        { "item": "skyroot_bark", "min": 1, "max": 2, "weight": 2.4, "rarity": "uncommon" }
+      ],
+      "farming": [
+        { "item": "auroral_grain", "min": 1, "max": 3, "weight": 4.4, "rarity": "uncommon" },
+        { "item": "cliffgrain_seed", "min": 1, "max": 3, "weight": 3.0, "rarity": "common" },
+        { "item": "snowmelt_barley", "min": 1, "max": 2, "weight": 2.6, "rarity": "common" },
+        { "item": "luster_seed", "min": 1, "max": 2, "weight": 2.4, "rarity": "uncommon" }
+      ],
+      "fishing": [
+        { "item": "spectral_ribbonfish", "min": 1, "max": 2, "weight": 4.0, "rarity": "rare" },
+        { "item": "stormwake_tuna", "min": 1, "max": 1, "weight": 3.2, "rarity": "rare" },
+        { "item": "icefin_perch", "min": 1, "max": 2, "weight": 2.8, "rarity": "uncommon" },
+        { "item": "skywhisper_koi", "min": 1, "max": 1, "weight": 2.0, "rarity": "rare" },
+        { "item": "deepcurrent_salmon", "min": 1, "max": 2, "weight": 2.4, "rarity": "uncommon" }
+      ]
+    }
+  ],
+  "dungeons": [
+    {
+      "id": "tempest_needle",
+      "mining": [
+        { "item": "stormglass_splinter", "min": 1, "max": 2, "weight": 5.0, "rarity": "rare" },
+        { "item": "tempest_core", "min": 1, "max": 1, "weight": 1.5, "rarity": "epic" },
+        { "item": "windhollow_shard", "min": 1, "max": 2, "weight": 3.2, "rarity": "rare" }
+      ],
+      "fishing": [
+        { "item": "skywhisper_koi", "min": 1, "max": 1, "weight": 2.8, "rarity": "rare" },
+        { "item": "moonlure_jelly", "min": 1, "max": 1, "weight": 1.2, "rarity": "epic" },
+        { "item": "stormwake_tuna", "min": 1, "max": 1, "weight": 2.2, "rarity": "rare" }
+      ]
+    },
+    {
+      "id": "molten_maw",
+      "mining": [
+        { "item": "magma_pearl", "min": 1, "max": 2, "weight": 5.8, "rarity": "rare" },
+        { "item": "obsidian_heart", "min": 1, "max": 1, "weight": 1.4, "rarity": "epic" },
+        { "item": "ashglass_core", "min": 1, "max": 2, "weight": 3.2, "rarity": "rare" }
+      ],
+      "fishing": [
+        { "item": "emberfin_eel", "min": 1, "max": 2, "weight": 4.6, "rarity": "uncommon" },
+        { "item": "mycelial_shrimp", "min": 1, "max": 1, "weight": 2.0, "rarity": "rare" },
+        { "item": "searing_lanternfish", "min": 1, "max": 1, "weight": 1.6, "rarity": "rare" }
+      ]
+    },
+    {
+      "id": "gloomwild_labyrinth",
+      "foraging": [
+        { "item": "gloomdew_extract", "min": 1, "max": 1, "weight": 3.5, "rarity": "epic" },
+        { "item": "nightpetal_blossom", "min": 1, "max": 2, "weight": 4.0, "rarity": "rare" },
+        { "item": "sporeglass_cluster", "min": 1, "max": 2, "weight": 2.8, "rarity": "rare" }
+      ],
+      "fishing": [
+        { "item": "gloomscale_piranha", "min": 1, "max": 1, "weight": 3.2, "rarity": "rare" },
+        { "item": "moonlure_jelly", "min": 1, "max": 1, "weight": 1.4, "rarity": "epic" },
+        { "item": "gloomlamp_catfish", "min": 1, "max": 1, "weight": 1.6, "rarity": "rare" }
+      ]
+    }
+  ]
+}
+
