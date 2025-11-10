@@ -7177,10 +7177,10 @@ function resolveCodexEntry(category, identifier) {
   switch (lowerCat) {
     case 'item':
     case 'items':
-      return ITEMS[normalized] || ITEM_LIST.find(it => it.name?.toLowerCase() === normalized);
+      return ITEMS[normalized] || ITEM_LIST.find(it => it.name?.toLowerCase() === normalized || it.id?.toLowerCase() === normalized);
     case 'enemy':
     case 'enemies':
-      return ENEMY_MAP[normalized] || ENEMY_LIST.find(e => e.name?.toLowerCase() === normalized);
+      return ENEMY_MAP[normalized] || ENEMY_LIST.find(e => e.name?.toLowerCase() === normalized || e.id?.toLowerCase() === normalized);
     case 'faction':
     case 'factions':
       return FACTIONS.find(f => f.id?.toLowerCase() === normalized || f.name?.toLowerCase() === normalized) || null;
@@ -7190,6 +7190,12 @@ function resolveCodexEntry(category, identifier) {
     case 'dungeon':
     case 'dungeons':
       return resolveDungeon(normalized);
+    case 'structure':
+    case 'structures':
+      return STRUCTURE_DEFINITIONS.find(s => s.id?.toLowerCase() === normalized || s.name?.toLowerCase() === normalized) || null;
+    case 'settlement':
+    case 'settlements':
+      return SETTLEMENT_TEMPLATES.find(s => s.id?.toLowerCase() === normalized || s.name?.toLowerCase() === normalized) || null;
     default:
       return null;
   }
@@ -7207,12 +7213,14 @@ function registerCodexUnlock(player, category, entryId) {
   if (!player.codex) {
     player.codex = { factions: [], biomes: [], enemies: [], items: [], dungeons: [], structures: [], settlements: [] };
   }
-  if (!player.codex[category]) {
-    player.codex[category] = [];
+  const normalizedCategory = category.toLowerCase();
+  if (!player.codex[normalizedCategory]) {
+    player.codex[normalizedCategory] = [];
   }
-  const list = player.codex[category];
-  if (list.includes(entryId)) return false;
-  list.push(entryId);
+  const list = player.codex[normalizedCategory];
+  const normalizedEntryId = entryId?.toLowerCase();
+  if (!normalizedEntryId || list.includes(normalizedEntryId)) return false;
+  list.push(normalizedEntryId);
   player.stats.codexUnlocks = (player.stats.codexUnlocks || 0) + 1;
   return true;
 }
@@ -7508,7 +7516,9 @@ async function showCodex(message, category, entryIdentifier) {
         `• 👹 Enemies — Creatures and hostile entities\n` +
         `• 🛡️ Factions — Groups and organizations\n` +
         `• 🌍 Biomes — Regions and environments\n` +
-        `• 🏰 Dungeons — Challenging locations\n\n` +
+        `• 🏰 Dungeons — Challenging locations\n` +
+        `• 🏛️ Structures — Discovered structures and landmarks\n` +
+        `• 🏘️ Settlements — Faction settlements and villages\n\n` +
         `Example: \`${PREFIX} codex factions kweebec\``
       )
       .setFooter({ text: 'Discover the lore and knowledge of Hytale.' });
@@ -7537,7 +7547,19 @@ async function showCodex(message, category, entryIdentifier) {
           .setStyle(ButtonStyle.Primary)
       );
     
-    return sendStyledEmbed(message, embed, 'codex', { components: [categoryButtons] });
+    const categoryButtons2 = new ActionRowBuilder()
+      .addComponents(
+        new ButtonBuilder()
+          .setCustomId('codex|category|structures')
+          .setLabel('🏛️ Structures')
+          .setStyle(ButtonStyle.Primary),
+        new ButtonBuilder()
+          .setCustomId('codex|category|settlements')
+          .setLabel('🏘️ Settlements')
+          .setStyle(ButtonStyle.Primary)
+      );
+    
+    return sendStyledEmbed(message, embed, 'codex', { components: [categoryButtons, categoryButtons2] });
   }
 
   const player = getPlayer(message.author.id);
@@ -7594,6 +7616,22 @@ async function showCodex(message, category, entryIdentifier) {
             categoryData.push({ id: d.id, name: d.name || d.id, emoji: '🏰' });
           });
           break;
+        case 'structure':
+        case 'structures':
+          STRUCTURE_DEFINITIONS.forEach(structure => {
+            const line = `**${structure.name || structure.id}** — ${structure.type || 'Unknown'} (${structure.rarity || 'common'})`;
+            lines.push(line);
+            categoryData.push({ id: structure.id, name: structure.name || structure.id, emoji: structure.emoji || '🏛️' });
+          });
+          break;
+        case 'settlement':
+        case 'settlements':
+          SETTLEMENT_TEMPLATES.forEach(settlement => {
+            const line = `**${settlement.name || settlement.id}** — ${settlement.faction || 'Unknown'} (${settlement.traits?.join(', ') || 'No traits'})`;
+            lines.push(line);
+            categoryData.push({ id: settlement.id, name: settlement.name || settlement.id, emoji: '🏘️' });
+          });
+          break;
         default:
           lines.push('Unknown category.');
       }
@@ -7620,17 +7658,31 @@ async function showCodex(message, category, entryIdentifier) {
           new ButtonBuilder()
             .setCustomId('codex|category|dungeons')
             .setLabel('🏰 Dungeons')
-            .setStyle(lowerCat === 'dungeons' || lowerCat === 'dungeon' ? ButtonStyle.Primary : ButtonStyle.Secondary)
+            .setStyle(lowerCat === 'dungeons' || lowerCat === 'dungeon' ? ButtonStyle.Primary : ButtonStyle.Secondary),
+          new ButtonBuilder()
+            .setCustomId('codex|category|structures')
+            .setLabel('🏛️ Structures')
+            .setStyle(lowerCat === 'structures' || lowerCat === 'structure' ? ButtonStyle.Primary : ButtonStyle.Secondary),
+          new ButtonBuilder()
+            .setCustomId('codex|category|settlements')
+            .setLabel('🏘️ Settlements')
+            .setStyle(lowerCat === 'settlements' || lowerCat === 'settlement' ? ButtonStyle.Primary : ButtonStyle.Secondary)
         );
 
-      addQuestField(listEmbed, 'Entries', lines.slice(0, 20));
-      if (lines.length > 20) {
-        listEmbed.addFields({ name: 'More Entries', value: `...and ${lines.length - 20} more. Use \`${PREFIX} codex ${lowerCat} <id>\` to view details.` });
-      }
-      if (!lines.length) {
-        listEmbed.setDescription('No data found for this category.');
-      } else {
+      // Show all entries, split into multiple fields if needed
+      if (lines.length > 0) {
+        const maxPerField = 20;
+        for (let i = 0; i < lines.length; i += maxPerField) {
+          const chunk = lines.slice(i, i + maxPerField);
+          const fieldName = i === 0 ? 'Entries' : `Entries (continued)`;
+          addQuestField(listEmbed, fieldName, chunk);
+        }
+        if (lines.length > maxPerField) {
+          listEmbed.addFields({ name: 'More Entries', value: `...and ${lines.length - maxPerField} more. Use \`${PREFIX} codex ${lowerCat} <id>\` to view details.` });
+        }
         listEmbed.setDescription(`Found ${lines.length} entries. Use \`${PREFIX} codex ${lowerCat} <id>\` to view details.`);
+      } else {
+        listEmbed.setDescription('No data found for this category.');
       }
       return sendStyledEmbed(message, listEmbed, 'codex', { components: [navButtons] });
     }
@@ -7738,6 +7790,52 @@ async function showCodex(message, category, entryIdentifier) {
       }
       break;
     }
+    case 'structure':
+    case 'structures': {
+      questCategory = 'structures';
+      embed.setTitle(`${entry.emoji || '🏛️'} ${entry.name || entry.id}`)
+        .setDescription(entry.description || 'A discovered structure in Orbis.')
+        .addFields(
+          { name: 'Type', value: entry.type || 'Unknown', inline: true },
+          { name: 'Rarity', value: entry.rarity || 'common', inline: true },
+          { name: 'Biome', value: entry.biome || 'Unknown', inline: true }
+        );
+      if (entry.rewards?.length) {
+        const rewardLines = entry.rewards.map(r => `${r.item || r.type} x${r.quantity || 1}`);
+        embed.addFields({ name: 'Possible Rewards', value: rewardLines.join('\n') });
+      }
+      if (entry.requirements) {
+        embed.addFields({ name: 'Requirements', value: entry.requirements });
+      }
+      if (normalizedEntryId) {
+        unlocked = registerCodexUnlock(player, 'structures', normalizedEntryId);
+      }
+      break;
+    }
+    case 'settlement':
+    case 'settlements': {
+      questCategory = 'settlements';
+      embed.setTitle(`🏘️ ${entry.name || entry.id}`)
+        .setDescription(entry.description || 'A faction settlement in Orbis.')
+        .addFields(
+          { name: 'Faction', value: entry.faction || 'Unknown', inline: true },
+          { name: 'Population Range', value: `${entry.population?.min || 0}-${entry.population?.max || 0}`, inline: true },
+          { name: 'Base Buildings', value: (entry.baseBuildings || []).join(', ') || 'None', inline: false }
+        );
+      if (entry.possibleBuildings?.length) {
+        embed.addFields({ name: 'Possible Buildings', value: entry.possibleBuildings.join(', ') });
+      }
+      if (entry.traits?.length) {
+        embed.addFields({ name: 'Traits', value: entry.traits.join(', ') });
+      }
+      if (entry.decisionTable?.length) {
+        embed.addFields({ name: 'Available Decisions', value: entry.decisionTable.join(', ') });
+      }
+      if (normalizedEntryId) {
+        unlocked = registerCodexUnlock(player, 'settlements', normalizedEntryId);
+      }
+      break;
+    }
     default:
       embed.setDescription('No codex data found.');
   }
@@ -7773,10 +7871,30 @@ async function showCodex(message, category, entryIdentifier) {
       new ButtonBuilder()
         .setCustomId('codex|category|dungeons')
         .setLabel('🏰 Dungeons')
-        .setStyle(lowerCat === 'dungeons' || lowerCat === 'dungeon' ? ButtonStyle.Primary : ButtonStyle.Secondary)
+        .setStyle(lowerCat === 'dungeons' || lowerCat === 'dungeon' ? ButtonStyle.Primary : ButtonStyle.Secondary),
+      new ButtonBuilder()
+        .setCustomId('codex|category|structures')
+        .setLabel('🏛️ Structures')
+        .setStyle(lowerCat === 'structures' || lowerCat === 'structure' ? ButtonStyle.Primary : ButtonStyle.Secondary),
+      new ButtonBuilder()
+        .setCustomId('codex|category|settlements')
+        .setLabel('🏘️ Settlements')
+        .setStyle(lowerCat === 'settlements' || lowerCat === 'settlement' ? ButtonStyle.Primary : ButtonStyle.Secondary)
     );
   
-  return sendStyledEmbed(message, embed, 'codex', { components: [navButtons] });
+  const navButtons2 = new ActionRowBuilder()
+    .addComponents(
+      new ButtonBuilder()
+        .setCustomId('codex|category|structures')
+        .setLabel('🏛️ Structures')
+        .setStyle(lowerCat === 'structures' || lowerCat === 'structure' ? ButtonStyle.Primary : ButtonStyle.Secondary),
+      new ButtonBuilder()
+        .setCustomId('codex|category|settlements')
+        .setLabel('🏘️ Settlements')
+        .setStyle(lowerCat === 'settlements' || lowerCat === 'settlement' ? ButtonStyle.Primary : ButtonStyle.Secondary)
+    );
+  
+  return sendStyledEmbed(message, embed, 'codex', { components: [navButtons, navButtons2] });
 }
 async function showReputation(message, factionIdentifier) {
   const player = getPlayer(message.author.id);
@@ -7999,12 +8117,44 @@ function resolveDungeon(identifier) {
   if (DUNGEON_LOOKUP[normalized]) return DUNGEON_LOOKUP[normalized];
   return DUNGEON_DEFINITIONS.find(d => d.name?.toLowerCase() === normalized) || null;
 }
+function buildDungeonMenuComponents(player) {
+  const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+  const rows = [];
+  
+  // Primary dungeon actions
+  const primaryRow = new ActionRowBuilder().addComponents(
+    new ButtonBuilder().setCustomId('dungeon|queue').setLabel('Queue for Dungeon').setStyle(ButtonStyle.Primary).setEmoji('🚪'),
+    new ButtonBuilder().setCustomId('dungeon|leave').setLabel('Leave Queue').setStyle(ButtonStyle.Secondary).setEmoji('🚶'),
+    new ButtonBuilder().setCustomId('dungeon|status').setLabel('Queue Status').setStyle(ButtonStyle.Secondary).setEmoji('📊'),
+    new ButtonBuilder().setCustomId('command|dungeons').setLabel('Dungeon Atlas').setStyle(ButtonStyle.Success).setEmoji('🗺️')
+  );
+  rows.push(primaryRow);
+  
+  // Dungeon run actions (if in a dungeon)
+  try {
+    const dungeonRunModule = require('./dungeons/run');
+    const dungeonRun = dungeonRunModule.getRunByPlayer ? dungeonRunModule.getRunByPlayer(player.userId || player.id) : null;
+    if (dungeonRun) {
+      const runRow = new ActionRowBuilder().addComponents(
+        new ButtonBuilder().setCustomId('dungeon|descend').setLabel('Descend').setStyle(ButtonStyle.Primary).setEmoji('⬇️'),
+        new ButtonBuilder().setCustomId('dungeon|retreat').setLabel('Retreat').setStyle(ButtonStyle.Danger).setEmoji('🏃'),
+        new ButtonBuilder().setCustomId('dungeon|info').setLabel('Dungeon Info').setStyle(ButtonStyle.Secondary).setEmoji('ℹ️')
+      );
+      rows.push(runRow);
+    }
+  } catch (error) {
+    // Dungeon run check failed, continue without run actions
+  }
+  
+  return rows;
+}
+
 async function showDungeons(message) {
   const player = getPlayer(message.author.id);
   const embed = new EmbedBuilder()
     .setColor('#8E44AD')
     .setTitle('🗺️ Dungeon Atlas')
-    .setDescription(`Level ${player.level} | Use \`${PREFIX} dungeon <id>\` to start a delve.`)
+    .setDescription(`Level ${player.level} | Use the buttons below to manage dungeons.`)
     .setFooter({ text: `Active quests: ${player.quests.length}/${MAX_ACTIVE_QUESTS}` });
 
   const available = [];
@@ -8035,7 +8185,8 @@ async function showDungeons(message) {
     embed.setDescription('No dungeon data found.');
   }
 
-  return sendStyledEmbed(message, embed, 'exploration');
+  const components = buildDungeonMenuComponents(player);
+  return sendStyledEmbed(message, embed, 'exploration', { components });
 }
 const ACHIEVEMENTS = [
   {
@@ -12218,7 +12369,7 @@ function buildBaseModuleSelectRow(base) {
   return new ActionRowBuilder().addComponents(menu);
 }
 
-function buildBaseModulePreview(base, moduleId) {
+function buildBaseModulePreview(player, base, moduleId) {
   const def = BASE_UPGRADE_DEFINITIONS[moduleId];
   if (!def) return { error: `Unknown module "${moduleId}".` };
   const currentLevel = base.upgrades?.[moduleId] ?? def.startLevel ?? 0;
@@ -12226,26 +12377,74 @@ function buildBaseModulePreview(base, moduleId) {
   const nextLevel = currentLevel + 1;
   const levelData = def.getLevel(nextLevel);
   if (!levelData) return { error: 'No data available for next level.' };
-  if (levelData.requires?.baseRank && base.rank < levelData.requires.baseRank) {
-    return { error: `Requires base rank ${levelData.requires.baseRank}.` };
-  }
-  if (levelData.requires?.modules) {
-    for (const [requiredModuleId, requiredLevel] of Object.entries(levelData.requires.modules)) {
-      const ownedLevel = base.upgrades?.[requiredModuleId] || 0;
-      if (ownedLevel < requiredLevel) {
-        return { error: `Requires ${requiredModuleId} level ${requiredLevel}.` };
-      }
+  
+  const embed = new EmbedBuilder()
+    .setColor('#3498DB')
+    .setTitle(`🔧 ${def.name || moduleId} - Level ${nextLevel} Preview`)
+    .setDescription(levelData.summary || 'Upgrade available.')
+    .addFields(
+      { name: 'Current Level', value: `${currentLevel}`, inline: true },
+      { name: 'Next Level', value: `${nextLevel}`, inline: true },
+      { name: 'Max Level', value: `${def.maxLevel}`, inline: true }
+    );
+  
+  if (levelData.requires?.baseRank) {
+    embed.addFields({ name: 'Requires Base Rank', value: `${levelData.requires.baseRank}`, inline: true });
+    if (base.rank < levelData.requires.baseRank) {
+      embed.addFields({ name: '⚠️ Requirement Not Met', value: `Your base rank is ${base.rank}, but this upgrade requires rank ${levelData.requires.baseRank}.`, inline: false });
     }
   }
-  if (levelData.cost && !canAffordCost(player, levelData.cost, { baseStorage: base.storage })) {
-    return { error: `Insufficient resources. Cost: ${formatCost(levelData.cost)}.` };
+  
+  if (levelData.requires?.modules) {
+    const requirements = [];
+    for (const [requiredModuleId, requiredLevel] of Object.entries(levelData.requires.modules)) {
+      const ownedLevel = base.upgrades?.[requiredModuleId] || 0;
+      const status = ownedLevel >= requiredLevel ? '✅' : '❌';
+      requirements.push(`${status} ${requiredModuleId}: ${ownedLevel}/${requiredLevel}`);
+    }
+    if (requirements.length) {
+      embed.addFields({ name: 'Module Requirements', value: requirements.join('\n'), inline: false });
+    }
   }
-  if (levelData.cost) deductCost(player, levelData.cost, { baseStorage: base.storage });
-  base.upgrades[moduleId] = nextLevel;
-  recalcBaseBonuses(base);
-  recalcPlayerBaseBonuses(player);
-  const label = def.name || moduleId;
-  return { message: `🔧 Upgraded **${label}** to level ${nextLevel}.` };
+  
+  if (levelData.cost) {
+    const costText = formatCost(levelData.cost);
+    const canAfford = canAffordCost(player, levelData.cost, { baseStorage: base.storage });
+    embed.addFields({ 
+      name: 'Cost', 
+      value: costText, 
+      inline: false 
+    });
+    if (!canAfford) {
+      embed.addFields({ name: '⚠️ Insufficient Resources', value: 'You do not have enough resources for this upgrade.', inline: false });
+    }
+  }
+  
+  if (levelData.bonuses) {
+    const bonusLines = [];
+    if (levelData.bonuses.gatheringSpeed) bonusLines.push(`Gathering Speed: +${(levelData.bonuses.gatheringSpeed * 100).toFixed(0)}%`);
+    if (levelData.bonuses.storageCapacity) bonusLines.push(`Storage Capacity: +${levelData.bonuses.storageCapacity}`);
+    if (levelData.bonuses.automationRate) bonusLines.push(`Automation Rate: +${(levelData.bonuses.automationRate * 100).toFixed(0)}%`);
+    if (bonusLines.length) {
+      embed.addFields({ name: 'Bonuses', value: bonusLines.join('\n'), inline: false });
+    }
+  }
+  
+  const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+  const canUpgrade = (!levelData.requires?.baseRank || base.rank >= levelData.requires.baseRank) &&
+                     (!levelData.requires?.modules || Object.entries(levelData.requires.modules).every(([reqId, reqLevel]) => (base.upgrades?.[reqId] || 0) >= reqLevel)) &&
+                     (!levelData.cost || canAffordCost(player, levelData.cost, { baseStorage: base.storage }));
+  
+  const upgradeButton = new ButtonBuilder()
+    .setCustomId(`base|upgrade|${base.biomeId}|${moduleId}`)
+    .setLabel('Upgrade Now')
+    .setStyle(ButtonStyle.Success)
+    .setDisabled(!canUpgrade)
+    .setEmoji('🔧');
+  
+  const components = new ActionRowBuilder().addComponents(upgradeButton);
+  
+  return { embed, components };
 }
 
 function rankUpBase(player, base) {
@@ -13514,11 +13713,11 @@ async function handleSelectMenuInteraction(interaction) {
         return interaction.reply({ ephemeral: true, content: '❌ Unable to determine module selection.' });
       }
       const base = ensureBase(player, biomeId.toLowerCase());
-      const preview = buildBaseModulePreview(base, moduleId);
+      const preview = buildBaseModulePreview(player, base, moduleId);
       if (preview.error) {
         return interaction.reply({ ephemeral: true, content: `❌ ${preview.error}` });
       }
-      return interaction.reply({ ephemeral: true, embeds: [preview.embed], components: preview.components });
+      return interaction.reply({ ephemeral: true, embeds: [preview.embed], components: [preview.components] });
     }
 
     if (scope === 'settlement-expedition') {
@@ -13715,6 +13914,33 @@ async function handleButtonInteraction(interaction) {
         break;
       }
       case 'dungeon': {
+        const player = getPlayer(interaction.user.id);
+        const message = createMessageAdapterFromInteraction(interaction, { ephemeral: true });
+        
+        if (action === 'queue') {
+          return handleDungeonCommand(message, ['queue']);
+        }
+        if (action === 'leave') {
+          return handleDungeonCommand(message, ['leave']);
+        }
+        if (action === 'status') {
+          return handleDungeonCommand(message, ['status']);
+        }
+        if (action === 'descend') {
+          return handleDungeonCommand(message, ['descend']);
+        }
+        if (action === 'retreat') {
+          return handleDungeonCommand(message, ['retreat']);
+        }
+        if (action === 'info') {
+          const dungeonRun = dungeonHandlers.getActiveDungeonRun(player);
+          if (!dungeonRun) {
+            return interaction.reply({ ephemeral: true, content: '❌ You are not in a dungeon run.' });
+          }
+          // Show dungeon info
+          return interaction.reply({ ephemeral: true, content: 'ℹ️ Dungeon info feature coming soon!' });
+        }
+        
         const runId = rest[0];
         return dungeonHandlers.handleDungeonButton(interaction, action, runId, { getPlayerFunc: getPlayer });
       }
