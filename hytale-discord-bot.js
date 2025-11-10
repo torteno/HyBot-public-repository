@@ -530,6 +530,88 @@ function sendGatheringTutorial(target, biomeName, options = {}) {
   return Promise.resolve();
 }
 
+async function showTutorial(message) {
+  const player = getPlayer(message.author.id);
+  const exploration = ensureExplorationState(player);
+  const biome = getBiomeDefinition(exploration.currentBiome);
+  const biomeName = biome?.name || exploration.currentBiome || 'Unknown Biome';
+
+  const onboardingEmbed = new EmbedBuilder()
+    .setColor('#3498DB')
+    .setTitle('🧭 Welcome to HyBot')
+    .setDescription('Follow these quick steps to get geared up, explore the world, and start progressing.')
+    .addFields(
+      {
+        name: '1️⃣ Know Your Hero',
+        value: `Use \`${PREFIX} profile\` and \`${PREFIX} stats\` to review your loadout, attributes, and advancement.`,
+        inline: false
+      },
+      {
+        name: '2️⃣ Explore & Travel',
+        value: `Check \`${PREFIX} explore status\` to see your current biome, then \`${PREFIX} travel <biome>\` to discover new regions.`,
+        inline: false
+      },
+      {
+        name: '3️⃣ Gather Resources',
+        value: `Run \`${PREFIX} gather status\` or press the buttons to harvest materials based on your biome. Upgrade gear and tools for big bonuses.`,
+        inline: false
+      },
+      {
+        name: '4️⃣ Fight & Quest',
+        value: `Start encounters with \`${PREFIX} hunt\`, clear dungeons with \`${PREFIX} dungeon <id>\`, and manage quests via \`${PREFIX} quests\`.`,
+        inline: false
+      },
+      {
+        name: '5️⃣ Craft & Brew',
+        value: `Transform loot with \`${PREFIX} craft <item>\`, check recipes using \`${PREFIX} recipes\`, and mix tonics through \`${PREFIX} brews\`.`,
+        inline: false
+      }
+    )
+    .setFooter({ text: 'Use buttons below to jump straight into key systems.' });
+
+  const systemsEmbed = new EmbedBuilder()
+    .setColor('#1ABC9C')
+    .setTitle('🌟 Progression Checklist')
+    .addFields(
+      {
+        name: 'Reputation & Factions',
+        value: `Raise standing with \`${PREFIX} reputation\` and unlock vendors via \`${PREFIX} vendor\`.`,
+        inline: false
+      },
+      {
+        name: 'Bases & Settlements',
+        value: `Automate gathering with base modules (\`${PREFIX} base status\`) and invest in settlements (\`${PREFIX} settlement list\`).`,
+        inline: false
+      },
+      {
+        name: 'Codex & Lore',
+        value: `Log discoveries with \`${PREFIX} codex <category>\` and dive into story bits via \`${PREFIX} lore <topic>\`.`,
+        inline: false
+      },
+      {
+        name: 'Events & Social',
+        value: `Stay informed with \`${PREFIX} eventstatus\`, earn rewards from contracts via \`${PREFIX} contracts\`, and compare rankings using \`${PREFIX} leaderboard\`.`,
+        inline: false
+      }
+    )
+    .setFooter({ text: 'Unlock more tutorials by exploring, battling, and crafting.' });
+
+  const payload = buildStyledPayload(onboardingEmbed, 'tutorial');
+  payload.embeds.push(applyVisualStyle(systemsEmbed, 'tutorial'));
+  payload.embeds.push(buildGatheringTutorialEmbed(biomeName));
+
+  await message.reply(payload);
+
+  player.tutorials = player.tutorials || {};
+  const onboardingState = typeof player.tutorials.onboarding === 'object' && player.tutorials.onboarding !== null
+    ? player.tutorials.onboarding
+    : {};
+  onboardingState.lastShown = Date.now();
+  onboardingState.timesShown = (onboardingState.timesShown || 0) + 1;
+  onboardingState.lastBiome = biome?.id || exploration.currentBiome;
+  player.tutorials.onboarding = onboardingState;
+}
+
 function buildGatheringNotificationEmbed(user, biome, type, drops, durationSeconds, tool) {
   const emojiMap = { mining: '⛏️', foraging: '🌿', farming: '🌾', fishing: '🎣' };
   const emoji = emojiMap[type] || '✨';
@@ -1747,6 +1829,7 @@ const EMBED_VISUALS = {
   achievements: 'https://hytale.com/static/media/housing.9d1f0d4b.png',
   minigames: 'https://hytale.com/static/media/adventure.9a44b763.png',
   info: 'https://hytale.com/static/media/community.4f8e76e3.png',
+  tutorial: 'https://hytale.com/static/media/header-hero.84f38cf2.png',
   events: 'https://hytale.com/static/media/worlds-map.5fc5a8a1.png',
   vendor: 'https://hytale.com/static/media/building.1b2fa699.png',
   contracts: 'https://hytale.com/static/media/settlement.8f08dcd4.png',
@@ -2185,6 +2268,11 @@ const SYSTEM_COMPONENTS = {
     { command: 'help', label: 'Help', emoji: '🆘', style: ButtonStyle.Primary },
     { command: 'dashboard', label: 'Dashboard', emoji: '🧭', style: ButtonStyle.Secondary },
     { command: 'profile', label: 'Profile', emoji: '🧙', style: ButtonStyle.Success }
+  ],
+  tutorial: [
+    { command: 'profile', label: 'Profile', emoji: '🧙', style: ButtonStyle.Primary },
+    { command: 'explore', label: 'Explore Status', emoji: '🧭', style: ButtonStyle.Secondary },
+    { command: 'gather', label: 'Gather Status', emoji: '🌿', style: ButtonStyle.Success }
   ],
   events: [
     { command: 'eventstatus', label: 'Active Event', emoji: '🎇', style: ButtonStyle.Primary },
@@ -5934,6 +6022,14 @@ function resolveCodexEntry(category, identifier) {
   }
 }
 
+const CODEX_QUEST_HINTS = {
+  items: `Experiment with \`${PREFIX} craft\` and gather rare drops to expand your item compendium.`,
+  enemies: `Start fights using \`${PREFIX} hunt\` or tackle dungeons with \`${PREFIX} dungeon <id>\` to catalogue new foes.`,
+  factions: `Grow allegiance via \`${PREFIX} reputation\`, complete \`${PREFIX} contracts\`, and visit faction vendors.`,
+  biomes: `Travel with \`${PREFIX} travel <biome>\` and maintain \`${PREFIX} explore status\` to unlock new regions.`,
+  dungeons: `Browse \`${PREFIX} dungeons\` and delve deeper with \`${PREFIX} descend\` to document more lairs.`
+};
+
 function registerCodexUnlock(player, category, entryId) {
   if (!player.codex) {
     player.codex = { factions: [], biomes: [], enemies: [], items: [], dungeons: [], structures: [], settlements: [] };
@@ -5946,6 +6042,36 @@ function registerCodexUnlock(player, category, entryId) {
   list.push(entryId);
   player.stats.codexUnlocks = (player.stats.codexUnlocks || 0) + 1;
   return true;
+}
+
+function maybeStartCodexQuest(message, player, questCategory, entryId, unlocked) {
+  if (!unlocked || !questCategory) return;
+  player.tutorials = player.tutorials || {};
+  if (!player.tutorials.codex || typeof player.tutorials.codex !== 'object') {
+    player.tutorials.codex = {};
+  }
+
+  let categoryState = player.tutorials.codex[questCategory];
+  if (!categoryState || typeof categoryState !== 'object') {
+    categoryState = {};
+  }
+  categoryState.count = (categoryState.count || 0) + 1;
+  if (entryId) {
+    categoryState.lastEntry = entryId;
+    if (!categoryState.firstEntry) categoryState.firstEntry = entryId;
+  }
+  categoryState.updatedAt = Date.now();
+
+  const hint = CODEX_QUEST_HINTS[questCategory];
+  const isSelfTest = typeof message?.author?.id === 'string' && message.author.id.startsWith('SELF_TEST_');
+  if (!categoryState.notified && hint) {
+    categoryState.notified = true;
+    if (!isSelfTest && message?.reply) {
+      message.reply(`📘 Codex milestone unlocked! ${hint}`).catch(() => {});
+    }
+  }
+
+  player.tutorials.codex[questCategory] = categoryState;
 }
 
 function formatTopReputation(player, limit = 3) {
@@ -7234,24 +7360,54 @@ async function showBrews(message, stationFilter) {
       if (brew.effects.heal) effects.push(`Heal +${brew.effects.heal}`);
       if (brew.effects.mana) effects.push(`Mana +${brew.effects.mana}`);
       if (brew.effects.buff) effects.push(`Buff: ${brew.effects.buff}`);
-      return `• **${brew.name}** (${brew.id}) — ${brew.rarity}
-   Station: ${brew.station} | Owned: ${owned}
-   Ingredients: ${ingredients}
-   Effects: ${effects.join(', ') || 'None'}
-   Description: ${brew.description}`;
+      return [
+        `• **${brew.name}** (${brew.id}) — ${brew.rarity}`,
+        `  Station: ${brew.station} | Owned: ${owned}`,
+        `  Ingredients: ${ingredients}`,
+        `  Effects: ${effects.join(', ') || 'None'}`,
+        `  Description: ${brew.description}`
+      ].join('\n');
     });
 
-  const embed = new EmbedBuilder()
+  const descriptions = [];
+  const MAX_SECTION_LENGTH = 3500;
+  let buffer = '';
+  for (const line of lines) {
+    const candidateLength = buffer.length ? buffer.length + 2 + line.length : line.length;
+    if (candidateLength > MAX_SECTION_LENGTH && buffer.length) {
+      descriptions.push(buffer);
+      buffer = line;
+    } else {
+      buffer = buffer.length ? `${buffer}\n\n${line}` : line;
+    }
+  }
+  if (!lines.length) {
+    descriptions.push('No brews available. Gather more ingredients!');
+  } else if (buffer.length) {
+    descriptions.push(buffer);
+  }
+
+  const primaryEmbed = new EmbedBuilder()
     .setColor('#F39C12')
     .setTitle('🧪 Brewing Recipes')
-    .setDescription(lines.join('\n\n') || 'No brews available. Gather more ingredients!')
+    .setDescription(descriptions[0] || '')
     .setFooter({ text: station ? `Filtered by station: ${station}` : `Use ${PREFIX} brews <station> to filter` });
 
   if (!station) {
-    embed.addFields({ name: 'Stations', value: 'brewery, campfire' });
+    primaryEmbed.addFields({ name: 'Stations', value: 'brewery, campfire' });
   }
 
-  message.reply({ embeds: [embed] });
+  const payload = buildStyledPayload(primaryEmbed, 'brew');
+
+  descriptions.slice(1).forEach((section, index) => {
+    const extraEmbed = new EmbedBuilder()
+      .setColor('#F39C12')
+      .setTitle(`🧪 Brewing Recipes (page ${index + 2})`)
+      .setDescription(section);
+    payload.embeds.push(applyVisualStyle(extraEmbed, 'brew'));
+  });
+
+  message.reply(payload);
 }
 
 async function brewItem(message, brewId, amount = 1) {
