@@ -5193,49 +5193,148 @@ async function handleStartCommand(message) {
     return message.reply('✅ You have already started your adventure! Use `/tutorial` to review the basics or continue playing.');
   }
   
-  // Roleplay introduction from Kweebec
-  const embed = new EmbedBuilder()
-    .setColor('#2ECC71')
-    .setTitle('🌿 Welcome to Orbis, Traveler!')
-    .setDescription(
-      `*A small Kweebec emerges from the undergrowth, their leaf-like features rustling gently in the breeze.*\n\n` +
-      `"Greetings, traveler! I am **Mentor Aldric**, and I found you wandering in the **Emerald Grove**. You seem lost, but do not worry - I shall guide you through your first steps in this world.\n\n` +
-      `"Orbis is a land of adventure, danger, and opportunity. You will explore biomes, gather resources, battle creatures, and grow stronger. But first, let us begin with the basics..."\n\n` +
-      `*Mentor Aldric hands you a small satchel with basic supplies.*`
-    )
-    .addFields(
-      { name: '🎒 Starting Items', value: '• Wooden Sword\n• Health Potion x2\n• Rusty Multi-Tool', inline: false },
-      { name: '📚 What\'s Next?', value: 'I will guide you through the tutorial quest. Follow my instructions carefully!', inline: false }
-    );
-  
-  await message.reply({ embeds: [embed] });
-  
-  // Auto-start tutorial quest
+  // Initialize tutorial step if not started
   if (!player.tutorialStarted) {
     player.tutorialStarted = true;
-    const tutorialQuest = QUESTS.find(q => q.id === 0);
-    if (tutorialQuest && !player.quests.includes(0)) {
-      initializeQuestProgress(player, tutorialQuest);
-      player.quests.push(0);
-      savePlayerData(message.author.id);
-      
-      // Send tutorial quest info
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      const questEmbed = new EmbedBuilder()
-        .setColor('#9B59B6')
-        .setTitle('📜 Tutorial Quest Started!')
-        .setDescription(`**${tutorialQuest.name}**\n${tutorialQuest.description}`)
+    player.tutorialStep = 0; // Track tutorial progression
+    savePlayerData(message.author.id);
+  }
+  
+  // Show first step with Next button
+  return showTutorialStep(message, player.tutorialStep || 0);
+}
+
+async function showTutorialStep(message, step) {
+  const player = getPlayer(message.author.id);
+  const isInteraction = message.interaction;
+  
+  let embed;
+  let components = [];
+  
+  switch (step) {
+    case 0: {
+      // Welcome message
+      embed = new EmbedBuilder()
+        .setColor('#2ECC71')
+        .setTitle('🌿 Welcome to Orbis, Traveler!')
+        .setDescription(
+          `*A small Kweebec emerges from the undergrowth, their leaf-like features rustling gently in the breeze.*\n\n` +
+          `"Greetings, traveler! I am **Mentor Aldric**, and I found you wandering in the **Emerald Grove**. You seem lost, but do not worry - I shall guide you through your first steps in this world.\n\n` +
+          `"Orbis is a land of adventure, danger, and opportunity. You will explore biomes, gather resources, battle creatures, and grow stronger. But first, let us begin with the basics..."\n\n` +
+          `*Mentor Aldric hands you a small satchel with basic supplies.*`
+        )
         .addFields(
-          { name: 'First Objective', value: tutorialQuest.objectives[0]?.description || 'Check your profile', inline: false }
+          { name: '🎒 Starting Items', value: '• Wooden Sword\n• Health Potion x2\n• Rusty Multi-Tool', inline: false }
         );
       
-      await message.channel.send({ embeds: [questEmbed] });
+      components = [
+        new ActionRowBuilder().addComponents(
+          new ButtonBuilder()
+            .setCustomId('tutorial|next|1')
+            .setLabel('Continue')
+            .setStyle(ButtonStyle.Primary)
+            .setEmoji('➡️')
+        )
+      ];
+      break;
+    }
+    case 1: {
+      // Tutorial quest introduction
+      const tutorialQuest = QUESTS.find(q => q.id === 0);
+      if (tutorialQuest && !player.quests.includes(0)) {
+        initializeQuestProgress(player, tutorialQuest);
+        player.quests.push(0);
+        savePlayerData(message.author.id);
+      }
       
+      embed = new EmbedBuilder()
+        .setColor('#9B59B6')
+        .setTitle('📜 Tutorial Quest Started!')
+        .setDescription(
+          `"Now, let me explain your first quest. This will teach you the fundamentals of Orbis!"\n\n` +
+          `**${tutorialQuest?.name || 'Tutorial Quest'}**\n` +
+          `${tutorialQuest?.description || 'Learn the basics of Orbis'}`
+        )
+        .addFields(
+          { name: 'First Objective', value: tutorialQuest?.objectives[0]?.description || 'Check your profile', inline: false }
+        );
+      
+      components = [
+        new ActionRowBuilder().addComponents(
+          new ButtonBuilder()
+            .setCustomId('tutorial|next|2')
+            .setLabel('Continue')
+            .setStyle(ButtonStyle.Primary)
+            .setEmoji('➡️')
+        )
+      ];
+      break;
+    }
+    case 2: {
+      // Show tutorial overview
+      embed = new EmbedBuilder()
+        .setColor('#3498DB')
+        .setTitle('📚 Tutorial Overview')
+        .setDescription(
+          `"I will guide you through the essential commands and systems. Let's begin with your profile!"\n\n` +
+          `**What you'll learn:**\n` +
+          `• How to check your profile and stats\n` +
+          `• How to use your inventory\n` +
+          `• How to explore biomes\n` +
+          `• How to gather resources\n` +
+          `• How to battle creatures\n` +
+          `• And much more!`
+        );
+      
+      components = [
+        new ActionRowBuilder().addComponents(
+          new ButtonBuilder()
+            .setCustomId('tutorial|next|3')
+            .setLabel('Start Tutorial')
+            .setStyle(ButtonStyle.Success)
+            .setEmoji('🎓')
+        )
+      ];
+      break;
+    }
+    case 3: {
       // Auto-run tutorial command
-      await new Promise(resolve => setTimeout(resolve, 1000));
       const tutorialMessage = createMessageAdapterFromMessage(message);
       await showTutorial(tutorialMessage);
+      
+      // Update step and save
+      player.tutorialStep = 3;
+      savePlayerData(message.author.id);
+      
+      // Return success message
+      if (isInteraction) {
+        return message.reply({ content: '✅ Tutorial guide opened! Follow the instructions to complete your first quest.', ephemeral: true });
+      }
+      return;
     }
+    default: {
+      embed = new EmbedBuilder()
+        .setColor('#2ECC71')
+        .setTitle('✅ Tutorial Complete!')
+        .setDescription('You have completed the tutorial introduction. Use `/tutorial` anytime to review the basics!');
+      
+      components = [];
+      break;
+    }
+  }
+  
+  // Update tutorial step
+  player.tutorialStep = step;
+  savePlayerData(message.author.id);
+  
+  // Send or update message
+  if (isInteraction) {
+    if (message.deferred || message.replied) {
+      return message.editReply({ embeds: [embed], components });
+    }
+    return message.reply({ embeds: [embed], components });
+  } else {
+    return message.reply({ embeds: [embed], components });
   }
 }
 
