@@ -56,6 +56,7 @@ console.log('📦 Loading dungeon modules...');
 const dungeonHandlers = require('./dungeons/handlers');
 const dungeonRun = require('./dungeons/run');
 console.log('✅ Dungeon modules loaded');
+console.log('📋 Continuing initialization...');
 
 console.log('🤖 Creating Discord client...');
 const client = new Client({
@@ -8868,12 +8869,17 @@ client.on('interactionCreate', interaction => {
   if (interaction.isButton()) return handleButtonInteraction(interaction);
   return null;
 });
+console.log('✅ Event handlers registered');
+
 // ==================== LOGIN ====================
 // Replace with your bot token
 
-console.log('🚀 Attempting to connect to Discord...');
 console.log('📝 All modules loaded, event handlers registered, ready to connect');
-client.login(TOKEN).catch(error => {
+console.log('🚀 Attempting to connect to Discord...');
+console.log(`🔑 Token length: ${TOKEN ? TOKEN.length : 0} characters`);
+client.login(TOKEN).then(() => {
+  console.log('✅ Login promise resolved, waiting for ready event...');
+}).catch(error => {
   console.error('❌ Failed to login to Discord:', error.message);
   console.error('Full error:', error);
   console.error('Stack trace:', error.stack);
