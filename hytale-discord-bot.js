@@ -4898,7 +4898,8 @@ function processQuestEvent(message, player, event) {
   }
   
   // Check adventure mode progress
-  checkAdventureModeProgress(player, event);
+  const userId = message?.author?.id || message?.user?.id;
+  checkAdventureModeProgress(player, event, userId);
 }
 
 // Notify when individual quest objectives are completed
@@ -12258,7 +12259,7 @@ function canAccessBiome(player, biomeId) {
   return canAccessZone(player, zoneId);
 }
 
-function checkAdventureModeProgress(player, event) {
+function checkAdventureModeProgress(player, event, userId = null) {
   if (!player.adventureMode || !player.adventureMode.currentSection) return;
   
   const chapter = ADVENTURE_MODE_LOOKUP[player.adventureMode.currentChapter?.toLowerCase()];
@@ -12360,11 +12361,8 @@ function checkAdventureModeProgress(player, event) {
   player.adventureMode.progress[chapter.id] = progress;
   
   // Save player data if progress was updated
-  if (anyUpdated) {
-    const userId = player.userId || player.id;
-    if (userId) {
-      savePlayerData(userId);
-    }
+  if (anyUpdated && userId) {
+    savePlayerData(userId);
   }
   
   // If all objectives complete, mark section as complete and apply rewards
