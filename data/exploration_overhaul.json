@@ -263,6 +263,206 @@
           "rare_loot",
           "treasure_cache"
         ]
+      },
+      {
+        "id": "find_structure_chain",
+        "description": "Survey and explore to discover hidden structures in your biome. This chain demonstrates how to find structures like shrines, caches, and puzzles.",
+        "steps": [
+          {
+            "action": "survey",
+            "durationMinutes": 5
+          },
+          {
+            "action": "forage",
+            "durationMinutes": 4
+          },
+          {
+            "action": "scavenge",
+            "durationMinutes": 6
+          }
+        ],
+        "rewardTags": [
+          "structure_discovery",
+          "puzzle_rewards",
+          "structure_loot"
+        ]
+      },
+      {
+        "id": "find_settlement_chain",
+        "description": "Explore thoroughly to discover settlements in your biome. This chain shows you how to find new settlements through exploration activities.",
+        "steps": [
+          {
+            "action": "survey",
+            "durationMinutes": 5
+          },
+          {
+            "action": "forage",
+            "durationMinutes": 4
+          },
+          {
+            "action": "mine",
+            "durationMinutes": 5
+          },
+          {
+            "action": "scavenge",
+            "durationMinutes": 6
+          }
+        ],
+        "rewardTags": [
+          "settlement_discovery",
+          "common_materials",
+          "uncommon_materials"
+        ]
+      },
+      {
+        "id": "find_dungeon_chain",
+        "description": "Search for dungeon entrances by exploring remote areas. This chain demonstrates how to discover dungeons through thorough exploration.",
+        "steps": [
+          {
+            "action": "survey",
+            "durationMinutes": 5
+          },
+          {
+            "action": "scavenge",
+            "durationMinutes": 6
+          },
+          {
+            "action": "den_scavenge",
+            "durationMinutes": 7
+          },
+          {
+            "action": "artifact_run",
+            "durationMinutes": 12
+          }
+        ],
+        "rewardTags": [
+          "dungeon_discovery",
+          "artifact_keys",
+          "rare_loot"
+        ]
+      },
+      {
+        "id": "structure_hunt_chain",
+        "description": "A focused search for structures. Survey first to increase your chances, then explore multiple areas.",
+        "steps": [
+          {
+            "action": "survey",
+            "durationMinutes": 5
+          },
+          {
+            "action": "survey",
+            "durationMinutes": 5
+          },
+          {
+            "action": "forage",
+            "durationMinutes": 4
+          },
+          {
+            "action": "scavenge",
+            "durationMinutes": 6
+          }
+        ],
+        "rewardTags": [
+          "structure_discovery",
+          "puzzle_rewards"
+        ]
+      },
+      {
+        "id": "settlement_search_chain",
+        "description": "A comprehensive exploration chain designed to find settlements. Multiple exploration actions increase discovery chances.",
+        "steps": [
+          {
+            "action": "survey",
+            "durationMinutes": 5
+          },
+          {
+            "action": "forage",
+            "durationMinutes": 4
+          },
+          {
+            "action": "mine",
+            "durationMinutes": 5
+          },
+          {
+            "action": "forage",
+            "durationMinutes": 4
+          },
+          {
+            "action": "scavenge",
+            "durationMinutes": 6
+          }
+        ],
+        "rewardTags": [
+          "settlement_discovery",
+          "common_materials",
+          "uncommon_materials",
+          "rare_materials"
+        ]
+      },
+      {
+        "id": "dungeon_entrance_chain",
+        "description": "Search remote and dangerous areas to find dungeon entrances. This chain explores areas where dungeons are most likely to be found.",
+        "steps": [
+          {
+            "action": "survey",
+            "durationMinutes": 5
+          },
+          {
+            "action": "scavenge",
+            "durationMinutes": 6
+          },
+          {
+            "action": "den_scavenge",
+            "durationMinutes": 7
+          },
+          {
+            "action": "scavenge",
+            "durationMinutes": 6
+          }
+        ],
+        "rewardTags": [
+          "dungeon_discovery",
+          "camp_loot",
+          "artifact_keys"
+        ]
+      },
+      {
+        "id": "comprehensive_discovery_chain",
+        "description": "The ultimate exploration chain for finding everything: structures, settlements, dungeons, and rare encounters. Perfect for thorough biome exploration.",
+        "steps": [
+          {
+            "action": "survey",
+            "durationMinutes": 5
+          },
+          {
+            "action": "forage",
+            "durationMinutes": 4
+          },
+          {
+            "action": "mine",
+            "durationMinutes": 5
+          },
+          {
+            "action": "scavenge",
+            "durationMinutes": 6
+          },
+          {
+            "action": "survey",
+            "durationMinutes": 5
+          },
+          {
+            "action": "scavenge",
+            "durationMinutes": 6
+          }
+        ],
+        "rewardTags": [
+          "structure_discovery",
+          "settlement_discovery",
+          "dungeon_discovery",
+          "common_materials",
+          "uncommon_materials",
+          "rare_materials"
+        ]
       }
     ]
   },

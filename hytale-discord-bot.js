@@ -13567,14 +13567,77 @@ function buildBiomeActivitiesEmbed(biome) {
 function buildChainListEmbed() {
   const embed = new EmbedBuilder()
     .setColor('#2980B9')
-    .setTitle('Exploration Chains');
-  const chains = Array.from(EXPLORATION_ACTION_CHAINS.keys());
-  if (!chains.length) {
+    .setTitle('🔗 Exploration Chains');
+  
+  // Get chain definitions from exploration meta
+  const chainDefinitions = Array.isArray(EXPLORATION_META.actionChains) 
+    ? EXPLORATION_META.actionChains 
+    : (EXPLORATION_GLOBAL_DEFAULTS.actionChains || []);
+  
+  if (!chainDefinitions.length) {
     embed.setDescription('No exploration chains configured.');
     return embed;
   }
-  embed.setDescription(chains.map(id => `• ${id}`).join('\n'));
-  embed.setFooter({ text: `Start with: ${PREFIX} explore chain <id>` });
+  
+  // Group chains by purpose
+  const structureChains = chainDefinitions.filter(c => c.id.includes('structure') || c.id.includes('find_structure'));
+  const settlementChains = chainDefinitions.filter(c => c.id.includes('settlement') || c.id.includes('find_settlement'));
+  const dungeonChains = chainDefinitions.filter(c => c.id.includes('dungeon') || c.id.includes('find_dungeon'));
+  const resourceChains = chainDefinitions.filter(c => 
+    c.id.includes('resource') || c.id.includes('gathering') || c.id.includes('harvest') || c.id.includes('quick')
+  );
+  const otherChains = chainDefinitions.filter(c => 
+    !structureChains.includes(c) && !settlementChains.includes(c) && !dungeonChains.includes(c) && !resourceChains.includes(c)
+  );
+  
+  let description = '';
+  
+  if (structureChains.length > 0) {
+    description += '**🏛️ Structure Discovery:**\n';
+    structureChains.forEach(chain => {
+      const desc = chain.description ? ` - ${chain.description}` : '';
+      description += `• \`${chain.id}\`${desc}\n`;
+    });
+    description += '\n';
+  }
+  
+  if (settlementChains.length > 0) {
+    description += '**🏘️ Settlement Discovery:**\n';
+    settlementChains.forEach(chain => {
+      const desc = chain.description ? ` - ${chain.description}` : '';
+      description += `• \`${chain.id}\`${desc}\n`;
+    });
+    description += '\n';
+  }
+  
+  if (dungeonChains.length > 0) {
+    description += '**⚔️ Dungeon Discovery:**\n';
+    dungeonChains.forEach(chain => {
+      const desc = chain.description ? ` - ${chain.description}` : '';
+      description += `• \`${chain.id}\`${desc}\n`;
+    });
+    description += '\n';
+  }
+  
+  if (resourceChains.length > 0) {
+    description += '**📦 Resource Gathering:**\n';
+    resourceChains.forEach(chain => {
+      const desc = chain.description ? ` - ${chain.description}` : '';
+      description += `• \`${chain.id}\`${desc}\n`;
+    });
+    description += '\n';
+  }
+  
+  if (otherChains.length > 0) {
+    description += '**🎯 Other Chains:**\n';
+    otherChains.forEach(chain => {
+      const desc = chain.description ? ` - ${chain.description}` : '';
+      description += `• \`${chain.id}\`${desc}\n`;
+    });
+  }
+  
+  embed.setDescription(description || 'No chains available.');
+  embed.setFooter({ text: `Use: ${PREFIX} explore chain <id> to start a chain` });
   return embed;
 }
 function buildTravelStatusEmbed(player, exploration, biome) {
@@ -14902,8 +14965,25 @@ function handleSlashAutocomplete(interaction) {
           return respond(options.filter(choice => choice.name.toLowerCase().includes(lowerFocused) || choice.value.toLowerCase().includes(lowerFocused)));
         }
         if (sub === 'chain' && focused.name === 'chain_id') {
-          const options = Array.from(EXPLORATION_ACTION_CHAINS.keys()).map(chainId => ({ name: chainId, value: chainId }));
-          return respond(options.filter(choice => choice.name.toLowerCase().includes(lowerFocused) || choice.value.toLowerCase().includes(lowerFocused)));
+          // Get chain definitions with descriptions
+          const chainDefinitions = Array.isArray(EXPLORATION_META.actionChains) 
+            ? EXPLORATION_META.actionChains 
+            : (EXPLORATION_GLOBAL_DEFAULTS.actionChains || []);
+          
+          const options = chainDefinitions.map(chain => {
+            const name = chain.description 
+              ? `${chain.id} - ${chain.description.substring(0, 80)}`
+              : chain.id;
+            return {
+              name: name.length > 100 ? name.substring(0, 97) + '...' : name,
+              value: chain.id
+            };
+          }).filter(choice => 
+            !lowerFocused || 
+            choice.name.toLowerCase().includes(lowerFocused) || 
+            choice.value.toLowerCase().includes(lowerFocused)
+          );
+          return respond(options.slice(0, 25));
         }
         if (sub === 'action' && focused.name === 'action_id') {
           const actions = getAvailableActionTypes(getBiomeDefinition(exploration.currentBiome));
