@@ -88,6 +88,35 @@ if (!fs.existsSync(PLAYER_DATA_DIR)) {
 // Channel restrictions for RPG commands
 const RPG_CHANNELS = new Map(); // guildId -> Set of channelIds
 const ADMIN_USER_ID = 'tortenotorteno'; // Hardcoded admin user
+const RPG_CHANNELS_FILE = path.join(__dirname, 'rpg_channels.json');
+
+// Save RPG channel restrictions to disk
+function saveRPGChannels() {
+  try {
+    const data = {};
+    RPG_CHANNELS.forEach((channels, guildId) => {
+      data[guildId] = Array.from(channels);
+    });
+    fs.writeFileSync(RPG_CHANNELS_FILE, JSON.stringify(data, null, 2));
+  } catch (error) {
+    console.error('Error saving RPG channels:', error);
+  }
+}
+
+// Load RPG channel restrictions from disk
+function loadRPGChannels() {
+  try {
+    if (fs.existsSync(RPG_CHANNELS_FILE)) {
+      const data = JSON.parse(fs.readFileSync(RPG_CHANNELS_FILE, 'utf8'));
+      Object.entries(data).forEach(([guildId, channels]) => {
+        RPG_CHANNELS.set(guildId, new Set(channels));
+      });
+      console.log(`✅ Loaded RPG channel restrictions for ${RPG_CHANNELS.size} guild(s)`);
+    }
+  } catch (error) {
+    console.error('Error loading RPG channels:', error);
+  }
+}
 
 // Save player data to disk
 function savePlayerData(userId) {
@@ -4671,7 +4700,7 @@ function updateQuestProgress(player, event) {
           if (event.type === 'command' && objective.target) {
             // Match command name (case-insensitive) - handle both slash and legacy commands
             const targetCommand = objective.target.toLowerCase();
-            const eventCommand = (event.command || '').toLowerCase();
+            const eventCommand = (event.command || event.target || '').toLowerCase();
             
             console.log(`[DEBUG QUEST] Command objective check - target: "${targetCommand}", event: "${eventCommand}"`);
             
@@ -4680,7 +4709,9 @@ function updateQuestProgress(player, event) {
               (targetCommand === 'profile' && (eventCommand === 'p' || eventCommand === 'profile')) ||
               (targetCommand === 'explore' && (eventCommand === 'explore' || eventCommand === 'exp' || eventCommand === 'exploremenu')) ||
               (targetCommand === 'shop' && (eventCommand === 'shop' || eventCommand === 'store')) ||
-              (targetCommand === 'travel' && (eventCommand === 'travel' || eventCommand === 't'));
+              (targetCommand === 'travel' && (eventCommand === 'travel' || eventCommand === 't')) ||
+              (targetCommand === 'inventory' && (eventCommand === 'inventory' || eventCommand === 'inv' || eventCommand === 'i')) ||
+              (targetCommand === 'gather' && (eventCommand === 'gather' || eventCommand === 'g'));
             
             console.log(`[DEBUG QUEST] Command match result: ${commandMatches}`);
             
@@ -4818,6 +4849,11 @@ function sendTutorialNPCMessage(message, quest, dialogueType, objectiveType = nu
   }
 }
 function processQuestEvent(message, player, event) {
+  // For command events, also set target to command name for easier matching
+  if (event.type === 'command' && event.command && !event.target) {
+    event.target = event.command;
+  }
+  
   console.log(`[DEBUG QUEST] processQuestEvent called - event:`, {
     type: event.type,
     command: event.command,
@@ -5335,6 +5371,7 @@ async function handleSetupCommand(message) {
   }
   
   allowedChannels.add(channelId);
+  saveRPGChannels(); // Save to disk
   
   const embed = new EmbedBuilder()
     .setColor('#2ECC71')
@@ -5370,6 +5407,7 @@ async function handleAddChannelCommand(message) {
   }
   
   allowedChannels.add(channelId);
+  saveRPGChannels(); // Save to disk
   
   return message.reply(`✅ Added this channel to RPG command channels! Players can now use RPG commands here.`);
 }
@@ -9240,9 +9278,8 @@ async function showCodex(message, category, entryIdentifier) {
     maybeStartCodexQuest(message, player, questCategory, normalizedEntryId, unlocked);
   }
   
-  // Add navigation buttons to entry view
-  const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
-  const navButtons = new ActionRowBuilder()
+  // Add navigation buttons to entry view (split into two rows, max 5 per row)
+  const navButtons1 = new ActionRowBuilder()
     .addComponents(
       new ButtonBuilder()
         .setCustomId('codex|category|items')
@@ -9263,18 +9300,9 @@ async function showCodex(message, category, entryIdentifier) {
       new ButtonBuilder()
         .setCustomId('codex|category|dungeons')
         .setLabel('🏰 Dungeons')
-        .setStyle(lowerCat === 'dungeons' || lowerCat === 'dungeon' ? ButtonStyle.Primary : ButtonStyle.Secondary),
-      new ButtonBuilder()
-        .setCustomId('codex|category|structures')
-        .setLabel('🏛️ Structures')
-        .setStyle(lowerCat === 'structures' || lowerCat === 'structure' ? ButtonStyle.Primary : ButtonStyle.Secondary),
-      new ButtonBuilder()
-        .setCustomId('codex|category|settlements')
-        .setLabel('🏘️ Settlements')
-        .setStyle(lowerCat === 'settlements' || lowerCat === 'settlement' ? ButtonStyle.Primary : ButtonStyle.Secondary)
+        .setStyle(lowerCat === 'dungeons' || lowerCat === 'dungeon' ? ButtonStyle.Primary : ButtonStyle.Secondary)
     );
   
-  // Split navigation buttons into two rows (max 5 buttons per row)
   const navButtons2 = new ActionRowBuilder()
     .addComponents(
       new ButtonBuilder()
@@ -9287,7 +9315,7 @@ async function showCodex(message, category, entryIdentifier) {
         .setStyle(lowerCat === 'settlements' || lowerCat === 'settlement' ? ButtonStyle.Primary : ButtonStyle.Secondary)
     );
   
-  return sendStyledEmbed(message, embed, 'codex', { components: [navButtons, navButtons2] });
+  return sendStyledEmbed(message, embed, 'codex', { components: [navButtons1, navButtons2] });
 }
 async function showReputation(message, factionIdentifier) {
   const player = getPlayer(message.author.id);
@@ -9462,6 +9490,9 @@ client.once('ready', async () => {
   
   // Load all player data from disk on startup
   loadAllPlayerData();
+  
+  // Load RPG channel restrictions from disk on startup
+  loadRPGChannels();
   
   // Set up player helper functions for dungeon system (after functions are defined)
   dungeonHandlers.setPlayerHelpers(addXp, addItemToInventory);
