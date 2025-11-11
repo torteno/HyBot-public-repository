@@ -4008,18 +4008,20 @@ function getPlayer(userId) {
   }
   const player = playerData.get(userId);
   
-  // Auto-start tutorial quest for new players
+  // Auto-start tutorial quest for new players (functions defined later, check at runtime)
   if (!player.tutorialStarted && !player.completedQuests?.includes(0)) {
-    const tutorialQuest = resolveQuest(0);
-    if (tutorialQuest && !player.quests.includes(0)) {
-      player.quests.push(0);
-      initializeQuestProgress(player, tutorialQuest);
-      refreshQuestProgress(player, tutorialQuest);
-      player.tutorialStarted = true;
-      player.stats.questsStarted = (player.stats.questsStarted || 0) + 1;
-      
-      // Send welcome message for tutorial quest (will be sent when player first uses a command)
-      // The welcome message is sent when the quest is explicitly started via startQuest
+    if (typeof resolveQuest === 'function' && typeof initializeQuestProgress === 'function' && typeof refreshQuestProgress === 'function') {
+      const tutorialQuest = resolveQuest(0);
+      if (tutorialQuest && !player.quests.includes(0)) {
+        player.quests.push(0);
+        initializeQuestProgress(player, tutorialQuest);
+        refreshQuestProgress(player, tutorialQuest);
+        player.tutorialStarted = true;
+        player.stats.questsStarted = (player.stats.questsStarted || 0) + 1;
+        
+        // Send welcome message for tutorial quest (will be sent when player first uses a command)
+        // The welcome message is sent when the quest is explicitly started via startQuest
+      }
     }
   }
   
