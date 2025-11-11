@@ -32,6 +32,7 @@ if (!TOKEN) {
 }
 console.log('✅ DISCORD_TOKEN found in environment variables');
 
+console.log('📦 Loading Discord.js modules...');
 const {
   Client,
   GatewayIntentBits,
@@ -42,15 +43,21 @@ const {
   StringSelectMenuBuilder,
   MessageFlags
 } = require('discord.js');
+console.log('✅ Discord.js loaded');
+
+console.log('📦 Loading other dependencies...');
 const axios = require('axios');
 const cron = require('node-cron');
 const fs = require('fs');
 const path = require('path');
+console.log('✅ Dependencies loaded');
 
-// Dungeon modules
+console.log('📦 Loading dungeon modules...');
 const dungeonHandlers = require('./dungeons/handlers');
 const dungeonRun = require('./dungeons/run');
+console.log('✅ Dungeon modules loaded');
 
+console.log('🤖 Creating Discord client...');
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -59,6 +66,7 @@ const client = new Client({
     GatewayIntentBits.GuildMembers,
   ],
 });
+console.log('✅ Discord client created');
 
 const PREFIX = '!hy';
 
@@ -8864,11 +8872,27 @@ client.on('interactionCreate', interaction => {
 // Replace with your bot token
 
 console.log('🚀 Attempting to connect to Discord...');
+console.log('📝 All modules loaded, event handlers registered, ready to connect');
 client.login(TOKEN).catch(error => {
   console.error('❌ Failed to login to Discord:', error.message);
   console.error('Full error:', error);
+  console.error('Stack trace:', error.stack);
   process.exit(1);
 });
+
+// Add error handlers for uncaught errors
+process.on('uncaughtException', (error) => {
+  console.error('❌ Uncaught Exception:', error);
+  console.error('Stack:', error.stack);
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('❌ Unhandled Rejection at:', promise);
+  console.error('Reason:', reason);
+  process.exit(1);
+});
+
 const MATERIAL_DROPS = [
   { item: 'ancient_bark', chance: 0.45, min: 1, max: 3 },
   { item: 'sunstone_shard', chance: 0.3, min: 1, max: 2 },
