@@ -2685,6 +2685,47 @@ const LEGACY_SLASH_COMMANDS = [
   { name: 'help', description: 'Show bot help categories.', options: [{ type: 3, name: 'category', description: 'Help category', required: false }] },
   { name: 'info', description: 'Show bot information.' },
   { name: 'lore', description: 'Read a lore entry.', options: [{ type: 3, name: 'topic', description: 'Lore topic', required: true, choices: [{ name: 'Kweebec', value: 'kweebec' }, { name: 'Trork', value: 'trork' }, { name: 'Varyn', value: 'varyn' }, { name: 'Orbis', value: 'orbis' }] }] },
+  { name: 'admin', description: 'Admin commands for managing players and game state.', options: [
+    { type: 1, name: 'giveitem', description: 'Give an item to a player.', options: [
+      { type: 6, name: 'user', description: 'Target player', required: true },
+      { type: 3, name: 'item', description: 'Item identifier', required: true, autocomplete: true },
+      { type: 4, name: 'quantity', description: 'Quantity', required: false }
+    ]},
+    { type: 1, name: 'givecoins', description: 'Give coins to a player.', options: [
+      { type: 6, name: 'user', description: 'Target player', required: true },
+      { type: 4, name: 'amount', description: 'Amount of coins', required: true }
+    ]},
+    { type: 1, name: 'givexp', description: 'Give XP to a player.', options: [
+      { type: 6, name: 'user', description: 'Target player', required: true },
+      { type: 4, name: 'amount', description: 'Amount of XP', required: true }
+    ]},
+    { type: 1, name: 'setlevel', description: 'Set a player\'s level.', options: [
+      { type: 6, name: 'user', description: 'Target player', required: true },
+      { type: 4, name: 'level', description: 'Level to set', required: true }
+    ]},
+    { type: 1, name: 'setcoins', description: 'Set a player\'s coins.', options: [
+      { type: 6, name: 'user', description: 'Target player', required: true },
+      { type: 4, name: 'amount', description: 'Amount of coins', required: true }
+    ]},
+    { type: 1, name: 'sethealth', description: 'Set a player\'s health.', options: [
+      { type: 6, name: 'user', description: 'Target player', required: true },
+      { type: 4, name: 'health', description: 'Health value', required: true }
+    ]},
+    { type: 1, name: 'setmana', description: 'Set a player\'s mana.', options: [
+      { type: 6, name: 'user', description: 'Target player', required: true },
+      { type: 4, name: 'mana', description: 'Mana value', required: true }
+    ]},
+    { type: 1, name: 'completequest', description: 'Complete a quest for a player.', options: [
+      { type: 6, name: 'user', description: 'Target player', required: true },
+      { type: 3, name: 'quest', description: 'Quest ID', required: true }
+    ]},
+    { type: 1, name: 'resetplayer', description: 'Reset a player\'s data.', options: [
+      { type: 6, name: 'user', description: 'Target player', required: true }
+    ]},
+    { type: 1, name: 'viewplayer', description: 'View detailed player data.', options: [
+      { type: 6, name: 'user', description: 'Target player', required: true }
+    ]}
+  ]},
   { name: 'codex', description: 'Browse the Orbis codex.', options: [
     {
       type: 3,
@@ -5395,12 +5436,14 @@ async function showTutorialStep(message, step) {
   savePlayerData(message.author.id);
   
   // Send or update message
-  if (interaction) {
+  if (interaction && typeof interaction.update === 'function') {
+    // It's a real Discord interaction
     if (interaction.deferred || interaction.replied) {
-      return interaction.update({ embeds: [embed], components });
+      return interaction.followUp({ embeds: [embed], components, ephemeral: true });
     }
     return interaction.update({ embeds: [embed], components });
   } else {
+    // It's a message adapter or regular message
     return message.reply({ embeds: [embed], components });
   }
 }
@@ -10876,7 +10919,11 @@ function buildPvPActionButtons(pvpState, playerId) {
       .setDisabled(pvpState.ended)
   );
   
-  return [row1, row2, row3].filter(row => row.components.length > 0);
+  const components = [];
+  if (row1.components.length > 0 && row1.components.length <= 5) components.push(row1);
+  if (row2.components.length > 0 && row2.components.length <= 5) components.push(row2);
+  if (row3.components.length > 0 && row3.components.length <= 5) components.push(row3);
+  return components;
 }
 
 // Handle PvP action
@@ -15429,6 +15476,9 @@ async function handleSlashCommand(interaction) {
     case 'start': {
       const message = createMessageAdapterFromInteraction(interaction);
       return handleStartCommand(message);
+    }
+    case 'admin': {
+      return handleAdminCommand(interaction);
     }
     default:
       break;
