@@ -15185,13 +15185,22 @@ async function handleSlashCommand(interaction) {
     case 'explore': {
       const sub = interaction.options.getSubcommand();
       if (!sub || sub === 'status') {
-        const biome = getBiomeDefinition(exploration.currentBiome);
-        const components = [
-          ...buildExplorationActionComponents(interaction.user.id, exploration, biome),
-          ...buildGatheringActionComponents(interaction.user.id, exploration),
-          ...buildDashboardComponents()
-        ];
-        return interaction.reply({ embeds: [buildExplorationStatusEmbed(player, biome, exploration)], components });
+        try {
+          const biome = getBiomeDefinition(exploration.currentBiome);
+          if (!biome) {
+            return interaction.reply({ ephemeral: true, content: '❌ Unable to determine your current biome. Try using `/travel` first.' });
+          }
+          const embed = buildExplorationStatusEmbed(player, biome, exploration);
+          const components = [
+            ...buildExplorationActionComponents(interaction.user.id, exploration, biome),
+            ...buildGatheringActionComponents(interaction.user.id, exploration),
+            ...buildDashboardComponents()
+          ];
+          return interaction.reply({ embeds: [embed], components });
+        } catch (error) {
+          console.error('Error in explore status:', error);
+          return interaction.reply({ ephemeral: true, content: '❌ An error occurred. Please try again.' });
+        }
       }
       if (sub === 'resolve') {
         const message = createMessageAdapterFromInteraction(interaction);
