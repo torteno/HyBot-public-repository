@@ -8097,6 +8097,95 @@ async function showLore(message, topic) {
     .setFooter({ text: 'Discover more lore by exploring Orbis!' });
   return sendStyledEmbed(message, embed, 'lore');
 }
+// Helper function to find where an item is located/found
+function findItemLocation(itemId) {
+  const locations = [];
+  const normalizedId = itemId?.toLowerCase();
+  if (!normalizedId) return locations;
+  
+  // Check gathering resources
+  GATHERING_RESOURCE_BIOMES.forEach((biomeData, biomeId) => {
+    const biome = BIOMES.find(b => b.id === biomeId);
+    const biomeName = biome?.name || biomeId;
+    
+    ['mining', 'foraging', 'farming', 'fishing'].forEach(type => {
+      if (biomeData[type]) {
+        const found = biomeData[type].find(r => r.item?.toLowerCase() === normalizedId);
+        if (found) {
+          locations.push(`${biomeName} (${type})`);
+        }
+      }
+    });
+  });
+  
+  // Check exploration resources
+  EXPLORATION_BIOMES?.forEach(biome => {
+    if (biome.resources) {
+      ['forage', 'mine', 'scavenge'].forEach(type => {
+        if (biome.resources[type]) {
+          const found = biome.resources[type].find(r => r.item?.toLowerCase() === normalizedId);
+          if (found) {
+            const biomeName = biome.name || biome.id;
+            locations.push(`${biomeName} (exploration ${type})`);
+          }
+        }
+      });
+    }
+  });
+  
+  // Check item sources
+  try {
+    const itemSources = require('./data/item_sources.json');
+    if (itemSources[normalizedId]) {
+      itemSources[normalizedId].forEach(source => {
+        if (source.includes('gathering_')) {
+          locations.push(`Gathering (${source.replace('gathering_', '')})`);
+        } else if (source.includes('exploration_')) {
+          locations.push(`Exploration (${source.replace('exploration_', '')})`);
+        } else {
+          locations.push(source.replace(/_/g, ' '));
+        }
+      });
+    }
+  } catch (e) {
+    // File might not exist, ignore
+  }
+  
+  return [...new Set(locations)]; // Remove duplicates
+}
+
+// Helper function to find where an enemy is found
+function findEnemyLocation(enemyId) {
+  const locations = [];
+  const normalizedId = enemyId?.toLowerCase();
+  if (!normalizedId) return locations;
+  
+  const enemy = ENEMY_LIST.find(e => (e.id || e.name)?.toLowerCase() === normalizedId);
+  if (enemy?.biome) {
+    const biome = BIOMES.find(b => b.id === enemy.biome);
+    locations.push(biome?.name || enemy.biome);
+  }
+  
+  // Check exploration encounters
+  EXPLORATION_BIOMES?.forEach(biome => {
+    if (biome.encounters?.combat) {
+      const found = biome.encounters.combat.find(e => e.enemy?.toLowerCase() === normalizedId);
+      if (found) {
+        locations.push(biome.name || biome.id);
+      }
+    }
+  });
+  
+  return [...new Set(locations)];
+}
+
+// Helper to check if entry is discovered
+function isCodexEntryDiscovered(player, category, entryId) {
+  if (!player.codex || !player.codex[category]) return false;
+  const normalizedId = entryId?.toLowerCase();
+  return player.codex[category].includes(normalizedId);
+}
+
 function resolveCodexEntry(category, identifier) {
   if (!category) return null;
   const lowerCat = category.toLowerCase();
@@ -8617,6 +8706,7 @@ async function showCodex(message, category, entryIdentifier) {
   }
   const embed = new EmbedBuilder().setColor('#2ECC71');
   const normalizedEntryId = entry.id || entry.name?.toLowerCase().replace(/\s+/g, '_');
+  const isDiscovered = isCodexEntryDiscovered(player, lowerCat, normalizedEntryId);
   let unlocked = false;
   let questCategory = null;
 
@@ -8624,22 +8714,38 @@ async function showCodex(message, category, entryIdentifier) {
     case 'item':
     case 'items': {
       questCategory = 'items';
-      embed.setTitle(`${entry.emoji || '❔'} ${entry.name || entry.id}`)
-        .setDescription(entry.description || 'No description available.')
-        .addFields(
-          { name: 'Type', value: entry.type || 'Unknown', inline: true },
-          { name: 'Rarity', value: entry.rarity || 'Unknown', inline: true },
-          { name: 'Value', value: `${entry.value || 0} coins`, inline: true }
-        );
-      const stats = [];
-      if (entry.damage) stats.push(`Damage: ${entry.damage}`);
-      if (entry.defense) stats.push(`Defense: ${entry.defense}`);
-      if (entry.heal) stats.push(`Heal: ${entry.heal}`);
-      if (entry.mana) stats.push(`Mana: ${entry.mana}`);
-      if (entry.luck) stats.push(`Luck: ${entry.luck}`);
-      if (stats.length) embed.addFields({ name: 'Attributes', value: stats.join(' • ') });
-      if (entry.tags?.length) embed.addFields({ name: 'Tags', value: entry.tags.join(', ') });
-      if (normalizedEntryId) {
+      const locations = findItemLocation(entry.id);
+      const locationText = locations.length > 0 ? locations.join(', ') : 'Unknown location';
+      
+      if (isDiscovered) {
+        // Show full information for discovered entries
+        embed.setTitle(`✅ ${entry.emoji || '❔'} ${entry.name || entry.id}`)
+          .setDescription(entry.description || 'No description available.')
+          .addFields(
+            { name: 'Type', value: entry.type || 'Unknown', inline: true },
+            { name: 'Rarity', value: entry.rarity || 'Unknown', inline: true },
+            { name: 'Value', value: `${entry.value || 0} coins`, inline: true },
+            { name: 'Found In', value: locationText, inline: false }
+          );
+        const stats = [];
+        if (entry.damage) stats.push(`Damage: ${entry.damage}`);
+        if (entry.defense) stats.push(`Defense: ${entry.defense}`);
+        if (entry.heal) stats.push(`Heal: ${entry.heal}`);
+        if (entry.mana) stats.push(`Mana: ${entry.mana}`);
+        if (entry.luck) stats.push(`Luck: ${entry.luck}`);
+        if (stats.length) embed.addFields({ name: 'Attributes', value: stats.join(' • ') });
+        if (entry.tags?.length) embed.addFields({ name: 'Tags', value: entry.tags.join(', ') });
+      } else {
+        // Show limited information for undiscovered entries
+        embed.setTitle(`❓ ${entry.emoji || '❔'} ${entry.name || entry.id}`)
+          .setDescription('*This entry has not been discovered yet. Find it in the world to unlock full details.*')
+          .addFields(
+            { name: 'Rarity', value: entry.rarity || 'Unknown', inline: true },
+            { name: 'Found In', value: locationText, inline: false }
+          );
+      }
+      
+      if (normalizedEntryId && !isDiscovered) {
         unlocked = registerCodexUnlock(player, 'items', normalizedEntryId);
       }
       break;
@@ -8647,16 +8753,32 @@ async function showCodex(message, category, entryIdentifier) {
     case 'enemy':
     case 'enemies': {
       questCategory = 'enemies';
-      embed.setTitle(`${entry.emoji || '❔'} ${entry.name || entry.id}`)
-        .setDescription(`Faction: ${entry.faction || 'Unknown'} • Biome: ${entry.biome || 'Unknown'}`)
-        .addFields(
-          { name: 'HP', value: `${entry.hp}`, inline: true },
-          { name: 'Damage', value: `${entry.damage}`, inline: true },
-          { name: 'XP Reward', value: `${entry.xp}`, inline: true },
-          { name: 'Coins', value: `${entry.coins}`, inline: true }
-        );
-      if (entry.tags?.length) embed.addFields({ name: 'Traits', value: entry.tags.join(', ') });
-      if (normalizedEntryId) {
+      const locations = findEnemyLocation(entry.id || entry.name);
+      const locationText = locations.length > 0 ? locations.join(', ') : (entry.biome || 'Unknown location');
+      
+      if (isDiscovered) {
+        // Show full information for discovered entries
+        embed.setTitle(`✅ ${entry.emoji || '❔'} ${entry.name || entry.id}`)
+          .setDescription(`Faction: ${entry.faction || 'Unknown'} • Biome: ${entry.biome || 'Unknown'}`)
+          .addFields(
+            { name: 'HP', value: `${entry.hp}`, inline: true },
+            { name: 'Damage', value: `${entry.damage}`, inline: true },
+            { name: 'XP Reward', value: `${entry.xp}`, inline: true },
+            { name: 'Coins', value: `${entry.coins}`, inline: true },
+            { name: 'Found In', value: locationText, inline: false }
+          );
+        if (entry.tags?.length) embed.addFields({ name: 'Traits', value: entry.tags.join(', ') });
+      } else {
+        // Show limited information for undiscovered entries
+        embed.setTitle(`❓ ${entry.emoji || '❔'} ${entry.name || entry.id}`)
+          .setDescription('*This enemy has not been encountered yet. Defeat it in combat to unlock full details.*')
+          .addFields(
+            { name: 'Rarity', value: entry.rarity || 'Unknown', inline: true },
+            { name: 'Found In', value: locationText, inline: false }
+          );
+      }
+      
+      if (normalizedEntryId && !isDiscovered) {
         unlocked = registerCodexUnlock(player, 'enemies', normalizedEntryId);
       }
       break;
