@@ -3,13 +3,25 @@
 // Install: npm install discord.js axios node-cron
 
 // Try loading .env.local first (for OneDrive sync issues), then .env
-require('dotenv').config({ path: '.env.local' });
-require('dotenv').config(); // This will override with .env if it exists and is synced
+// On Railway/cloud platforms, environment variables are set directly, so these files may not exist
+// Note: fs is declared later in the file, so we'll check file existence differently
+try {
+  require('dotenv').config({ path: '.env.local' });
+} catch (e) {
+  // .env.local doesn't exist, that's fine
+}
+try {
+  require('dotenv').config(); // This will override with .env if it exists and is synced
+} catch (e) {
+  // .env doesn't exist, that's fine (Railway uses direct env vars)
+}
+// Railway and other platforms set env vars directly, so check process.env after file loading
 const TOKEN = process.env.DISCORD_TOKEN;
 if (!TOKEN) {
   console.error('❌ DISCORD_TOKEN missing from environment variables');
   console.error('Available env vars:', Object.keys(process.env).filter(k => k.includes('TOKEN') || k.includes('DISCORD')));
-  console.error('💡 If using OneDrive, make sure .env is synced locally (right-click > Always keep on this device)');
+  console.error('💡 If using OneDrive locally, make sure .env is synced (right-click > Always keep on this device)');
+  console.error('💡 If using Railway, ensure DISCORD_TOKEN is set in the Railway dashboard environment variables');
   throw new Error('DISCORD_TOKEN missing');
 }
 
