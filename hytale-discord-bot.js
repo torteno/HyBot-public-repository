@@ -5206,7 +5206,7 @@ async function handleStartCommand(message) {
 
 async function showTutorialStep(message, step) {
   const player = getPlayer(message.author.id);
-  const isInteraction = message.interaction;
+  const interaction = message.interaction;
   
   let embed;
   let components = [];
@@ -5307,8 +5307,8 @@ async function showTutorialStep(message, step) {
       savePlayerData(message.author.id);
       
       // Return success message
-      if (isInteraction) {
-        return message.reply({ content: '✅ Tutorial guide opened! Follow the instructions to complete your first quest.', ephemeral: true });
+      if (interaction) {
+        return interaction.update({ content: '✅ Tutorial guide opened! Follow the instructions to complete your first quest.', embeds: [], components: [] });
       }
       return;
     }
@@ -5328,11 +5328,11 @@ async function showTutorialStep(message, step) {
   savePlayerData(message.author.id);
   
   // Send or update message
-  if (isInteraction) {
-    if (message.deferred || message.replied) {
-      return message.editReply({ embeds: [embed], components });
+  if (interaction) {
+    if (interaction.deferred || interaction.replied) {
+      return interaction.update({ embeds: [embed], components });
     }
-    return message.reply({ embeds: [embed], components });
+    return interaction.update({ embeds: [embed], components });
   } else {
     return message.reply({ embeds: [embed], components });
   }
