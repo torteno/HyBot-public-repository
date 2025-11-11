@@ -15428,6 +15428,14 @@ async function handleButtonInteraction(interaction) {
         }
         break;
       }
+      case 'tutorial': {
+        if (action === 'next') {
+          const nextStep = parseInt(rest[0]) || 0;
+          const message = createMessageAdapterFromInteraction(interaction);
+          return showTutorialStep(message, nextStep);
+        }
+        break;
+      }
       default:
         break;
     }
