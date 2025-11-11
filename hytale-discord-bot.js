@@ -4126,6 +4126,7 @@ function getPlayer(userId) {
   ensureGatheringGear(player);
   return player;
 }
+console.log('✅ getPlayer function defined');
 function xpForLevel(level) {
   return Math.floor(100 * Math.pow(1.5, level - 1));
 }
