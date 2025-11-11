@@ -4589,7 +4589,7 @@ function updateQuestProgress(player, event) {
       }
     }
   }
-  return { readyQuests, completedObjectives };
+  return { readyQuests, completedObjectives, updated: updated };
 }
 function notifyQuestReady(message, quests) {
   if (!message || !quests || quests.length === 0) return;
