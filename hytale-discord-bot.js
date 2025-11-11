@@ -14921,6 +14921,26 @@ function handleSlashAutocomplete(interaction) {
         }
         break;
       }
+      case 'admin': {
+        if (focused.name === 'item') {
+          // Show ALL items for admin giveitem
+          const options = ITEM_LIST.map(item => {
+            const itemData = ITEMS[item.id?.toLowerCase()];
+            const name = itemData?.name || item.name || item.id;
+            const emoji = itemData?.emoji || item.emoji || '📦';
+            return {
+              name: `${emoji} ${name}`.slice(0, 100),
+              value: item.id
+            };
+          }).filter(choice => 
+            !lowerFocused || 
+            choice.name.toLowerCase().includes(lowerFocused) || 
+            choice.value.toLowerCase().includes(lowerFocused)
+          );
+          return respond(options.slice(0, 25));
+        }
+        break;
+      }
       case 'reputation': {
         if (focused.name !== 'faction') break;
         const options = FACTIONS.map(faction => ({
