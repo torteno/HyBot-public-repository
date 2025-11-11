@@ -5057,7 +5057,7 @@ async function executeCommand(message, command, args) {
     await showLeaderboard(message, args[0]);
   }
   else if (command === 'trade') {
-    await initiateTrade(message, args[0], args[1]);
+    await initiateTrade(message, args[0], args[1], args[2] || 0, args[3] || 15);
   }
   
   // Info Commands
