@@ -4,26 +4,33 @@
 
 // Try loading .env.local first (for OneDrive sync issues), then .env
 // On Railway/cloud platforms, environment variables are set directly, so these files may not exist
-// Note: fs is declared later in the file, so we'll check file existence differently
+console.log('🔧 Loading environment variables...');
 try {
   require('dotenv').config({ path: '.env.local' });
+  console.log('📁 Attempted to load .env.local');
 } catch (e) {
   // .env.local doesn't exist, that's fine
+  console.log('📁 .env.local not found (this is normal on Railway)');
 }
 try {
   require('dotenv').config(); // This will override with .env if it exists and is synced
+  console.log('📁 Attempted to load .env');
 } catch (e) {
   // .env doesn't exist, that's fine (Railway uses direct env vars)
+  console.log('📁 .env not found (this is normal on Railway)');
 }
 // Railway and other platforms set env vars directly, so check process.env after file loading
+console.log('🔍 Checking for DISCORD_TOKEN in environment...');
 const TOKEN = process.env.DISCORD_TOKEN;
 if (!TOKEN) {
   console.error('❌ DISCORD_TOKEN missing from environment variables');
-  console.error('Available env vars:', Object.keys(process.env).filter(k => k.includes('TOKEN') || k.includes('DISCORD')));
+  console.error('Available env vars with TOKEN/DISCORD:', Object.keys(process.env).filter(k => k.includes('TOKEN') || k.includes('DISCORD')));
   console.error('💡 If using OneDrive locally, make sure .env is synced (right-click > Always keep on this device)');
   console.error('💡 If using Railway, ensure DISCORD_TOKEN is set in the Railway dashboard environment variables');
-  throw new Error('DISCORD_TOKEN missing');
+  console.error('💡 Railway: Go to your project → Variables tab → Add DISCORD_TOKEN');
+  process.exit(1);
 }
+console.log('✅ DISCORD_TOKEN found in environment variables');
 
 const {
   Client,
@@ -8856,7 +8863,12 @@ client.on('interactionCreate', interaction => {
 // ==================== LOGIN ====================
 // Replace with your bot token
 
-client.login(TOKEN);
+console.log('🚀 Attempting to connect to Discord...');
+client.login(TOKEN).catch(error => {
+  console.error('❌ Failed to login to Discord:', error.message);
+  console.error('Full error:', error);
+  process.exit(1);
+});
 const MATERIAL_DROPS = [
   { item: 'ancient_bark', chance: 0.45, min: 1, max: 3 },
   { item: 'sunstone_shard', chance: 0.3, min: 1, max: 2 },
