@@ -3573,5 +3573,151 @@
         "durationSeconds": 240
       }
     }
+  },
+  {
+    "id": "class_sanctum",
+    "name": "Class Sanctum",
+    "biome": "oasis_springs",
+    "category": "rare_unique",
+    "requiresItem": false,
+    "specialFunction": "class_change",
+    "description": "An ancient sanctum where adventurers can choose or change their class, or upgrade their existing class to an advanced form.",
+    "puzzle": {
+      "type": "special",
+      "difficulty": 1,
+      "successReward": {
+        "xp": 500,
+        "coins": 1000
+      },
+      "failureConsequence": {
+        "damagePercent": 0.05
+      }
+    }
+  },
+  {
+    "id": "ancient_treasure_vault",
+    "name": "Ancient Treasure Vault",
+    "biome": "howling_sands",
+    "category": "rare_unique",
+    "requiresItem": "treasure_map_ancient_vault",
+    "description": "A legendary vault filled with priceless treasures. Can only be discovered using a Treasure Map.",
+    "puzzle": {
+      "type": "sequence",
+      "difficulty": 4,
+      "successReward": {
+        "xp": 2000,
+        "coins": 5000,
+        "items": [
+          {
+            "item": "ancient_artifact",
+            "quantity": 1
+          },
+          {
+            "item": "legendary_weapon_scroll",
+            "quantity": 1
+          }
+        ]
+      },
+      "failureConsequence": {
+        "spawnEnemy": "vault_guardian"
+      }
+    }
+  },
+  {
+    "id": "lost_mage_tower",
+    "name": "Lost Mage Tower",
+    "biome": "wind_temple",
+    "category": "rare_unique",
+    "requiresItem": "arcane_compass",
+    "description": "A tower lost to time, containing powerful magical artifacts. Requires an Arcane Compass to locate.",
+    "puzzle": {
+      "type": "logic",
+      "difficulty": 5,
+      "successReward": {
+        "xp": 2500,
+        "items": [
+          {
+            "item": "master_spell_tome",
+            "quantity": 1
+          },
+          {
+            "item": "mana_crystal",
+            "quantity": 3
+          },
+          {
+            "item": "ancient_spell_scroll",
+            "quantity": 2
+          }
+        ]
+      },
+      "failureConsequence": {
+        "spawnEnemy": "arcane_construct"
+      }
+    }
+  },
+  {
+    "id": "warrior_stronghold",
+    "name": "Warrior Stronghold",
+    "biome": "dune_sepulcher",
+    "category": "rare_unique",
+    "requiresItem": "battle_standard",
+    "description": "An ancient warrior fortress filled with legendary weapons and armor. Only discoverable with a Battle Standard.",
+    "puzzle": {
+      "type": "timed_input",
+      "difficulty": 4,
+      "successReward": {
+        "xp": 2000,
+        "items": [
+          {
+            "item": "legendary_sword",
+            "quantity": 1
+          },
+          {
+            "item": "champion_armor_set",
+            "quantity": 1
+          },
+          {
+            "item": "warrior_technique_scroll",
+            "quantity": 1
+          }
+        ]
+      },
+      "failureConsequence": {
+        "spawnEnemy": "stronghold_defender"
+      }
+    }
+  },
+  {
+    "id": "rogue_cache",
+    "name": "Rogue Hidden Cache",
+    "biome": "mirage_canyon",
+    "category": "rare_unique",
+    "requiresItem": "thieves_map",
+    "description": "A secret cache hidden by master rogues. Only those with a Thieves' Map can find it.",
+    "puzzle": {
+      "type": "memory",
+      "difficulty": 4,
+      "successReward": {
+        "xp": 1800,
+        "coins": 4000,
+        "items": [
+          {
+            "item": "shadow_blade",
+            "quantity": 1
+          },
+          {
+            "item": "assassin_poison",
+            "quantity": 5
+          },
+          {
+            "item": "stealth_technique_scroll",
+            "quantity": 1
+          }
+        ]
+      },
+      "failureConsequence": {
+        "spawnEnemy": "cache_guardian"
+      }
+    }
   }
 ]

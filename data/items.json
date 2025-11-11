@@ -14303,7 +14303,47 @@
     "hp": 60,
     "mana": 50,
     "power": 15,
-    "description": "A legendary amulet combining Zone 1 and Zone 2 ancient artifacts.",
+    "description": "A legendary amulet combining Zone 1 and Zone 2 ancient artifacts.",   
     "tags": ["zone_2", "accessory", "cross_zone"]
+  },
+  {
+    "id": "treasure_map_ancient_vault",
+    "name": "Treasure Map: Ancient Vault",
+    "type": "consumable",
+    "rarity": "epic",
+    "value": 2000,
+    "emoji": "🗺️",
+    "description": "A detailed map that guarantees discovery of the Ancient Treasure Vault on your next exploration. Consumed on use.",
+    "tags": ["map", "structure_discovery", "rare"]
+  },
+  {
+    "id": "arcane_compass",
+    "name": "Arcane Compass",
+    "type": "consumable",
+    "rarity": "epic",
+    "value": 2500,
+    "emoji": "🧭",
+    "description": "A magical compass that points directly to the Lost Mage Tower. Guarantees discovery on your next exploration. Consumed on use.",
+    "tags": ["compass", "structure_discovery", "rare"]
+  },
+  {
+    "id": "battle_standard",
+    "name": "Battle Standard",
+    "type": "consumable",
+    "rarity": "epic",
+    "value": 2200,
+    "emoji": "🏴",
+    "description": "A warrior's banner that resonates with ancient strongholds. Guarantees discovery of the Warrior Stronghold on your next exploration. Consumed on use.",
+    "tags": ["standard", "structure_discovery", "rare"]
+  },
+  {
+    "id": "thieves_map",
+    "name": "Thieves' Map",
+    "type": "consumable",
+    "rarity": "epic",
+    "value": 2100,
+    "emoji": "🗺️",
+    "description": "A secret map marked by master rogues. Guarantees discovery of the Rogue Hidden Cache on your next exploration. Consumed on use.",
+    "tags": ["map", "structure_discovery", "rare"]
   }
 ]

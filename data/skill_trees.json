@@ -66,6 +66,79 @@
             "bonuses": { "stunResistance": 1.0, "knockbackResistance": 1.0 }
           }
         ]
+      },
+      {
+        "id": "adventurer",
+        "name": "Adventurer",
+        "description": "Fieldcraft and survival mastery to thrive in the wilds.",
+        "skills": [
+          {
+            "id": "trailblazer",
+            "name": "Trailblazer",
+            "level": 1,
+            "cost": 1,
+            "description": "Explore 10% faster.",
+            "bonuses": { "explorationSpeedMultiplier": 0.10 }
+          },
+          {
+            "id": "resourcefulness",
+            "name": "Resourcefulness",
+            "level": 3,
+            "cost": 2,
+            "description": "Gather 15% more materials.",
+            "bonuses": { "gatheringYieldMultiplier": 0.15 }
+          },
+          {
+            "id": "treasure_hunter",
+            "name": "Treasure Hunter",
+            "level": 5,
+            "cost": 3,
+            "description": "15% chance to find extra loot when exploring.",
+            "bonuses": { "lootFindChance": 0.15 }
+          }
+        ]
+      }
+    ],
+    "upgrades": [
+      {
+        "id": "champion",
+        "name": "Champion",
+        "emoji": "👑",
+        "description": "An advanced Warrior path - the ultimate melee combatant. Unlocks at level 30 with 10+ skills learned.",
+        "requirement": {
+          "level": 30,
+          "skillsLearned": 10
+        },
+        "bonuses": {
+          "damageMultiplier": 0.25,
+          "defenseMultiplier": 0.15,
+          "hpMultiplier": 0.20
+        },
+        "newBranches": [
+          {
+            "id": "champion_mastery",
+            "name": "Champion Mastery",
+            "description": "Master techniques of the Champion.",
+            "skills": [
+              {
+                "id": "champion_aura",
+                "name": "Champion's Aura",
+                "level": 30,
+                "cost": 5,
+                "description": "Allies within range gain 15% damage and defense.",
+                "bonuses": { "auraRadius": 3, "auraDamageBonus": 0.15, "auraDefenseBonus": 0.15 }
+              },
+              {
+                "id": "unstoppable",
+                "name": "Unstoppable",
+                "level": 35,
+                "cost": 7,
+                "description": "Once per battle, ignore all damage for one turn.",
+                "ability": "unstoppable"
+              }
+            ]
+          }
+        ]
       }
     ]
   },
@@ -136,6 +209,79 @@
             "ability": "freeze_enemies"
           }
         ]
+      },
+      {
+        "id": "adventurer",
+        "name": "Adventurer",
+        "description": "Arcane foraging and swift exploration techniques.",
+        "skills": [
+          {
+            "id": "field_researcher",
+            "name": "Field Researcher",
+            "level": 1,
+            "cost": 1,
+            "description": "Explore 10% faster.",
+            "bonuses": { "explorationSpeedMultiplier": 0.10 }
+          },
+          {
+            "id": "efficient_harvest",
+            "name": "Efficient Harvest",
+            "level": 3,
+            "cost": 2,
+            "description": "Gather 15% more materials.",
+            "bonuses": { "gatheringYieldMultiplier": 0.15 }
+          },
+          {
+            "id": "lorekeeper",
+            "name": "Lorekeeper",
+            "level": 5,
+            "cost": 3,
+            "description": "10% chance to auto-discover Codex entries you encounter.",
+            "bonuses": { "codexDiscoveryChance": 0.10 }
+          }
+        ]
+      }
+    ],
+    "upgrades": [
+      {
+        "id": "archmage",
+        "name": "Archmage",
+        "emoji": "🌟",
+        "description": "An advanced Mage path - master of all arcane arts. Unlocks at level 30 with 10+ skills learned.",
+        "requirement": {
+          "level": 30,
+          "skillsLearned": 10
+        },
+        "bonuses": {
+          "spellDamageMultiplier": 0.30,
+          "manaMultiplier": 0.25,
+          "spellCooldownReduction": 0.20
+        },
+        "newBranches": [
+          {
+            "id": "archmage_mastery",
+            "name": "Archmage Mastery",
+            "description": "Master techniques of the Archmage.",
+            "skills": [
+              {
+                "id": "arcane_surge",
+                "name": "Arcane Surge",
+                "level": 30,
+                "cost": 5,
+                "description": "All spells cost 50% less mana for 3 turns.",
+                "ability": "arcane_surge"
+              },
+              {
+                "id": "spell_weaving",
+                "name": "Spell Weaving",
+                "level": 35,
+                "cost": 7,
+                "description": "Cast two spells in one turn once per battle.",
+                "ability": "spell_weaving"
+              }
+            ]
+          }
+        ]
       }
     ]
   },
@@ -204,6 +350,79 @@
             "cost": 3,
             "description": "Arrows pierce through multiple enemies.",
             "ability": "piercing_shot"
+          }
+        ]
+      },
+      {
+        "id": "adventurer",
+        "name": "Adventurer",
+        "description": "Ranging and scavenging expertise suited for long expeditions.",
+        "skills": [
+          {
+            "id": "pathfinder",
+            "name": "Pathfinder",
+            "level": 1,
+            "cost": 1,
+            "description": "Explore 10% faster.",
+            "bonuses": { "explorationSpeedMultiplier": 0.10 }
+          },
+          {
+            "id": "scavengers_instinct",
+            "name": "Scavenger's Instinct",
+            "level": 3,
+            "cost": 2,
+            "description": "Gather 15% more materials.",
+            "bonuses": { "gatheringYieldMultiplier": 0.15 }
+          },
+          {
+            "id": "opportunist",
+            "name": "Opportunist",
+            "level": 5,
+            "cost": 3,
+            "description": "15% chance to find extra loot when exploring.",
+            "bonuses": { "lootFindChance": 0.15 }
+          }
+        ]
+      }
+    ],
+    "upgrades": [
+      {
+        "id": "shadowmaster",
+        "name": "Shadowmaster",
+        "emoji": "🌑",
+        "description": "An advanced Rogue path - the ultimate assassin. Unlocks at level 30 with 10+ skills learned.",
+        "requirement": {
+          "level": 30,
+          "skillsLearned": 10
+        },
+        "bonuses": {
+          "critChance": 0.20,
+          "critMultiplier": 0.50,
+          "dodgeChance": 0.15
+        },
+        "newBranches": [
+          {
+            "id": "shadowmaster_mastery",
+            "name": "Shadowmaster Mastery",
+            "description": "Master techniques of the Shadowmaster.",
+            "skills": [
+              {
+                "id": "shadow_step",
+                "name": "Shadow Step",
+                "level": 30,
+                "cost": 5,
+                "description": "Teleport behind enemy and guarantee critical hit.",
+                "ability": "shadow_step"
+              },
+              {
+                "id": "death_mark",
+                "name": "Death Mark",
+                "level": 35,
+                "cost": 7,
+                "description": "Mark an enemy - next attack deals 300% damage.",
+                "ability": "death_mark"
+              }
+            ]
           }
         ]
       }

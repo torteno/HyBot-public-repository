@@ -2815,6 +2815,11 @@ const SYSTEM_COMPONENTS = {
     { command: 'stats', label: 'Stats', emoji: '📊', style: ButtonStyle.Secondary },
     { command: 'dashboard', label: 'Dashboard', emoji: '🧭', style: ButtonStyle.Success }
   ],
+  skilltree: [
+    { command: 'profile', label: 'Profile', emoji: '🧙', style: ButtonStyle.Primary },
+    { command: 'class', label: 'Choose Class', emoji: '🏷️', style: ButtonStyle.Secondary },
+    { command: 'adventure', label: 'Adventure', emoji: '📖', style: ButtonStyle.Success }
+  ],
   inventory: [
     { command: 'profile', label: 'Profile', emoji: '🧙', style: ButtonStyle.Primary },
     { command: 'shop', label: 'Shop', emoji: '🛒', style: ButtonStyle.Secondary },
@@ -2947,7 +2952,11 @@ function buildStyledPayload(embed, key, options = {}) {
   applyVisualStyle(embed, key);
   const extraComponents = options.components ? [...options.components] : [];
   const systemComponents = buildSystemComponents(key);
-  const components = [...extraComponents, ...systemComponents];
+  // Merge and sanitize component rows: Discord requires 1-5 components per row and max 5 rows
+  const merged = [...extraComponents, ...systemComponents];
+  const components = merged
+    .filter(row => Array.isArray(row?.components) && row.components.length >= 1 && row.components.length <= 5)
+    .slice(0, 5);
   const payload = { ...options, embeds: [embed] };
   if (components.length) payload.components = components;
   return payload;
@@ -3089,8 +3098,10 @@ const SIMPLE_SLASH_EXECUTORS = {
   info: () => ({ command: 'info', args: [] }),
   lore: interaction => ({ command: 'lore', args: [interaction.options.getString('topic', true)] }),
   codex: interaction => {
-    const args = [interaction.options.getString('category', true)];
+    const category = interaction.options.getString('category');
     const entry = interaction.options.getString('entry');
+    const args = [];
+    if (category) args.push(category);
     if (entry) args.push(entry);
     return { command: 'codex', args };
   },
@@ -4511,22 +4522,48 @@ function refreshQuestProgress(player, quest) {
   return progress;
 }
 function updateQuestProgress(player, event) {
-  if (!player.questProgress || !player.quests || player.quests.length === 0) return { readyQuests: [], completedObjectives: [], updated: false };
+  console.log(`[DEBUG QUEST] updateQuestProgress called - event type: ${event.type}, target: ${event.target || event.command || event.itemId || event.enemy || 'none'}`);
+  
+  if (!player.questProgress || !player.quests || player.quests.length === 0) {
+    console.log(`[DEBUG QUEST] No quest progress or no active quests - questProgress: ${!!player.questProgress}, quests: ${player.quests?.length || 0}`);
+    return { readyQuests: [], completedObjectives: [], updated: false };
+  }
+  
+  console.log(`[DEBUG QUEST] Processing ${player.quests.length} active quest(s):`, player.quests);
+  
   const readyQuests = [];
   const completedObjectives = [];
   let updated = false;
   const count = event.count || 1;
+  
   for (const questId of player.quests) {
     const quest = QUEST_MAP[questId];
-    if (!quest) continue;
+    if (!quest) {
+      console.log(`[DEBUG QUEST] Quest ${questId} not found in QUEST_MAP`);
+      continue;
+    }
+    
     const progress = player.questProgress[questId];
-    if (!progress || progress.completed) continue;
+    if (!progress || progress.completed) {
+      console.log(`[DEBUG QUEST] Quest ${questId} - no progress or already completed`);
+      continue;
+    }
+    
+    console.log(`[DEBUG QUEST] Checking quest ${questId} (${quest.name}) - objectives:`, quest.objectives.length);
+    
     let questUpdated = false;
     quest.objectives.forEach((objective, index) => {
       const current = progress.objectives[index] || 0;
-      if (current >= objective.quantity) return;
+      if (current >= objective.quantity) {
+        console.log(`[DEBUG QUEST] Objective ${index} already complete (${current}/${objective.quantity})`);
+        return;
+      }
+      
       let wasUpdated = false;
       let oldProgress = current;
+      
+      console.log(`[DEBUG QUEST] Checking objective ${index}: type=${objective.type}, target=${objective.target || objective.item || objective.enemy || 'none'}, current=${current}, needed=${objective.quantity}`);
+      
       switch (objective.type) {
         case 'defeat': {
           if (event.type === 'defeat' && objective.enemy && objective.enemy === event.enemyId) {
@@ -4628,6 +4665,9 @@ function updateQuestProgress(player, event) {
             // Match command name (case-insensitive) - handle both slash and legacy commands
             const targetCommand = objective.target.toLowerCase();
             const eventCommand = (event.command || '').toLowerCase();
+            
+            console.log(`[DEBUG QUEST] Command objective check - target: "${targetCommand}", event: "${eventCommand}"`);
+            
             // Also check for aliases (e.g., 'p' for 'profile')
             const commandMatches = targetCommand === eventCommand || 
               (targetCommand === 'profile' && (eventCommand === 'p' || eventCommand === 'profile')) ||
@@ -4635,14 +4675,22 @@ function updateQuestProgress(player, event) {
               (targetCommand === 'shop' && (eventCommand === 'shop' || eventCommand === 'store')) ||
               (targetCommand === 'travel' && (eventCommand === 'travel' || eventCommand === 't'));
             
+            console.log(`[DEBUG QUEST] Command match result: ${commandMatches}`);
+            
             if (commandMatches) {
               progress.objectives[index] = Math.min(objective.quantity, current + count);
               wasUpdated = progress.objectives[index] !== oldProgress;
               questUpdated = wasUpdated || questUpdated;
+              
+              console.log(`[DEBUG QUEST] Command objective updated - old: ${oldProgress}, new: ${progress.objectives[index]}, needed: ${objective.quantity}`);
+              
               if (wasUpdated && progress.objectives[index] >= objective.quantity) {
+                console.log(`[DEBUG QUEST] Command objective ${index} COMPLETED!`);
                 completedObjectives.push({ quest, objective, index });
               }
             }
+          } else {
+            console.log(`[DEBUG QUEST] Command objective skipped - event.type: ${event.type}, objective.target: ${objective.target}`);
           }
           break;
         }
@@ -4663,13 +4711,19 @@ function updateQuestProgress(player, event) {
     });
     if (questUpdated) {
       updated = true; // Mark overall as updated
+      console.log(`[DEBUG QUEST] Quest ${questId} was updated`);
       const complete = quest.objectives.every((obj, idx) => (progress.objectives[idx] || 0) >= obj.quantity);
+      console.log(`[DEBUG QUEST] Quest ${questId} complete check: ${complete}, ready: ${progress.ready}`);
       if (complete && !progress.ready) {
         progress.ready = true;
         readyQuests.push(quest);
+        console.log(`[DEBUG QUEST] Quest ${questId} is now READY to turn in!`);
       }
     }
   }
+  
+  console.log(`[DEBUG QUEST] updateQuestProgress result - updated: ${updated}, readyQuests: ${readyQuests.length}, completedObjectives: ${completedObjectives.length}`);
+  
   return { readyQuests, completedObjectives, updated: updated };
 }
 function notifyQuestReady(message, quests) {
@@ -4757,15 +4811,32 @@ function sendTutorialNPCMessage(message, quest, dialogueType, objectiveType = nu
   }
 }
 function processQuestEvent(message, player, event) {
-  const result = updateQuestProgress(player, event) || { readyQuests: [], completedObjectives: [] };
+  console.log(`[DEBUG QUEST] processQuestEvent called - event:`, {
+    type: event.type,
+    command: event.command,
+    target: event.target,
+    itemId: event.itemId,
+    enemy: event.enemy,
+    count: event.count
+  });
+  
+  const result = updateQuestProgress(player, event) || { readyQuests: [], completedObjectives: [], updated: false };
   const { readyQuests, completedObjectives } = result;
+  
+  console.log(`[DEBUG QUEST] processQuestEvent result - updated: ${result.updated}, readyQuests: ${readyQuests.length}, completedObjectives: ${completedObjectives.length}`);
   
   // Save player data if quest progress was updated
   if (result.updated) {
     const userId = message?.author?.id || message?.user?.id || player.userId || player.id;
+    console.log(`[DEBUG QUEST] Saving player data for userId: ${userId}`);
     if (userId) {
       savePlayerData(userId);
+      console.log(`[DEBUG QUEST] Player data saved`);
+    } else {
+      console.log(`[DEBUG QUEST] WARNING: No userId found for saving!`);
     }
+  } else {
+    console.log(`[DEBUG QUEST] No update needed, skipping save`);
   }
   
   // Notify when individual objectives are completed
@@ -4959,6 +5030,7 @@ async function executeCommand(message, command, args) {
   
   // Track command usage for all active quests
   if (player.quests && player.quests.length > 0) {
+    console.log(`[DEBUG QUEST] Calling processQuestEvent for command: "${command}"`);
     processQuestEvent(message, player, { type: 'command', command: command, count: 1 });
   }
   
@@ -5298,17 +5370,15 @@ async function handleAddChannelCommand(message) {
 async function handleStartCommand(message) {
   const player = getPlayer(message.author.id);
   
-  // Check if player has already started
-  if (player.tutorialStarted && player.completedQuests?.includes(0)) {
+  // Check if player has already started - only allow /start once
+  if (player.tutorialStarted) {
     return message.reply('✅ You have already started your adventure! Use `/tutorial` to review the basics or continue playing.');
   }
   
-  // Initialize tutorial step if not started
-  if (!player.tutorialStarted) {
-    player.tutorialStarted = true;
-    player.tutorialStep = 0; // Track tutorial progression
-    savePlayerData(message.author.id);
-  }
+  // Initialize tutorial step
+  player.tutorialStarted = true;
+  player.tutorialStep = 0; // Track tutorial progression
+  savePlayerData(message.author.id);
   
   // Show first step with Next button
   return showTutorialStep(message, player.tutorialStep || 0);
@@ -5451,18 +5521,27 @@ async function showTutorialStep(message, step) {
     }
     case 3: {
       // Auto-run tutorial command
-      const tutorialMessage = createMessageAdapterFromMessage(message);
-      await showTutorial(tutorialMessage);
-      
-      // Update step and save
-      player.tutorialStep = 3;
-      savePlayerData(message.author.id);
-      
-      // Return success message
-      if (interaction) {
-        return interaction.update({ content: '✅ Tutorial guide opened! Follow the instructions to complete your first quest.', embeds: [], components: [] });
+      try {
+        const tutorialMessage = createMessageAdapterFromMessage(message);
+        await showTutorial(tutorialMessage);
+        
+        // Update step and save
+        player.tutorialStep = 3;
+        savePlayerData(message.author.id);
+        
+        // Return success message
+        if (interaction && typeof interaction.update === 'function') {
+          return interaction.update({ content: '✅ Tutorial guide opened! Follow the instructions to complete your first quest.', embeds: [], components: [] });
+        }
+        // If it's a message adapter, the tutorial was already sent
+        return;
+      } catch (error) {
+        console.error('Error showing tutorial:', error);
+        if (interaction && typeof interaction.update === 'function') {
+          return interaction.update({ content: '✅ Tutorial guide opened! Follow the instructions to complete your first quest.', embeds: [], components: [] });
+        }
+        return message.reply('✅ Tutorial guide opened! Follow the instructions to complete your first quest.');
       }
-      return;
     }
     default: {
       embed = new EmbedBuilder()
@@ -5711,6 +5790,9 @@ client.on('messageCreate', async message => {
     }
     else if (command === 'chooseclass' || command === 'class') {
       await chooseClass(message, args[0]);
+    }
+    else if (command === 'upgradeclass' || command === 'upgrade') {
+      await upgradeClass(message);
     }
     
     // Adventure Mode Commands
@@ -6018,36 +6100,27 @@ async function showInventory(message, category = null) {
     return message.reply(`🎒 No items found in category "${categories[category] || category}"!`);
   }
   
-  // Create buttons for category filtering
-  const categoryButtons = new ActionRowBuilder();
-  
-  Object.entries(categories).slice(0, 5).forEach(([key, label]) => {
-    categoryButtons.addComponents(
-      new ButtonBuilder()
-        .setCustomId(`inventory|filter|${key}`)
-        .setLabel(label)
-        .setStyle(key === (category || 'all') ? ButtonStyle.Primary : ButtonStyle.Secondary)
-    );
-  });
-  
-  const categoryButtons2 = new ActionRowBuilder();
-  Object.entries(categories).slice(5).forEach(([key, label]) => {
-    categoryButtons2.addComponents(
-      new ButtonBuilder()
-        .setCustomId(`inventory|filter|${key}`)
-        .setLabel(label)
-        .setStyle(key === (category || 'all') ? ButtonStyle.Primary : ButtonStyle.Secondary)
-    );
-  });
+  // Create buttons for category filtering (chunked to valid rows)
+  const categoryEntries = Object.entries(categories);
+  const components = [];
+  for (let i = 0; i < categoryEntries.length; i += 5) {
+    const row = new ActionRowBuilder();
+    categoryEntries.slice(i, i + 5).forEach(([key, label]) => {
+      row.addComponents(
+        new ButtonBuilder()
+          .setCustomId(`inventory|filter|${key}`)
+          .setLabel(label)
+          .setStyle(key === (category || 'all') ? ButtonStyle.Primary : ButtonStyle.Secondary)
+      );
+    });
+    if (row.components.length) components.push(row);
+  }
   
   const embed = new EmbedBuilder()
     .setColor('#00D4FF')
     .setTitle(`🎒 Your Inventory${category && category !== 'all' ? ` - ${categories[category]}` : ''}`)
     .setDescription(filteredItems.slice(0, 20).join('\n') + (filteredItems.length > 20 ? `\n\n...and ${filteredItems.length - 20} more items` : ''))
     .setFooter({ text: `⭐ = Equipped | Use ${PREFIX} equip <item> or ${PREFIX} use <item>` });
-  
-  const components = [categoryButtons];
-  if (categoryButtons2.components.length > 0) components.push(categoryButtons2);
   
   return sendStyledEmbed(message, embed, 'inventory', { components });
 }
@@ -10237,18 +10310,51 @@ function getSkillTreeBonuses(player) {
     damageMultiplier: 0,
     defenseMultiplier: 0,
     fireSpellDamage: 0,
+    spellDamageMultiplier: 0,
     iceSlowEffect: 0,
     backstabMultiplier: 0,
     rangedAccuracy: 0,
     defenseFromMana: 0,
     stunResistance: 0,
     knockbackResistance: 0,
+    // Exploration and economy bonuses
+    explorationSpeedMultiplier: 0, // reduces exploration durations
+    gatheringYieldMultiplier: 0,   // increases gathered quantities
+    lootFindChance: 0,             // chance to roll extra loot
+    brewPotencyMultiplier: 0,      // enhances brew effects
+    codexDiscoveryChance: 0,       // chance to auto-discover codex entries on encounter
+    petDamageMultiplier: 0,        // boosts active pet damage
+    // Upgrade bonuses
+    manaMultiplier: 0,
+    spellCooldownReduction: 0,
+    critChance: 0,
+    critMultiplier: 0,
+    dodgeChance: 0,
+    hpMultiplier: 0,
     abilities: []
   };
   
+  // Apply upgrade bonuses first (base bonuses from class upgrade)
+  if (player.skillTree.upgradeBonuses) {
+    Object.entries(player.skillTree.upgradeBonuses).forEach(([key, value]) => {
+      if (bonuses.hasOwnProperty(key)) {
+        bonuses[key] = (bonuses[key] || 0) + (Number(value) || 0);
+      }
+    });
+  }
+  
   const hpPercent = player.hp / player.maxHp;
   
-  skillTree.branches.forEach(branch => {
+  // Get all branches including upgrade branches
+  const allBranches = [...(skillTree.branches || [])];
+  if (player.skillTree.upgrade) {
+    const upgrade = skillTree.upgrades?.find(u => u.id === player.skillTree.upgrade);
+    if (upgrade?.newBranches) {
+      allBranches.push(...upgrade.newBranches);
+    }
+  }
+  
+  allBranches.forEach(branch => {
     const branchProgress = player.skillTree.branches[branch.id] || { skills: [] };
     const learnedSkills = branchProgress.skills || [];
     
@@ -10263,10 +10369,13 @@ function getSkillTreeBonuses(player) {
           if (skill.bonuses.condition === 'hp_below_50' && hpPercent > 0.5) return;
           
           if (key === 'damageMultiplier' || key === 'defenseMultiplier' || 
-              key === 'fireSpellDamage' || key === 'iceSlowEffect' || 
-              key === 'backstabMultiplier' || key === 'rangedAccuracy' ||
-              key === 'defenseFromMana' || key === 'stunResistance' || 
-              key === 'knockbackResistance') {
+              key === 'fireSpellDamage' || key === 'spellDamageMultiplier' ||
+              key === 'iceSlowEffect' || key === 'backstabMultiplier' || 
+              key === 'rangedAccuracy' || key === 'defenseFromMana' || 
+              key === 'stunResistance' || key === 'knockbackResistance' ||
+              key === 'explorationSpeedMultiplier' || key === 'gatheringYieldMultiplier' ||
+              key === 'lootFindChance' || key === 'brewPotencyMultiplier' ||
+              key === 'codexDiscoveryChance' || key === 'petDamageMultiplier') {
             bonuses[key] = (bonuses[key] || 0) + (Number(value) || 0);
           }
         });
@@ -12740,10 +12849,18 @@ function startTravel(player, targetBiomeId) {
 }
 function startExplorationAction(player, actionType, biomeId, metadata = {}, options = {}) {
   const exploration = ensureExplorationState(player);
-  const durationMinutes = Math.max(
+  let durationMinutes = Math.max(
     1,
     Number(options.durationMinutes ?? metadata.durationMinutes ?? getBiomeActionDuration(biomeId, actionType))
   );
+  // Apply skill-based exploration speed multiplier
+  try {
+    const skillBonuses = getSkillTreeBonuses(player);
+    if (skillBonuses?.explorationSpeedMultiplier) {
+      const speed = Math.min(0.75, Math.max(0, Number(skillBonuses.explorationSpeedMultiplier))); // cap 75% faster
+      durationMinutes = Math.max(1, Math.ceil(durationMinutes * (1 - speed)));
+    }
+  } catch {}
   const now = Date.now();
   exploration.status = 'busy';
   exploration.action = {
@@ -12802,11 +12919,44 @@ function resolveExplorationCombat(player, enemyId) {
     events: rewardLines
   };
 }
-function resolveStructureEncounter(player, structureId) {
+function checkDiscoveryItems(player, biomeId, userId) {
+  // Map discovery items to their target structures
+  const itemToStructureMap = {
+    'treasure_map_ancient_vault': 'ancient_treasure_vault',
+    'arcane_compass': 'lost_mage_tower',
+    'battle_standard': 'warrior_stronghold',
+    'thieves_map': 'rogue_cache'
+  };
+  
+  // Check player inventory for discovery items
+  for (const [itemId, structureId] of Object.entries(itemToStructureMap)) {
+    if (player.inventory && player.inventory[itemId] > 0) {
+      const structure = STRUCTURE_LOOKUP[structureId.toLowerCase()];
+      if (structure && structure.biome === biomeId) {
+        // Consume the item
+        player.inventory[itemId] = (player.inventory[itemId] || 0) - 1;
+        if (player.inventory[itemId] <= 0) {
+          delete player.inventory[itemId];
+        }
+        if (userId) savePlayerData(userId);
+        return { structureId, itemId, structure };
+      }
+    }
+  }
+  return null;
+}
+
+function resolveStructureEncounter(player, structureId, message = null) {
   const structure = STRUCTURE_LOOKUP[structureId?.toLowerCase()];
   if (!structure) {
     return { text: 'Found an unmarked ruin but could not glean anything useful.' };
   }
+  
+  // Handle Class Sanctum special function
+  if (structure.specialFunction === 'class_change') {
+    return handleClassSanctum(player, message);
+  }
+  
   const puzzle = structure.puzzle;
   if (!puzzle) {
     return { text: `Explored **${structure.name}** but found nothing of note.` };
@@ -12834,6 +12984,52 @@ function resolveStructureEncounter(player, structureId) {
     failureText += ` Suffered ${puzzle.failureConsequence.debuff} for ${Math.floor((puzzle.failureConsequence.durationSeconds || 120) / 60)} minutes.`;
   }
   return { text: failureText };
+}
+
+function handleClassSanctum(player, message) {
+  if (!player.skillTree) player.skillTree = { class: null, branches: {}, totalPoints: 0, upgrade: null };
+  
+  const currentClass = player.skillTree.class;
+  const skillTree = currentClass ? SKILL_TREE_LOOKUP[currentClass.toLowerCase()] : null;
+  const upgrades = skillTree?.upgrades || [];
+  
+  // Check if player can upgrade
+  let canUpgrade = false;
+  let availableUpgrade = null;
+  if (skillTree && upgrades.length > 0) {
+    const totalSkills = Object.values(player.skillTree.branches || {}).reduce((sum, branch) => {
+      return sum + (branch.skills?.length || 0);
+    }, 0);
+    
+    availableUpgrade = upgrades.find(upgrade => {
+      const req = upgrade.requirement || {};
+      return player.level >= (req.level || 30) && totalSkills >= (req.skillsLearned || 10);
+    });
+    canUpgrade = !!availableUpgrade && !player.skillTree.upgrade;
+  }
+  
+  if (!currentClass) {
+    return { 
+      text: `🏛️ **Class Sanctum**\n\nYou stand before the ancient Class Sanctum. Choose your path:\n\n⚔️ **Warrior** - Master of melee combat\n🔮 **Mage** - Wielder of arcane magic\n🗡️ **Rogue** - Swift and deadly assassin\n\nUse \`${PREFIX} chooseclass <warrior|mage|rogue>\` to select your class.`,
+      special: 'class_sanctum',
+      canChoose: true
+    };
+  }
+  
+  if (canUpgrade && availableUpgrade) {
+    return {
+      text: `🏛️ **Class Sanctum**\n\nYou have returned to the Class Sanctum. As a ${skillTree.emoji} **${skillTree.name}**, you are eligible for an upgrade:\n\n${availableUpgrade.emoji} **${availableUpgrade.name}**\n${availableUpgrade.description}\n\nUse \`${PREFIX} upgradeclass\` to ascend to this advanced form.`,
+      special: 'class_sanctum',
+      canUpgrade: true,
+      upgrade: availableUpgrade
+    };
+  }
+  
+  return {
+    text: `🏛️ **Class Sanctum**\n\nYou have returned to the Class Sanctum. You are currently a ${skillTree?.emoji || '❓'} **${skillTree?.name || 'Unknown'}**.\n\n${canUpgrade ? 'You are not yet eligible for an upgrade.' : 'You have already reached your maximum potential, or no upgrades are available.'}`,
+    special: 'class_sanctum',
+    canUpgrade: false
+  };
 }
 function triggerExplorationEvent(player, biome, event, message) {
   if (!event) return null;
@@ -12937,6 +13133,9 @@ function resolveExplorationAction(player, message) {
   if (action.type === 'forage' || action.type === 'mine' || action.type === 'scavenge') {
     const table = biome?.resources?.[action.type];
     const results = [];
+    const skillBonuses = getSkillTreeBonuses(player);
+    const yieldMult = 1 + Math.max(0, Number(skillBonuses.gatheringYieldMultiplier || 0));
+    const extraLootChance = Math.max(0, Math.min(0.75, Number(skillBonuses.lootFindChance || 0)));
     if (Array.isArray(table)) {
       for (let i = 0; i < 3; i++) {
         const entry = weightedChoice(table, 'chance');
@@ -12944,10 +13143,24 @@ function resolveExplorationAction(player, message) {
         if (Math.random() > (entry.chance || 1)) continue;
         const min = entry.min || 1;
         const max = entry.max || min;
-        const qty = min + Math.floor(Math.random() * (max - min + 1));
+        let qty = min + Math.floor(Math.random() * (max - min + 1));
+        qty = Math.max(1, Math.floor(qty * yieldMult));
         addItemToInventory(player, entry.item, qty);
         results.push(`${entry.item} x${qty}`);
         processQuestEvent(message, player, { type: 'gather', itemId: entry.item, count: qty });
+        // Chance for an extra roll from loot find
+        if (extraLootChance > 0 && Math.random() < extraLootChance) {
+          const bonusEntry = weightedChoice(table, 'chance');
+          if (bonusEntry) {
+            const bmin = bonusEntry.min || 1;
+            const bmax = bonusEntry.max || bmin;
+            let bqty = bmin + Math.floor(Math.random() * (bmax - bmin + 1));
+            bqty = Math.max(1, Math.floor(bqty * yieldMult));
+            addItemToInventory(player, bonusEntry.item, bqty);
+            results.push(`(bonus) ${bonusEntry.item} x${bqty}`);
+            processQuestEvent(message, player, { type: 'gather', itemId: bonusEntry.item, count: bqty });
+          }
+        }
       }
     }
     responseText = `🔍 Completed ${action.type} in ${biome?.name || exploration.currentBiome}.`;
@@ -12957,13 +13170,39 @@ function resolveExplorationAction(player, message) {
     const totalEventWeight = Object.values(EXPLORATION_EVENT_WEIGHTS).reduce((sum, value) => sum + (Number(value) || 0), 0);
     const eventTriggerChance = Math.min(0.75, totalEventWeight > 0 ? totalEventWeight : 0.25);
     let combatTriggered = false;
-    if (eventEntries && eventEntries.length) {
-      if (Math.random() < eventTriggerChance) {
-        const event = weightedChoice(eventEntries, 'chance');
-      if (event) {
-        const eventOutcome = triggerExplorationEvent(player, biome, event, message);
-        if (eventOutcome?.text) extraFields.push({ name: 'Event', value: eventOutcome.text, inline: false });
-      }
+    
+    // Check for discovery items first (guaranteed structure discovery)
+    const userId = message?.author?.id || message?.user?.id;
+    const discoveryResult = checkDiscoveryItems(player, biome.id, userId);
+    if (discoveryResult) {
+      const itemData = ITEMS[discoveryResult.itemId];
+      startExplorationAction(player, 'structure', biome.id, { structureId: discoveryResult.structureId });
+      const itemName = itemData?.name || discoveryResult.itemId;
+      extraFields.push({ 
+        name: '🗺️ Discovery Item Used', 
+        value: `Used **${itemName}** to locate **${discoveryResult.structure.name}**! Use \`${PREFIX} explore resolve\` when the timer completes.`, 
+        inline: false 
+      });
+    } else if (eventEntries && eventEntries.length) {
+      // Filter out item-only structures from random discovery
+      const availableEvents = eventEntries.filter(event => {
+        if (event.type === 'structure' || event.type === 'rare_unique') {
+          const structure = STRUCTURE_LOOKUP[event.structure?.toLowerCase()];
+          // Only allow structures that don't require items, or if player has the required item
+          if (structure?.requiresItem) {
+            return player.inventory && player.inventory[structure.requiresItem] > 0;
+          }
+          return true;
+        }
+        return true;
+      });
+      
+      if (availableEvents.length > 0 && Math.random() < eventTriggerChance) {
+        const event = weightedChoice(availableEvents, 'chance');
+        if (event) {
+          const eventOutcome = triggerExplorationEvent(player, biome, event, message);
+          if (eventOutcome?.text) extraFields.push({ name: 'Event', value: eventOutcome.text, inline: false });
+        }
       }
     }
     if (combatEntries && combatEntries.length && shouldTriggerSuddenCombat(exploration)) {
@@ -12984,8 +13223,12 @@ function resolveExplorationAction(player, message) {
   }
   if (action.type === 'structure' || action.type === 'puzzle') {
     const structureId = action.metadata?.structureId;
-    const outcome = resolveStructureEncounter(player, structureId);
+    const outcome = resolveStructureEncounter(player, structureId, message);
     responseText = outcome.text || `Explored ${structureId}.`;
+    if (outcome.special === 'class_sanctum') {
+      // Class Sanctum requires special handling - return immediately
+      return { text: responseText, fields: extraFields, special: 'class_sanctum', canChoose: outcome.canChoose, canUpgrade: outcome.canUpgrade, upgrade: outcome.upgrade };
+    }
     return { text: responseText, fields: extraFields };
   }
   if (action.type === 'survey') {
@@ -13072,13 +13315,27 @@ function startExplorationChain(player, chainId) {
   };
 }
 async function handleExploreCommand(message, args = []) {
+  console.log(`[DEBUG EXPLORE] handleExploreCommand called - userId: ${message.author?.id}, args:`, args);
   if (!Array.isArray(args)) {
     args = typeof args === 'string' ? args.split(/\s+/).filter(Boolean) : [];
   }
+  console.log(`[DEBUG EXPLORE] Processed args:`, args);
+  
   const player = getPlayer(message.author.id);
+  console.log(`[DEBUG EXPLORE] Player loaded:`, !!player);
+  
   const exploration = ensureExplorationState(player);
+  console.log(`[DEBUG EXPLORE] Exploration state:`, {
+    currentBiome: exploration.currentBiome,
+    status: exploration.status,
+    hasAction: !!exploration.action
+  });
+  
   const biome = getBiomeDefinition(exploration.currentBiome);
+  console.log(`[DEBUG EXPLORE] Biome definition:`, biome ? biome.id : 'null');
+  
   if (!biome) {
+    console.log(`[DEBUG EXPLORE] ERROR: No biome found for ${exploration.currentBiome}`);
     return message.reply('❌ You are currently located in an unknown biome. Try traveling again.');
   }
 
@@ -13090,14 +13347,29 @@ async function handleExploreCommand(message, args = []) {
   };
 
   const subcommand = (args[0] || '').toLowerCase();
+  console.log(`[DEBUG EXPLORE] Subcommand: "${subcommand}"`);
+  
   if (!subcommand || subcommand === 'status' || subcommand === 'info') {
-    const embed = buildExplorationStatusEmbed(player, biome, exploration);
-    const components = [
-      ...buildExplorationActionComponents(message.author.id, exploration, biome),
-      ...buildGatheringActionComponents(message.author.id, exploration),
-      ...buildDashboardComponents()
-    ];
-    return sendStyledEmbed(message, embed, 'explore', { components });
+    console.log(`[DEBUG EXPLORE] Showing status/info`);
+    try {
+      const embed = buildExplorationStatusEmbed(player, biome, exploration);
+      console.log(`[DEBUG EXPLORE] Embed built successfully`);
+      
+      const components = [
+        ...buildExplorationActionComponents(message.author.id, exploration, biome),
+        ...buildGatheringActionComponents(message.author.id, exploration),
+        ...buildDashboardComponents()
+      ];
+      console.log(`[DEBUG EXPLORE] Components built: ${components.length} rows`);
+      
+      const result = await sendStyledEmbed(message, embed, 'explore', { components });
+      console.log(`[DEBUG EXPLORE] Status sent successfully`);
+      return result;
+    } catch (error) {
+      console.error(`[DEBUG EXPLORE] ERROR in status handler:`, error);
+      console.error(`[DEBUG EXPLORE] Error stack:`, error.stack);
+      return message.reply('❌ An error occurred while showing exploration status.');
+    }
   }
 
   if (subcommand === 'actions') {
@@ -15174,9 +15446,18 @@ function handleSlashAutocomplete(interaction) {
 }
 // Command handler wrappers for slash commands
 async function handleCodexCommand(message, args) {
-  const category = args[0] || null;
-  const entry = args[1] || null;
-  return showCodex(message, category, entry);
+  try {
+    const category = args[0] || null;
+    const entry = args[1] || null;
+    return await showCodex(message, category, entry);
+  } catch (error) {
+    console.error('Error in handleCodexCommand:', error);
+    const isInteraction = message?.interaction && typeof message.interaction.reply === 'function';
+    if (isInteraction) {
+      return message.interaction.reply({ content: '❌ An error occurred while showing the codex. Please try again.', ephemeral: true });
+    }
+    return message.reply('❌ An error occurred while showing the codex. Please try again.');
+  }
 }
 
 async function handleAchievementCommand(message, args) {
@@ -15252,10 +15533,24 @@ async function handleSlashCommand(interaction) {
   // Track command usage for all active quests (skip for setup/admin commands)
   if (!isSetupCommand && player.quests && player.quests.length > 0) {
     const message = createMessageAdapterFromInteraction(interaction);
+    console.log(`[DEBUG QUEST] Calling processQuestEvent for slash command: "${interaction.commandName}"`);
     processQuestEvent(message, player, { type: 'command', command: interaction.commandName, count: 1 });
   }
 
-  if (!['dashboard', 'explore', 'travel', 'base', 'settlement', 'hy', 'setup', 'addchannel', 'start'].includes(interaction.commandName)) {
+  // Handle codex command separately to ensure it responds
+  if (interaction.commandName === 'codex') {
+    try {
+      const category = interaction.options.getString('category');
+      const entry = interaction.options.getString('entry');
+      const message = createMessageAdapterFromInteraction(interaction);
+      return handleCodexCommand(message, category ? [category, entry].filter(Boolean) : []);
+    } catch (error) {
+      console.error('Error in codex command:', error);
+      return interaction.reply({ content: '❌ An error occurred. Please try again.', ephemeral: true });
+    }
+  }
+
+  if (!['dashboard', 'explore', 'travel', 'base', 'settlement', 'hy', 'setup', 'addchannel', 'start', 'codex'].includes(interaction.commandName)) {
     const executor = SIMPLE_SLASH_EXECUTORS[interaction.commandName];
     if (executor) {
       const result = executor(interaction) || {};
@@ -15278,22 +15573,34 @@ async function handleSlashCommand(interaction) {
       return interaction.reply({ embeds: embeds.slice(0, 10), components: buildDashboardComponents() });
     }
     case 'explore': {
+      console.log(`[DEBUG EXPLORE] /explore slash command received - userId: ${interaction.user.id}, subcommand: ${interaction.options.getSubcommand()}`);
       const sub = interaction.options.getSubcommand();
       if (!sub || sub === 'status') {
+        console.log(`[DEBUG EXPLORE] Handling explore status subcommand`);
         try {
           const biome = getBiomeDefinition(exploration.currentBiome);
+          console.log(`[DEBUG EXPLORE] Biome definition:`, biome ? biome.id : 'null');
           if (!biome) {
+            console.log(`[DEBUG EXPLORE] ERROR: No biome found`);
             return interaction.reply({ ephemeral: true, content: '❌ Unable to determine your current biome. Try using `/travel` first.' });
           }
+          console.log(`[DEBUG EXPLORE] Building embed...`);
           const embed = buildExplorationStatusEmbed(player, biome, exploration);
+          console.log(`[DEBUG EXPLORE] Embed built successfully`);
+          console.log(`[DEBUG EXPLORE] Building components...`);
           const components = [
             ...buildExplorationActionComponents(interaction.user.id, exploration, biome),
             ...buildGatheringActionComponents(interaction.user.id, exploration),
             ...buildDashboardComponents()
           ];
-          return interaction.reply({ embeds: [embed], components });
+          console.log(`[DEBUG EXPLORE] Components built: ${components.length} rows`);
+          console.log(`[DEBUG EXPLORE] Sending reply...`);
+          const result = await interaction.reply({ embeds: [embed], components });
+          console.log(`[DEBUG EXPLORE] Reply sent successfully`);
+          return result;
         } catch (error) {
-          console.error('Error in explore status:', error);
+          console.error(`[DEBUG EXPLORE] ERROR in explore status:`, error);
+          console.error(`[DEBUG EXPLORE] Error stack:`, error.stack);
           return interaction.reply({ ephemeral: true, content: '❌ An error occurred. Please try again.' });
         }
       }
@@ -15518,22 +15825,44 @@ async function handleSlashCommand(interaction) {
       return initiateTrade(message, user.id, item, coins, duration);
     }
     case 'exploremenu': {
+      console.log(`[DEBUG EXPLORE] /exploremenu command received - userId: ${interaction.user.id}`);
       try {
         const player = getPlayer(interaction.user.id);
+        console.log(`[DEBUG EXPLORE] Player loaded:`, !!player);
+        
         const exploration = ensureExplorationState(player);
+        console.log(`[DEBUG EXPLORE] Exploration state:`, {
+          currentBiome: exploration.currentBiome,
+          status: exploration.status
+        });
+        
         const biome = getBiomeDefinition(exploration.currentBiome);
+        console.log(`[DEBUG EXPLORE] Biome definition:`, biome ? biome.id : 'null');
+        
         if (!biome) {
+          console.log(`[DEBUG EXPLORE] ERROR: No biome found`);
           return interaction.reply({ ephemeral: true, content: '❌ Unable to determine your current biome. Try using `/explore` first.' });
         }
+        
+        console.log(`[DEBUG EXPLORE] Building embed...`);
         const embed = buildExplorationStatusEmbed(player, biome, exploration);
+        console.log(`[DEBUG EXPLORE] Embed built successfully`);
+        
+        console.log(`[DEBUG EXPLORE] Building components...`);
         const components = [
           ...buildExplorationActionComponents(interaction.user.id, exploration, biome),
           ...buildGatheringActionComponents(interaction.user.id, exploration),
           ...buildDashboardComponents()
         ];
-        return interaction.reply({ ephemeral: true, embeds: [embed], components });
+        console.log(`[DEBUG EXPLORE] Components built: ${components.length} rows`);
+        
+        console.log(`[DEBUG EXPLORE] Sending reply...`);
+        const result = await interaction.reply({ ephemeral: true, embeds: [embed], components });
+        console.log(`[DEBUG EXPLORE] Reply sent successfully`);
+        return result;
       } catch (error) {
-        console.error('Error in exploremenu:', error);
+        console.error(`[DEBUG EXPLORE] ERROR in exploremenu:`, error);
+        console.error(`[DEBUG EXPLORE] Error stack:`, error.stack);
         return interaction.reply({ ephemeral: true, content: '❌ An error occurred. Please try again.' });
       }
     }
@@ -16803,25 +17132,58 @@ async function showSkillTree(message, classId = null) {
   const embed = new EmbedBuilder()
     .setColor('#3498DB')
     .setTitle(`${skillTree.emoji} ${skillTree.name} Skill Tree`)
-    .setDescription(skillTree.description);
+    .setDescription(skillTree.description)
+    .setThumbnail(EMBED_VISUALS.skilltree || EMBED_VISUALS.info || EMBED_VISUALS.profile);
   
-  const branchInfo = [];
+  const totalPointsSpent = player.skillTree.totalPoints || 0;
+  const totalAvailable = Math.max(0, player.level - totalPointsSpent);
+  embed.addFields(
+    { name: 'Total Skill Points', value: `${totalPointsSpent}`, inline: true },
+    { name: 'Available Points', value: `${totalAvailable}`, inline: true }
+  );
+  
+  // Per-branch visuals
   skillTree.branches.forEach(branch => {
     const branchProgress = player.skillTree.branches[branch.id] || { skills: [], points: 0 };
     const learnedSkills = branchProgress.skills || [];
-    branchInfo.push(`**${branch.name}** (${branchProgress.points || 0} points)\n${branch.description}\nLearned: ${learnedSkills.length}/${branch.skills.length}`);
+    const totalSkills = branch.skills.length;
+    const totalBranchCost = branch.skills.reduce((sum, s) => sum + (Number(s.cost) || 0), 0);
+    const spent = branchProgress.points || 0;
+    const pct = totalBranchCost > 0 ? Math.min(1, spent / totalBranchCost) : 0;
+
+    const nextSkill = branch.skills.find(s => !learnedSkills.includes(s.id));
+    const nextText = nextSkill
+      ? `Next: ${nextSkill.name} (Lvl ${nextSkill.level}, Cost ${nextSkill.cost})`
+      : 'All skills learned';
+
+    const progressBar = buildProgressBar(pct);
+    const learnedList = learnedSkills.length
+      ? learnedSkills.map(id => {
+          const sk = branch.skills.find(s => s.id === id);
+          return sk ? `✅ ${sk.name}` : `✅ ${id}`;
+        }).slice(0, 4).join(' • ') + (learnedSkills.length > 4 ? ` • +${learnedSkills.length - 4}` : '')
+      : 'None';
+
+    embed.addFields({
+      name: `🧬 ${branch.name} (${spent}/${totalBranchCost} pts)`,
+      value: [
+        branch.description,
+        `Progress: \`${progressBar}\` ${Math.round(pct * 100)}%`,
+        `Learned: ${learnedSkills.length}/${totalSkills} — ${learnedList}`,
+        nextText
+      ].join('\n'),
+      inline: false
+    });
   });
   
-  embed.addFields({ name: 'Branches', value: branchInfo.join('\n\n') || 'None', inline: false });
-  embed.addFields({ name: 'Total Skill Points', value: `${player.skillTree.totalPoints || 0}`, inline: true });
-  embed.addFields({ name: 'Available Points', value: `${Math.max(0, player.level - (player.skillTree.totalPoints || 0))}`, inline: true });
+  embed.setFooter({ text: `Learn with: ${PREFIX} learnskill <branchId> <skillId> • Class: ${skillTree.name}` });
   
   return sendStyledEmbed(message, embed, 'skilltree');
 }
 
 async function chooseClass(message, classId) {
   const player = getPlayer(message.author.id);
-  if (!player.skillTree) player.skillTree = { class: null, branches: {}, totalPoints: 0 };
+  if (!player.skillTree) player.skillTree = { class: null, branches: {}, totalPoints: 0, upgrade: null };
   
   if (!classId) {
     return message.reply(`❌ Please specify a class. Available classes: warrior, mage, rogue`);
@@ -16832,14 +17194,86 @@ async function chooseClass(message, classId) {
     return message.reply(`❌ Class "${classId}" not found. Available classes: warrior, mage, rogue`);
   }
   
+  // Check if player is at Class Sanctum (allows class change)
+  const exploration = ensureExplorationState(player);
+  const biome = getBiomeDefinition(exploration.currentBiome);
+  const isAtSanctum = biome?.id === 'oasis_springs' && exploration.action?.metadata?.structureId === 'class_sanctum';
+  
   if (player.skillTree.class && player.skillTree.class !== classId.toLowerCase()) {
-    return message.reply(`❌ You have already chosen a class. You cannot change it.`);
+    if (!isAtSanctum) {
+      return message.reply(`❌ You have already chosen a class. Visit the Class Sanctum in Oasis Springs to change your class.`);
+    }
+    // At Class Sanctum - allow class change (resets upgrade and branches)
+    player.skillTree.class = classId.toLowerCase();
+    player.skillTree.upgrade = null;
+    player.skillTree.upgradeBonuses = null;
+    player.skillTree.branches = {};
+    player.skillTree.totalPoints = 0;
+    savePlayerData(message.author.id);
+    return message.reply(`🔄 **Class Changed!** You have chosen ${skillTree.emoji} **${skillTree.name}**! Your previous class progress has been reset. Use \`${PREFIX} skilltree\` to view your new skill tree.`);
   }
   
   player.skillTree.class = classId.toLowerCase();
   // Check for achievement
   handleAchievementCheck(message, player);
+  savePlayerData(message.author.id);
   return message.reply(`✅ Chosen class: ${skillTree.emoji} **${skillTree.name}**! Use \`${PREFIX} skilltree\` to view your skill tree.`);
+}
+
+async function upgradeClass(message) {
+  const player = getPlayer(message.author.id);
+  if (!player.skillTree) player.skillTree = { class: null, branches: {}, totalPoints: 0, upgrade: null };
+  
+  if (!player.skillTree.class) {
+    return message.reply(`❌ You haven't chosen a class yet. Use \`${PREFIX} chooseclass <class>\` to choose one.`);
+  }
+  
+  if (player.skillTree.upgrade) {
+    return message.reply(`❌ You have already upgraded your class to **${player.skillTree.upgrade}**.`);
+  }
+  
+  const skillTree = SKILL_TREE_LOOKUP[player.skillTree.class.toLowerCase()];
+  if (!skillTree || !skillTree.upgrades || skillTree.upgrades.length === 0) {
+    return message.reply(`❌ No upgrades available for your class.`);
+  }
+  
+  const totalSkills = Object.values(player.skillTree.branches || {}).reduce((sum, branch) => {
+    return sum + (branch.skills?.length || 0);
+  }, 0);
+  
+  const availableUpgrade = skillTree.upgrades.find(upgrade => {
+    const req = upgrade.requirement || {};
+    return player.level >= (req.level || 30) && totalSkills >= (req.skillsLearned || 10);
+  });
+  
+  if (!availableUpgrade) {
+    const req = skillTree.upgrades[0]?.requirement || { level: 30, skillsLearned: 10 };
+    return message.reply(`❌ You are not eligible for a class upgrade yet. Requirements: Level ${req.level}, ${req.skillsLearned} skills learned. You are level ${player.level} with ${totalSkills} skills.`);
+  }
+  
+  // Apply upgrade
+  player.skillTree.upgrade = availableUpgrade.id;
+  
+  // Apply upgrade bonuses
+  if (availableUpgrade.bonuses) {
+    // Store upgrade bonuses in skill tree for getSkillTreeBonuses to use
+    if (!player.skillTree.upgradeBonuses) player.skillTree.upgradeBonuses = {};
+    Object.assign(player.skillTree.upgradeBonuses, availableUpgrade.bonuses);
+  }
+  
+  // Add new branches from upgrade
+  if (availableUpgrade.newBranches && Array.isArray(availableUpgrade.newBranches)) {
+    availableUpgrade.newBranches.forEach(branch => {
+      if (!player.skillTree.branches[branch.id]) {
+        player.skillTree.branches[branch.id] = { skills: [], points: 0 };
+      }
+    });
+  }
+  
+  savePlayerData(message.author.id);
+  handleAchievementCheck(message, player);
+  
+  return message.reply(`🌟 **Class Upgraded!** You have ascended to ${availableUpgrade.emoji} **${availableUpgrade.name}**! New abilities and bonuses are now available. Use \`${PREFIX} skilltree\` to view your enhanced skill tree.`);
 }
 
 async function learnSkill(message, branchId, skillId) {

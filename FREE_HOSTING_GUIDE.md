@@ -12,7 +12,7 @@
 | Service | Free Tier | Persistent Storage | Always-On | Best For |
 |---------|-----------|-------------------|-----------|----------|
 | **Render** | 750 hrs/month | ❌ No | ⚠️ Sleeps after 15min | Small bots |
-| **Fly.io** | 3 VMs, 3GB volumes | ✅ Yes (3GB) | ✅ Yes | Bots needing disk |
+| **Fly.io** | ⚠️ 7-day trial, then paid | ✅ Yes (3GB) | ✅ Yes | Bots needing disk (after trial) |
 | **Replit** | Always-on option | ✅ Yes | ✅ Yes | Quick setup |
 | **Koyeb** | 2 services | ❌ No | ✅ Yes | Simple deployments |
 | **Cyclic** | Always-on | ❌ No | ✅ Yes | Serverless |
@@ -30,6 +30,8 @@
 
 ### Option 1: Fly.io + File System (No Code Changes)
 
+⚠️ **Note**: Fly.io only offers a 7-day free trial, then requires payment ($5-10/month)
+
 1. **Sign up** at [fly.io](https://fly.io)
 2. **Install Fly CLI**: `npm install -g @fly/cli`
 3. **Login**: `fly auth login`
@@ -44,7 +46,7 @@
 7. **Deploy**: `fly deploy`
 
 ✅ **Pros**: No code changes needed, files persist
-❌ **Cons**: Limited to 3GB total, slower than database
+❌ **Cons**: Only free for 7 days, then paid, limited to 3GB total, slower than database
 
 ### Option 2: Render + MongoDB Atlas (Recommended)
 

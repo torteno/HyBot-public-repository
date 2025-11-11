@@ -159,35 +159,171 @@
   },
   {
     "id": "chapter_2",
-    "name": "Chapter 2: The Shadow Depths",
-    "emoji": "🌑",
-    "description": "Venture into the dark depths.",
-    "level": 10,
+    "name": "Chapter 2: The Howling Sands",
+    "emoji": "🏜️",
+    "description": "Journey into the vast desert of Zone 2, where ancient secrets and powerful magic await. Master the harsh environment, discover lost temples, and unlock your true potential through the Class System.",
+    "level": 15,
     "chapters": [
       {
         "id": "chapter_2_1",
-        "name": "Descent into Darkness",
-        "description": "Enter the Shadow Depths and face the darkness.",
+        "name": "The Desert Crossing",
+        "description": "Your first steps into Zone 2: Howling Sands. The scorching sun and shifting dunes test your resolve. Learn to survive in this harsh environment, gather desert resources, and discover the first signs of ancient civilizations.",
         "objectives": [
           {
             "type": "explore",
-            "target": "shadow_realm",
-            "quantity": 1,
-            "description": "Explore the Shadow Realm"
+            "target": "howling_sands",
+            "quantity": 5,
+            "description": "Perform 5 exploration actions in the Howling Sands biome to adapt to the desert environment"
+          },
+          {
+            "type": "gather",
+            "target": "desert_crystal",
+            "quantity": 10,
+            "description": "Gather 10 Desert Crystals by mining in desert biomes - these rare materials are essential for Zone 2 crafting"
           },
           {
             "type": "defeat",
-            "target": "shadow_creature",
-            "quantity": 10,
-            "description": "Defeat 10 Shadow Creatures"
+            "target": "sand_scorpion",
+            "quantity": 5,
+            "description": "Defeat 5 Sand Scorpions to prove your combat prowess in the desert"
+          },
+          {
+            "type": "command",
+            "target": "travel",
+            "quantity": 1,
+            "description": "Use /travel to explore neighboring biomes in Zone 2 and discover new areas"
+          },
+          {
+            "type": "complete",
+            "target": "dungeon",
+            "quantity": 2,
+            "description": "Complete 2 Zone 2 dungeons to gain experience with the increased difficulty"
           }
         ],
         "rewards": {
-          "xp": 500,
-          "coins": 250,
+          "xp": 800,
+          "coins": 400,
           "items": [
-            { "item": "shadow_resistance_potion", "quantity": 1 }
+            { "item": "desert_essence", "quantity": 3 },
+            { "item": "sandwalker_boots", "quantity": 1 }
           ]
+        }
+      },
+      {
+        "id": "chapter_2_2",
+        "name": "The Wind Temple",
+        "description": "Rumors speak of an ancient Wind Temple hidden in the deepest dunes. Seek out this legendary structure, solve its mysteries, and uncover the first clues about the Class System - a path to unlocking your true potential.",
+        "objectives": [
+          {
+            "type": "explore",
+            "target": "wind_temple",
+            "quantity": 1,
+            "description": "Discover the Wind Temple biome through exploration - this rare location holds ancient secrets"
+          },
+          {
+            "type": "defeat",
+            "target": "temple_guardian",
+            "quantity": 3,
+            "description": "Defeat 3 Temple Guardians protecting the Wind Temple - these powerful enemies guard ancient knowledge"
+          },
+          {
+            "type": "complete",
+            "target": "quest",
+            "quantity": 3,
+            "description": "Complete 3 Zone 2 quests to gain favor with the desert factions and learn about the region's history"
+          },
+          {
+            "type": "command",
+            "target": "codex",
+            "quantity": 1,
+            "description": "Use /codex to research the ancient texts you've discovered, learning about the Class System"
+          }
+        ],
+        "rewards": {
+          "xp": 1200,
+          "coins": 600,
+          "items": [
+            { "item": "wind_temple_key", "quantity": 1 },
+            { "item": "ancient_scroll", "quantity": 1 }
+          ]
+        }
+      },
+      {
+        "id": "chapter_2_3",
+        "name": "The Path of Mastery",
+        "description": "Having proven yourself in the Howling Sands, you discover the ancient Class Sanctum - a rare structure where adventurers can choose their path. Warrior, Mage, or Rogue - each class offers unique abilities and skill trees. This choice will shape your journey forward.",
+        "objectives": [
+          {
+            "type": "level",
+            "target": "level",
+            "quantity": 20,
+            "description": "Reach level 20 - you must be strong enough to handle the power of a class"
+          },
+          {
+            "type": "explore",
+            "target": "oasis_springs",
+            "quantity": 1,
+            "description": "Discover the Oasis Springs biome - the Class Sanctum is rumored to appear near these sacred waters"
+          },
+          {
+            "type": "defeat",
+            "target": "desert_wraith",
+            "quantity": 1,
+            "description": "Defeat a Desert Wraith - these powerful entities guard the path to the Class Sanctum"
+          },
+          {
+            "type": "command",
+            "target": "chooseclass",
+            "quantity": 1,
+            "description": "Visit the Class Sanctum and choose your class using /chooseclass <warrior|mage|rogue> - this is a permanent choice that unlocks your skill tree"
+          }
+        ],
+        "rewards": {
+          "xp": 2000,
+          "coins": 1000,
+          "items": [
+            { "item": "class_emblem", "quantity": 1 },
+            { "item": "skill_point_scroll", "quantity": 5 }
+          ],
+          "unlocks": {
+            "class_system": true
+          }
+        }
+      },
+      {
+        "id": "chapter_2_complete",
+        "name": "Zone 2 Complete - Master of the Sands",
+        "description": "You have mastered the Howling Sands, discovered the Class System, and chosen your path. The desert has tested you, and you have emerged stronger. Your journey continues, but now with the power of a true class at your side.",
+        "objectives": [
+          {
+            "type": "level",
+            "target": "level",
+            "quantity": 25,
+            "description": "Reach level 25 to prove your mastery of Zone 2"
+          },
+          {
+            "type": "skillsLearned",
+            "target": "skills",
+            "quantity": 3,
+            "description": "Learn at least 3 skills in your chosen class to begin mastering your path"
+          },
+          {
+            "type": "complete",
+            "target": "dungeon",
+            "quantity": 5,
+            "description": "Complete 5 Zone 2 dungeons to demonstrate your combat prowess"
+          }
+        ],
+        "rewards": {
+          "xp": 3000,
+          "coins": 1500,
+          "items": [
+            { "item": "zone_2_mastery_badge", "quantity": 1 },
+            { "item": "ancient_class_tome", "quantity": 1 }
+          ],
+          "unlocks": {
+            "zone": "zone_3"
+          }
         }
       }
     ]
