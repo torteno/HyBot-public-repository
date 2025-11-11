@@ -3886,16 +3886,10 @@ function adjustSettlementPrestige(settlement, amount, player) {
 }
 // ==================== HELPER FUNCTIONS ====================
 console.log('✅ All constants and data structures loaded, starting function definitions...');
-// Define getPlayer function (large function, may take a moment to parse)
-function getPlayer(userId) {
-  if (!playerData.has(userId)) {
-    // Try to load from disk first
-    const savedData = loadPlayerData(userId);
-    if (savedData) {
-      playerData.set(userId, savedData);
-    } else {
-      // Create new player
-      playerData.set(userId, {
+
+// Helper function to create a new player object (extracted to avoid parsing issues)
+function createNewPlayer() {
+  return {
       level: 1,
       xp: 0,
       hp: 100,
@@ -4004,7 +3998,20 @@ function getPlayer(userId) {
       bases: {},
       settlements: {},
       travelHistory: []
-    });
+    };
+}
+
+// Define getPlayer function
+function getPlayer(userId) {
+  if (!playerData.has(userId)) {
+    // Try to load from disk first
+    const savedData = loadPlayerData(userId);
+    if (savedData) {
+      playerData.set(userId, savedData);
+    } else {
+      // Create new player using helper function
+      playerData.set(userId, createNewPlayer());
+    }
   }
   const player = playerData.get(userId);
   
