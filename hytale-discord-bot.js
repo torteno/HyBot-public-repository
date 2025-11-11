@@ -7436,14 +7436,22 @@ async function claimDaily(message) {
   const player = getPlayer(message.author.id);
   const now = Date.now();
   
+  // Check if already claimed today (24 hours = 86400000 ms)
   if (player.lastDaily && now - player.lastDaily < 86400000) {
     const remaining = Math.ceil((86400000 - (now - player.lastDaily)) / 3600000);
     return message.reply(`❌ Daily reward already claimed! Come back in ${remaining} hours.`);
   }
   
+  // Set lastDaily immediately to prevent race conditions from multiple button clicks
+  player.lastDaily = now;
+  savePlayerData(message.author.id); // Save immediately to prevent duplicate claims
+  
+  // Calculate and apply reward
   const reward = 100 + player.level * 10;
   player.coins += reward;
-  player.lastDaily = now;
+  
+  // Save again after applying reward
+  savePlayerData(message.author.id);
   
   await message.reply(`🎁 Daily reward claimed! +${reward} coins!`);
   await handleAchievementCheck(message, player);
