@@ -14985,6 +14985,21 @@ function handleSlashAutocomplete(interaction) {
         }
         break;
       }
+      case 'adventure':
+      case 'startadventure': {
+        if (focused.name === 'chapter') {
+          const options = ADVENTURE_MODE_DEFINITIONS.map(chapter => ({
+            name: `${chapter.emoji || '📖'} ${chapter.name} (Level ${chapter.level}+)`,
+            value: chapter.id
+          })).filter(choice => 
+            !lowerFocused || 
+            choice.name.toLowerCase().includes(lowerFocused) || 
+            choice.value.toLowerCase().includes(lowerFocused)
+          );
+          return respond(options.slice(0, 25));
+        }
+        break;
+      }
       case 'reputation': {
         if (focused.name !== 'faction') break;
         const options = FACTIONS.map(faction => ({
@@ -16829,7 +16844,7 @@ async function showAdventureMode(message, chapterId = null) {
   const embed = new EmbedBuilder()
     .setColor('#8E44AD')
     .setTitle(`${chapter.emoji} ${chapter.name}`)
-    .setDescription(chapter.description);
+    .setDescription(chapter.description || 'No description available.');
   
   const progress = player.adventureMode.progress[chapter.id] || {};
   const sections = chapter.chapters || [];
@@ -16837,15 +16852,58 @@ async function showAdventureMode(message, chapterId = null) {
   const sectionInfo = sections.map((section, index) => {
     const sectionProgress = progress[section.id] || { completed: false, objectives: {} };
     const status = sectionProgress.completed ? '✅' : progress.currentSection === section.id ? '⏳' : '❌';
-    return `${status} **${section.name}**\n${section.description}`;
+    
+    // Build detailed objective list
+    let objectiveText = '';
+    if (section.objectives && Array.isArray(section.objectives) && section.objectives.length > 0) {
+      const objectiveLines = section.objectives.map((obj, idx) => {
+        const currentProgress = sectionProgress.objectives?.[idx] || 0;
+        const progressText = obj.quantity ? ` (${currentProgress}/${obj.quantity})` : '';
+        const objStatus = obj.quantity && currentProgress >= obj.quantity ? '✅' : '⏳';
+        return `${objStatus} ${obj.description || `${obj.type}: ${obj.target || obj.item || obj.enemy || 'N/A'}`}${progressText}`;
+      });
+      objectiveText = '\n' + objectiveLines.join('\n');
+    }
+    
+    // Build reward preview
+    let rewardText = '';
+    if (section.rewards) {
+      const rewardParts = [];
+      if (section.rewards.xp) rewardParts.push(`${section.rewards.xp} XP`);
+      if (section.rewards.coins) rewardParts.push(`${section.rewards.coins} coins`);
+      if (section.rewards.items && Array.isArray(section.rewards.items)) {
+        section.rewards.items.forEach(item => {
+          const itemData = ITEMS[item.item?.toLowerCase()];
+          rewardParts.push(`${itemData?.emoji || '📦'} ${itemData?.name || item.item} x${item.quantity || 1}`);
+        });
+      }
+      if (rewardParts.length > 0) {
+        rewardText = '\n\n**Rewards:** ' + rewardParts.join(', ');
+      }
+    }
+    
+    return `${status} **${section.name}**\n${section.description || 'No description'}${objectiveText}${rewardText}`;
   });
   
-  embed.addFields({ name: 'Sections', value: sectionInfo.join('\n\n') || 'None', inline: false });
+  embed.addFields({ name: 'Sections', value: sectionInfo.join('\n\n') || 'No sections available.', inline: false });
   
   if (player.adventureMode.currentSection) {
     const currentSection = sections.find(s => s.id === player.adventureMode.currentSection);
     if (currentSection) {
-      embed.addFields({ name: 'Current Section', value: `**${currentSection.name}**\n${currentSection.description}`, inline: false });
+      // Show detailed current section info
+      let currentInfo = `**${currentSection.name}**\n${currentSection.description || 'No description'}`;
+      
+      if (currentSection.objectives && Array.isArray(currentSection.objectives) && currentSection.objectives.length > 0) {
+        currentInfo += '\n\n**Objectives:**';
+        currentSection.objectives.forEach((obj, idx) => {
+          const currentProgress = progress[currentSection.id]?.objectives?.[idx] || 0;
+          const progressText = obj.quantity ? ` (${currentProgress}/${obj.quantity})` : '';
+          const objStatus = obj.quantity && currentProgress >= obj.quantity ? '✅' : '⏳';
+          currentInfo += `\n${objStatus} ${obj.description || `${obj.type}: ${obj.target || obj.item || obj.enemy || 'N/A'}`}${progressText}`;
+        });
+      }
+      
+      embed.addFields({ name: 'Current Section', value: currentInfo, inline: false });
     }
   }
   

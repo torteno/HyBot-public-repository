@@ -72,6 +72,197 @@
           "ritual_components",
           "mythic_loot"
         ]
+      },
+      {
+        "id": "resource_gathering_chain",
+        "steps": [
+          {
+            "action": "forage",
+            "durationMinutes": 4
+          },
+          {
+            "action": "mine",
+            "durationMinutes": 5
+          },
+          {
+            "action": "scavenge",
+            "durationMinutes": 6
+          }
+        ],
+        "rewardTags": [
+          "common_materials",
+          "uncommon_materials"
+        ]
+      },
+      {
+        "id": "exploration_survey_chain",
+        "steps": [
+          {
+            "action": "survey",
+            "durationMinutes": 5
+          },
+          {
+            "action": "forage",
+            "durationMinutes": 4
+          },
+          {
+            "action": "mine",
+            "durationMinutes": 5
+          }
+        ],
+        "rewardTags": [
+          "survey_data",
+          "rare_materials"
+        ]
+      },
+      {
+        "id": "artifact_hunt_chain",
+        "steps": [
+          {
+            "action": "survey",
+            "durationMinutes": 5
+          },
+          {
+            "action": "scavenge",
+            "durationMinutes": 6
+          },
+          {
+            "action": "artifact_run",
+            "durationMinutes": 12
+          }
+        ],
+        "rewardTags": [
+          "artifact_keys",
+          "rare_loot"
+        ]
+      },
+      {
+        "id": "farming_harvest_chain",
+        "steps": [
+          {
+            "action": "farming",
+            "durationMinutes": 10
+          },
+          {
+            "action": "harvest",
+            "durationMinutes": 6
+          },
+          {
+            "action": "forage",
+            "durationMinutes": 4
+          }
+        ],
+        "rewardTags": [
+          "farming_materials",
+          "settlement_bonus"
+        ]
+      },
+      {
+        "id": "den_raid_chain",
+        "steps": [
+          {
+            "action": "scout",
+            "durationMinutes": 4
+          },
+          {
+            "action": "den_scavenge",
+            "durationMinutes": 7
+          },
+          {
+            "action": "loot_cache",
+            "durationMinutes": 6
+          }
+        ],
+        "rewardTags": [
+          "camp_loot",
+          "artifact_keys"
+        ]
+      },
+      {
+        "id": "full_exploration_chain",
+        "steps": [
+          {
+            "action": "survey",
+            "durationMinutes": 5
+          },
+          {
+            "action": "forage",
+            "durationMinutes": 4
+          },
+          {
+            "action": "mine",
+            "durationMinutes": 5
+          },
+          {
+            "action": "scavenge",
+            "durationMinutes": 6
+          }
+        ],
+        "rewardTags": [
+          "common_materials",
+          "uncommon_materials",
+          "rare_materials"
+        ]
+      },
+      {
+        "id": "boss_preparation_chain",
+        "steps": [
+          {
+            "action": "survey",
+            "durationMinutes": 5
+          },
+          {
+            "action": "ritual",
+            "durationMinutes": 9
+          },
+          {
+            "action": "boss_hunt",
+            "durationMinutes": 18
+          }
+        ],
+        "rewardTags": [
+          "ritual_components",
+          "mythic_loot",
+          "boss_rewards"
+        ]
+      },
+      {
+        "id": "quick_resource_run",
+        "steps": [
+          {
+            "action": "forage",
+            "durationMinutes": 4
+          },
+          {
+            "action": "mine",
+            "durationMinutes": 5
+          }
+        ],
+        "rewardTags": [
+          "common_materials"
+        ]
+      },
+      {
+        "id": "treasure_hunter_chain",
+        "steps": [
+          {
+            "action": "scavenge",
+            "durationMinutes": 6
+          },
+          {
+            "action": "den_scavenge",
+            "durationMinutes": 7
+          },
+          {
+            "action": "artifact_run",
+            "durationMinutes": 12
+          }
+        ],
+        "rewardTags": [
+          "artifact_keys",
+          "rare_loot",
+          "treasure_cache"
+        ]
       }
     ]
   },

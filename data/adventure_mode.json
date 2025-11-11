@@ -9,19 +9,49 @@
       {
         "id": "chapter_1_1",
         "name": "The First Steps",
-        "description": "Learn the basics of survival.",
+        "description": "Master the fundamentals of survival in Orbis. This section teaches you essential mechanics: gathering resources, combat basics, inventory management, and exploration. Complete these objectives to progress through Zone 1.",
         "objectives": [
+          {
+            "type": "command",
+            "target": "profile",
+            "quantity": 1,
+            "description": "Check your profile with /profile to see your stats, level, and equipment"
+          },
+          {
+            "type": "command",
+            "target": "inventory",
+            "quantity": 1,
+            "description": "View your inventory with /inventory to see your items and manage your gear"
+          },
           {
             "type": "gather",
             "target": "ancient_bark",
             "quantity": 5,
-            "description": "Gather 5 Ancient Bark"
+            "description": "Gather 5 Ancient Bark by using /gather foraging in the Emerald Grove biome"
+          },
+          {
+            "type": "command",
+            "target": "explore",
+            "quantity": 1,
+            "description": "Check your exploration status with /explore status to see your current biome"
           },
           {
             "type": "defeat",
-            "target": "trork",
-            "quantity": 3,
-            "description": "Defeat 3 Trorks"
+            "target": "feral_trork",
+            "quantity": 1,
+            "description": "Defeat a Feral Trork using /hunt to learn combat mechanics"
+          },
+          {
+            "type": "command",
+            "target": "shop",
+            "quantity": 1,
+            "description": "Visit the shop with /shop to see available items and learn about the economy"
+          },
+          {
+            "type": "command",
+            "target": "travel",
+            "quantity": 1,
+            "description": "Check the travel menu with /travel status to see neighboring biomes"
           }
         ],
         "rewards": {
@@ -49,19 +79,43 @@
       {
         "id": "chapter_1_2",
         "name": "The Emerald Grove",
-        "description": "Discover the secrets of the Emerald Grove.",
+        "description": "Dive deeper into Zone 1 by exploring the Emerald Grove biome thoroughly. Learn about quests, base claiming, settlements, and advanced exploration mechanics. This section ensures you experience all major Zone 1 features before moving forward.",
         "objectives": [
           {
             "type": "explore",
             "target": "emerald_grove",
-            "quantity": 1,
-            "description": "Explore the Emerald Grove"
+            "quantity": 3,
+            "description": "Perform 3 exploration actions (forage, mine, or scavenge) in the Emerald Grove using /explore"
           },
           {
             "type": "complete",
             "target": "quest",
+            "quantity": 2,
+            "description": "Complete 2 quests using /quests to view available quests and /completequest to finish them"
+          },
+          {
+            "type": "command",
+            "target": "base",
             "quantity": 1,
-            "description": "Complete a quest"
+            "description": "Check base information with /base list to learn about claiming bases in biomes"
+          },
+          {
+            "type": "gather",
+            "target": "ancient_bark",
+            "quantity": 10,
+            "description": "Gather 10 Ancient Bark total to stockpile resources for crafting and trading"
+          },
+          {
+            "type": "defeat",
+            "target": "feral_trork",
+            "quantity": 3,
+            "description": "Defeat 3 Feral Trorks to gain combat experience and loot"
+          },
+          {
+            "type": "command",
+            "target": "codex",
+            "quantity": 1,
+            "description": "Browse the codex with /codex to discover information about items and enemies you've found"
           }
         ],
         "rewards": {
