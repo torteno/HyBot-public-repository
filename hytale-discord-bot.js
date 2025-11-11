@@ -15423,19 +15423,24 @@ async function handleSlashCommand(interaction) {
       return initiateTrade(message, user.id, item, coins, duration);
     }
     case 'exploremenu': {
-      const player = getPlayer(interaction.user.id);
-      const exploration = ensureExplorationState(player);
-      const biome = getBiomeDefinition(exploration.currentBiome);
-      if (!biome) {
-        return interaction.reply({ ephemeral: true, content: '❌ Unable to determine your current biome. Try using `/explore` first.' });
+      try {
+        const player = getPlayer(interaction.user.id);
+        const exploration = ensureExplorationState(player);
+        const biome = getBiomeDefinition(exploration.currentBiome);
+        if (!biome) {
+          return interaction.reply({ ephemeral: true, content: '❌ Unable to determine your current biome. Try using `/explore` first.' });
+        }
+        const embed = buildExplorationStatusEmbed(player, biome, exploration);
+        const components = [
+          ...buildExplorationActionComponents(interaction.user.id, exploration, biome),
+          ...buildGatheringActionComponents(interaction.user.id, exploration),
+          ...buildDashboardComponents()
+        ];
+        return interaction.reply({ ephemeral: true, embeds: [embed], components });
+      } catch (error) {
+        console.error('Error in exploremenu:', error);
+        return interaction.reply({ ephemeral: true, content: '❌ An error occurred. Please try again.' });
       }
-      const embed = buildExplorationStatusEmbed(player, biome, exploration);
-      const components = [
-        ...buildExplorationActionComponents(interaction.user.id, exploration, biome),
-        ...buildGatheringActionComponents(interaction.user.id, exploration),
-        ...buildDashboardComponents()
-      ];
-      return interaction.reply({ ephemeral: true, embeds: [embed], components });
     }
     case 'help': {
       const category = interaction.options.getString('category');
