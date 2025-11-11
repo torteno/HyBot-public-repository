@@ -115,6 +115,28 @@ function loadPlayerData(userId) {
   return null;
 }
 
+// Load all player data on startup
+function loadAllPlayerData() {
+  try {
+    if (!fs.existsSync(PLAYER_DATA_DIR)) return;
+    const files = fs.readdirSync(PLAYER_DATA_DIR);
+    let loadedCount = 0;
+    files.forEach(file => {
+      if (file.endsWith('.json')) {
+        const userId = file.replace('.json', '');
+        const data = loadPlayerData(userId);
+        if (data) {
+          playerData.set(userId, data);
+          loadedCount++;
+        }
+      }
+    });
+    console.log(`✅ Loaded ${loadedCount} player data files from disk`);
+  } catch (error) {
+    console.error('❌ Error loading player data on startup:', error);
+  }
+}
+
 // Save all player data periodically
 setInterval(() => {
   playerData.forEach((player, userId) => {
@@ -321,6 +343,7 @@ const GATHERING_RESOURCE_KEYS = {
 const ACTIVE_GATHER_SESSIONS = new Map();
 const EXPLORATION_PROGRESS_UPDATE_MS = 2000;
 const ACTIVE_EXPLORATION_SESSIONS = new Map();
+const ACTIVE_TRADES = new Map(); // tradeId -> { initiator, target, initiatorOffer: {items: [], coins: 0}, targetOffer: {items: [], coins: 0}, expiresAt, messageId, channelId, status: 'pending'|'accepted'|'declined'|'expired' }
 const GATHERING_SLASH_CHOICES = GATHERING_SET_TYPES.map(type => ({
   name: GATHERING_TYPE_LABELS[type],
   value: type
@@ -2646,7 +2669,19 @@ const LEGACY_SLASH_COMMANDS = [
   { name: 'rps', description: 'Play rock-paper-scissors against the bot.', options: [{ type: 3, name: 'choice', description: 'Your choice', required: true, choices: [{ name: 'Rock', value: 'rock' }, { name: 'Paper', value: 'paper' }, { name: 'Scissors', value: 'scissors' }] }] },
   { name: 'coinflip', description: 'Flip a coin.', options: [{ type: 3, name: 'call', description: 'Heads or tails', required: false, choices: [{ name: 'Heads', value: 'heads' }, { name: 'Tails', value: 'tails' }] }] },
   { name: 'leaderboard', description: 'View global leaderboards.', options: [{ type: 3, name: 'category', description: 'Leaderboard category', required: false }] },
-  { name: 'trade', description: 'Initiate a trade with another player.', options: [{ type: 6, name: 'user', description: 'Trade partner', required: true }, { type: 3, name: 'item', description: 'Item identifier', required: true }] },
+  { name: 'trade', description: 'Initiate a trade with another player.', options: [
+    { type: 6, name: 'user', description: 'Trade partner', required: true },
+    { type: 3, name: 'item', description: 'Item you want to request (optional)', required: false, autocomplete: true },
+    { type: 4, name: 'coins', description: 'Coins you want to offer (optional)', required: false },
+    { type: 3, name: 'duration', description: 'Trade duration', required: false, choices: [
+      { name: '5 minutes', value: '5' },
+      { name: '10 minutes', value: '10' },
+      { name: '15 minutes', value: '15' },
+      { name: '30 minutes', value: '30' },
+      { name: '1 hour', value: '60' }
+    ]}
+  ] },
+  { name: 'exploremenu', description: 'Open the exploration menu with all available actions.' },
   { name: 'help', description: 'Show bot help categories.', options: [{ type: 3, name: 'category', description: 'Help category', required: false }] },
   { name: 'info', description: 'Show bot information.' },
   { name: 'lore', description: 'Read a lore entry.', options: [{ type: 3, name: 'topic', description: 'Lore topic', required: true, choices: [{ name: 'Kweebec', value: 'kweebec' }, { name: 'Trork', value: 'trork' }, { name: 'Varyn', value: 'varyn' }, { name: 'Orbis', value: 'orbis' }] }] },
@@ -2989,8 +3024,10 @@ const SIMPLE_SLASH_EXECUTORS = {
   },
   trade: interaction => {
     const user = interaction.options.getUser('user', true);
-    const item = interaction.options.getString('item', true);
-    return { command: 'trade', args: [user.id, item] };
+    const item = interaction.options.getString('item');
+    const coins = interaction.options.getInteger('coins') || 0;
+    const duration = parseInt(interaction.options.getString('duration') || '15');
+    return { command: 'trade', args: [user.id, item, coins, duration] };
   },
   adventure: interaction => {
     const chapter = interaction.options.getString('chapter');
@@ -4870,6 +4907,12 @@ async function handleAchievementCheck(message, player) {
 }
 async function executeCommand(message, command, args) {
   const player = getPlayer(message.author.id);
+  
+  // Block RPG commands for players who haven't started
+  const isSetupCommand = ['setup', 'addchannel', 'start', 'help', 'info'].includes(command);
+  if (!isSetupCommand && !player.tutorialStarted) {
+    return message.reply(`❌ You need to start your adventure first! Use \`${PREFIX} start\` to begin.`);
+  }
   
   // Track command usage for all active quests
   if (player.quests && player.quests.length > 0) {
@@ -7846,8 +7889,119 @@ async function showLeaderboard(message, type = 'level') {
   return sendStyledEmbed(message, embed, 'leaderboard');
 }
 
-async function initiateTrade(message, targetUser, itemName) {
-  return message.reply('🚧 Trading system coming soon! Stay tuned for updates.');
+async function initiateTrade(message, targetUser, itemName = null, coins = 0, durationMinutes = 15) {
+  const initiatorId = message.author.id;
+  const targetId = typeof targetUser === 'string' ? targetUser : (targetUser?.id || targetUser);
+  
+  if (initiatorId === targetId) {
+    return message.reply('❌ You cannot trade with yourself!');
+  }
+  
+  const initiator = getPlayer(initiatorId);
+  const target = getPlayer(targetId);
+  
+  // Check if either player is already in a trade
+  for (const [tradeId, trade] of ACTIVE_TRADES.entries()) {
+    if ((trade.initiator === initiatorId || trade.target === targetId) && trade.status === 'pending') {
+      return message.reply('❌ One of you is already in an active trade!');
+    }
+  }
+  
+  // Get target user object
+  let targetUserObj;
+  try {
+    targetUserObj = await client.users.fetch(targetId);
+  } catch (e) {
+    return message.reply('❌ Could not find that user. Make sure they exist and are in a server with the bot.');
+  }
+  
+  const tradeId = `${initiatorId}_${targetId}_${Date.now()}`;
+  const expiresAt = Date.now() + (durationMinutes * 60000);
+  
+  const trade = {
+    initiator: initiatorId,
+    target: targetId,
+    initiatorOffer: { items: [], coins: 0 },
+    targetOffer: { items: [], coins: 0 },
+    requestedItem: itemName || null,
+    expiresAt,
+    messageId: null,
+    channelId: message.channel?.id,
+    status: 'pending'
+  };
+  
+  // If coins were specified, add them to initiator's offer
+  if (coins > 0) {
+    if (initiator.coins < coins) {
+      return message.reply(`❌ You don't have enough coins! You have ${initiator.coins} coins.`);
+    }
+    trade.initiatorOffer.coins = coins;
+  }
+  
+  ACTIVE_TRADES.set(tradeId, trade);
+  
+  const embed = new EmbedBuilder()
+    .setColor('#F39C12')
+    .setTitle('🔄 Trade Request')
+    .setDescription(`${message.author.username} wants to trade with ${targetUserObj.username}`)
+    .addFields(
+      { name: '⏰ Duration', value: `${durationMinutes} minutes`, inline: true },
+      { name: '📦 Requested Item', value: itemName ? `Looking for: ${itemName}` : 'No specific item requested', inline: false }
+    );
+  
+  if (coins > 0) {
+    embed.addFields({ name: '💰 Coins Offered', value: `${coins} coins`, inline: true });
+  }
+  
+  const components = [
+    new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+        .setCustomId(`trade|accept|${tradeId}`)
+        .setLabel('Accept Trade')
+        .setStyle(ButtonStyle.Success)
+        .setEmoji('✅'),
+      new ButtonBuilder()
+        .setCustomId(`trade|decline|${tradeId}`)
+        .setLabel('Decline')
+        .setStyle(ButtonStyle.Danger)
+        .setEmoji('❌'),
+      new ButtonBuilder()
+        .setCustomId(`trade|add_item|${tradeId}`)
+        .setLabel('Add Item')
+        .setStyle(ButtonStyle.Primary)
+        .setEmoji('📦'),
+      new ButtonBuilder()
+        .setCustomId(`trade|add_coins|${tradeId}`)
+        .setLabel('Add Coins')
+        .setStyle(ButtonStyle.Primary)
+        .setEmoji('💰')
+    )
+  ];
+  
+  const reply = await message.reply({ embeds: [embed], components });
+  trade.messageId = reply.id || (reply.message?.id);
+  ACTIVE_TRADES.set(tradeId, trade);
+  
+  // Set timeout to expire trade
+  setTimeout(() => {
+    const expiredTrade = ACTIVE_TRADES.get(tradeId);
+    if (expiredTrade && expiredTrade.status === 'pending') {
+      expiredTrade.status = 'expired';
+      ACTIVE_TRADES.delete(tradeId);
+      // Update message if possible
+      try {
+        message.channel.messages.fetch(expiredTrade.messageId).then(msg => {
+          const expiredEmbed = new EmbedBuilder()
+            .setColor('#95A5A6')
+            .setTitle('⏰ Trade Expired')
+            .setDescription('This trade request has expired.');
+          msg.edit({ embeds: [expiredEmbed], components: [] });
+        }).catch(() => {});
+      } catch (e) {}
+    }
+  }, durationMinutes * 60000);
+  
+  return reply;
 }
 // ==================== INFO COMMANDS ====================
 async function showHelp(message, category) {
@@ -9130,6 +9284,9 @@ console.log('📝 Registering event handlers...');
 client.once('ready', async () => {
   console.log(`✅ Hytale Bot is online as ${client.user.tag}!`);
   console.log(`📊 Serving ${client.guilds.cache.size} servers`);
+  
+  // Load all player data from disk on startup
+  loadAllPlayerData();
   
   // Set up player helper functions for dungeon system (after functions are defined)
   dungeonHandlers.setPlayerHelpers(addXp, addItemToInventory);
@@ -14862,6 +15019,12 @@ async function handleSlashCommand(interaction) {
   const player = getPlayer(interaction.user.id);
   const exploration = ensureExplorationState(player);
   
+  // Block RPG commands for players who haven't started
+  const isRPGCommand = !['setup', 'addchannel', 'start', 'help', 'info'].includes(interaction.commandName);
+  if (isRPGCommand && !player.tutorialStarted) {
+    return interaction.reply({ ephemeral: true, content: `❌ You need to start your adventure first! Use \`/start\` to begin.` });
+  }
+  
   // Track command usage for all active quests (skip for setup/admin commands)
   if (!isSetupCommand && player.quests && player.quests.length > 0) {
     const message = createMessageAdapterFromInteraction(interaction);
@@ -15115,9 +15278,26 @@ async function handleSlashCommand(interaction) {
     }
     case 'trade': {
       const user = interaction.options.getUser('user', true);
-      const item = interaction.options.getString('item', true);
+      const item = interaction.options.getString('item');
+      const coins = interaction.options.getInteger('coins') || 0;
+      const duration = parseInt(interaction.options.getString('duration') || '15');
       const message = createMessageAdapterFromInteraction(interaction);
-      return handleTradeCommand(message, [user.id, item]);
+      return initiateTrade(message, user.id, item, coins, duration);
+    }
+    case 'exploremenu': {
+      const player = getPlayer(interaction.user.id);
+      const exploration = ensureExplorationState(player);
+      const biome = getBiomeDefinition(exploration.currentBiome);
+      if (!biome) {
+        return interaction.reply({ ephemeral: true, content: '❌ Unable to determine your current biome. Try using `/explore` first.' });
+      }
+      const embed = buildExplorationStatusEmbed(player, biome, exploration);
+      const components = [
+        ...buildExplorationActionComponents(interaction.user.id, exploration, biome),
+        ...buildGatheringActionComponents(interaction.user.id, exploration),
+        ...buildDashboardComponents()
+      ];
+      return interaction.reply({ ephemeral: true, embeds: [embed], components });
     }
     case 'help': {
       const category = interaction.options.getString('category');
@@ -15438,13 +15618,24 @@ async function handleButtonInteraction(interaction) {
       }
       case 'dashboard': {
         if (action === 'explore') {
-          const embed = buildExplorationStatusEmbed(player, biome, exploration);
-          const components = [
-            ...buildExplorationActionComponents(interaction.user.id, exploration, biome),
-            ...buildGatheringActionComponents(interaction.user.id, exploration),
-            ...buildDashboardComponents()
-          ];
-          return interaction.reply({ ephemeral: true, embeds: [embed], components });
+          try {
+            const player = getPlayer(interaction.user.id);
+            const exploration = ensureExplorationState(player);
+            const biome = getBiomeDefinition(exploration.currentBiome);
+            if (!biome) {
+              return interaction.reply({ ephemeral: true, content: '❌ Unable to determine your current biome. Try using `/explore` first.' });
+            }
+            const embed = buildExplorationStatusEmbed(player, biome, exploration);
+            const components = [
+              ...buildExplorationActionComponents(interaction.user.id, exploration, biome),
+              ...buildGatheringActionComponents(interaction.user.id, exploration),
+              ...buildDashboardComponents()
+            ];
+            return interaction.reply({ ephemeral: true, embeds: [embed], components });
+          } catch (error) {
+            console.error('Error handling dashboard explore button:', error);
+            return interaction.reply({ ephemeral: true, content: '❌ An error occurred. Try using `/explore` instead.' });
+          }
         }
         if (action === 'travel') {
           const embed = buildTravelStatusEmbed(player, exploration, biome);
@@ -15633,6 +15824,125 @@ async function handleButtonInteraction(interaction) {
           const message = createMessageAdapterFromInteraction(interaction);
           return showTutorialStep(message, nextStep);
         }
+        break;
+      }
+      case 'trade': {
+        const tradeId = rest[0];
+        const trade = ACTIVE_TRADES.get(tradeId);
+        if (!trade) {
+          return interaction.reply({ ephemeral: true, content: '❌ Trade not found or has expired.' });
+        }
+        
+        const userId = interaction.user.id;
+        const isInitiator = trade.initiator === userId;
+        const isTarget = trade.target === userId;
+        
+        if (!isInitiator && !isTarget) {
+          return interaction.reply({ ephemeral: true, content: '❌ This trade is not for you.' });
+        }
+        
+        if (action === 'accept') {
+          if (!isTarget) {
+            return interaction.reply({ ephemeral: true, content: '❌ Only the trade recipient can accept.' });
+          }
+          if (trade.status !== 'pending') {
+            return interaction.reply({ ephemeral: true, content: '❌ This trade is no longer pending.' });
+          }
+          
+          // Execute the trade
+          const initiator = getPlayer(trade.initiator);
+          const target = getPlayer(trade.target);
+          
+          // Check if both players have the items/coins they're offering
+          // For now, we'll allow trades even if items aren't in inventory (they can be added later)
+          
+          // Transfer coins
+          if (trade.initiatorOffer.coins > 0) {
+            if (initiator.coins < trade.initiatorOffer.coins) {
+              return interaction.reply({ ephemeral: true, content: '❌ Initiator no longer has enough coins.' });
+            }
+            initiator.coins -= trade.initiatorOffer.coins;
+            target.coins += trade.initiatorOffer.coins;
+          }
+          if (trade.targetOffer.coins > 0) {
+            if (target.coins < trade.targetOffer.coins) {
+              return interaction.reply({ ephemeral: true, content: '❌ You no longer have enough coins.' });
+            }
+            target.coins -= trade.targetOffer.coins;
+            initiator.coins += trade.targetOffer.coins;
+          }
+          
+          // Transfer items
+          trade.initiatorOffer.items.forEach(({ itemId, quantity }) => {
+            if (initiator.inventory[itemId] >= quantity) {
+              initiator.inventory[itemId] = (initiator.inventory[itemId] || 0) - quantity;
+              target.inventory[itemId] = (target.inventory[itemId] || 0) + quantity;
+            }
+          });
+          trade.targetOffer.items.forEach(({ itemId, quantity }) => {
+            if (target.inventory[itemId] >= quantity) {
+              target.inventory[itemId] = (target.inventory[itemId] || 0) - quantity;
+              initiator.inventory[itemId] = (initiator.inventory[itemId] || 0) + quantity;
+            }
+          });
+          
+          trade.status = 'accepted';
+          ACTIVE_TRADES.delete(tradeId);
+          
+          savePlayerData(trade.initiator);
+          savePlayerData(trade.target);
+          
+          const successEmbed = new EmbedBuilder()
+            .setColor('#2ECC71')
+            .setTitle('✅ Trade Completed!')
+            .setDescription('The trade has been successfully completed.');
+          
+          try {
+            const channel = interaction.channel;
+            if (channel && trade.messageId) {
+              channel.messages.fetch(trade.messageId).then(msg => {
+                msg.edit({ embeds: [successEmbed], components: [] });
+              }).catch(() => {});
+            }
+          } catch (e) {}
+          
+          return interaction.reply({ ephemeral: true, content: '✅ Trade accepted and completed!' });
+        }
+        
+        if (action === 'decline') {
+          if (!isTarget) {
+            return interaction.reply({ ephemeral: true, content: '❌ Only the trade recipient can decline.' });
+          }
+          trade.status = 'declined';
+          ACTIVE_TRADES.delete(tradeId);
+          
+          const declinedEmbed = new EmbedBuilder()
+            .setColor('#E74C3C')
+            .setTitle('❌ Trade Declined')
+            .setDescription('This trade request has been declined.');
+          
+          try {
+            const channel = interaction.channel;
+            if (channel && trade.messageId) {
+              channel.messages.fetch(trade.messageId).then(msg => {
+                msg.edit({ embeds: [declinedEmbed], components: [] });
+              }).catch(() => {});
+            }
+          } catch (e) {}
+          
+          return interaction.reply({ ephemeral: true, content: '❌ Trade declined.' });
+        }
+        
+        if (action === 'add_item') {
+          // Show item selection menu - this would need a select menu
+          return interaction.reply({ ephemeral: true, content: '📦 Item selection coming soon! For now, you can add items by using the trade command with item names.' });
+        }
+        
+        if (action === 'add_coins') {
+          // This would need a modal or follow-up interaction
+          return interaction.reply({ ephemeral: true, content: '💰 Coin input coming soon! For now, specify coins when initiating the trade.' });
+        }
+        
         break;
       }
       default:
