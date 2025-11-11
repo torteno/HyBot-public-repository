@@ -2665,7 +2665,7 @@ const LEGACY_SLASH_COMMANDS = [
     },
     { type: 3, name: 'entry', description: 'Entry identifier', required: false, autocomplete: true }
   ] },
-  { name: 'reputation', description: 'Check faction reputation.', options: [{ type: 3, name: 'faction', description: 'Faction identifier', required: false }] },
+  { name: 'reputation', description: 'Check faction reputation.', options: [{ type: 3, name: 'faction', description: 'Faction identifier', required: false, autocomplete: true }] },
   { name: 'eventsub', description: 'Subscribe the current channel to world events.', options: [{ type: 3, name: 'event', description: 'Event identifier or "off"', required: false }] },
   { name: 'eventstatus', description: 'Show the active world event.' },
   { name: 'participate', description: 'Participate in the active event.', options: [{ type: 3, name: 'event', description: 'Event identifier', required: true }] },
@@ -2683,7 +2683,10 @@ const LEGACY_SLASH_COMMANDS = [
   { name: 'adventurechoice', description: 'Make a choice in Adventure Mode.', options: [{ type: 3, name: 'choice', description: 'Choice identifier', required: true }] },
   { name: 'setup', description: 'Set up the bot in this channel for RPG commands. (Admin only)' },
   { name: 'addchannel', description: 'Add this channel to RPG command channels. (Admin only)' },
-  { name: 'start', description: 'Start your adventure in Orbis! (For new players)' }
+  { name: 'start', description: 'Start your adventure in Orbis! (For new players)' },
+  { name: 'pets', description: 'View and manage your pets.', options: [{ type: 3, name: 'action', description: 'Action to perform', required: false, choices: [{ name: 'List', value: 'list' }, { name: 'Stable', value: 'stable' }] }] },
+  { name: 'activatepet', description: 'Activate a pet from your collection.', options: [{ type: 3, name: 'pet', description: 'Pet identifier', required: true }] },
+  { name: 'stablepet', description: 'Return your active pet to the stable.', options: [{ type: 3, name: 'pet', description: 'Pet identifier', required: false }] }
 ];
 
 SLASH_COMMAND_DEFINITIONS.push(...LEGACY_SLASH_COMMANDS);
@@ -5865,7 +5868,6 @@ async function showInventory(message, category = null) {
   }
   
   // Create buttons for category filtering
-  const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
   const categoryButtons = new ActionRowBuilder();
   
   Object.entries(categories).slice(0, 5).forEach(([key, label]) => {
@@ -7271,13 +7273,21 @@ async function showQuests(message) {
     embed.setDescription('You have no quests at the moment. Visit NPCs or the quest board to find new adventures!');
   }
   
-  // Add quest dropdown for detailed info
-  const allQuests = [...(player.quests || []).map(id => QUEST_MAP[id]).filter(Boolean), ...QUESTS.filter(q => getQuestAvailability(player, q).status === 'available')];
-  const questOptions = allQuests.slice(0, 25).map(quest => ({
-    label: `${quest.id}: ${quest.name}`.slice(0, 100),
-    value: String(quest.id),
-    description: quest.description?.slice(0, 100) || `Level ${quest.req?.level || 1} quest`
-  }));
+  // Add quest dropdown for detailed info - show ALL quests (active, available, completed)
+  const activeQuests = (player.quests || []).map(id => QUEST_MAP[id]).filter(Boolean);
+  const availableQuests = QUESTS.filter(q => getQuestAvailability(player, q).status === 'available');
+  const completedQuests = (player.completedQuests || []).map(id => QUEST_MAP[id]).filter(Boolean);
+  const allQuests = [...new Map([...activeQuests, ...availableQuests, ...completedQuests].map(q => [q.id, q])).values()];
+  const questOptions = allQuests.slice(0, 25).map(quest => {
+    const isActive = player.quests?.includes(quest.id);
+    const isCompleted = player.completedQuests?.includes(quest.id);
+    const status = isActive ? '🟢 Active' : isCompleted ? '✅ Completed' : '⚪ Available';
+    return {
+      label: `${quest.id}: ${quest.name}`.slice(0, 100),
+      value: String(quest.id),
+      description: `${status} - ${quest.description?.slice(0, 80) || `Level ${quest.req?.level || 1} quest`}`
+    };
+  });
   
   const components = [];
   if (questOptions.length > 0) {
@@ -8402,7 +8412,6 @@ async function equipTitle(message, titleId) {
 }
 async function showCodex(message, category, entryIdentifier) {
   if (!category) {
-    const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
     const embed = new EmbedBuilder()
       .setColor('#3498DB')
       .setTitle('📘 Orbis Codex')
@@ -14551,6 +14560,18 @@ function handleSlashAutocomplete(interaction) {
         }
         break;
       }
+      case 'reputation': {
+        if (focused.name !== 'faction') break;
+        const options = FACTIONS.map(faction => ({
+          name: faction.name || faction.id,
+          value: faction.id
+        })).filter(choice => 
+          !lowerFocused || 
+          choice.name.toLowerCase().includes(lowerFocused) || 
+          choice.value.toLowerCase().includes(lowerFocused)
+        );
+        return respond(options.slice(0, 25));
+      }
       case 'codex': {
         if (focused.name !== 'entry') break;
         const categoryRaw = interaction.options.getString('category');
@@ -14962,6 +14983,21 @@ async function handleSlashCommand(interaction) {
       const faction = interaction.options.getString('faction');
       const message = createMessageAdapterFromInteraction(interaction);
       return handleReputationCommand(message, faction ? [faction] : []);
+    }
+    case 'pets': {
+      const action = interaction.options.getString('action') || 'list';
+      const message = createMessageAdapterFromInteraction(interaction);
+      return showPets(message, action);
+    }
+    case 'activatepet': {
+      const petId = interaction.options.getString('pet', true);
+      const message = createMessageAdapterFromInteraction(interaction);
+      return activatePet(message, petId);
+    }
+    case 'stablepet': {
+      const petId = interaction.options.getString('pet');
+      const message = createMessageAdapterFromInteraction(interaction);
+      return stablePet(message, petId);
     }
     case 'eventsub': {
       const eventId = interaction.options.getString('event');
