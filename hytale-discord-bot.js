@@ -4433,9 +4433,10 @@ function refreshQuestProgress(player, quest) {
   return progress;
 }
 function updateQuestProgress(player, event) {
-  if (!player.questProgress || !player.quests || player.quests.length === 0) return { readyQuests: [], completedObjectives: [] };
+  if (!player.questProgress || !player.quests || player.quests.length === 0) return { readyQuests: [], completedObjectives: [], updated: false };
   const readyQuests = [];
   const completedObjectives = [];
+  let updated = false;
   const count = event.count || 1;
   for (const questId of player.quests) {
     const quest = QUEST_MAP[questId];
