@@ -4521,7 +4521,7 @@ function updateQuestProgress(player, event) {
     if (!quest) continue;
     const progress = player.questProgress[questId];
     if (!progress || progress.completed) continue;
-    let updated = false;
+    let questUpdated = false;
     quest.objectives.forEach((objective, index) => {
       const current = progress.objectives[index] || 0;
       if (current >= objective.quantity) return;
@@ -4532,7 +4532,7 @@ function updateQuestProgress(player, event) {
           if (event.type === 'defeat' && objective.enemy && objective.enemy === event.enemyId) {
             progress.objectives[index] = Math.min(objective.quantity, current + count);
             wasUpdated = progress.objectives[index] !== oldProgress;
-            updated = wasUpdated || updated;
+            questUpdated = wasUpdated || questUpdated;
             if (wasUpdated && progress.objectives[index] >= objective.quantity) {
               completedObjectives.push({ quest, objective, index });
             }
@@ -4543,7 +4543,7 @@ function updateQuestProgress(player, event) {
           if (event.type === 'gather' && objective.item && objective.item === event.itemId) {
             progress.objectives[index] = Math.min(objective.quantity, current + count);
             wasUpdated = progress.objectives[index] !== oldProgress;
-            updated = wasUpdated || updated;
+            questUpdated = wasUpdated || questUpdated;
             if (wasUpdated && progress.objectives[index] >= objective.quantity) {
               completedObjectives.push({ quest, objective, index });
             }
@@ -4554,7 +4554,7 @@ function updateQuestProgress(player, event) {
           if (event.type === 'craft' && objective.item && objective.item === event.itemId) {
             progress.objectives[index] = Math.min(objective.quantity, current + count);
             wasUpdated = progress.objectives[index] !== oldProgress;
-            updated = wasUpdated || updated;
+            questUpdated = wasUpdated || questUpdated;
             if (wasUpdated && progress.objectives[index] >= objective.quantity) {
               completedObjectives.push({ quest, objective, index });
             }
@@ -4565,7 +4565,7 @@ function updateQuestProgress(player, event) {
           if (event.type === 'dungeon' && objective.dungeon && objective.dungeon === event.dungeonId) {
             progress.objectives[index] = Math.min(objective.quantity, current + count);
             wasUpdated = progress.objectives[index] !== oldProgress;
-            updated = wasUpdated || updated;
+            questUpdated = wasUpdated || questUpdated;
             if (wasUpdated && progress.objectives[index] >= objective.quantity) {
               completedObjectives.push({ quest, objective, index });
             }
@@ -4576,7 +4576,7 @@ function updateQuestProgress(player, event) {
           if (event.type === 'codex' && objective.category && event.category === objective.category && event.entry === objective.entry) {
             progress.objectives[index] = Math.min(objective.quantity, current + count);
             wasUpdated = progress.objectives[index] !== oldProgress;
-            updated = wasUpdated || updated;
+            questUpdated = wasUpdated || questUpdated;
             if (wasUpdated && progress.objectives[index] >= objective.quantity) {
               completedObjectives.push({ quest, objective, index });
             }
@@ -4587,7 +4587,7 @@ function updateQuestProgress(player, event) {
           if (event.type === 'faction' && objective.faction && objective.faction === event.faction) {
             progress.objectives[index] = Math.min(objective.quantity, current + count);
             wasUpdated = progress.objectives[index] !== oldProgress;
-            updated = wasUpdated || updated;
+            questUpdated = wasUpdated || questUpdated;
             if (wasUpdated && progress.objectives[index] >= objective.quantity) {
               completedObjectives.push({ quest, objective, index });
             }
@@ -4601,7 +4601,7 @@ function updateQuestProgress(player, event) {
             if (matchesBrew && matchesAction) {
               progress.objectives[index] = Math.min(objective.quantity, current + count);
               wasUpdated = progress.objectives[index] !== oldProgress;
-              updated = wasUpdated || updated;
+              questUpdated = wasUpdated || questUpdated;
               if (wasUpdated && progress.objectives[index] >= objective.quantity) {
                 completedObjectives.push({ quest, objective, index });
               }
@@ -4615,7 +4615,7 @@ function updateQuestProgress(player, event) {
             if (matchesResult) {
               progress.objectives[index] = Math.min(objective.quantity, current + count);
               wasUpdated = progress.objectives[index] !== oldProgress;
-              updated = wasUpdated || updated;
+              questUpdated = wasUpdated || questUpdated;
               if (wasUpdated && progress.objectives[index] >= objective.quantity) {
                 completedObjectives.push({ quest, objective, index });
               }
@@ -4630,14 +4630,15 @@ function updateQuestProgress(player, event) {
             const eventCommand = (event.command || '').toLowerCase();
             // Also check for aliases (e.g., 'p' for 'profile')
             const commandMatches = targetCommand === eventCommand || 
-              (targetCommand === 'profile' && eventCommand === 'p') ||
-              (targetCommand === 'explore' && (eventCommand === 'explore' || eventCommand === 'exp')) ||
-              (targetCommand === 'shop' && (eventCommand === 'shop' || eventCommand === 'store'));
+              (targetCommand === 'profile' && (eventCommand === 'p' || eventCommand === 'profile')) ||
+              (targetCommand === 'explore' && (eventCommand === 'explore' || eventCommand === 'exp' || eventCommand === 'exploremenu')) ||
+              (targetCommand === 'shop' && (eventCommand === 'shop' || eventCommand === 'store')) ||
+              (targetCommand === 'travel' && (eventCommand === 'travel' || eventCommand === 't'));
             
             if (commandMatches) {
               progress.objectives[index] = Math.min(objective.quantity, current + count);
               wasUpdated = progress.objectives[index] !== oldProgress;
-              updated = wasUpdated || updated;
+              questUpdated = wasUpdated || questUpdated;
               if (wasUpdated && progress.objectives[index] >= objective.quantity) {
                 completedObjectives.push({ quest, objective, index });
               }
@@ -4649,7 +4650,7 @@ function updateQuestProgress(player, event) {
           if (event.type === 'explore' && objective.target && objective.target === event.biomeId) {
             progress.objectives[index] = Math.min(objective.quantity, current + count);
             wasUpdated = progress.objectives[index] !== oldProgress;
-            updated = wasUpdated || updated;
+            questUpdated = wasUpdated || questUpdated;
             if (wasUpdated && progress.objectives[index] >= objective.quantity) {
               completedObjectives.push({ quest, objective, index });
             }
@@ -4660,7 +4661,8 @@ function updateQuestProgress(player, event) {
           break;
       }
     });
-    if (updated) {
+    if (questUpdated) {
+      updated = true; // Mark overall as updated
       const complete = quest.objectives.every((obj, idx) => (progress.objectives[idx] || 0) >= obj.quantity);
       if (complete && !progress.ready) {
         progress.ready = true;
@@ -5347,7 +5349,7 @@ async function showTutorialStep(message, step) {
       break;
     }
     case 1: {
-      // Tutorial quest introduction
+      // Tutorial quest introduction - brief
       const tutorialQuest = QUESTS.find(q => q.id === 0);
       if (tutorialQuest && !player.quests.includes(0)) {
         initializeQuestProgress(player, tutorialQuest);
@@ -5357,28 +5359,70 @@ async function showTutorialStep(message, step) {
       
       embed = new EmbedBuilder()
         .setColor('#9B59B6')
-        .setTitle('📜 Tutorial Quest Started!')
+        .setTitle('📜 Your First Quest!')
         .setDescription(
           `"Now, let me explain your first quest. This will teach you the fundamentals of Orbis!"\n\n` +
           `**${tutorialQuest?.name || 'Tutorial Quest'}**\n` +
           `${tutorialQuest?.description || 'Learn the basics of Orbis'}`
-        )
-        .addFields(
-          { name: 'First Objective', value: tutorialQuest?.objectives[0]?.description || 'Check your profile', inline: false }
         );
       
       components = [
         new ActionRowBuilder().addComponents(
           new ButtonBuilder()
             .setCustomId('tutorial|next|2')
-            .setLabel('Continue')
+            .setLabel('View Quest Details')
             .setStyle(ButtonStyle.Primary)
-            .setEmoji('➡️')
+            .setEmoji('📋')
         )
       ];
       break;
     }
     case 2: {
+      // Show detailed quest overview with all objectives
+      const tutorialQuest = QUESTS.find(q => q.id === 0);
+      if (!tutorialQuest) {
+        return showTutorialStep(message, 3); // Skip to tutorial if quest not found
+      }
+      
+      const objectiveLines = tutorialQuest.objectives.map((obj, idx) => {
+        const progress = player.questProgress?.[0]?.objectives?.[idx] || 0;
+        const completed = progress >= obj.quantity;
+        const status = completed ? '✅' : '⏳';
+        return `${status} **${idx + 1}.** ${obj.description} (${progress}/${obj.quantity})`;
+      });
+      
+      const rewardLines = [];
+      if (tutorialQuest.reward.xp) rewardLines.push(`• ${tutorialQuest.reward.xp} XP`);
+      if (tutorialQuest.reward.coins) rewardLines.push(`• ${tutorialQuest.reward.coins} coins`);
+      if (tutorialQuest.reward.items) {
+        tutorialQuest.reward.items.forEach(item => {
+          const itemData = ITEMS[item.item?.toLowerCase()];
+          rewardLines.push(`• ${itemData?.emoji || '📦'} ${itemData?.name || item.item} x${item.quantity || 1}`);
+        });
+      }
+      
+      embed = new EmbedBuilder()
+        .setColor('#9B59B6')
+        .setTitle(`📜 ${tutorialQuest.name} - Quest Details`)
+        .setDescription(tutorialQuest.description)
+        .addFields(
+          { name: '📋 Objectives', value: objectiveLines.join('\n') || 'No objectives', inline: false },
+          { name: '🎁 Rewards', value: rewardLines.join('\n') || 'No rewards', inline: false }
+        )
+        .setFooter({ text: 'Complete all objectives to finish this quest!' });
+      
+      components = [
+        new ActionRowBuilder().addComponents(
+          new ButtonBuilder()
+            .setCustomId('tutorial|next|3')
+            .setLabel('Start Tutorial Guide')
+            .setStyle(ButtonStyle.Success)
+            .setEmoji('🎓')
+        )
+      ];
+      break;
+    }
+    case 3: {
       // Show tutorial overview
       embed = new EmbedBuilder()
         .setColor('#3498DB')
