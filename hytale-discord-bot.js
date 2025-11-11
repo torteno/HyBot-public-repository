@@ -52,6 +52,14 @@ const fs = require('fs');
 const path = require('path');
 console.log('✅ Dependencies loaded');
 
+console.log('📦 Loading database module...');
+const db = require('./database');
+console.log('✅ Database module loaded');
+
+// Initialize Supabase on startup
+console.log('🔌 Initializing Supabase connection...');
+db.initSupabase();
+
 console.log('📦 Loading dungeon modules...');
 const dungeonHandlers = require('./dungeons/handlers');
 const dungeonRun = require('./dungeons/run');
@@ -87,52 +95,561 @@ if (!fs.existsSync(PLAYER_DATA_DIR)) {
 
 // Channel restrictions for RPG commands
 const RPG_CHANNELS = new Map(); // guildId -> Set of channelIds
+const GUILD_SETUP_STATUS = new Map(); // guildId -> { setupCompleted: boolean, setupDate: timestamp }
 const ADMIN_USER_ID = 'tortenotorteno'; // Hardcoded admin user
 const RPG_CHANNELS_FILE = path.join(__dirname, 'rpg_channels.json');
 
-// Save RPG channel restrictions to disk
-function saveRPGChannels() {
+// Save RPG channel restrictions and guild setup status (with Supabase support)
+async function saveRPGChannels() {
   try {
-    const data = {};
+    // Prepare guild data for each guild
+    const guildDataMap = new Map();
     RPG_CHANNELS.forEach((channels, guildId) => {
-      data[guildId] = Array.from(channels);
+      const setupStatus = GUILD_SETUP_STATUS.get(guildId) || { setupCompleted: channels.size > 0, setupDate: null };
+      guildDataMap.set(guildId, {
+        allowedChannels: Array.from(channels),
+        setupCompleted: setupStatus.setupCompleted || channels.size > 0,
+        setupDate: setupStatus.setupDate || (channels.size > 0 ? new Date().toISOString() : null)
+      });
     });
-    fs.writeFileSync(RPG_CHANNELS_FILE, JSON.stringify(data, null, 2));
+    
+    // Try Supabase first if enabled
+    if (db.isSupabaseEnabled()) {
+      const savePromises = [];
+      guildDataMap.forEach((guildData, guildId) => {
+        savePromises.push(db.saveGuildData(guildId, guildData));
+      });
+      const results = await Promise.allSettled(savePromises);
+      const successCount = results.filter(r => r.status === 'fulfilled' && r.value.success).length;
+      if (successCount > 0) {
+        console.log(`✅ Saved ${successCount} guild configurations to Supabase`);
+        // Also save to file as backup
+      }
+    }
+    
+    // Fallback/S backup to file system
+    const fileData = {};
+    guildDataMap.forEach((guildData, guildId) => {
+      fileData[guildId] = guildData.allowedChannels;
+    });
+    fs.writeFileSync(RPG_CHANNELS_FILE, JSON.stringify(fileData, null, 2), 'utf8');
   } catch (error) {
-    console.error('Error saving RPG channels:', error);
+    console.error('❌ Error saving RPG channels:', error);
   }
 }
 
-// Load RPG channel restrictions from disk
-function loadRPGChannels() {
+// Load RPG channel restrictions and guild setup status (with Supabase support)
+async function loadRPGChannels() {
   try {
+    // Try Supabase first if enabled
+    if (db.isSupabaseEnabled()) {
+      const guildDataMap = await db.loadAllGuildData();
+      if (guildDataMap && guildDataMap.size > 0) {
+        guildDataMap.forEach((guildData, guildId) => {
+          if (guildData.allowedChannels && Array.isArray(guildData.allowedChannels)) {
+            RPG_CHANNELS.set(guildId, new Set(guildData.allowedChannels));
+          }
+          if (guildData.setupCompleted !== undefined) {
+            GUILD_SETUP_STATUS.set(guildId, {
+              setupCompleted: guildData.setupCompleted,
+              setupDate: guildData.setupDate || null
+            });
+          }
+        });
+        console.log(`✅ Loaded ${RPG_CHANNELS.size} guild configurations from Supabase`);
+        return;
+      }
+      console.log('⚠️  No guild data found in Supabase, checking file system...');
+    }
+    
+    // Fallback to file system
     if (fs.existsSync(RPG_CHANNELS_FILE)) {
       const data = JSON.parse(fs.readFileSync(RPG_CHANNELS_FILE, 'utf8'));
       Object.entries(data).forEach(([guildId, channels]) => {
-        RPG_CHANNELS.set(guildId, new Set(channels));
+        if (Array.isArray(channels)) {
+          RPG_CHANNELS.set(guildId, new Set(channels));
+          // Mark as setup if channels exist
+          if (channels.length > 0) {
+            GUILD_SETUP_STATUS.set(guildId, {
+              setupCompleted: true,
+              setupDate: null // Unknown date from file
+            });
+          }
+        }
       });
-      console.log(`✅ Loaded RPG channel restrictions for ${RPG_CHANNELS.size} guild(s)`);
+      console.log(`✅ Loaded RPG channel restrictions for ${RPG_CHANNELS.size} guild(s) from file`);
     }
   } catch (error) {
-    console.error('Error loading RPG channels:', error);
+    console.error('❌ Error loading RPG channels:', error);
   }
 }
 
-// Save player data to disk
-function savePlayerData(userId) {
+// Save player data to Supabase (with file system fallback)
+async function savePlayerData(userId) {
   try {
     const player = playerData.get(userId);
-    if (!player) return;
+    if (!player) {
+      console.warn(`⚠️  Attempted to save player data for ${userId}, but player not found in memory`);
+      return;
+    }
+    
+    // Ensure all computed fields are up-to-date before saving
+    // Recalculate base bonuses if bases exist
+    if (player.bases && Object.keys(player.bases).length > 0 && typeof recalcPlayerBaseBonuses === 'function') {
+      recalcPlayerBaseBonuses(player);
+    }
+    
+    // Ensure gathering gear is initialized
+    if (typeof ensureGatheringGear === 'function') {
+      ensureGatheringGear(player);
+    }
+    
+    // Ensure exploration state is properly initialized
+    if (typeof ensureExplorationState === 'function') {
+      ensureExplorationState(player);
+    }
+    
+    // Create a deep clone of the player data to ensure we save the complete, current state
+    // This prevents any issues with references or partially updated objects
+    // Using JSON.parse(JSON.stringify()) ensures we get a complete deep copy of all data
+    let playerDataToSave;
+    try {
+      playerDataToSave = JSON.parse(JSON.stringify(player));
+    } catch (cloneError) {
+      console.error(`❌ Error cloning player data for ${userId}:`, cloneError);
+      // Fallback: try to save what we have, even if cloning failed
+      playerDataToSave = player;
+    }
+    
+    // Validate that essential fields exist (defensive check)
+    // This is a comprehensive list of ALL fields that should be saved
+    const essentialFields = [
+      'level', 'xp', 'hp', 'maxHp', 'mana', 'maxMana', 'coins',
+      'inventory', 'equipped', 'quests', 'completedQuests', 'questProgress',
+      'achievements', 'attributes', 'stats', 'codex', 'reputation',
+      'activeBuffs', 'contracts', 'cosmetics', 'pets', 'spells',
+      'skillTree', 'adventureMode', 'dailyChallenges', 'pvp',
+      'worldBosses', 'worldEvents', 'exploration', 'bases', 'settlements',
+      'travelHistory', 'baseBonuses', 'gatheringGear', 'settings', 'tutorials',
+      'tutorialStarted'
+    ];
+    
+    // Ensure bases have all required nested structures
+    if (playerDataToSave.bases && typeof playerDataToSave.bases === 'object') {
+      Object.values(playerDataToSave.bases).forEach(base => {
+        if (base && typeof base === 'object') {
+          // Ensure base has all required fields
+          if (!base.biomeId) base.biomeId = Object.keys(playerDataToSave.bases).find(k => playerDataToSave.bases[k] === base) || 'unknown';
+          if (base.rank === undefined) base.rank = 1;
+          if (!base.upgrades || typeof base.upgrades !== 'object') base.upgrades = {};
+          if (!base.storage || typeof base.storage !== 'object') base.storage = {};
+          if (base.capacity === undefined) base.capacity = 0;
+          if (!base.lastProcessed) base.lastProcessed = Date.now();
+          if (!base.name) base.name = `${base.biomeId?.replace(/_/g, ' ') || 'Unknown'} Outpost`;
+          if (!base.bonuses || typeof base.bonuses !== 'object') base.bonuses = {};
+          if (!Array.isArray(base.logs)) base.logs = [];
+          if (!base.progress || typeof base.progress !== 'object') base.progress = {};
+          if (base.unreadLogs === undefined) base.unreadLogs = 0;
+        }
+      });
+    }
+    
+    // Ensure settlements have all required nested structures
+    if (playerDataToSave.settlements && typeof playerDataToSave.settlements === 'object') {
+      Object.values(playerDataToSave.settlements).forEach(settlement => {
+        if (settlement && typeof settlement === 'object') {
+          // Ensure settlement has all required fields
+          if (!settlement.id) settlement.id = Object.keys(playerDataToSave.settlements).find(k => playerDataToSave.settlements[k] === settlement) || 'unknown';
+          if (!settlement.name) settlement.name = settlement.id;
+          if (!settlement.faction) settlement.faction = 'unknown';
+          if (!settlement.templateId) settlement.templateId = settlement.id;
+          if (!settlement.buildings || typeof settlement.buildings !== 'object') settlement.buildings = {};
+          if (!Array.isArray(settlement.availableBuildings)) settlement.availableBuildings = [];
+          if (settlement.population === undefined) settlement.population = 10;
+          if (settlement.happiness === undefined) settlement.happiness = 60;
+          if (settlement.wealth === undefined) settlement.wealth = 100;
+          if (settlement.garrison === undefined) settlement.garrison = 40;
+          if (settlement.prestige === undefined) settlement.prestige = 0;
+          if (!settlement.prestigeTier) settlement.prestigeTier = 'nascent';
+          if (!Array.isArray(settlement.traits)) settlement.traits = [];
+          if (!Array.isArray(settlement.decisions)) settlement.decisions = [];
+          if (!settlement.nextDecisionAt) settlement.nextDecisionAt = Date.now() + 60 * 60 * 1000;
+          if (!Array.isArray(settlement.expeditions)) settlement.expeditions = [];
+          if (!settlement.bonuses || typeof settlement.bonuses !== 'object') settlement.bonuses = {};
+          if (!settlement.production || typeof settlement.production !== 'object') settlement.production = {};
+          if (!settlement.stockpile || typeof settlement.stockpile !== 'object') settlement.stockpile = {};
+          if (!settlement.lastUpdated) settlement.lastUpdated = Date.now();
+          // Validate expedition structure within settlements
+          settlement.expeditions.forEach(expedition => {
+            if (expedition && typeof expedition === 'object') {
+              if (!expedition.id) expedition.id = `${expedition.type || 'expedition'}_${Date.now()}`;
+              if (!expedition.type) expedition.type = 'unknown';
+              if (expedition.villagers === undefined) expedition.villagers = 0;
+              if (!expedition.status) expedition.status = 'pending';
+              if (!expedition.startedAt) expedition.startedAt = Date.now();
+              if (!expedition.endsAt) expedition.endsAt = Date.now();
+              if (expedition.success === undefined && expedition.status === 'completed') expedition.success = false;
+              if (expedition.rewards === undefined && expedition.status === 'completed') expedition.rewards = null;
+              if (expedition.returning === undefined && expedition.status === 'completed') expedition.returning = 0;
+            }
+          });
+        }
+      });
+    }
+    
+    // Ensure contracts structure is complete
+    if (!playerDataToSave.contracts || typeof playerDataToSave.contracts !== 'object') {
+      playerDataToSave.contracts = {};
+    } else {
+      // Validate each contract
+      Object.values(playerDataToSave.contracts).forEach(contract => {
+        if (contract && typeof contract === 'object') {
+          if (contract.progress === undefined) contract.progress = 0;
+          if (contract.quantity === undefined) contract.quantity = 1;
+          if (contract.completed === undefined) contract.completed = false;
+        }
+      });
+    }
+    
+    // Ensure activeBuffs structure is complete (object with buff IDs as keys)
+    if (!playerDataToSave.activeBuffs || typeof playerDataToSave.activeBuffs !== 'object') {
+      playerDataToSave.activeBuffs = {};
+    }
+    
+    // Ensure codex has all categories
+    if (!playerDataToSave.codex || typeof playerDataToSave.codex !== 'object') {
+      playerDataToSave.codex = {
+        factions: [],
+        biomes: [],
+        enemies: [],
+        items: [],
+        dungeons: [],
+        structures: [],
+        settlements: []
+      };
+    } else {
+      const codexDefaults = {
+        factions: [],
+        biomes: [],
+        enemies: [],
+        items: [],
+        dungeons: [],
+        structures: [],
+        settlements: []
+      };
+      Object.keys(codexDefaults).forEach(key => {
+        if (!Array.isArray(playerDataToSave.codex[key])) {
+          playerDataToSave.codex[key] = [];
+        }
+      });
+    }
+    
+    // Ensure reputation structure exists
+    if (!playerDataToSave.reputation || typeof playerDataToSave.reputation !== 'object') {
+      playerDataToSave.reputation = {};
+    }
+    
+    // Ensure adventureMode structure is complete
+    if (!playerDataToSave.adventureMode || typeof playerDataToSave.adventureMode !== 'object') {
+      playerDataToSave.adventureMode = {
+        currentChapter: null,
+        currentSection: null,
+        progress: {},
+        choices: []
+      };
+    } else {
+      if (playerDataToSave.adventureMode.currentChapter === undefined) playerDataToSave.adventureMode.currentChapter = null;
+      if (playerDataToSave.adventureMode.currentSection === undefined) playerDataToSave.adventureMode.currentSection = null;
+      if (!playerDataToSave.adventureMode.progress || typeof playerDataToSave.adventureMode.progress !== 'object') {
+        playerDataToSave.adventureMode.progress = {};
+      }
+      if (!Array.isArray(playerDataToSave.adventureMode.choices)) {
+        playerDataToSave.adventureMode.choices = [];
+      }
+    }
+    
+    // Ensure dailyChallenges structure is complete
+    if (!playerDataToSave.dailyChallenges || typeof playerDataToSave.dailyChallenges !== 'object') {
+      playerDataToSave.dailyChallenges = {
+        active: [],
+        completed: [],
+        streak: 0,
+        lastReset: null
+      };
+    } else {
+      if (!Array.isArray(playerDataToSave.dailyChallenges.active)) playerDataToSave.dailyChallenges.active = [];
+      if (!Array.isArray(playerDataToSave.dailyChallenges.completed)) playerDataToSave.dailyChallenges.completed = [];
+      if (playerDataToSave.dailyChallenges.streak === undefined) playerDataToSave.dailyChallenges.streak = 0;
+      if (playerDataToSave.dailyChallenges.lastReset === undefined) playerDataToSave.dailyChallenges.lastReset = null;
+    }
+    
+    // Ensure pvp structure is complete
+    if (!playerDataToSave.pvp || typeof playerDataToSave.pvp !== 'object') {
+      playerDataToSave.pvp = {
+        rating: 1000,
+        wins: 0,
+        losses: 0,
+        streak: 0,
+        rank: "unranked"
+      };
+    } else {
+      if (playerDataToSave.pvp.rating === undefined) playerDataToSave.pvp.rating = 1000;
+      if (playerDataToSave.pvp.wins === undefined) playerDataToSave.pvp.wins = 0;
+      if (playerDataToSave.pvp.losses === undefined) playerDataToSave.pvp.losses = 0;
+      if (playerDataToSave.pvp.streak === undefined) playerDataToSave.pvp.streak = 0;
+      if (!playerDataToSave.pvp.rank) playerDataToSave.pvp.rank = "unranked";
+    }
+    
+    // Ensure worldBosses structure is complete
+    if (!playerDataToSave.worldBosses || typeof playerDataToSave.worldBosses !== 'object') {
+      playerDataToSave.worldBosses = {
+        participated: [],
+        lastDamage: {},
+        rewards: []
+      };
+    } else {
+      if (!Array.isArray(playerDataToSave.worldBosses.participated)) playerDataToSave.worldBosses.participated = [];
+      if (!playerDataToSave.worldBosses.lastDamage || typeof playerDataToSave.worldBosses.lastDamage !== 'object') {
+        playerDataToSave.worldBosses.lastDamage = {};
+      }
+      if (!Array.isArray(playerDataToSave.worldBosses.rewards)) playerDataToSave.worldBosses.rewards = [];
+    }
+    
+    // Ensure worldEvents structure is complete
+    if (!playerDataToSave.worldEvents || typeof playerDataToSave.worldEvents !== 'object') {
+      playerDataToSave.worldEvents = {
+        active: [],
+        participation: {},
+        rewards: []
+      };
+    } else {
+      if (!Array.isArray(playerDataToSave.worldEvents.active)) playerDataToSave.worldEvents.active = [];
+      if (!playerDataToSave.worldEvents.participation || typeof playerDataToSave.worldEvents.participation !== 'object') {
+        playerDataToSave.worldEvents.participation = {};
+      }
+      if (!Array.isArray(playerDataToSave.worldEvents.rewards)) playerDataToSave.worldEvents.rewards = [];
+    }
+    
+    // Ensure pets structure is complete
+    if (!playerDataToSave.pets || typeof playerDataToSave.pets !== 'object') {
+      playerDataToSave.pets = {
+        owned: [],
+        active: null,
+        stabled: [],
+        taskQueue: []
+      };
+    } else {
+      if (!Array.isArray(playerDataToSave.pets.owned)) playerDataToSave.pets.owned = [];
+      if (playerDataToSave.pets.active === undefined) playerDataToSave.pets.active = null;
+      if (!Array.isArray(playerDataToSave.pets.stabled)) playerDataToSave.pets.stabled = [];
+      if (!Array.isArray(playerDataToSave.pets.taskQueue)) playerDataToSave.pets.taskQueue = [];
+    }
+    
+    // Ensure spells structure is complete
+    if (!playerDataToSave.spells || typeof playerDataToSave.spells !== 'object') {
+      playerDataToSave.spells = {
+        known: [],
+        equipped: [],
+        cooldowns: {}
+      };
+    } else {
+      if (!Array.isArray(playerDataToSave.spells.known)) playerDataToSave.spells.known = [];
+      if (!Array.isArray(playerDataToSave.spells.equipped)) playerDataToSave.spells.equipped = [];
+      if (!playerDataToSave.spells.cooldowns || typeof playerDataToSave.spells.cooldowns !== 'object') {
+        playerDataToSave.spells.cooldowns = {};
+      }
+    }
+    
+    // Ensure skillTree structure is complete
+    if (!playerDataToSave.skillTree || typeof playerDataToSave.skillTree !== 'object') {
+      playerDataToSave.skillTree = {
+        class: null,
+        branches: {},
+        totalPoints: 0
+      };
+    } else {
+      if (playerDataToSave.skillTree.class === undefined) playerDataToSave.skillTree.class = null;
+      if (!playerDataToSave.skillTree.branches || typeof playerDataToSave.skillTree.branches !== 'object') {
+        playerDataToSave.skillTree.branches = {};
+      }
+      if (playerDataToSave.skillTree.totalPoints === undefined) playerDataToSave.skillTree.totalPoints = 0;
+    }
+    
+    // Ensure achievements structure is complete
+    if (!playerDataToSave.achievements || typeof playerDataToSave.achievements !== 'object') {
+      playerDataToSave.achievements = {
+        claimed: [],
+        notified: []
+      };
+    } else {
+      if (!Array.isArray(playerDataToSave.achievements.claimed)) playerDataToSave.achievements.claimed = [];
+      if (!Array.isArray(playerDataToSave.achievements.notified)) playerDataToSave.achievements.notified = [];
+    }
+    
+    // Ensure cosmetics structure is complete
+    if (!playerDataToSave.cosmetics || typeof playerDataToSave.cosmetics !== 'object') {
+      playerDataToSave.cosmetics = {
+        titles: { owned: [], equipped: null }
+      };
+    } else {
+      if (!playerDataToSave.cosmetics.titles || typeof playerDataToSave.cosmetics.titles !== 'object') {
+        playerDataToSave.cosmetics.titles = { owned: [], equipped: null };
+      } else {
+        if (!Array.isArray(playerDataToSave.cosmetics.titles.owned)) {
+          playerDataToSave.cosmetics.titles.owned = [];
+        }
+        if (playerDataToSave.cosmetics.titles.equipped === undefined) {
+          playerDataToSave.cosmetics.titles.equipped = null;
+        }
+      }
+    }
+    
+    // Ensure travelHistory is an array
+    if (!Array.isArray(playerDataToSave.travelHistory)) {
+      playerDataToSave.travelHistory = [];
+    }
+    
+    // Ensure questProgress is an object
+    if (!playerDataToSave.questProgress || typeof playerDataToSave.questProgress !== 'object') {
+      playerDataToSave.questProgress = {};
+    }
+    
+    // Ensure quests and completedQuests are arrays
+    if (!Array.isArray(playerDataToSave.quests)) {
+      playerDataToSave.quests = [];
+    }
+    if (!Array.isArray(playerDataToSave.completedQuests)) {
+      playerDataToSave.completedQuests = [];
+    }
+    
+    // Ensure attributes structure is complete
+    if (!playerDataToSave.attributes || typeof playerDataToSave.attributes !== 'object') {
+      playerDataToSave.attributes = {
+        power: 10,
+        agility: 8,
+        resilience: 8,
+        focus: 6
+      };
+    } else {
+      if (playerDataToSave.attributes.power === undefined) playerDataToSave.attributes.power = 10;
+      if (playerDataToSave.attributes.agility === undefined) playerDataToSave.attributes.agility = 8;
+      if (playerDataToSave.attributes.resilience === undefined) playerDataToSave.attributes.resilience = 8;
+      if (playerDataToSave.attributes.focus === undefined) playerDataToSave.attributes.focus = 6;
+    }
+    
+    // Check for missing top-level fields
+    const missingFields = essentialFields.filter(field => !(field in playerDataToSave));
+    if (missingFields.length > 0) {
+      console.warn(`⚠️  Player ${userId} is missing fields: ${missingFields.join(', ')}. Adding defaults...`);
+      // Add missing fields with defaults from createNewPlayer
+      const defaultPlayer = createNewPlayer();
+      missingFields.forEach(field => {
+        if (defaultPlayer[field] !== undefined) {
+          // Deep clone the default value to avoid reference issues
+          playerDataToSave[field] = JSON.parse(JSON.stringify(defaultPlayer[field]));
+        }
+      });
+    }
+    
+    // Ensure nested fields in exploration are present
+    if (playerDataToSave.exploration) {
+      const explorationDefaults = {
+        gathering: null,
+        consecutiveActionsSinceCombat: 0,
+        lastCombatAt: 0,
+        pendingChain: null,
+        unlockedZones: ['zone_1']
+      };
+      Object.keys(explorationDefaults).forEach(key => {
+        if (!(key in playerDataToSave.exploration)) {
+          playerDataToSave.exploration[key] = explorationDefaults[key];
+        }
+      });
+    }
+    
+    // Ensure baseBonuses structure is complete
+    if (!playerDataToSave.baseBonuses) {
+      playerDataToSave.baseBonuses = {
+        contractRewardBonus: 0,
+        settlementWealthBonus: 0,
+        settlementDefenseBonus: 0,
+        brewSuccessBonus: 0
+      };
+    }
+    
+    // Ensure gatheringGear structure is complete
+    if (!playerDataToSave.gatheringGear) {
+      playerDataToSave.gatheringGear = {
+        current: {},
+        unlocked: {}
+      };
+    }
+    
+    // Ensure settings structure is complete
+    if (!playerDataToSave.settings) {
+      playerDataToSave.settings = {
+        gatherNotifications: true
+      };
+    }
+    
+    // Ensure tutorials structure is complete
+    if (!playerDataToSave.tutorials) {
+      playerDataToSave.tutorials = {
+        gathering: {
+          intro: false,
+          completionHint: false
+        },
+        onboarding: null
+      };
+    }
+    
+    // Ensure equipped has tool field
+    if (playerDataToSave.equipped && playerDataToSave.equipped.tool === undefined) {
+      playerDataToSave.equipped.tool = 'rusty_multi_tool';
+    }
+    
+    // Try Supabase first if enabled
+    if (db.isSupabaseEnabled()) {
+      const result = await db.savePlayerData(userId, playerDataToSave);
+      if (result.success) {
+        return; // Successfully saved to Supabase
+      }
+      // If Supabase save failed, fall back to file system
+      console.warn(`⚠️  Supabase save failed for ${userId}, falling back to file system`);
+    }
+    
+    // Fallback to file system
     const filePath = path.join(PLAYER_DATA_DIR, `${userId}.json`);
-    fs.writeFileSync(filePath, JSON.stringify(player, null, 2));
+    fs.writeFileSync(filePath, JSON.stringify(playerDataToSave, null, 2), 'utf8');
   } catch (error) {
-    console.error(`Error saving player data for ${userId}:`, error);
+    console.error(`❌ Error saving player data for ${userId}:`, error);
+    // Try to save a backup even if there's an error
+    try {
+      const player = playerData.get(userId);
+      if (player) {
+        const backupPath = path.join(PLAYER_DATA_DIR, `${userId}.backup.json`);
+        fs.writeFileSync(backupPath, JSON.stringify(player, null, 2), 'utf8');
+        console.log(`💾 Created backup file for ${userId}`);
+      }
+    } catch (backupError) {
+      console.error(`❌ Failed to create backup for ${userId}:`, backupError);
+    }
   }
 }
 
-// Load player data from disk
-function loadPlayerData(userId) {
+// Load player data from Supabase (with file system fallback)
+async function loadPlayerData(userId) {
   try {
+    // Try Supabase first if enabled
+    if (db.isSupabaseEnabled()) {
+      const data = await db.loadPlayerData(userId);
+      if (data) {
+        return data; // Successfully loaded from Supabase
+      }
+      // If not found in Supabase, try file system fallback
+    }
+    
+    // Fallback to file system
     const filePath = path.join(PLAYER_DATA_DIR, `${userId}.json`);
     if (fs.existsSync(filePath)) {
       const data = fs.readFileSync(filePath, 'utf8');
@@ -144,22 +661,39 @@ function loadPlayerData(userId) {
   return null;
 }
 
-// Load all player data on startup
-function loadAllPlayerData() {
+// Load all player data on startup (from Supabase or file system)
+async function loadAllPlayerData() {
   try {
-    if (!fs.existsSync(PLAYER_DATA_DIR)) return;
+    // Try Supabase first if enabled
+    if (db.isSupabaseEnabled()) {
+      const playerDataMap = await db.loadAllPlayerData();
+      if (playerDataMap && playerDataMap.size > 0) {
+        playerDataMap.forEach((data, userId) => {
+          playerData.set(userId, data);
+        });
+        console.log(`✅ Loaded ${playerDataMap.size} player records from Supabase`);
+        return;
+      }
+      console.log('⚠️  No player data found in Supabase, checking file system...');
+    }
+    
+    // Fallback to file system
+    if (!fs.existsSync(PLAYER_DATA_DIR)) {
+      console.log('📁 No player_data directory found, starting with empty database');
+      return;
+    }
     const files = fs.readdirSync(PLAYER_DATA_DIR);
     let loadedCount = 0;
-    files.forEach(file => {
+    for (const file of files) {
       if (file.endsWith('.json')) {
         const userId = file.replace('.json', '');
-        const data = loadPlayerData(userId);
+        const data = await loadPlayerData(userId);
         if (data) {
           playerData.set(userId, data);
           loadedCount++;
         }
       }
-    });
+    }
     console.log(`✅ Loaded ${loadedCount} player data files from disk`);
   } catch (error) {
     console.error('❌ Error loading player data on startup:', error);
@@ -167,10 +701,12 @@ function loadAllPlayerData() {
 }
 
 // Save all player data periodically
-setInterval(() => {
+setInterval(async () => {
+  const savePromises = [];
   playerData.forEach((player, userId) => {
-    savePlayerData(userId);
+    savePromises.push(savePlayerData(userId));
   });
+  await Promise.allSettled(savePromises);
 }, 60000); // Save every minute
 
 // Check if channel is allowed for RPG commands
@@ -4030,7 +4566,8 @@ function createNewPlayer() {
         chestplate: null,
         leggings: null,
         boots: null,
-        accessories: [] // Array for multiple accessories (max 3)
+        accessories: [], // Array for multiple accessories (max 3)
+        tool: 'rusty_multi_tool'
       },
       quests: [],
       completedQuests: [],
@@ -4119,25 +4656,46 @@ function createNewPlayer() {
         action: null,
         discoveredBiomes: ['emerald_grove'],
         lastTick: Date.now(),
-        unlockedZones: ['zone_1'] // Start with Zone 1 unlocked
+        unlockedZones: ['zone_1'], // Start with Zone 1 unlocked
+        gathering: null, // Current gathering activity {type, startedAt, endsAt, biomeId}
+        consecutiveActionsSinceCombat: 0, // Tracking consecutive actions
+        lastCombatAt: 0, // Timestamp of last combat
+        pendingChain: null // Pending chain event
       },
       bases: {},
       settlements: {},
-      travelHistory: []
+      travelHistory: [],
+      // Additional fields that may be added dynamically but should be saved
+      baseBonuses: { // Computed from bases, but stored for persistence
+        contractRewardBonus: 0,
+        settlementWealthBonus: 0,
+        settlementDefenseBonus: 0,
+        brewSuccessBonus: 0
+      },
+      gatheringGear: { // Gathering equipment
+        current: {}, // {type: tierId}
+        unlocked: {} // {type: {tierId: true}}
+      },
+      settings: { // User settings
+        gatherNotifications: true
+      },
+      tutorials: { // Tutorial progress
+        gathering: {
+          intro: false,
+          completionHint: false
+        },
+        onboarding: null // Onboarding state object
+      }
     };
 }
 
 // Define getPlayer function
 function getPlayer(userId) {
   if (!playerData.has(userId)) {
-    // Try to load from disk first
-    const savedData = loadPlayerData(userId);
-    if (savedData) {
-      playerData.set(userId, savedData);
-    } else {
-      // Create new player using helper function
-      playerData.set(userId, createNewPlayer());
-    }
+    // Player not in memory - create new player
+    // Note: All existing player data should be loaded on startup via loadAllPlayerData()
+    // If a player doesn't exist in memory at this point, they're a new player
+    playerData.set(userId, createNewPlayer());
   }
   const player = playerData.get(userId);
   
@@ -5433,7 +5991,14 @@ async function handleSetupCommand(message) {
   }
   
   allowedChannels.add(channelId);
-  saveRPGChannels(); // Save to disk
+  
+  // Update guild setup status
+  GUILD_SETUP_STATUS.set(guildId, {
+    setupCompleted: true,
+    setupDate: new Date().toISOString()
+  });
+  
+  await saveRPGChannels(); // Save to Supabase/disk
   
   const embed = new EmbedBuilder()
     .setColor('#2ECC71')
@@ -5469,7 +6034,16 @@ async function handleAddChannelCommand(message) {
   }
   
   allowedChannels.add(channelId);
-  saveRPGChannels(); // Save to disk
+  
+  // Update guild setup status if not already set
+  if (!GUILD_SETUP_STATUS.has(guildId) || !GUILD_SETUP_STATUS.get(guildId).setupCompleted) {
+    GUILD_SETUP_STATUS.set(guildId, {
+      setupCompleted: true,
+      setupDate: new Date().toISOString()
+    });
+  }
+  
+  await saveRPGChannels(); // Save to Supabase/disk
   
   return message.reply(`✅ Added this channel to RPG command channels! Players can now use RPG commands here.`);
 }
@@ -9756,11 +10330,19 @@ client.once('ready', async () => {
   console.log(`✅ Hytale Bot is online as ${client.user.tag}!`);
   console.log(`📊 Serving ${client.guilds.cache.size} servers`);
   
-  // Load all player data from disk on startup
-  loadAllPlayerData();
+  // Initialize and test Supabase connection
+  if (db.isSupabaseEnabled()) {
+    const connectionOk = await db.testConnection();
+    if (!connectionOk) {
+      console.warn('⚠️  Supabase connection test failed. Falling back to file-based storage.');
+    }
+  }
   
-  // Load RPG channel restrictions from disk on startup
-  loadRPGChannels();
+  // Load all player data from Supabase or disk on startup
+  await loadAllPlayerData();
+  
+  // Load RPG channel restrictions and guild setup status from Supabase or disk on startup
+  await loadRPGChannels();
   
   // Set up player helper functions for dungeon system (after functions are defined)
   dungeonHandlers.setPlayerHelpers(addXp, addItemToInventory);
