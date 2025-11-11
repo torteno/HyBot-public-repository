@@ -55,11 +55,31 @@
       "combat": [
         {
           "enemy": "feral_trork",
-          "chance": 0.35
+          "chance": 0.30
         },
         {
-          "enemy": "shadow_crawler",
-          "chance": 0.18
+          "enemy": "wildvine_beast",
+          "chance": 0.20
+        },
+        {
+          "enemy": "silkwood_silkspinner",
+          "chance": 0.15
+        },
+        {
+          "enemy": "moonshadow_wisp",
+          "chance": 0.12
+        },
+        {
+          "enemy": "trork_beastmaster",
+          "chance": 0.10
+        },
+        {
+          "enemy": "sunglade_keeper",
+          "chance": 0.08
+        },
+        {
+          "enemy": "kweebec_guardian",
+          "chance": 0.05
         }
       ],
       "events": [
@@ -142,11 +162,27 @@
       "combat": [
         {
           "enemy": "void_knight",
-          "chance": 0.28
+          "chance": 0.25
         },
         {
           "enemy": "skysong_mage",
+          "chance": 0.20
+        },
+        {
+          "enemy": "stormguard_wyvern",
+          "chance": 0.18
+        },
+        {
+          "enemy": "thunder_wraith",
+          "chance": 0.15
+        },
+        {
+          "enemy": "mistspire_sentinel",
           "chance": 0.12
+        },
+        {
+          "enemy": "skysong_sentinel",
+          "chance": 0.10
         }
       ],
       "events": [
@@ -402,11 +438,27 @@
       "combat": [
         {
           "enemy": "shadow_crawler",
-          "chance": 0.32
+          "chance": 0.28
         },
         {
-          "enemy": "abyssal_mimic",
+          "enemy": "void_knight",
           "chance": 0.22
+        },
+        {
+          "enemy": "voidcaller",
+          "chance": 0.15
+        },
+        {
+          "enemy": "echo_specter",
+          "chance": 0.15
+        },
+        {
+          "enemy": "gloam_stalker",
+          "chance": 0.12
+        },
+        {
+          "enemy": "varyn_warlord",
+          "chance": 0.08
         }
       ],
       "events": [
@@ -574,12 +626,28 @@
     "encounters": {
       "combat": [
         {
-          "enemy": "deep_ocean_siren",
+          "enemy": "coastal_crab",
+          "chance": 0.28
+        },
+        {
+          "enemy": "tide_wraith",
           "chance": 0.22
         },
         {
-          "enemy": "sand_scrapper",
+          "enemy": "deep_ocean_siren",
+          "chance": 0.18
+        },
+        {
+          "enemy": "coral_guardian",
+          "chance": 0.15
+        },
+        {
+          "enemy": "tempest_privateer",
           "chance": 0.12
+        },
+        {
+          "enemy": "bluehaven_corsair",
+          "chance": 0.05
         }
       ],
       "events": [
@@ -928,12 +996,28 @@
     "encounters": {
       "combat": [
         {
+          "enemy": "bog_wraith",
+          "chance": 0.25
+        },
+        {
+          "enemy": "ember_fiend",
+          "chance": 0.20
+        },
+        {
           "enemy": "sand_scrapper",
-          "chance": 0.2
+          "chance": 0.18
         },
         {
           "enemy": "shadow_crawler",
-          "chance": 0.16
+          "chance": 0.15
+        },
+        {
+          "enemy": "crimson_mireling",
+          "chance": 0.12
+        },
+        {
+          "enemy": "dreadroot_hag",
+          "chance": 0.10
         }
       ],
       "events": [
@@ -1009,12 +1093,28 @@
     "encounters": {
       "combat": [
         {
+          "enemy": "crystal_golem",
+          "chance": 0.25
+        },
+        {
+          "enemy": "luminous_sprite",
+          "chance": 0.20
+        },
+        {
           "enemy": "crystal_construct",
-          "chance": 0.24
+          "chance": 0.18
         },
         {
           "enemy": "skysong_mage",
-          "chance": 0.14
+          "chance": 0.15
+        },
+        {
+          "enemy": "moonshadow_wisp",
+          "chance": 0.12
+        },
+        {
+          "enemy": "runic_guardian",
+          "chance": 0.10
         }
       ],
       "events": [
@@ -6977,15 +7077,27 @@
       "combat": [
         {
           "enemy": "sand_raider",
-          "chance": 0.4
+          "chance": 0.25
         },
         {
-          "enemy": "dune_colossus",
-          "chance": 0.15
+          "enemy": "desert_nomad",
+          "chance": 0.20
         },
         {
           "enemy": "wind_elemental",
-          "chance": 0.2
+          "chance": 0.18
+        },
+        {
+          "enemy": "dune_stalker",
+          "chance": 0.15
+        },
+        {
+          "enemy": "wind_mage",
+          "chance": 0.12
+        },
+        {
+          "enemy": "dune_colossus",
+          "chance": 0.10
         }
       ],
       "events": [
@@ -7081,15 +7193,27 @@
       "combat": [
         {
           "enemy": "mummy_guardian",
-          "chance": 0.35
-        },
-        {
-          "enemy": "sand_wraith",
           "chance": 0.25
         },
         {
+          "enemy": "sand_wraith",
+          "chance": 0.20
+        },
+        {
+          "enemy": "canyon_scorpion",
+          "chance": 0.18
+        },
+        {
+          "enemy": "wind_elemental",
+          "chance": 0.15
+        },
+        {
+          "enemy": "mirage_phantom",
+          "chance": 0.12
+        },
+        {
           "enemy": "pharaoh_lich",
-          "chance": 0.08
+          "chance": 0.10
         }
       ],
       "events": [
@@ -7177,15 +7301,27 @@
       "combat": [
         {
           "enemy": "wind_mage",
-          "chance": 0.3
-        },
-        {
-          "enemy": "storm_guardian",
           "chance": 0.25
         },
         {
+          "enemy": "storm_guardian",
+          "chance": 0.20
+        },
+        {
+          "enemy": "wind_elemental",
+          "chance": 0.18
+        },
+        {
+          "enemy": "sandstorm_elemental",
+          "chance": 0.15
+        },
+        {
+          "enemy": "skysong_mage",
+          "chance": 0.12
+        },
+        {
           "enemy": "tempest_lord",
-          "chance": 0.1
+          "chance": 0.10
         }
       ],
       "events": [
@@ -7278,15 +7414,27 @@
       "combat": [
         {
           "enemy": "sandstorm_elemental",
-          "chance": 0.35
+          "chance": 0.25
         },
         {
           "enemy": "dune_stalker",
-          "chance": 0.28
+          "chance": 0.20
+        },
+        {
+          "enemy": "wind_elemental",
+          "chance": 0.18
+        },
+        {
+          "enemy": "storm_guardian",
+          "chance": 0.15
+        },
+        {
+          "enemy": "wind_mage",
+          "chance": 0.12
         },
         {
           "enemy": "storm_beast",
-          "chance": 0.15
+          "chance": 0.10
         }
       ],
       "events": [
@@ -7600,11 +7748,27 @@
       "combat": [
         {
           "enemy": "ancient_golem",
-          "chance": 0.35
+          "chance": 0.25
         },
         {
           "enemy": "rune_guardian",
-          "chance": 0.25
+          "chance": 0.20
+        },
+        {
+          "enemy": "crystal_construct",
+          "chance": 0.18
+        },
+        {
+          "enemy": "echo_specter",
+          "chance": 0.15
+        },
+        {
+          "enemy": "voidcaller",
+          "chance": 0.12
+        },
+        {
+          "enemy": "runic_guardian",
+          "chance": 0.10
         }
       ],
       "events": [
@@ -7677,11 +7841,27 @@
       "combat": [
         {
           "enemy": "oasis_guardian",
-          "chance": 0.3
+          "chance": 0.25
         },
         {
           "enemy": "desert_nomad",
-          "chance": 0.25
+          "chance": 0.20
+        },
+        {
+          "enemy": "wind_elemental",
+          "chance": 0.18
+        },
+        {
+          "enemy": "canyon_scorpion",
+          "chance": 0.15
+        },
+        {
+          "enemy": "dune_stalker",
+          "chance": 0.12
+        },
+        {
+          "enemy": "sand_raider",
+          "chance": 0.10
         }
       ],
       "events": [
@@ -7748,11 +7928,27 @@
       "combat": [
         {
           "enemy": "canyon_scorpion",
-          "chance": 0.35
+          "chance": 0.25
         },
         {
           "enemy": "mirage_phantom",
-          "chance": 0.2
+          "chance": 0.20
+        },
+        {
+          "enemy": "desert_nomad",
+          "chance": 0.18
+        },
+        {
+          "enemy": "dune_stalker",
+          "chance": 0.15
+        },
+        {
+          "enemy": "wind_mage",
+          "chance": 0.12
+        },
+        {
+          "enemy": "sand_wraith",
+          "chance": 0.10
         }
       ],
       "events": [

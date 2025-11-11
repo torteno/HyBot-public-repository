@@ -31,13 +31,24 @@ async function handleDungeonButton(interaction, action, runId, options = {}) {
     return handleDungeonComplete(interaction, run, options.getPlayerFunc);
   }
 
+  // Parse customId for additional parameters (e.g., spell ID)
+  const customIdParts = interaction.customId ? interaction.customId.split('|') : [];
+  const rest = customIdParts.slice(3); // Skip 'dungeon', action, runId
+
   switch (action) {
     case 'attack':
-      return handleCombatAction(interaction, run, userId, 'attack');
+      return handleCombatAction(interaction, run, userId, 'attack', options);
     case 'defend':
-      return handleCombatAction(interaction, run, userId, 'defend');
+      return handleCombatAction(interaction, run, userId, 'defend', options);
     case 'ability':
-      return handleCombatAction(interaction, run, userId, 'ability');
+      return handleCombatAction(interaction, run, userId, 'ability', options);
+    case 'spell':
+      const spellId = rest && rest[0];
+      return handleCombatAction(interaction, run, userId, 'spell', options, spellId);
+    case 'items':
+      return handleCombatAction(interaction, run, userId, 'items', options);
+    case 'pet':
+      return handleCombatAction(interaction, run, userId, 'pet', options);
     case 'solve':
       return handlePuzzleAction(interaction, run, userId);
     case 'claim':
@@ -123,7 +134,7 @@ async function handleEventChoice(interaction, run, userId, choice) {
   return interaction.reply({ ephemeral: true, content: `✅ ${rewardText}` });
 }
 
-async function handleCombatAction(interaction, run, userId, actionType) {
+async function handleCombatAction(interaction, run, userId, actionType, options = {}, spellId = null) {
   const currentRoom = run.rooms[run.currentRoomIndex];
   if (currentRoom.type !== runModule.ROOM_TYPES.COMBAT && currentRoom.type !== runModule.ROOM_TYPES.BOSS) {
     return interaction.reply({ ephemeral: true, content: '❌ This is not a combat room.' });
@@ -141,103 +152,202 @@ async function handleCombatAction(interaction, run, userId, actionType) {
   }
   player.lastActionTime = now;
 
-  // Simple combat resolution (can be expanded)
+  // Get combat functions from options
+  const {
+    buildPlayerCombatProfile = null,
+    buildEnemyCombatProfile = null,
+    resolveAttack = null,
+    resolveSpell = null,
+    formatAttackResult = null,
+    getEnemyAbilities = null,
+    selectEnemyAbility = null,
+    executeEnemyAbility = null,
+    getBrewModifiers = null,
+    getSkillTreeBonuses = null,
+    SPELL_LOOKUP = {},
+    ITEMS = {},
+    PET_LOOKUP = {}
+  } = options;
+
+  // Fallback to simple combat if functions not available
+  const useAdvancedCombat = buildPlayerCombatProfile && buildEnemyCombatProfile && resolveAttack;
+
   const enemies = currentRoom.enemies || (currentRoom.boss ? [currentRoom.boss] : []);
   if (enemies.length === 0 || enemies.every(e => e.hp <= 0)) {
-    // Room already cleared
     currentRoom.completed = true;
     await updateRunMessage(interaction, run);
     return interaction.reply({ ephemeral: true, content: '✅ This room is already cleared!' });
   }
 
-  let damage = 0;
+  const target = enemies.find(e => e.hp > 0) || enemies[0];
+  if (!target) {
+    currentRoom.completed = true;
+    await updateRunMessage(interaction, run);
+    return interaction.reply({ ephemeral: true, content: '✅ This room is already cleared!' });
+  }
+
+  // Ensure target has maxHp
+  if (!target.maxHp) target.maxHp = target.hp || 30;
+  if (!target.hp) target.hp = target.maxHp;
+
   let actionText = '';
-  
-  // Apply team buffs to damage calculation
+  let damage = 0;
+
+  // Apply team buffs
   const teamBuffs = run.teamBuffs || [];
   let powerBonus = 0;
   let critChance = 0;
-  let lootBonus = 0;
   teamBuffs.forEach(buff => {
     if (buff.power) powerBonus += buff.power;
     if (buff.critChance) critChance += buff.critChance;
-    if (buff.lootBonus) lootBonus += buff.lootBonus;
   });
-  
-  if (actionType === 'attack') {
-    // Base damage scales with level and team buffs
-    const baseDamage = 10 + (player.level || 1) * 2 + powerBonus;
-    // Add some randomness
-    damage = Math.floor(baseDamage * (0.8 + Math.random() * 0.4));
-    
-    // Critical hit chance
-    if (Math.random() < critChance) {
-      damage = Math.floor(damage * 1.5);
-      actionText = '💥 You land a critical hit';
-    } else {
-      actionText = '⚔️ You attack';
-    }
-  } else if (actionType === 'ability') {
-    // Abilities cost mana but deal more damage
-    if ((player.mana || 0) < 10) {
-      return interaction.reply({ ephemeral: true, content: '❌ Not enough mana! You need 10 mana to use an ability.' });
-    }
-    const baseDamage = 15 + (player.level || 1) * 3 + powerBonus;
-    damage = Math.floor(baseDamage * (0.9 + Math.random() * 0.2));
-    
-    // Abilities have higher crit chance
-    const abilityCritChance = critChance + 0.15;
-    if (Math.random() < abilityCritChance) {
-      damage = Math.floor(damage * 1.5);
-      actionText = '💥✨ You unleash a critical ability';
-    } else {
-      actionText = '✨ You use an ability';
-    }
-    
-    player.mana = Math.max(0, (player.mana || 0) - 10);
-    
-    // Chance to apply status effect (stun, burn, etc.)
-    if (Math.random() < 0.2) {
-      if (!target.statusEffects) target.statusEffects = [];
-      const statusEffect = {
-        type: Math.random() < 0.5 ? 'stun' : 'burn',
-        duration: 2,
-        damage: Math.floor(damage * 0.1)
-      };
-      target.statusEffects.push(statusEffect);
-      actionText += ' and apply a status effect!';
-    }
-  } else if (actionType === 'defend') {
-    // Defend reduces incoming damage for next attack
-    player.defending = true;
-    player.defendUntil = now + 5000; // Defend lasts 5 seconds
-    await updateRunMessage(interaction, run);
-    return interaction.reply({ ephemeral: true, content: '🛡️ You brace for the next attack. Incoming damage reduced for 5 seconds.' });
-  }
-  
-  // Apply damage to first alive enemy
-  const target = enemies.find(e => e.hp > 0) || enemies[0];
-  
-  // Apply status effects to enemies before new damage
-  if (target && target.statusEffects && target.statusEffects.length > 0) {
-    target.statusEffects = target.statusEffects.filter(effect => {
-      effect.duration--;
-      if (effect.type === 'burn' && effect.duration > 0) {
-        target.hp = Math.max(0, target.hp - effect.damage);
-      }
-      return effect.duration > 0;
+
+  if (useAdvancedCombat) {
+    // Use advanced combat system
+    const modifiers = getBrewModifiers ? getBrewModifiers(player) : {};
+    const playerProfile = buildPlayerCombatProfile(player, {
+      label: interaction.user.username,
+      modifiers
     });
-  }
-  if (target) {
+    const enemyProfile = buildEnemyCombatProfile(target);
+    enemyProfile.hpRef = target;
+
+    switch (actionType) {
+      case 'attack': {
+        const result = resolveAttack(playerProfile, enemyProfile);
+        damage = result.type === 'hit' ? result.damage : 0;
+        target.hp = Math.max(0, target.hp - damage);
+        actionText = formatAttackResult(playerProfile.label, enemyProfile.label, result, target.hp, target.maxHp);
+        break;
+      }
+      case 'spell': {
+        if (!spellId) {
+          return interaction.reply({ ephemeral: true, content: '❌ Spell not specified.' });
+        }
+        const spell = SPELL_LOOKUP[spellId.toLowerCase()];
+        if (!spell) {
+          return interaction.reply({ ephemeral: true, content: '❌ Spell not found.' });
+        }
+        const skillBonuses = getSkillTreeBonuses ? getSkillTreeBonuses(player) : {};
+        const result = resolveSpell(spell, playerProfile, enemyProfile, skillBonuses);
+        if (result.type === 'spell') {
+          damage = result.damage || 0;
+          target.hp = Math.max(0, target.hp - damage);
+          actionText = formatAttackResult(playerProfile.label, enemyProfile.label, result, target.hp, target.maxHp);
+        } else {
+          return interaction.reply({ ephemeral: true, content: `❌ ${result.type === 'insufficient_mana' ? `Not enough mana! Need ${result.required}, have ${result.current}` : 'Spell failed!'}` });
+        }
+        break;
+      }
+      case 'items': {
+        const potions = Object.entries(player.inventory || {}).filter(([id, count]) => {
+          const item = ITEMS[id];
+          return item && (item.type === 'consumable' || item.heal || item.mana) && count > 0;
+        });
+        if (potions.length === 0) {
+          return interaction.reply({ ephemeral: true, content: '❌ No usable items in inventory!' });
+        }
+        const [itemId] = potions[0];
+        const item = ITEMS[itemId];
+        player.inventory[itemId]--;
+        if (player.inventory[itemId] === 0) delete player.inventory[itemId];
+        
+        const healAmount = item.heal || 0;
+        const manaAmount = item.mana || 0;
+        if (healAmount) {
+          player.hp = Math.min(player.maxHp, player.hp + healAmount);
+          actionText = `🍷 Used **${item.name}** and restored ${healAmount} HP!`;
+        }
+        if (manaAmount) {
+          player.mana = Math.min(player.maxMana, (player.mana || 0) + manaAmount);
+          actionText += ` Restored ${manaAmount} Mana!`;
+        }
+        break;
+      }
+      case 'pet': {
+        const activePet = player.pets?.active;
+        if (!activePet) {
+          return interaction.reply({ ephemeral: true, content: '❌ No active pet!' });
+        }
+        const pet = PET_LOOKUP[activePet.toLowerCase()];
+        if (!pet || !pet.abilities || !pet.abilities.combat) {
+          return interaction.reply({ ephemeral: true, content: '❌ Pet has no combat ability!' });
+        }
+        const heal = pet.bonuses?.hp || 10;
+        player.hp = Math.min(player.maxHp, player.hp + heal);
+        actionText = `🐾 ${pet.name} used its ability and restored ${heal} HP!`;
+        break;
+      }
+      case 'defend': {
+        player.defending = true;
+        player.defendUntil = now + 5000;
+        await updateRunMessage(interaction, run);
+        return interaction.reply({ ephemeral: true, content: '🛡️ You brace for the next attack. Incoming damage reduced for 5 seconds.' });
+      }
+      default:
+        return interaction.reply({ ephemeral: true, content: '❌ Unknown action type.' });
+    }
+  } else {
+    // Fallback to simple combat
+    if (actionType === 'attack') {
+      const baseDamage = 10 + (player.level || 1) * 2 + powerBonus;
+      damage = Math.floor(baseDamage * (0.8 + Math.random() * 0.4));
+      if (Math.random() < critChance) {
+        damage = Math.floor(damage * 1.5);
+        actionText = '💥 You land a critical hit';
+      } else {
+        actionText = '⚔️ You attack';
+      }
+    } else if (actionType === 'ability') {
+      if ((player.mana || 0) < 10) {
+        return interaction.reply({ ephemeral: true, content: '❌ Not enough mana! You need 10 mana to use an ability.' });
+      }
+      const baseDamage = 15 + (player.level || 1) * 3 + powerBonus;
+      damage = Math.floor(baseDamage * (0.9 + Math.random() * 0.2));
+      const abilityCritChance = critChance + 0.15;
+      if (Math.random() < abilityCritChance) {
+        damage = Math.floor(damage * 1.5);
+        actionText = '💥✨ You unleash a critical ability';
+      } else {
+        actionText = '✨ You use an ability';
+      }
+      player.mana = Math.max(0, (player.mana || 0) - 10);
+    } else if (actionType === 'defend') {
+      player.defending = true;
+      player.defendUntil = now + 5000;
+      await updateRunMessage(interaction, run);
+      return interaction.reply({ ephemeral: true, content: '🛡️ You brace for the next attack. Incoming damage reduced for 5 seconds.' });
+    }
+    
     target.hp = Math.max(0, target.hp - damage);
-    player.damageDealt = (player.damageDealt || 0) + damage;
-    player.actionsTaken = (player.actionsTaken || 0) + 1;
+    actionText += ` for **${damage}** damage!`;
   }
 
-  // Enemy counterattack (only if enemy is still alive)
+  player.damageDealt = (player.damageDealt || 0) + damage;
+  player.actionsTaken = (player.actionsTaken || 0) + 1;
+
+  // Enemy counterattack using abilities if available
   let enemyAttackText = '';
-  if (target && target.hp > 0) {
-    // Enemy attacks a random player
+  if (target && target.hp > 0 && useAdvancedCombat && selectEnemyAbility && executeEnemyAbility) {
+    const alivePlayers = Array.from(run.party.values()).filter(p => p.hp > 0);
+    if (alivePlayers.length > 0) {
+      const targetPlayer = alivePlayers[Math.floor(Math.random() * alivePlayers.length)];
+      const targetPlayerProfile = buildPlayerCombatProfile(targetPlayer, {
+        label: targetPlayer.name || `Player ${targetPlayer.userId}`,
+        modifiers: {}
+      });
+      targetPlayerProfile.hpRef = targetPlayer;
+      
+      const enemyAbility = selectEnemyAbility(target, target.hp, target.maxHp);
+      const enemyResult = executeEnemyAbility(enemyAbility, enemyProfile, targetPlayerProfile);
+      
+      if (enemyAbility.name && enemyAbility.name !== 'Basic Attack') {
+        enemyAttackText = ` 💥 ${target.name} uses **${enemyAbility.name}**!`;
+      }
+      enemyAttackText += ` ${formatAttackResult(enemyProfile.label, targetPlayerProfile.label, enemyResult, targetPlayer.hp, targetPlayer.maxHp)}`;
+    }
+  } else if (target && target.hp > 0) {
+    // Simple enemy counterattack
     const alivePlayers = Array.from(run.party.values()).filter(p => p.hp > 0);
     if (alivePlayers.length > 0) {
       const targetPlayer = alivePlayers[Math.floor(Math.random() * alivePlayers.length)];
@@ -246,7 +356,7 @@ async function handleCombatAction(interaction, run, userId, actionType) {
         ? Math.floor(enemyDamage * 0.5) 
         : enemyDamage;
       targetPlayer.hp = Math.max(0, targetPlayer.hp - actualDamage);
-      targetPlayer.defending = false; // Defend is consumed
+      targetPlayer.defending = false;
       
       if (targetPlayer.userId === userId) {
         enemyAttackText = ` The enemy counterattacks for ${actualDamage} damage!`;
@@ -259,18 +369,16 @@ async function handleCombatAction(interaction, run, userId, actionType) {
   // Check if room is cleared
   if (enemies.every(e => e.hp <= 0)) {
     currentRoom.completed = true;
-    // Grant rewards
     const totalXp = enemies.reduce((sum, e) => sum + (e.xp || 0), 0);
     const totalCoins = enemies.reduce((sum, e) => sum + (e.coins || 0), 0);
     currentRoom.rewards = { xp: totalXp, coins: totalCoins };
     
-    // Notify all players
     const partyMentions = Array.from(run.party.values()).map(p => `<@${p.userId}>`).join(' ');
     interaction.channel.send(`🎉 **Room Cleared!** ${partyMentions} — All enemies defeated!`).catch(() => {});
   }
 
   await updateRunMessage(interaction, run);
-  return interaction.reply({ ephemeral: true, content: `${actionText} for **${damage}** damage!${target.hp > 0 ? ` Enemy has ${target.hp}/${target.maxHp} HP remaining.${enemyAttackText}` : ' Enemy defeated!'}` });
+  return interaction.reply({ ephemeral: true, content: `${actionText}${target.hp > 0 ? ` Enemy has ${target.hp}/${target.maxHp} HP remaining.${enemyAttackText}` : ' Enemy defeated!'}` });
 }
 
 async function handlePuzzleAction(interaction, run, userId) {

@@ -4,6 +4,7 @@
     "name": "Feral Trork",
     "emoji": "🐗",
     "hp": 30,
+    "maxHp": 30,
     "damage": 5,
     "xp": 20,
     "coins": 10,
@@ -13,6 +14,26 @@
     "tags": [
       "melee",
       "aggressive"
+    ],
+    "abilities": [
+      {
+        "id": "basic_attack",
+        "name": "Charge",
+        "damage": 5,
+        "type": "physical",
+        "condition": null,
+        "chance": 0.7
+      },
+      {
+        "id": "rage_attack",
+        "name": "Furious Charge",
+        "damage": 8,
+        "type": "physical",
+        "condition": {
+          "hpBelow": 0.5
+        },
+        "chance": 0.3
+      }
     ]
   },
   {
@@ -20,6 +41,7 @@
     "name": "Shadow Crawler",
     "emoji": "🕷️",
     "hp": 50,
+    "maxHp": 50,
     "damage": 8,
     "xp": 35,
     "coins": 20,
@@ -29,6 +51,24 @@
     "tags": [
       "poison",
       "lurker"
+    ],
+    "abilities": [
+      {
+        "id": "basic_attack",
+        "name": "Shadow Bite",
+        "damage": 8,
+        "type": "poison",
+        "condition": null,
+        "chance": 0.6
+      },
+      {
+        "id": "poison_sting",
+        "name": "Poison Sting",
+        "damage": 10,
+        "type": "poison",
+        "condition": null,
+        "chance": 0.4
+      }
     ]
   },
   {
@@ -36,6 +76,7 @@
     "name": "Void Knight",
     "emoji": "⚔️",
     "hp": 80,
+    "maxHp": 80,
     "damage": 12,
     "xp": 60,
     "coins": 40,
@@ -45,6 +86,34 @@
     "tags": [
       "elite",
       "melee"
+    ],
+    "abilities": [
+      {
+        "id": "basic_attack",
+        "name": "Void Slash",
+        "damage": 12,
+        "type": "physical",
+        "condition": null,
+        "chance": 0.5
+      },
+      {
+        "id": "dark_strike",
+        "name": "Dark Strike",
+        "damage": 16,
+        "type": "shadow",
+        "condition": null,
+        "chance": 0.3
+      },
+      {
+        "id": "desperate_attack",
+        "name": "Desperate Strike",
+        "damage": 20,
+        "type": "physical",
+        "condition": {
+          "hpBelow": 0.3
+        },
+        "chance": 0.2
+      }
     ]
   },
   {
@@ -52,6 +121,7 @@
     "name": "Ancient Golem",
     "emoji": "🗿",
     "hp": 120,
+    "maxHp": 120,
     "damage": 15,
     "xp": 100,
     "coins": 75,
@@ -61,6 +131,34 @@
     "tags": [
       "guardian",
       "heavy"
+    ],
+    "abilities": [
+      {
+        "id": "basic_attack",
+        "name": "Stone Slam",
+        "damage": 15,
+        "type": "physical",
+        "condition": null,
+        "chance": 0.6
+      },
+      {
+        "id": "ground_stomp",
+        "name": "Ground Stomp",
+        "damage": 18,
+        "type": "physical",
+        "condition": null,
+        "chance": 0.3
+      },
+      {
+        "id": "berserk",
+        "name": "Berserk Rage",
+        "damage": 22,
+        "type": "physical",
+        "condition": {
+          "hpBelow": 0.4
+        },
+        "chance": 0.1
+      }
     ]
   },
   {
@@ -84,6 +182,7 @@
     "name": "Kweebec Guardian",
     "emoji": "🌳",
     "hp": 65,
+    "maxHp": 65,
     "damage": 9,
     "xp": 45,
     "coins": 30,
@@ -93,6 +192,24 @@
     "tags": [
       "ally",
       "ranged"
+    ],
+    "abilities": [
+      {
+        "id": "basic_attack",
+        "name": "Thorn Strike",
+        "damage": 9,
+        "type": "physical",
+        "condition": null,
+        "chance": 0.6
+      },
+      {
+        "id": "root_bind",
+        "name": "Root Bind",
+        "damage": 6,
+        "type": "nature",
+        "condition": null,
+        "chance": 0.4
+      }
     ]
   },
   {
@@ -484,6 +601,7 @@
     "name": "Wildvine Beast",
     "emoji": "🐗",
     "hp": 105,
+    "maxHp": 105,
     "damage": 17,
     "xp": 140,
     "coins": 95,
@@ -493,6 +611,34 @@
     "tags": [
       "beast",
       "nature"
+    ],
+    "abilities": [
+      {
+        "id": "basic_attack",
+        "name": "Vine Whip",
+        "damage": 17,
+        "type": "physical",
+        "condition": null,
+        "chance": 0.5
+      },
+      {
+        "id": "entangle",
+        "name": "Entangle",
+        "damage": 12,
+        "type": "nature",
+        "condition": null,
+        "chance": 0.3
+      },
+      {
+        "id": "frenzy",
+        "name": "Frenzied Assault",
+        "damage": 22,
+        "type": "physical",
+        "condition": {
+          "hpBelow": 0.4
+        },
+        "chance": 0.2
+      }
     ]
   },
   {
@@ -548,6 +694,7 @@
     "name": "Silkwood Silkspinner",
     "emoji": "🕷️",
     "hp": 100,
+    "maxHp": 100,
     "damage": 15,
     "xp": 130,
     "coins": 88,
@@ -557,6 +704,34 @@
     "tags": [
       "poison",
       "weaver"
+    ],
+    "abilities": [
+      {
+        "id": "basic_attack",
+        "name": "Venom Bite",
+        "damage": 15,
+        "type": "poison",
+        "condition": null,
+        "chance": 0.5
+      },
+      {
+        "id": "web_trap",
+        "name": "Web Trap",
+        "damage": 10,
+        "type": "poison",
+        "condition": null,
+        "chance": 0.3
+      },
+      {
+        "id": "poison_burst",
+        "name": "Poison Burst",
+        "damage": 18,
+        "type": "poison",
+        "condition": {
+          "hpBelow": 0.5
+        },
+        "chance": 0.2
+      }
     ]
   },
   {
@@ -1569,6 +1744,7 @@
     "name": "Sand Raider",
     "emoji": "🏜️",
     "hp": 100,
+    "maxHp": 100,
     "damage": 15,
     "xp": 80,
     "coins": 50,
@@ -1579,6 +1755,24 @@
       "melee",
       "aggressive",
       "zone_2"
+    ],
+    "abilities": [
+      {
+        "id": "basic_attack",
+        "name": "Desert Strike",
+        "damage": 15,
+        "type": "physical",
+        "condition": null,
+        "chance": 0.7
+      },
+      {
+        "id": "sand_swipe",
+        "name": "Sand Swipe",
+        "damage": 18,
+        "type": "physical",
+        "condition": null,
+        "chance": 0.3
+      }
     ],
     "loot": [
       {
@@ -1631,6 +1825,7 @@
     "name": "Wind Elemental",
     "emoji": "💨",
     "hp": 120,
+    "maxHp": 120,
     "damage": 18,
     "xp": 100,
     "coins": 70,
@@ -1641,6 +1836,34 @@
       "magic",
       "ranged",
       "zone_2"
+    ],
+    "abilities": [
+      {
+        "id": "basic_attack",
+        "name": "Wind Blast",
+        "damage": 18,
+        "type": "wind",
+        "condition": null,
+        "chance": 0.6
+      },
+      {
+        "id": "gust",
+        "name": "Powerful Gust",
+        "damage": 22,
+        "type": "wind",
+        "condition": null,
+        "chance": 0.3
+      },
+      {
+        "id": "cyclone",
+        "name": "Cyclone",
+        "damage": 26,
+        "type": "wind",
+        "condition": {
+          "hpBelow": 0.4
+        },
+        "chance": 0.1
+      }
     ],
     "loot": [
       {
@@ -1662,6 +1885,7 @@
     "name": "Mummy Guardian",
     "emoji": "🧟",
     "hp": 150,
+    "maxHp": 150,
     "damage": 20,
     "xp": 120,
     "coins": 90,
@@ -1672,6 +1896,34 @@
       "undead",
       "melee",
       "zone_2"
+    ],
+    "abilities": [
+      {
+        "id": "basic_attack",
+        "name": "Ancient Strike",
+        "damage": 20,
+        "type": "physical",
+        "condition": null,
+        "chance": 0.6
+      },
+      {
+        "id": "curse_strike",
+        "name": "Curse Strike",
+        "damage": 24,
+        "type": "shadow",
+        "condition": null,
+        "chance": 0.3
+      },
+      {
+        "id": "mummy_rage",
+        "name": "Mummy's Rage",
+        "damage": 28,
+        "type": "physical",
+        "condition": {
+          "hpBelow": 0.4
+        },
+        "chance": 0.1
+      }
     ],
     "loot": [
       {
@@ -1693,6 +1945,7 @@
     "name": "Sand Wraith",
     "emoji": "👻",
     "hp": 180,
+    "maxHp": 180,
     "damage": 22,
     "xp": 150,
     "coins": 110,
@@ -1703,6 +1956,34 @@
       "undead",
       "magic",
       "zone_2"
+    ],
+    "abilities": [
+      {
+        "id": "basic_attack",
+        "name": "Sand Curse",
+        "damage": 22,
+        "type": "shadow",
+        "condition": null,
+        "chance": 0.5
+      },
+      {
+        "id": "desert_curse",
+        "name": "Desert Curse",
+        "damage": 27,
+        "type": "shadow",
+        "condition": null,
+        "chance": 0.3
+      },
+      {
+        "id": "phantom_rage",
+        "name": "Phantom Rage",
+        "damage": 32,
+        "type": "shadow",
+        "condition": {
+          "hpBelow": 0.3
+        },
+        "chance": 0.2
+      }
     ],
     "loot": [
       {
@@ -1724,6 +2005,7 @@
     "name": "Pharaoh Lich",
     "emoji": "👑",
     "hp": 350,
+    "maxHp": 350,
     "damage": 40,
     "xp": 350,
     "coins": 300,
@@ -1735,6 +2017,34 @@
       "undead",
       "magic",
       "zone_2"
+    ],
+    "abilities": [
+      {
+        "id": "basic_attack",
+        "name": "Pharaoh's Curse",
+        "damage": 40,
+        "type": "shadow",
+        "condition": null,
+        "chance": 0.4
+      },
+      {
+        "id": "ancient_power",
+        "name": "Ancient Power",
+        "damage": 50,
+        "type": "shadow",
+        "condition": null,
+        "chance": 0.3
+      },
+      {
+        "id": "desert_doom",
+        "name": "Desert Doom",
+        "damage": 65,
+        "type": "shadow",
+        "condition": {
+          "hpBelow": 0.3
+        },
+        "chance": 0.3
+      }
     ],
     "loot": [
       {
@@ -1762,6 +2072,7 @@
     "name": "Wind Mage",
     "emoji": "🧙",
     "hp": 130,
+    "maxHp": 130,
     "damage": 20,
     "xp": 110,
     "coins": 80,
@@ -1772,6 +2083,34 @@
       "magic",
       "ranged",
       "zone_2"
+    ],
+    "abilities": [
+      {
+        "id": "basic_attack",
+        "name": "Wind Bolt",
+        "damage": 20,
+        "type": "wind",
+        "condition": null,
+        "chance": 0.6
+      },
+      {
+        "id": "wind_slash",
+        "name": "Wind Slash",
+        "damage": 25,
+        "type": "wind",
+        "condition": null,
+        "chance": 0.3
+      },
+      {
+        "id": "tempest_blast",
+        "name": "Tempest Blast",
+        "damage": 30,
+        "type": "wind",
+        "condition": {
+          "hpBelow": 0.4
+        },
+        "chance": 0.1
+      }
     ],
     "loot": [
       {
@@ -1793,6 +2132,7 @@
     "name": "Storm Guardian",
     "emoji": "⚡",
     "hp": 200,
+    "maxHp": 200,
     "damage": 28,
     "xp": 180,
     "coins": 130,
@@ -1803,6 +2143,34 @@
       "magic",
       "elite",
       "zone_2"
+    ],
+    "abilities": [
+      {
+        "id": "basic_attack",
+        "name": "Lightning Strike",
+        "damage": 28,
+        "type": "wind",
+        "condition": null,
+        "chance": 0.5
+      },
+      {
+        "id": "thunder_bolt",
+        "name": "Thunder Bolt",
+        "damage": 35,
+        "type": "wind",
+        "condition": null,
+        "chance": 0.3
+      },
+      {
+        "id": "storm_fury",
+        "name": "Storm Fury",
+        "damage": 42,
+        "type": "wind",
+        "condition": {
+          "hpBelow": 0.4
+        },
+        "chance": 0.2
+      }
     ],
     "loot": [
       {
@@ -1824,6 +2192,7 @@
     "name": "Tempest Lord",
     "emoji": "🌪️",
     "hp": 400,
+    "maxHp": 400,
     "damage": 45,
     "xp": 400,
     "coins": 350,
@@ -1834,6 +2203,34 @@
       "boss",
       "magic",
       "zone_2"
+    ],
+    "abilities": [
+      {
+        "id": "basic_attack",
+        "name": "Tempest Strike",
+        "damage": 45,
+        "type": "wind",
+        "condition": null,
+        "chance": 0.4
+      },
+      {
+        "id": "hurricane",
+        "name": "Hurricane",
+        "damage": 55,
+        "type": "wind",
+        "condition": null,
+        "chance": 0.3
+      },
+      {
+        "id": "apocalypse_storm",
+        "name": "Apocalypse Storm",
+        "damage": 70,
+        "type": "wind",
+        "condition": {
+          "hpBelow": 0.3
+        },
+        "chance": 0.3
+      }
     ],
     "loot": [
       {
@@ -1861,6 +2258,7 @@
     "name": "Sandstorm Elemental",
     "emoji": "🌪️",
     "hp": 160,
+    "maxHp": 160,
     "damage": 24,
     "xp": 140,
     "coins": 100,
@@ -1871,6 +2269,34 @@
       "magic",
       "elemental",
       "zone_2"
+    ],
+    "abilities": [
+      {
+        "id": "basic_attack",
+        "name": "Sandstorm Blast",
+        "damage": 24,
+        "type": "wind",
+        "condition": null,
+        "chance": 0.6
+      },
+      {
+        "id": "whirlwind",
+        "name": "Whirlwind",
+        "damage": 30,
+        "type": "wind",
+        "condition": null,
+        "chance": 0.3
+      },
+      {
+        "id": "desert_storm",
+        "name": "Desert Storm",
+        "damage": 36,
+        "type": "wind",
+        "condition": {
+          "hpBelow": 0.4
+        },
+        "chance": 0.1
+      }
     ],
     "loot": [
       {
@@ -1892,6 +2318,7 @@
     "name": "Dune Stalker",
     "emoji": "🐺",
     "hp": 110,
+    "maxHp": 110,
     "damage": 16,
     "xp": 90,
     "coins": 60,
@@ -1902,6 +2329,24 @@
       "melee",
       "aggressive",
       "zone_2"
+    ],
+    "abilities": [
+      {
+        "id": "basic_attack",
+        "name": "Bite",
+        "damage": 16,
+        "type": "physical",
+        "condition": null,
+        "chance": 0.7
+      },
+      {
+        "id": "pounce",
+        "name": "Pounce",
+        "damage": 20,
+        "type": "physical",
+        "condition": null,
+        "chance": 0.3
+      }
     ],
     "loot": [
       {
@@ -1923,6 +2368,7 @@
     "name": "Storm Beast",
     "emoji": "🐉",
     "hp": 280,
+    "maxHp": 280,
     "damage": 35,
     "xp": 250,
     "coins": 200,
@@ -1933,6 +2379,34 @@
       "boss",
       "magic",
       "zone_2"
+    ],
+    "abilities": [
+      {
+        "id": "basic_attack",
+        "name": "Storm Claw",
+        "damage": 35,
+        "type": "wind",
+        "condition": null,
+        "chance": 0.5
+      },
+      {
+        "id": "lightning_breath",
+        "name": "Lightning Breath",
+        "damage": 42,
+        "type": "wind",
+        "condition": null,
+        "chance": 0.3
+      },
+      {
+        "id": "tempest_roar",
+        "name": "Tempest Roar",
+        "damage": 50,
+        "type": "wind",
+        "condition": {
+          "hpBelow": 0.3
+        },
+        "chance": 0.2
+      }
     ],
     "loot": [
       {
@@ -1960,6 +2434,7 @@
     "name": "Crystal Golem",
     "emoji": "🗿",
     "hp": 90,
+    "maxHp": 90,
     "damage": 12,
     "xp": 70,
     "coins": 50,
@@ -1970,6 +2445,24 @@
       "construct",
       "melee",
       "zone_1"
+    ],
+    "abilities": [
+      {
+        "id": "basic_attack",
+        "name": "Crystal Strike",
+        "damage": 12,
+        "type": "physical",
+        "condition": null,
+        "chance": 0.7
+      },
+      {
+        "id": "crystal_blast",
+        "name": "Crystal Blast",
+        "damage": 15,
+        "type": "magic",
+        "condition": null,
+        "chance": 0.3
+      }
     ],
     "loot": [
       {
@@ -1991,6 +2484,7 @@
     "name": "Luminous Sprite",
     "emoji": "✨",
     "hp": 60,
+    "maxHp": 60,
     "damage": 8,
     "xp": 45,
     "coins": 30,
@@ -2001,6 +2495,24 @@
       "magic",
       "ranged",
       "zone_1"
+    ],
+    "abilities": [
+      {
+        "id": "basic_attack",
+        "name": "Light Bolt",
+        "damage": 8,
+        "type": "magic",
+        "condition": null,
+        "chance": 0.6
+      },
+      {
+        "id": "dazzle",
+        "name": "Dazzle",
+        "damage": 10,
+        "type": "magic",
+        "condition": null,
+        "chance": 0.4
+      }
     ],
     "loot": [
       {
@@ -2022,6 +2534,7 @@
     "name": "Coastal Crab",
     "emoji": "🦀",
     "hp": 70,
+    "maxHp": 70,
     "damage": 10,
     "xp": 55,
     "coins": 40,
@@ -2032,6 +2545,24 @@
       "melee",
       "aggressive",
       "zone_1"
+    ],
+    "abilities": [
+      {
+        "id": "basic_attack",
+        "name": "Claw Snap",
+        "damage": 10,
+        "type": "physical",
+        "condition": null,
+        "chance": 0.7
+      },
+      {
+        "id": "pinch",
+        "name": "Vicious Pinch",
+        "damage": 13,
+        "type": "physical",
+        "condition": null,
+        "chance": 0.3
+      }
     ],
     "loot": [
       {
@@ -2053,6 +2584,7 @@
     "name": "Tide Wraith",
     "emoji": "👻",
     "hp": 100,
+    "maxHp": 100,
     "damage": 14,
     "xp": 80,
     "coins": 60,
@@ -2063,6 +2595,34 @@
       "undead",
       "magic",
       "zone_1"
+    ],
+    "abilities": [
+      {
+        "id": "basic_attack",
+        "name": "Tidal Strike",
+        "damage": 14,
+        "type": "magic",
+        "condition": null,
+        "chance": 0.6
+      },
+      {
+        "id": "drown",
+        "name": "Drowning Grasp",
+        "damage": 17,
+        "type": "magic",
+        "condition": null,
+        "chance": 0.3
+      },
+      {
+        "id": "desperate_tide",
+        "name": "Desperate Tide",
+        "damage": 20,
+        "type": "magic",
+        "condition": {
+          "hpBelow": 0.3
+        },
+        "chance": 0.1
+      }
     ],
     "loot": [
       {
@@ -2084,6 +2644,7 @@
     "name": "Bog Wraith",
     "emoji": "👻",
     "hp": 110,
+    "maxHp": 110,
     "damage": 15,
     "xp": 90,
     "coins": 70,
@@ -2094,6 +2655,34 @@
       "undead",
       "magic",
       "zone_1"
+    ],
+    "abilities": [
+      {
+        "id": "basic_attack",
+        "name": "Bog Strike",
+        "damage": 15,
+        "type": "magic",
+        "condition": null,
+        "chance": 0.6
+      },
+      {
+        "id": "mire_grasp",
+        "name": "Mire Grasp",
+        "damage": 18,
+        "type": "magic",
+        "condition": null,
+        "chance": 0.3
+      },
+      {
+        "id": "swamp_rage",
+        "name": "Swamp Rage",
+        "damage": 22,
+        "type": "magic",
+        "condition": {
+          "hpBelow": 0.4
+        },
+        "chance": 0.1
+      }
     ],
     "loot": [
       {
@@ -2115,6 +2704,7 @@
     "name": "Ember Fiend",
     "emoji": "🔥",
     "hp": 130,
+    "maxHp": 130,
     "damage": 18,
     "xp": 110,
     "coins": 90,
@@ -2125,6 +2715,34 @@
       "fire",
       "magic",
       "zone_1"
+    ],
+    "abilities": [
+      {
+        "id": "basic_attack",
+        "name": "Fire Bolt",
+        "damage": 18,
+        "type": "fire",
+        "condition": null,
+        "chance": 0.5
+      },
+      {
+        "id": "flame_burst",
+        "name": "Flame Burst",
+        "damage": 22,
+        "type": "fire",
+        "condition": null,
+        "chance": 0.3
+      },
+      {
+        "id": "inferno",
+        "name": "Inferno",
+        "damage": 28,
+        "type": "fire",
+        "condition": {
+          "hpBelow": 0.5
+        },
+        "chance": 0.2
+      }
     ],
     "loot": [
       {
@@ -2146,6 +2764,7 @@
     "name": "Rune Guardian",
     "emoji": "🛡️",
     "hp": 150,
+    "maxHp": 150,
     "damage": 20,
     "xp": 130,
     "coins": 100,
@@ -2156,6 +2775,34 @@
       "construct",
       "elite",
       "zone_1"
+    ],
+    "abilities": [
+      {
+        "id": "basic_attack",
+        "name": "Rune Strike",
+        "damage": 20,
+        "type": "magic",
+        "condition": null,
+        "chance": 0.5
+      },
+      {
+        "id": "rune_blast",
+        "name": "Rune Blast",
+        "damage": 25,
+        "type": "magic",
+        "condition": null,
+        "chance": 0.3
+      },
+      {
+        "id": "ancient_power",
+        "name": "Ancient Power",
+        "damage": 30,
+        "type": "magic",
+        "condition": {
+          "hpBelow": 0.4
+        },
+        "chance": 0.2
+      }
     ],
     "loot": [
       {
@@ -2177,6 +2824,7 @@
     "name": "Oasis Guardian",
     "emoji": "🌴",
     "hp": 140,
+    "maxHp": 140,
     "damage": 19,
     "xp": 120,
     "coins": 95,
@@ -2187,6 +2835,34 @@
       "nature",
       "melee",
       "zone_2"
+    ],
+    "abilities": [
+      {
+        "id": "basic_attack",
+        "name": "Palm Strike",
+        "damage": 19,
+        "type": "physical",
+        "condition": null,
+        "chance": 0.6
+      },
+      {
+        "id": "healing_spring",
+        "name": "Healing Spring",
+        "damage": 15,
+        "type": "nature",
+        "condition": null,
+        "chance": 0.3
+      },
+      {
+        "id": "oasis_rage",
+        "name": "Oasis Rage",
+        "damage": 24,
+        "type": "nature",
+        "condition": {
+          "hpBelow": 0.4
+        },
+        "chance": 0.1
+      }
     ],
     "loot": [
       {
@@ -2208,6 +2884,7 @@
     "name": "Desert Nomad",
     "emoji": "🏜️",
     "hp": 120,
+    "maxHp": 120,
     "damage": 17,
     "xp": 100,
     "coins": 80,
@@ -2218,6 +2895,24 @@
       "melee",
       "aggressive",
       "zone_2"
+    ],
+    "abilities": [
+      {
+        "id": "basic_attack",
+        "name": "Scimitar Slash",
+        "damage": 17,
+        "type": "physical",
+        "condition": null,
+        "chance": 0.7
+      },
+      {
+        "id": "sand_strike",
+        "name": "Sand Strike",
+        "damage": 20,
+        "type": "physical",
+        "condition": null,
+        "chance": 0.3
+      }
     ],
     "loot": [
       {
@@ -2239,6 +2934,7 @@
     "name": "Canyon Scorpion",
     "emoji": "🦂",
     "hp": 130,
+    "maxHp": 130,
     "damage": 18,
     "xp": 110,
     "coins": 85,
@@ -2249,6 +2945,34 @@
       "poison",
       "melee",
       "zone_2"
+    ],
+    "abilities": [
+      {
+        "id": "basic_attack",
+        "name": "Sting",
+        "damage": 18,
+        "type": "poison",
+        "condition": null,
+        "chance": 0.6
+      },
+      {
+        "id": "venom_strike",
+        "name": "Venom Strike",
+        "damage": 22,
+        "type": "poison",
+        "condition": null,
+        "chance": 0.3
+      },
+      {
+        "id": "desperate_sting",
+        "name": "Desperate Sting",
+        "damage": 26,
+        "type": "poison",
+        "condition": {
+          "hpBelow": 0.4
+        },
+        "chance": 0.1
+      }
     ],
     "loot": [
       {
@@ -2270,6 +2994,7 @@
     "name": "Mirage Phantom",
     "emoji": "👻",
     "hp": 160,
+    "maxHp": 160,
     "damage": 22,
     "xp": 140,
     "coins": 110,
@@ -2280,6 +3005,34 @@
       "undead",
       "magic",
       "zone_2"
+    ],
+    "abilities": [
+      {
+        "id": "basic_attack",
+        "name": "Mirage Strike",
+        "damage": 22,
+        "type": "shadow",
+        "condition": null,
+        "chance": 0.5
+      },
+      {
+        "id": "illusion_blast",
+        "name": "Illusion Blast",
+        "damage": 28,
+        "type": "shadow",
+        "condition": null,
+        "chance": 0.3
+      },
+      {
+        "id": "phantom_curse",
+        "name": "Phantom Curse",
+        "damage": 34,
+        "type": "shadow",
+        "condition": {
+          "hpBelow": 0.4
+        },
+        "chance": 0.2
+      }
     ],
     "loot": [
       {

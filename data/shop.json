@@ -1,0 +1,38 @@
+[
+  {
+    "id": "health_potion",
+    "name": "Health Potion",
+    "price": 50,
+    "emoji": "🧪",
+    "description": "Restores 30 HP on use."
+  },
+  {
+    "id": "mana_potion",
+    "name": "Mana Potion",
+    "price": 45,
+    "emoji": "🔮",
+    "description": "Restores 20 Mana on use."
+  },
+  {
+    "id": "iron_sword",
+    "name": "Iron Sword",
+    "price": 200,
+    "emoji": "⚔️",
+    "description": "Sturdy blade favored by Borea guards."
+  },
+  {
+    "id": "leather_armor",
+    "name": "Leather Armor",
+    "price": 150,
+    "emoji": "🛡️",
+    "description": "Basic armor offering modest protection."
+  },
+  {
+    "id": "focus_elixir",
+    "name": "Focus Elixir",
+    "price": 120,
+    "emoji": "✨",
+    "description": "Temporarily boosts spellcasting efficiency."
+  }
+]
+
