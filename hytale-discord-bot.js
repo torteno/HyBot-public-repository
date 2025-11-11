@@ -4765,7 +4765,7 @@ function updateQuestProgress(player, event) {
   
   return { readyQuests, completedObjectives, updated: updated };
 }
-function notifyQuestReady(message, quests) {
+async function notifyQuestReady(message, quests) {
   if (!message || !quests || quests.length === 0) return;
   const unique = [];
   const seen = new Set();
@@ -4777,19 +4777,79 @@ function notifyQuestReady(message, quests) {
   });
   if (unique.length === 0) return;
   
-  // Special handling for tutorial quest with NPC dialogue
-  const tutorialQuest = unique.find(q => q.id === 0);
-  if (tutorialQuest && tutorialQuest.npc) {
-    sendTutorialNPCMessage(message, tutorialQuest, 'objective_complete');
+  const player = getPlayer(message.author.id);
+  
+  // Auto-complete all ready quests
+  for (const quest of unique) {
+    if (player.quests.includes(quest.id)) {
+      // Auto-complete the quest
+      player.quests = player.quests.filter(id => id !== quest.id);
+      if (!player.completedQuests.includes(quest.id)) {
+        player.completedQuests.push(quest.id);
+      }
+      const progress = player.questProgress?.[quest.id];
+      if (progress) {
+        progress.completed = true;
+        progress.ready = false;
+        delete player.questProgress[quest.id];
+      }
+      
+      // Apply rewards
+      player.coins += quest.reward.coins || 0;
+      const leveled = addXp(player, quest.reward.xp || 0);
+      player.stats.questsCompleted++;
+      
+      const rewardLines = [];
+      if (quest.reward.xp) rewardLines.push(`+${quest.reward.xp} XP`);
+      if (quest.reward.coins) rewardLines.push(`+${quest.reward.coins} coins`);
+      
+      if (Array.isArray(quest.reward.items)) {
+        quest.reward.items.forEach(entry => {
+          addItemToInventory(player, entry.item, entry.quantity || 1);
+          rewardLines.push(`+${entry.quantity || 1} ${entry.item}`);
+          processQuestEvent(message, player, { type: 'gather', itemId: entry.item, count: entry.quantity || 1 });
+          
+          // Check if item has special unlocks
+          const itemData = ITEMS[entry.item];
+          if (itemData?.special?.unlocks) {
+            if (!player.flags) player.flags = {};
+            itemData.special.unlocks.forEach(flag => {
+              player.flags[flag] = true;
+            });
+          }
+        });
+      }
+      
+      // Handle quest reward flags
+      if (Array.isArray(quest.reward.flags)) {
+        if (!player.flags) player.flags = {};
+        quest.reward.flags.forEach(flag => {
+          player.flags[flag] = true;
+          rewardLines.push(`🔓 Unlocked: ${flag}`);
+        });
+      }
+      
+      // Send completion message
+      const embed = new EmbedBuilder()
+        .setColor('#00FF00')
+        .setTitle('🏆 Quest Completed!')
+        .setDescription(`**${quest.name}**\n${quest.description || quest.desc || ''}`)
+        .addFields(
+          { name: '🎁 Rewards', value: rewardLines.join(' | ') || 'No rewards', inline: false }
+        )
+        .setFooter({ text: leveled ? `⭐ Level up! You are now level ${player.level}!` : `Level ${player.level}` });
+      
+      await message.reply({ embeds: [embed] }).catch(() => {});
+      await handleAchievementCheck(message, player);
+      
+      // Special handling for tutorial quest with NPC dialogue
+      if (quest.id === 0 && quest.npc) {
+        sendTutorialNPCMessage(message, quest, 'quest_complete');
+      }
+    }
   }
   
-  const embed = new EmbedBuilder()
-    .setColor('#F1C40F')
-    .setTitle('📜 Quest Update')
-    .setDescription(unique.map(q => `✅ **${q.name}** is ready to turn in!`).join('\n'))
-    .setFooter({ text: `Use ${PREFIX} completequest <id> to claim rewards.` });
-  const payload = buildStyledPayload(embed, 'quests', { components: buildSystemComponents('quests') });
-  message.channel.send(payload).catch(() => {});
+  savePlayerData(message.author.id);
 }
 
 // Tutorial NPC Dialogue System
@@ -5540,7 +5600,7 @@ async function showTutorialStep(message, step) {
       break;
     }
     case 3: {
-      // Show tutorial overview
+      // Show tutorial overview with codex info
       embed = new EmbedBuilder()
         .setColor('#3498DB')
         .setTitle('📚 Tutorial Overview')
@@ -5552,13 +5612,28 @@ async function showTutorialStep(message, step) {
           `• How to explore biomes\n` +
           `• How to gather resources\n` +
           `• How to battle creatures\n` +
+          `• How to use the Codex to track discoveries\n` +
           `• And much more!`
+        )
+        .addFields(
+          { 
+            name: '📘 The Codex System', 
+            value: `The **Codex** is your knowledge database! As you explore, battle enemies, and discover items, they are automatically added to your codex.\n\n` +
+                   `Use \`/codex\` to browse all categories:\n` +
+                   `• 📦 Items - Weapons, armor, consumables\n` +
+                   `• 👹 Enemies - Creatures you've encountered\n` +
+                   `• 🌍 Biomes - Regions you've explored\n` +
+                   `• 🏛️ Structures - Landmarks you've found\n` +
+                   `• And more!\n\n` +
+                   `Undiscovered entries show limited info (name, rarity, location hints). Once discovered, you'll see full details!`,
+            inline: false
+          }
         );
       
       components = [
         new ActionRowBuilder().addComponents(
           new ButtonBuilder()
-            .setCustomId('tutorial|next|3')
+            .setCustomId('tutorial|next|4')
             .setLabel('Start Tutorial')
             .setStyle(ButtonStyle.Success)
             .setEmoji('🎓')
@@ -5566,14 +5641,43 @@ async function showTutorialStep(message, step) {
       ];
       break;
     }
-    case 3: {
-      // Auto-run tutorial command
+    case 4: {
+      // Auto-run tutorial command and start first adventure quest
       try {
         const tutorialMessage = createMessageAdapterFromMessage(message);
         await showTutorial(tutorialMessage);
         
+        // Auto-start first adventure chapter
+        if (!player.adventureMode || !player.adventureMode.currentChapter) {
+          const firstChapter = ADVENTURE_MODE_DEFINITIONS.find(ch => ch.id === 'chapter_1');
+          if (firstChapter) {
+            if (!player.adventureMode) {
+              player.adventureMode = { currentChapter: null, currentSection: null, progress: {}, choices: [] };
+            }
+            player.adventureMode.currentChapter = firstChapter.id;
+            if (firstChapter.chapters && firstChapter.chapters.length > 0) {
+              player.adventureMode.currentSection = firstChapter.chapters[0].id;
+              if (!player.adventureMode.progress[firstChapter.id]) {
+                player.adventureMode.progress[firstChapter.id] = { currentSection: firstChapter.chapters[0].id };
+              }
+            }
+            savePlayerData(message.author.id);
+            
+            const adventureEmbed = new EmbedBuilder()
+              .setColor('#9B59B6')
+              .setTitle('📖 Adventure Mode Started!')
+              .setDescription(
+                `**${firstChapter.emoji} ${firstChapter.name}** has been automatically started for you!\n\n` +
+                `${firstChapter.description}\n\n` +
+                `Use \`/adventure\` to view your progress and objectives. Complete adventure chapters to unlock new zones and features!`
+              );
+            
+            await message.reply({ embeds: [adventureEmbed] }).catch(() => {});
+          }
+        }
+        
         // Update step and save
-        player.tutorialStep = 3;
+        player.tutorialStep = 4;
         savePlayerData(message.author.id);
         
         // Return success message
@@ -15660,6 +15764,10 @@ function handleSlashAutocomplete(interaction) {
           options = BIOMES.map(biome => makeChoice(biome.id, biome.name || biome.id, '🌍'));
         } else if (cat === 'dungeon' || cat === 'dungeons') {
           options = DUNGEON_DEFINITIONS.map(dungeon => makeChoice(dungeon.id, dungeon.name || dungeon.id, '🏰'));
+        } else if (cat === 'structure' || cat === 'structures') {
+          options = STRUCTURE_DEFINITIONS.map(structure => makeChoice(structure.id, structure.name || structure.id, structure.emoji || '🏛️'));
+        } else if (cat === 'settlement' || cat === 'settlements') {
+          options = SETTLEMENT_TEMPLATES.map(settlement => makeChoice(settlement.id, settlement.name || settlement.id, '🏘️'));
         }
         if (!options.length) return respond([]);
         return respond(options.filter(matches));
