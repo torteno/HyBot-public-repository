@@ -16773,3 +16773,4 @@ function buildPlayerOverviewEmbed(player, exploration) {
   embed.addFields({ name: 'Exploration', value: action, inline: false });
   return embed;
 }
+}
