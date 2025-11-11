@@ -1868,11 +1868,12 @@ QUESTS.forEach(quest => {
 const MAX_ACTIVE_QUESTS = 3;
 
 function formatObjectiveLabel(objective) {
-  if (objective.type === 'command') {
-    return `Use ${objective.target} command`;
-  }
-  if (!objective) return '';
+  if (!objective) return 'Unknown objective';
   if (objective.description) return objective.description;
+  if (objective.type === 'command') {
+    const target = objective.target || 'unknown';
+    return `Use /${target} command`;
+  }
   switch (objective.type) {
     case 'defeat':
       return `Defeat ${objective.quantity}x ${objective.enemy}`;
@@ -4544,12 +4545,23 @@ function updateQuestProgress(player, event) {
           break;
         }
         case 'command': {
-          if (event.type === 'command' && objective.target && objective.target === event.command) {
-            progress.objectives[index] = Math.min(objective.quantity, current + count);
-            wasUpdated = progress.objectives[index] !== oldProgress;
-            updated = wasUpdated || updated;
-            if (wasUpdated && progress.objectives[index] >= objective.quantity) {
-              completedObjectives.push({ quest, objective, index });
+          if (event.type === 'command' && objective.target) {
+            // Match command name (case-insensitive) - handle both slash and legacy commands
+            const targetCommand = objective.target.toLowerCase();
+            const eventCommand = (event.command || '').toLowerCase();
+            // Also check for aliases (e.g., 'p' for 'profile')
+            const commandMatches = targetCommand === eventCommand || 
+              (targetCommand === 'profile' && eventCommand === 'p') ||
+              (targetCommand === 'explore' && (eventCommand === 'explore' || eventCommand === 'exp')) ||
+              (targetCommand === 'shop' && (eventCommand === 'shop' || eventCommand === 'store'));
+            
+            if (commandMatches) {
+              progress.objectives[index] = Math.min(objective.quantity, current + count);
+              wasUpdated = progress.objectives[index] !== oldProgress;
+              updated = wasUpdated || updated;
+              if (wasUpdated && progress.objectives[index] >= objective.quantity) {
+                completedObjectives.push({ quest, objective, index });
+              }
             }
           }
           break;
@@ -4666,6 +4678,14 @@ function sendTutorialNPCMessage(message, quest, dialogueType, objectiveType = nu
 function processQuestEvent(message, player, event) {
   const result = updateQuestProgress(player, event) || { readyQuests: [], completedObjectives: [] };
   const { readyQuests, completedObjectives } = result;
+  
+  // Save player data if quest progress was updated
+  if (result.updated) {
+    const userId = message?.author?.id || message?.user?.id || player.userId || player.id;
+    if (userId) {
+      savePlayerData(userId);
+    }
+  }
   
   // Notify when individual objectives are completed
   if (completedObjectives.length > 0 && message) {
@@ -4850,8 +4870,8 @@ async function handleAchievementCheck(message, player) {
 async function executeCommand(message, command, args) {
   const player = getPlayer(message.author.id);
   
-  // Track command usage for tutorial quest
-  if (player.quests && player.quests.includes(0)) {
+  // Track command usage for all active quests
+  if (player.quests && player.quests.length > 0) {
     processQuestEvent(message, player, { type: 'command', command: command, count: 1 });
   }
   
@@ -14704,6 +14724,12 @@ async function handleSlashCommand(interaction) {
   
   const player = getPlayer(interaction.user.id);
   const exploration = ensureExplorationState(player);
+  
+  // Track command usage for all active quests (skip for setup/admin commands)
+  if (!isSetupCommand && player.quests && player.quests.length > 0) {
+    const message = createMessageAdapterFromInteraction(interaction);
+    processQuestEvent(message, player, { type: 'command', command: interaction.commandName, count: 1 });
+  }
 
   if (!['dashboard', 'explore', 'travel', 'base', 'settlement', 'hy', 'setup', 'addchannel', 'start'].includes(interaction.commandName)) {
     const executor = SIMPLE_SLASH_EXECUTORS[interaction.commandName];
