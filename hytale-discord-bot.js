@@ -12272,6 +12272,7 @@ function checkAdventureModeProgress(player, event) {
   
   // Check if all objectives are complete
   let allComplete = true;
+  let anyUpdated = false; // Track if any objective was updated
   section.objectives.forEach((objective, index) => {
     const current = sectionProgress.objectives[index] || 0;
     let updated = false;
@@ -12281,36 +12282,70 @@ function checkAdventureModeProgress(player, event) {
         if (event.type === 'gather' && event.itemId === objective.target) {
           sectionProgress.objectives[index] = Math.min(objective.quantity, current + (event.count || 1));
           updated = true;
+          anyUpdated = true;
         }
         break;
       case 'defeat':
         if (event.type === 'defeat' && event.enemyId === objective.target) {
           sectionProgress.objectives[index] = Math.min(objective.quantity, current + (event.count || 1));
           updated = true;
+          anyUpdated = true;
         }
         break;
       case 'explore':
         if (event.type === 'explore' && event.biomeId === objective.target) {
           sectionProgress.objectives[index] = Math.min(objective.quantity, current + (event.count || 1));
           updated = true;
+          anyUpdated = true;
         }
         break;
       case 'complete':
         if (event.type === objective.target && event.count) {
           sectionProgress.objectives[index] = Math.min(objective.quantity, current + event.count);
           updated = true;
+          anyUpdated = true;
         }
         break;
       case 'level':
         if (objective.target === 'level' && player.level >= objective.quantity) {
           sectionProgress.objectives[index] = objective.quantity;
           updated = true;
+          anyUpdated = true;
         }
         break;
+      case 'command': {
+        if (event.type === 'command' && objective.target) {
+          // Match command name (case-insensitive) - handle both slash and legacy commands
+          const targetCommand = objective.target.toLowerCase();
+          const eventCommand = (event.command || event.target || '').toLowerCase();
+          
+          // Also check for aliases (e.g., 'p' for 'profile')
+          const commandMatches = targetCommand === eventCommand || 
+            (targetCommand === 'profile' && (eventCommand === 'p' || eventCommand === 'profile')) ||
+            (targetCommand === 'explore' && (eventCommand === 'explore' || eventCommand === 'exp' || eventCommand === 'exploremenu')) ||
+            (targetCommand === 'shop' && (eventCommand === 'shop' || eventCommand === 'store')) ||
+            (targetCommand === 'travel' && (eventCommand === 'travel' || eventCommand === 't')) ||
+            (targetCommand === 'inventory' && (eventCommand === 'inventory' || eventCommand === 'inv' || eventCommand === 'i')) ||
+            (targetCommand === 'gather' && (eventCommand === 'gather' || eventCommand === 'g')) ||
+            (targetCommand === 'base' && (eventCommand === 'base' || eventCommand === 'bases'));
+          
+          if (commandMatches) {
+            sectionProgress.objectives[index] = Math.min(objective.quantity, current + (event.count || 1));
+            updated = true;
+            anyUpdated = true;
+          }
+        }
+        break;
+      }
     }
     
     if (!updated && objective.type === 'level' && player.level >= objective.quantity) {
       sectionProgress.objectives[index] = objective.quantity;
+      anyUpdated = true;
+    }
+    
+    if (updated) {
+      anyUpdated = true;
     }
     
     if ((sectionProgress.objectives[index] || 0) < objective.quantity) {
@@ -12323,6 +12358,14 @@ function checkAdventureModeProgress(player, event) {
     progress[section.id] = sectionProgress;
   }
   player.adventureMode.progress[chapter.id] = progress;
+  
+  // Save player data if progress was updated
+  if (anyUpdated) {
+    const userId = player.userId || player.id;
+    if (userId) {
+      savePlayerData(userId);
+    }
+  }
   
   // If all objectives complete, mark section as complete and apply rewards
   if (allComplete && !sectionProgress.completed) {
