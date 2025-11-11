@@ -68,6 +68,7 @@ const client = new Client({
   ],
 });
 console.log('✅ Discord client created');
+console.log('📋 Initializing data structures...');
 
 const PREFIX = '!hy';
 
@@ -1717,6 +1718,7 @@ ENEMIES.forEach(enemy => {
   if (key) ENEMY_MAP[key] = enemy;
 });
 const ENEMY_LIST = ENEMIES;
+console.log('✅ Enemy data loaded');
 
 // Combat state management - stores active combat sessions
 const ACTIVE_COMBAT = new Map(); // userId -> combatState
@@ -2693,6 +2695,7 @@ SLASH_COMMAND_DEFINITIONS.forEach(def => {
 });
 SLASH_COMMAND_DEFINITIONS.length = 0;
 SLASH_COMMAND_DEFINITIONS.push(...SLASH_COMMAND_DEDUP.values());
+console.log('✅ Slash command definitions processed');
 
 const HY_SLASH_SUBCOMMAND_SET = new Set([
   'inventory','equip','use','stats','shop','buy','sell','recipes','craft','brews','brew','drink','buffs','daily','give','vendor','tutorial','buyrep','contracts','acceptcontract','turnincontract','abandoncontract','quests','startquest','completequest','claimachievement','gather'
@@ -3882,6 +3885,7 @@ function adjustSettlementPrestige(settlement, amount, player) {
   }
 }
 // ==================== HELPER FUNCTIONS ====================
+console.log('✅ All constants and data structures loaded, starting function definitions...');
 function getPlayer(userId) {
   if (!playerData.has(userId)) {
     // Try to load from disk first
@@ -8845,6 +8849,7 @@ async function addCoinsAdmin(message, targetUser, amount) {
 }
 
 // ==================== BOT READY ====================
+console.log('📝 Registering event handlers...');
 client.once('ready', async () => {
   console.log(`✅ Hytale Bot is online as ${client.user.tag}!`);
   console.log(`📊 Serving ${client.guilds.cache.size} servers`);
