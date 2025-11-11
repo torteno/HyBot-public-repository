@@ -17322,6 +17322,149 @@ async function endWorldBossFight(interaction, activeBoss) {
   ACTIVE_WORLD_BOSSES.delete(boss.id);
 }
 
+// ==================== ADMIN COMMANDS ====================
+function isAdmin(user) {
+  if (!user) return false;
+  if (user.username === ADMIN_USER_ID) return true;
+  if (user.member?.permissions?.has?.('Administrator')) return true;
+  return false;
+}
+
+async function handleAdminCommand(interaction) {
+  if (!isAdmin(interaction.user)) {
+    return interaction.reply({ ephemeral: true, content: '❌ You do not have permission to use admin commands.' });
+  }
+  
+  const subcommand = interaction.options.getSubcommand();
+  const targetUser = interaction.options.getUser('user', true);
+  const targetPlayer = getPlayer(targetUser.id);
+  
+  try {
+    switch (subcommand) {
+      case 'giveitem': {
+        const itemId = interaction.options.getString('item', true);
+        const quantity = interaction.options.getInteger('quantity') || 1;
+        const item = ITEMS[itemId.toLowerCase()] || ITEM_LIST.find(i => i.id?.toLowerCase() === itemId.toLowerCase());
+        if (!item) {
+          return interaction.reply({ ephemeral: true, content: `❌ Item "${itemId}" not found.` });
+        }
+        targetPlayer.inventory[item.id] = (targetPlayer.inventory[item.id] || 0) + quantity;
+        savePlayerData(targetUser.id);
+        return interaction.reply({ ephemeral: true, content: `✅ Gave ${quantity}x ${item.name || item.id} to ${targetUser.username}` });
+      }
+      case 'givecoins': {
+        const amount = interaction.options.getInteger('amount', true);
+        targetPlayer.coins = (targetPlayer.coins || 0) + amount;
+        savePlayerData(targetUser.id);
+        return interaction.reply({ ephemeral: true, content: `✅ Gave ${amount} coins to ${targetUser.username} (new total: ${targetPlayer.coins})` });
+      }
+      case 'givexp': {
+        const amount = interaction.options.getInteger('amount', true);
+        targetPlayer.xp = (targetPlayer.xp || 0) + amount;
+        // Check for level up
+        while (targetPlayer.xp >= getXpForLevel(targetPlayer.level + 1)) {
+          targetPlayer.level++;
+          targetPlayer.xp -= getXpForLevel(targetPlayer.level);
+          targetPlayer.hp = getMaxHp(targetPlayer);
+          targetPlayer.mana = getMaxMana(targetPlayer);
+        }
+        savePlayerData(targetUser.id);
+        return interaction.reply({ ephemeral: true, content: `✅ Gave ${amount} XP to ${targetUser.username} (Level ${targetPlayer.level}, ${targetPlayer.xp} XP)` });
+      }
+      case 'setlevel': {
+        const level = interaction.options.getInteger('level', true);
+        if (level < 1 || level > 100) {
+          return interaction.reply({ ephemeral: true, content: '❌ Level must be between 1 and 100.' });
+        }
+        targetPlayer.level = level;
+        targetPlayer.xp = 0;
+        targetPlayer.hp = getMaxHp(targetPlayer);
+        targetPlayer.mana = getMaxMana(targetPlayer);
+        savePlayerData(targetUser.id);
+        return interaction.reply({ ephemeral: true, content: `✅ Set ${targetUser.username}'s level to ${level}` });
+      }
+      case 'setcoins': {
+        const amount = interaction.options.getInteger('amount', true);
+        if (amount < 0) {
+          return interaction.reply({ ephemeral: true, content: '❌ Amount cannot be negative.' });
+        }
+        targetPlayer.coins = amount;
+        savePlayerData(targetUser.id);
+        return interaction.reply({ ephemeral: true, content: `✅ Set ${targetUser.username}'s coins to ${amount}` });
+      }
+      case 'sethealth': {
+        const health = interaction.options.getInteger('health', true);
+        if (health < 0) {
+          return interaction.reply({ ephemeral: true, content: '❌ Health cannot be negative.' });
+        }
+        targetPlayer.hp = Math.min(health, getMaxHp(targetPlayer));
+        savePlayerData(targetUser.id);
+        return interaction.reply({ ephemeral: true, content: `✅ Set ${targetUser.username}'s health to ${targetPlayer.hp}/${getMaxHp(targetPlayer)}` });
+      }
+      case 'setmana': {
+        const mana = interaction.options.getInteger('mana', true);
+        if (mana < 0) {
+          return interaction.reply({ ephemeral: true, content: '❌ Mana cannot be negative.' });
+        }
+        targetPlayer.mana = Math.min(mana, getMaxMana(targetPlayer));
+        savePlayerData(targetUser.id);
+        return interaction.reply({ ephemeral: true, content: `✅ Set ${targetUser.username}'s mana to ${targetPlayer.mana}/${getMaxMana(targetPlayer)}` });
+      }
+      case 'completequest': {
+        const questId = interaction.options.getString('quest', true);
+        const quest = QUEST_MAP[questId] || QUESTS.find(q => q.id === parseInt(questId));
+        if (!quest) {
+          return interaction.reply({ ephemeral: true, content: `❌ Quest "${questId}" not found.` });
+        }
+        if (!targetPlayer.quests.includes(quest.id)) {
+          targetPlayer.quests.push(quest.id);
+          initializeQuestProgress(targetPlayer, quest);
+        }
+        const progress = targetPlayer.questProgress[quest.id];
+        if (progress) {
+          quest.objectives.forEach((obj, idx) => {
+            progress.objectives[idx] = obj.quantity;
+          });
+          progress.ready = true;
+        }
+        savePlayerData(targetUser.id);
+        return interaction.reply({ ephemeral: true, content: `✅ Completed quest "${quest.name}" for ${targetUser.username}` });
+      }
+      case 'resetplayer': {
+        const oldData = JSON.parse(JSON.stringify(targetPlayer));
+        const newData = createNewPlayer();
+        newData.userId = targetUser.id;
+        playerData.set(targetUser.id, newData);
+        savePlayerData(targetUser.id);
+        return interaction.reply({ ephemeral: true, content: `✅ Reset ${targetUser.username}'s player data. (Was level ${oldData.level}, ${oldData.coins} coins)` });
+      }
+      case 'viewplayer': {
+        const embed = new EmbedBuilder()
+          .setColor('#3498DB')
+          .setTitle(`📊 Player Data: ${targetUser.username}`)
+          .addFields(
+            { name: 'Level', value: String(targetPlayer.level || 1), inline: true },
+            { name: 'XP', value: String(targetPlayer.xp || 0), inline: true },
+            { name: 'Coins', value: String(targetPlayer.coins || 0), inline: true },
+            { name: 'HP', value: `${targetPlayer.hp || 0}/${getMaxHp(targetPlayer)}`, inline: true },
+            { name: 'Mana', value: `${targetPlayer.mana || 0}/${getMaxMana(targetPlayer)}`, inline: true },
+            { name: 'Active Quests', value: String((targetPlayer.quests || []).length), inline: true },
+            { name: 'Inventory Items', value: String(Object.keys(targetPlayer.inventory || {}).length), inline: true },
+            { name: 'Bases', value: String(Object.keys(targetPlayer.bases || {}).length), inline: true },
+            { name: 'Settlements', value: String(Object.keys(targetPlayer.settlements || {}).length), inline: true }
+          )
+          .setFooter({ text: `User ID: ${targetUser.id}` });
+        return interaction.reply({ ephemeral: true, embeds: [embed] });
+      }
+      default:
+        return interaction.reply({ ephemeral: true, content: '❌ Unknown admin subcommand.' });
+    }
+  } catch (error) {
+    console.error('Admin command error:', error);
+    return interaction.reply({ ephemeral: true, content: `❌ Error: ${error.message}` });
+  }
+}
+
 async function joinWorldBoss(message, bossId) {
   const player = getPlayer(message.author.id);
   if (!player.worldBosses) player.worldBosses = { participated: [], lastDamage: {}, rewards: [] };
