@@ -4123,8 +4123,9 @@ function getPlayer(userId) {
   if (player.settings.gatherNotifications === undefined) player.settings.gatherNotifications = true;
   if (!player.tutorials) player.tutorials = {};
   if (!player.tutorials.gathering) player.tutorials.gathering = { intro: false, completionHint: false };
-  cleanupExpiredBuffs(player);
-  ensureGatheringGear(player);
+  // These functions are defined later in the file, but that's okay - they're only called at runtime
+  if (typeof cleanupExpiredBuffs === 'function') cleanupExpiredBuffs(player);
+  if (typeof ensureGatheringGear === 'function') ensureGatheringGear(player);
   return player;
 }
 console.log('✅ getPlayer function defined');
