@@ -6,15 +6,15 @@
 // On Railway/cloud platforms, environment variables are set directly, so these files may not exist
 console.log('🔧 Loading environment variables...');
 try {
-  require('dotenv').config({ path: '.env.local' });
-  console.log('📁 Attempted to load .env.local');
+  require('dotenv').config({ path: '.env.local', override: true });
+  console.log('📁 Attempted to load .env.local (with override)');
 } catch (e) {
   // .env.local doesn't exist, that's fine
   console.log('📁 .env.local not found (this is normal on Railway)');
 }
 try {
-  require('dotenv').config(); // This will override with .env if it exists and is synced
-  console.log('📁 Attempted to load .env');
+  require('dotenv').config({ override: true }); // This will override with .env if it exists and is synced
+  console.log('📁 Attempted to load .env (with override)');
 } catch (e) {
   // .env doesn't exist, that's fine (Railway uses direct env vars)
   console.log('📁 .env not found (this is normal on Railway)');
