@@ -3886,7 +3886,7 @@ function adjustSettlementPrestige(settlement, amount, player) {
 }
 // ==================== HELPER FUNCTIONS ====================
 console.log('✅ All constants and data structures loaded, starting function definitions...');
-console.log('📝 Defining getPlayer function...');
+// Define getPlayer function (large function, may take a moment to parse)
 function getPlayer(userId) {
   if (!playerData.has(userId)) {
     // Try to load from disk first
