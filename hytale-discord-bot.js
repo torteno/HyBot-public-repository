@@ -2623,7 +2623,7 @@ const SLASH_COMMAND_DEFINITIONS = [
 const LEGACY_SLASH_COMMANDS = [
   { name: 'profile', description: 'Show a player profile.', options: [{ type: 6, name: 'user', description: 'Player to inspect', required: false }] },
   { name: 'inventory', description: 'View your inventory.' },
-  { name: 'equip', description: 'Equip an item from your inventory.', options: [{ type: 3, name: 'item', description: 'Item identifier', required: true }] },
+  { name: 'equip', description: 'Equip an item from your inventory.', options: [{ type: 3, name: 'item', description: 'Item identifier', required: true, autocomplete: true }] },
   { name: 'use', description: 'Use a consumable item.', options: [{ type: 3, name: 'item', description: 'Item identifier', required: true }] },
   {
     name: 'gather',
