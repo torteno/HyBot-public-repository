@@ -14254,8 +14254,20 @@ function calculateExpeditionExpediteCost(remainingMs, villagers) {
 async function registerSlashCommands(client) {
   if (!client?.application?.commands) return;
   try {
+    // Register commands globally
     await client.application.commands.set(SLASH_COMMAND_DEFINITIONS);
-    console.log('✅ Slash commands registered.');
+    console.log('✅ Slash commands registered globally.');
+    
+    // Also register per-guild for faster updates during development
+    // This makes commands appear immediately instead of waiting up to 1 hour
+    for (const guild of client.guilds.cache.values()) {
+      try {
+        await guild.commands.set(SLASH_COMMAND_DEFINITIONS);
+        console.log(`✅ Slash commands registered for guild: ${guild.name}`);
+      } catch (guildError) {
+        console.error(`⚠️ Failed to register commands for guild ${guild.name}:`, guildError.message);
+      }
+    }
   } catch (error) {
     console.error('❌ Failed to register slash commands:', error);
   }
