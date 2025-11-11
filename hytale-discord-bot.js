@@ -14715,7 +14715,7 @@ function buildGatheringActionComponents(userId, exploration) {
   );
   rows.push(primaryRow);
   const utilityRow = new ActionRowBuilder().addComponents(
-    new ButtonBuilder().setCustomId('command|gather').setLabel('Status').setStyle(ButtonStyle.Secondary).setEmoji('📊'),
+    new ButtonBuilder().setCustomId('command|gather|status').setLabel('Status').setStyle(ButtonStyle.Secondary).setEmoji('📊'),
     new ButtonBuilder().setCustomId('command|gather|gear').setLabel('Gear & Upgrades').setStyle(ButtonStyle.Success).setEmoji('🛠️'),
     new ButtonBuilder().setCustomId('command|gather|notifications').setLabel('Toggle Notifications').setStyle(ButtonStyle.Primary).setEmoji('🔔')
   );
