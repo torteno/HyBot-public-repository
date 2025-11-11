@@ -2764,7 +2764,9 @@ const LEGACY_SLASH_COMMANDS = [
   { name: 'start', description: 'Start your adventure in Orbis! (For new players)' },
   { name: 'pets', description: 'View and manage your pets.', options: [{ type: 3, name: 'action', description: 'Action to perform', required: false, choices: [{ name: 'List', value: 'list' }, { name: 'Stable', value: 'stable' }] }] },
   { name: 'activatepet', description: 'Activate a pet from your collection.', options: [{ type: 3, name: 'pet', description: 'Pet identifier', required: true }] },
-  { name: 'stablepet', description: 'Return your active pet to the stable.', options: [{ type: 3, name: 'pet', description: 'Pet identifier', required: false }] }
+  { name: 'stablepet', description: 'Return your active pet to the stable.', options: [{ type: 3, name: 'pet', description: 'Pet identifier', required: false }] },
+  { name: 'chooseclass', description: 'Choose your character class (Warrior, Mage, or Rogue).', options: [{ type: 3, name: 'class', description: 'Class to choose', required: true, choices: [{ name: 'Warrior', value: 'warrior' }, { name: 'Mage', value: 'mage' }, { name: 'Rogue', value: 'rogue' }] }] },
+  { name: 'upgradeclass', description: 'Upgrade your class to an advanced form (requires level 30 and 10+ skills learned).' }
 ];
 
 SLASH_COMMAND_DEFINITIONS.push(...LEGACY_SLASH_COMMANDS);
@@ -4564,6 +4566,10 @@ function updateQuestProgress(player, event) {
       let oldProgress = current;
       
       console.log(`[DEBUG QUEST] Checking objective ${index}: type=${objective.type}, target=${objective.target || objective.item || objective.enemy || 'none'}, current=${current}, needed=${objective.quantity}`);
+      console.log(`[DEBUG QUEST] Objective object keys:`, Object.keys(objective));
+      console.log(`[DEBUG QUEST] Objective.target value:`, objective.target);
+      console.log(`[DEBUG QUEST] Objective.item value:`, objective.item);
+      console.log(`[DEBUG QUEST] Objective.enemy value:`, objective.enemy);
       
       switch (objective.type) {
         case 'defeat': {
@@ -15910,6 +15916,15 @@ async function handleSlashCommand(interaction) {
       const message = createMessageAdapterFromInteraction(interaction);
       return stablePet(message, petId);
     }
+    case 'chooseclass': {
+      const classId = interaction.options.getString('class', true);
+      const message = createMessageAdapterFromInteraction(interaction);
+      return chooseClass(message, classId);
+    }
+    case 'upgradeclass': {
+      const message = createMessageAdapterFromInteraction(interaction);
+      return upgradeClass(message);
+    }
     case 'eventsub': {
       const eventId = interaction.options.getString('event');
       const message = createMessageAdapterFromInteraction(interaction);
@@ -17400,7 +17415,33 @@ async function showAdventureMode(message, chapterId = null) {
     return `${status} **${section.name}**\n${section.description || 'No description'}${objectiveText}${rewardText}`;
   });
   
-  embed.addFields({ name: 'Sections', value: sectionInfo.join('\n\n') || 'No sections available.', inline: false });
+  // Split sections into multiple fields if needed (Discord limit is 1024 chars per field)
+  const sectionsText = sectionInfo.join('\n\n') || 'No sections available.';
+  if (sectionsText.length > 1024) {
+    // Split into multiple fields
+    const chunks = [];
+    let currentChunk = '';
+    sectionInfo.forEach((section, index) => {
+      const addition = index === 0 ? section : `\n\n${section}`;
+      if ((currentChunk + addition).length > 1024) {
+        if (currentChunk) chunks.push(currentChunk);
+        currentChunk = section;
+      } else {
+        currentChunk = currentChunk ? `${currentChunk}\n\n${section}` : section;
+      }
+    });
+    if (currentChunk) chunks.push(currentChunk);
+    
+    chunks.forEach((chunk, index) => {
+      embed.addFields({ 
+        name: index === 0 ? 'Sections' : `Sections (cont. ${index + 1})`, 
+        value: chunk, 
+        inline: false 
+      });
+    });
+  } else {
+    embed.addFields({ name: 'Sections', value: sectionsText, inline: false });
+  }
   
   if (player.adventureMode.currentSection) {
     const currentSection = sections.find(s => s.id === player.adventureMode.currentSection);
@@ -17418,7 +17459,32 @@ async function showAdventureMode(message, chapterId = null) {
         });
       }
       
-      embed.addFields({ name: 'Current Section', value: currentInfo, inline: false });
+      // Split current section info if too long
+      if (currentInfo.length > 1024) {
+        const chunks = [];
+        let currentChunk = '';
+        const lines = currentInfo.split('\n');
+        lines.forEach((line, index) => {
+          const addition = index === 0 ? line : `\n${line}`;
+          if ((currentChunk + addition).length > 1024) {
+            if (currentChunk) chunks.push(currentChunk);
+            currentChunk = line;
+          } else {
+            currentChunk = currentChunk ? `${currentChunk}\n${line}` : line;
+          }
+        });
+        if (currentChunk) chunks.push(currentChunk);
+        
+        chunks.forEach((chunk, index) => {
+          embed.addFields({ 
+            name: index === 0 ? 'Current Section' : `Current Section (cont. ${index + 1})`, 
+            value: chunk, 
+            inline: false 
+          });
+        });
+      } else {
+        embed.addFields({ name: 'Current Section', value: currentInfo, inline: false });
+      }
     }
   }
   
