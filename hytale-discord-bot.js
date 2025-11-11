@@ -1854,8 +1854,9 @@ const QUEST_DEFINITIONS = loadDataFile('quests.json', fallbackQuestDefinitions).
   const objectives = Array.isArray(raw.objectives)
     ? raw.objectives.map(obj => ({
         type: obj.type || 'gather',
-        item: obj.item || obj.target || null,
-        enemy: obj.enemy || obj.target || null,
+        target: obj.target || null,  // Preserve target for command objectives
+        item: obj.item || (obj.type === 'gather' ? obj.target : null) || null,
+        enemy: obj.enemy || (obj.type === 'defeat' ? obj.target : null) || null,
         dungeon: obj.dungeon || null,
         quantity: obj.quantity || obj.count || 1,
         description: obj.description || ''
@@ -8898,7 +8899,7 @@ async function showCodex(message, category, entryIdentifier) {
 
   if (!entry) {
     if (!entryIdentifier) {
-      const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+      // ActionRowBuilder, ButtonBuilder, ButtonStyle are already imported globally
       const listEmbed = new EmbedBuilder()
         .setColor('#2980B9')
         .setTitle(`📘 Codex: ${lowerCat.charAt(0).toUpperCase()}${lowerCat.slice(1)}`);
