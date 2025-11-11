@@ -8591,11 +8591,19 @@ async function showCodex(message, category, entryIdentifier) {
 
       let lines = [];
       let categoryData = [];
+      const playerCodex = player.codex || {};
+      const categoryCodex = playerCodex[lowerCat] || [];
+      
       switch (lowerCat) {
         case 'items':
         case 'item':
           ITEM_LIST.forEach(item => {
-            const line = `${item.emoji} **${item.name || item.id}** (${item.rarity || 'common'})`;
+            const entryId = item.id?.toLowerCase();
+            const isDiscovered = categoryCodex.includes(entryId);
+            const locations = findItemLocation(item.id);
+            const locationText = locations.length > 0 ? ` — Found in: ${locations.slice(0, 2).join(', ')}${locations.length > 2 ? '...' : ''}` : '';
+            const discoveryMark = isDiscovered ? '✅' : '❓';
+            const line = `${discoveryMark} ${item.emoji} **${item.name || item.id}** (${item.rarity || 'common'})${locationText}`;
             lines.push(line);
             categoryData.push({ id: item.id, name: item.name || item.id, emoji: item.emoji });
           });
@@ -8603,7 +8611,12 @@ async function showCodex(message, category, entryIdentifier) {
         case 'enemies':
         case 'enemy':
           ENEMY_LIST.forEach(enemy => {
-            const line = `${enemy.emoji || '❔'} **${enemy.name || enemy.id}** — ${enemy.faction || 'wild'} (${enemy.rarity || 'common'})`;
+            const entryId = (enemy.id || enemy.name)?.toLowerCase();
+            const isDiscovered = categoryCodex.includes(entryId);
+            const locations = findEnemyLocation(enemy.id || enemy.name);
+            const locationText = locations.length > 0 ? ` — Found in: ${locations.join(', ')}` : '';
+            const discoveryMark = isDiscovered ? '✅' : '❓';
+            const line = `${discoveryMark} ${enemy.emoji || '❔'} **${enemy.name || enemy.id}** — ${enemy.faction || 'wild'} (${enemy.rarity || 'common'})${locationText}`;
             lines.push(line);
             categoryData.push({ id: enemy.id || enemy.name, name: enemy.name || enemy.id, emoji: enemy.emoji || '❔' });
           });
@@ -8696,7 +8709,8 @@ async function showCodex(message, category, entryIdentifier) {
         if (lines.length > maxPerField) {
           listEmbed.addFields({ name: 'More Entries', value: `...and ${lines.length - maxPerField} more. Use \`${PREFIX} codex ${lowerCat} <id>\` to view details.` });
         }
-        listEmbed.setDescription(`Found ${lines.length} entries. Use \`${PREFIX} codex ${lowerCat} <id>\` to view details.`);
+        const discoveredCount = lines.filter(l => l.startsWith('✅')).length;
+        listEmbed.setDescription(`Found ${lines.length} entries (${discoveredCount} discovered, ${lines.length - discoveredCount} undiscovered). Use \`${PREFIX} codex ${lowerCat} <id>\` to view details.`);
       } else {
         listEmbed.setDescription('No data found for this category.');
       }
