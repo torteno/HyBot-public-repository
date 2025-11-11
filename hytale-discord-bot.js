@@ -2,9 +2,16 @@
 // Required dependencies: discord.js, axios, node-cron
 // Install: npm install discord.js axios node-cron
 
-require('dotenv').config();
+// Try loading .env.local first (for OneDrive sync issues), then .env
+require('dotenv').config({ path: '.env.local' });
+require('dotenv').config(); // This will override with .env if it exists and is synced
 const TOKEN = process.env.DISCORD_TOKEN;
-if (!TOKEN) throw new Error('DISCORD_TOKEN missing');
+if (!TOKEN) {
+  console.error('❌ DISCORD_TOKEN missing from environment variables');
+  console.error('Available env vars:', Object.keys(process.env).filter(k => k.includes('TOKEN') || k.includes('DISCORD')));
+  console.error('💡 If using OneDrive, make sure .env is synced locally (right-click > Always keep on this device)');
+  throw new Error('DISCORD_TOKEN missing');
+}
 
 const {
   Client,
@@ -88,9 +95,9 @@ setInterval(() => {
 
 // Check if channel is allowed for RPG commands
 function isRPGChannelAllowed(guildId, channelId) {
-  if (!guildId || !channelId) return false;
+  if (!guildId || !channelId) return true; // Allow DMs and missing IDs
   const allowedChannels = RPG_CHANNELS.get(guildId);
-  if (!allowedChannels || allowedChannels.size === 0) return false;
+  if (!allowedChannels || allowedChannels.size === 0) return true; // If no channels configured, allow all
   return allowedChannels.has(channelId);
 }
 
@@ -5215,19 +5222,20 @@ client.on('messageCreate', async message => {
   const isAdmin = message.member?.permissions.has('Administrator') || message.author.username === ADMIN_USER_ID;
   const isSetupCommand = ['setup', 'addchannel', 'start'].includes(command);
   
+  // Always allow setup commands and DMs
   if (!isSetupCommand && message.guild) {
     const guildId = message.guild.id;
     const channelId = message.channel.id;
     
-    // Check if RPG channels are configured for this guild
+    // Only restrict if channels are explicitly configured for this guild
     const allowedChannels = RPG_CHANNELS.get(guildId);
     if (allowedChannels && allowedChannels.size > 0) {
       // RPG channels are configured, check if this channel is allowed
-      if (!isRPGChannelAllowed(guildId, channelId)) {
+      if (!allowedChannels.has(channelId)) {
         return message.reply(`❌ RPG commands are only available in designated channels. Ask an admin to add this channel with \`${PREFIX} addchannel\`.`);
       }
     }
-    // If no channels configured yet, allow all (until setup is run)
+    // If no channels configured yet, allow all commands (backward compatible)
   }
 
   try {
@@ -14475,16 +14483,20 @@ async function handleSlashCommand(interaction) {
   const isAdmin = interaction.member?.permissions.has('Administrator') || interaction.user.username === ADMIN_USER_ID;
   const isSetupCommand = ['setup', 'addchannel', 'start'].includes(interaction.commandName);
   
+  // Always allow setup commands and DMs
   if (!isSetupCommand && interaction.guild) {
     const guildId = interaction.guild.id;
     const channelId = interaction.channel.id;
     
+    // Only restrict if channels are explicitly configured for this guild
     const allowedChannels = RPG_CHANNELS.get(guildId);
     if (allowedChannels && allowedChannels.size > 0) {
-      if (!isRPGChannelAllowed(guildId, channelId)) {
+      // RPG channels are configured, check if this channel is allowed
+      if (!allowedChannels.has(channelId)) {
         return interaction.reply({ ephemeral: true, content: `❌ RPG commands are only available in designated channels. Ask an admin to add this channel with \`${PREFIX} addchannel\`.` });
       }
     }
+    // If no channels configured yet, allow all commands (backward compatible)
   }
   
   const player = getPlayer(interaction.user.id);
@@ -16694,4 +16706,5 @@ function buildPlayerOverviewEmbed(player, exploration) {
   const action = exploration.action ? `${formatActionName(exploration.action.type)} (${formatDuration(exploration.action.endsAt - Date.now())})` : 'Idle';
   embed.addFields({ name: 'Exploration', value: action, inline: false });
   return embed;
+}
 }
