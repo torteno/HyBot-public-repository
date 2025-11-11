@@ -2795,7 +2795,8 @@ const LEGACY_SLASH_COMMANDS = [
   { name: 'activatepet', description: 'Activate a pet from your collection.', options: [{ type: 3, name: 'pet', description: 'Pet identifier', required: true }] },
   { name: 'stablepet', description: 'Return your active pet to the stable.', options: [{ type: 3, name: 'pet', description: 'Pet identifier', required: false }] },
   { name: 'chooseclass', description: 'Choose your character class (Warrior, Mage, or Rogue).', options: [{ type: 3, name: 'class', description: 'Class to choose', required: true, choices: [{ name: 'Warrior', value: 'warrior' }, { name: 'Mage', value: 'mage' }, { name: 'Rogue', value: 'rogue' }] }] },
-  { name: 'upgradeclass', description: 'Upgrade your class to an advanced form (requires level 30 and 10+ skills learned).' }
+  { name: 'upgradeclass', description: 'Upgrade your class to an advanced form (requires level 30 and 10+ skills learned).' },
+  { name: 'classinfo', description: 'View information about your current class, including bonuses and abilities.' }
 ];
 
 SLASH_COMMAND_DEFINITIONS.push(...LEGACY_SLASH_COMMANDS);
@@ -8948,10 +8949,9 @@ async function showCodex(message, category, entryIdentifier) {
 
   const player = getPlayer(message.author.id);
   const lowerCat = category.toLowerCase();
-  const entry = resolveCodexEntry(lowerCat, entryIdentifier);
-
-  if (!entry) {
-    if (!entryIdentifier) {
+  
+  // If no entryIdentifier provided, show the category list
+  if (!entryIdentifier || entryIdentifier.trim() === '') {
       // ActionRowBuilder, ButtonBuilder, ButtonStyle are already imported globally
       const listEmbed = new EmbedBuilder()
         .setColor('#2980B9')
@@ -9066,31 +9066,27 @@ async function showCodex(message, category, entryIdentifier) {
             .setStyle(lowerCat === 'settlements' || lowerCat === 'settlement' ? ButtonStyle.Primary : ButtonStyle.Secondary)
         );
 
-      // Show all entries, split into multiple fields if needed
+      // Show entries with pagination - use the dedicated function
       if (lines.length > 0) {
-        const maxPerField = 20;
-        for (let i = 0; i < lines.length; i += maxPerField) {
-          const chunk = lines.slice(i, i + maxPerField);
-          const fieldName = i === 0 ? 'Entries' : `Entries (continued)`;
-          addQuestField(listEmbed, fieldName, chunk);
-        }
-        if (lines.length > maxPerField) {
-          listEmbed.addFields({ name: 'More Entries', value: `...and ${lines.length - maxPerField} more. Use \`${PREFIX} codex ${lowerCat} <id>\` to view details.` });
-        }
-        const discoveredCount = lines.filter(l => l.startsWith('✅')).length;
-        listEmbed.setDescription(`Found ${lines.length} entries (${discoveredCount} discovered, ${lines.length - discoveredCount} undiscovered). Use \`${PREFIX} codex ${lowerCat} <id>\` to view details.`);
+        return showCodexPage(message, lowerCat, 1);
       } else {
         listEmbed.setDescription('No data found for this category.');
       }
       return sendStyledEmbed(message, listEmbed, 'codex', { components: [navButtons] });
     }
-    return message.reply('❌ Codex entry not found. Check the category or identifier.');
-  }
-  const embed = new EmbedBuilder().setColor('#2ECC71');
-  const normalizedEntryId = entry.id || entry.name?.toLowerCase().replace(/\s+/g, '_');
-  const isDiscovered = isCodexEntryDiscovered(player, lowerCat, normalizedEntryId);
-  let unlocked = false;
-  let questCategory = null;
+    
+    // Try to resolve the entry
+    const entry = resolveCodexEntry(lowerCat, entryIdentifier);
+    if (!entry || (!entry.id && !entry.name)) {
+      return message.reply('❌ Codex entry not found. Check the category or identifier.');
+    }
+    
+    // Show individual entry details
+    const embed = new EmbedBuilder().setColor('#2ECC71');
+    const normalizedEntryId = entry.id || entry.name?.toLowerCase().replace(/\s+/g, '_');
+    const isDiscovered = isCodexEntryDiscovered(player, lowerCat, normalizedEntryId);
+    let unlocked = false;
+    let questCategory = null;
 
   switch (lowerCat) {
     case 'item':
@@ -9318,6 +9314,173 @@ async function showCodex(message, category, entryIdentifier) {
   
   return sendStyledEmbed(message, embed, 'codex', { components: [navButtons1, navButtons2] });
 }
+
+async function showCodexPage(message, category, page = 1) {
+  const player = getPlayer(message.author.id);
+  const lowerCat = category.toLowerCase();
+  
+  const listEmbed = new EmbedBuilder()
+    .setColor('#2980B9')
+    .setTitle(`📘 Codex: ${lowerCat.charAt(0).toUpperCase()}${lowerCat.slice(1)}`);
+
+  let lines = [];
+  const playerCodex = player.codex || {};
+  const categoryCodex = playerCodex[lowerCat] || [];
+  
+  switch (lowerCat) {
+    case 'items':
+    case 'item':
+      ITEM_LIST.forEach(item => {
+        const entryId = item.id?.toLowerCase();
+        const isDiscovered = categoryCodex.includes(entryId);
+        const locations = findItemLocation(item.id);
+        const locationText = locations.length > 0 ? ` — Found in: ${locations.slice(0, 2).join(', ')}${locations.length > 2 ? '...' : ''}` : '';
+        const discoveryMark = isDiscovered ? '✅' : '❓';
+        const line = `${discoveryMark} ${item.emoji} **${item.name || item.id}** (${item.rarity || 'common'})${locationText}`;
+        lines.push(line);
+      });
+      break;
+    case 'enemies':
+    case 'enemy':
+      ENEMY_LIST.forEach(enemy => {
+        const entryId = (enemy.id || enemy.name)?.toLowerCase();
+        const isDiscovered = categoryCodex.includes(entryId);
+        const locations = findEnemyLocation(enemy.id || enemy.name);
+        const locationText = locations.length > 0 ? ` — Found in: ${locations.join(', ')}` : '';
+        const discoveryMark = isDiscovered ? '✅' : '❓';
+        const line = `${discoveryMark} ${enemy.emoji || '❔'} **${enemy.name || enemy.id}** — ${enemy.faction || 'wild'} (${enemy.rarity || 'common'})${locationText}`;
+        lines.push(line);
+      });
+      break;
+    case 'factions':
+    case 'faction':
+      FACTIONS.forEach(faction => {
+        const line = `**${faction.name || faction.id}** — ${faction.description || 'No description'}`;
+        lines.push(line);
+      });
+      break;
+    case 'biomes':
+    case 'biome':
+      BIOMES.forEach(biome => {
+        const line = `**${biome.name || biome.id}** — ${biome.description || 'No description'}`;
+        lines.push(line);
+      });
+      break;
+    case 'dungeons':
+    case 'dungeon':
+      DUNGEON_DEFINITIONS.forEach(d => {
+        const line = `**${d.name || d.id}** — Lvl ${d.minLevel || 1} (${d.theme || 'unknown'})`;
+        lines.push(line);
+      });
+      break;
+    case 'structure':
+    case 'structures':
+      STRUCTURE_DEFINITIONS.forEach(structure => {
+        const line = `**${structure.name || structure.id}** — ${structure.type || 'Unknown'} (${structure.rarity || 'common'})`;
+        lines.push(line);
+      });
+      break;
+    case 'settlement':
+    case 'settlements':
+      SETTLEMENT_TEMPLATES.forEach(settlement => {
+        const line = `**${settlement.name || settlement.id}** — ${settlement.faction || 'Unknown'} (${settlement.traits?.join(', ') || 'No traits'})`;
+        lines.push(line);
+      });
+      break;
+    default:
+      lines.push('Unknown category.');
+  }
+
+  // Pagination
+  const entriesPerPage = 25;
+  const totalPages = Math.ceil(lines.length / entriesPerPage);
+  const currentPage = Math.max(1, Math.min(page, totalPages));
+  
+  const startIdx = (currentPage - 1) * entriesPerPage;
+  const endIdx = Math.min(startIdx + entriesPerPage, lines.length);
+  const pageLines = lines.slice(startIdx, endIdx);
+  
+  // Split into fields (max 20 entries per field)
+  const maxPerField = 20;
+  for (let i = 0; i < pageLines.length; i += maxPerField) {
+    const chunk = pageLines.slice(i, i + maxPerField);
+    const fieldName = i === 0 ? `Entries (Page ${currentPage}/${totalPages})` : `Entries (continued)`;
+    addQuestField(listEmbed, fieldName, chunk);
+  }
+  
+  const discoveredCount = lines.filter(l => l.startsWith('✅')).length;
+  listEmbed.setDescription(`Found ${lines.length} entries (${discoveredCount} discovered, ${lines.length - discoveredCount} undiscovered). Showing page ${currentPage} of ${totalPages}. Use \`${PREFIX} codex ${lowerCat} <id>\` to view details.`);
+  
+  // Navigation buttons
+  const navButtons = new ActionRowBuilder()
+    .addComponents(
+      new ButtonBuilder()
+        .setCustomId('codex|category|items')
+        .setLabel('📦 Items')
+        .setStyle(lowerCat === 'items' || lowerCat === 'item' ? ButtonStyle.Primary : ButtonStyle.Secondary),
+      new ButtonBuilder()
+        .setCustomId('codex|category|enemies')
+        .setLabel('👹 Enemies')
+        .setStyle(lowerCat === 'enemies' || lowerCat === 'enemy' ? ButtonStyle.Primary : ButtonStyle.Secondary),
+      new ButtonBuilder()
+        .setCustomId('codex|category|factions')
+        .setLabel('🛡️ Factions')
+        .setStyle(lowerCat === 'factions' || lowerCat === 'faction' ? ButtonStyle.Primary : ButtonStyle.Secondary),
+      new ButtonBuilder()
+        .setCustomId('codex|category|biomes')
+        .setLabel('🌍 Biomes')
+        .setStyle(lowerCat === 'biomes' || lowerCat === 'biome' ? ButtonStyle.Primary : ButtonStyle.Secondary),
+      new ButtonBuilder()
+        .setCustomId('codex|category|dungeons')
+        .setLabel('🏰 Dungeons')
+        .setStyle(lowerCat === 'dungeons' || lowerCat === 'dungeon' ? ButtonStyle.Primary : ButtonStyle.Secondary)
+    );
+  
+  const navButtons2 = new ActionRowBuilder()
+    .addComponents(
+      new ButtonBuilder()
+        .setCustomId('codex|category|structures')
+        .setLabel('🏛️ Structures')
+        .setStyle(lowerCat === 'structures' || lowerCat === 'structure' ? ButtonStyle.Primary : ButtonStyle.Secondary),
+      new ButtonBuilder()
+        .setCustomId('codex|category|settlements')
+        .setLabel('🏘️ Settlements')
+        .setStyle(lowerCat === 'settlements' || lowerCat === 'settlement' ? ButtonStyle.Primary : ButtonStyle.Secondary)
+    );
+  
+  // Pagination buttons
+  const paginationButtons = [];
+  if (totalPages > 1) {
+    const pageRow = new ActionRowBuilder();
+    if (currentPage > 1) {
+      pageRow.addComponents(
+        new ButtonBuilder()
+          .setCustomId(`codex|page|${lowerCat}|${currentPage - 1}`)
+          .setLabel('◀️ Previous')
+          .setStyle(ButtonStyle.Secondary)
+      );
+    }
+    pageRow.addComponents(
+      new ButtonBuilder()
+        .setCustomId(`codex|page|${lowerCat}|${currentPage}`)
+        .setLabel(`Page ${currentPage}/${totalPages}`)
+        .setStyle(ButtonStyle.Secondary)
+        .setDisabled(true)
+    );
+    if (currentPage < totalPages) {
+      pageRow.addComponents(
+        new ButtonBuilder()
+          .setCustomId(`codex|page|${lowerCat}|${currentPage + 1}`)
+          .setLabel('Next ▶️')
+          .setStyle(ButtonStyle.Secondary)
+      );
+    }
+    paginationButtons.push(pageRow);
+  }
+  
+  return sendStyledEmbed(message, listEmbed, 'codex', { components: [...paginationButtons, navButtons, navButtons2] });
+}
+
 async function showReputation(message, factionIdentifier) {
   const player = getPlayer(message.author.id);
 
@@ -16005,6 +16168,10 @@ async function handleSlashCommand(interaction) {
       const message = createMessageAdapterFromInteraction(interaction);
       return upgradeClass(message);
     }
+    case 'classinfo': {
+      const message = createMessageAdapterFromInteraction(interaction);
+      return showClassInfo(message);
+    }
     case 'eventsub': {
       const eventId = interaction.options.getString('event');
       const message = createMessageAdapterFromInteraction(interaction);
@@ -16481,6 +16648,12 @@ async function handleButtonInteraction(interaction) {
           const category = rest[0] || 'items';
           const message = createMessageAdapterFromInteraction(interaction, { ephemeral: true });
           return showCodex(message, category, null);
+        }
+        if (action === 'page') {
+          const category = rest[0] || 'items';
+          const page = parseInt(rest[1]) || 1;
+          const message = createMessageAdapterFromInteraction(interaction, { ephemeral: true });
+          return showCodexPage(message, category, page);
         }
         break;
       }
@@ -17277,6 +17450,91 @@ async function showSkillTree(message, classId = null) {
   return sendStyledEmbed(message, embed, 'skilltree');
 }
 
+async function showClassInfo(message) {
+  const player = getPlayer(message.author.id);
+  if (!player.skillTree || !player.skillTree.class) {
+    return message.reply(`❌ You haven't chosen a class yet. Complete Adventure Mode Chapter 2: "The Path of Mastery" to unlock class selection. Use \`${PREFIX} adventure\` to check your progress.`);
+  }
+  
+  const classId = player.skillTree.class;
+  const skillTree = SKILL_TREE_LOOKUP[classId.toLowerCase()];
+  if (!skillTree) {
+    return message.reply(`❌ Class data not found.`);
+  }
+  
+  const bonuses = getSkillTreeBonuses(player);
+  const embed = new EmbedBuilder()
+    .setColor('#9B59B6')
+    .setTitle(`${skillTree.emoji} ${skillTree.name} - Class Information`)
+    .setDescription(skillTree.description)
+    .setThumbnail(EMBED_VISUALS.skilltree || EMBED_VISUALS.info || EMBED_VISUALS.profile);
+  
+  // Show class upgrade status
+  if (player.skillTree.upgrade) {
+    const upgrade = skillTree.upgrades?.find(u => u.id === player.skillTree.upgrade);
+    if (upgrade) {
+      embed.addFields({
+        name: `${upgrade.emoji} Class Upgrade: ${upgrade.name}`,
+        value: upgrade.description,
+        inline: false
+      });
+    }
+  } else {
+    const availableUpgrade = skillTree.upgrades?.find(upgrade => {
+      const req = upgrade.requirement || {};
+      const totalSkills = Object.values(player.skillTree.branches || {}).reduce((sum, branch) => {
+        return sum + (branch.skills?.length || 0);
+      }, 0);
+      return player.level >= (req.level || 30) && totalSkills >= (req.skillsLearned || 10);
+    });
+    if (availableUpgrade) {
+      embed.addFields({
+        name: '💫 Available Upgrade',
+        value: `${availableUpgrade.emoji} **${availableUpgrade.name}**\n${availableUpgrade.description}\n\nUse \`${PREFIX} upgradeclass\` to unlock this advanced form.`,
+        inline: false
+      });
+    }
+  }
+  
+  // Show active bonuses
+  const bonusFields = [];
+  if (bonuses.damageMultiplier > 0) bonusFields.push(`⚔️ Damage: +${Math.round(bonuses.damageMultiplier * 100)}%`);
+  if (bonuses.defenseMultiplier > 0) bonusFields.push(`🛡️ Defense: +${Math.round(bonuses.defenseMultiplier * 100)}%`);
+  if (bonuses.spellDamageMultiplier > 0) bonusFields.push(`✨ Spell Damage: +${Math.round(bonuses.spellDamageMultiplier * 100)}%`);
+  if (bonuses.critChance > 0) bonusFields.push(`🎯 Crit Chance: +${Math.round(bonuses.critChance * 100)}%`);
+  if (bonuses.dodgeChance > 0) bonusFields.push(`💨 Dodge Chance: +${Math.round(bonuses.dodgeChance * 100)}%`);
+  if (bonuses.explorationSpeedMultiplier > 0) bonusFields.push(`🧭 Exploration Speed: +${Math.round(bonuses.explorationSpeedMultiplier * 100)}%`);
+  if (bonuses.gatheringYieldMultiplier > 0) bonusFields.push(`🌿 Gathering Yield: +${Math.round(bonuses.gatheringYieldMultiplier * 100)}%`);
+  if (bonuses.lootFindChance > 0) bonusFields.push(`💰 Loot Find: +${Math.round(bonuses.lootFindChance * 100)}%`);
+  if (bonuses.codexDiscoveryChance > 0) bonusFields.push(`📘 Codex Discovery: +${Math.round(bonuses.codexDiscoveryChance * 100)}%`);
+  if (bonuses.petDamageMultiplier > 0) bonusFields.push(`🐾 Pet Damage: +${Math.round(bonuses.petDamageMultiplier * 100)}%`);
+  
+  if (bonusFields.length > 0) {
+    embed.addFields({
+      name: '📊 Active Bonuses',
+      value: bonusFields.join('\n'),
+      inline: false
+    });
+  }
+  
+  // Show skill tree branches
+  const branchList = skillTree.branches.map(branch => {
+    const branchProgress = player.skillTree.branches[branch.id] || { skills: [], points: 0 };
+    const learnedCount = branchProgress.skills?.length || 0;
+    return `🧬 **${branch.name}**: ${learnedCount}/${branch.skills.length} skills learned`;
+  }).join('\n');
+  
+  embed.addFields({
+    name: '🌳 Skill Branches',
+    value: branchList || 'No branches available',
+    inline: false
+  });
+  
+  embed.setFooter({ text: `Use ${PREFIX} skilltree to view your full skill tree • Total Points: ${player.skillTree.totalPoints || 0}` });
+  
+  return sendStyledEmbed(message, embed, 'skilltree');
+}
+
 async function chooseClass(message, classId) {
   const player = getPlayer(message.author.id);
   if (!player.skillTree) player.skillTree = { class: null, branches: {}, totalPoints: 0, upgrade: null };
@@ -17294,6 +17552,15 @@ async function chooseClass(message, classId) {
   const exploration = ensureExplorationState(player);
   const biome = getBiomeDefinition(exploration.currentBiome);
   const isAtSanctum = biome?.id === 'oasis_springs' && exploration.action?.metadata?.structureId === 'class_sanctum';
+  
+  // Check if player has completed chapter 2 section 3 (The Path of Mastery) - required for first class selection
+  if (!player.skillTree.class) {
+    const chapter2Progress = player.adventureMode?.progress?.['chapter_2'];
+    const sectionProgress = chapter2Progress?.['chapter_2_3'];
+    if (!sectionProgress || !sectionProgress.completed) {
+      return message.reply(`❌ You must complete Adventure Mode Chapter 2: "The Path of Mastery" before choosing a class. Use \`${PREFIX} adventure\` to check your progress.`);
+    }
+  }
   
   if (player.skillTree.class && player.skillTree.class !== classId.toLowerCase()) {
     if (!isAtSanctum) {
