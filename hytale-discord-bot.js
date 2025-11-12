@@ -2987,6 +2987,7 @@ const SLASH_COMMAND_DEFINITIONS = [
       { type: 1, name: 'status', description: 'View your exploration status.' },
       { type: 1, name: 'resolve', description: 'Resolve the active exploration action.' },
       { type: 1, name: 'explore', description: 'Search the biome thoroughly for discoveries (higher discovery chances, may encounter enemies).' },
+      { type: 1, name: 'survey', description: 'Survey the area to increase event discovery chances for 10 minutes (30 seconds).' },
       {
         type: 1,
         name: 'activity',
@@ -4680,7 +4681,9 @@ function createNewPlayer() {
         gathering: null, // Current gathering activity {type, startedAt, endsAt, biomeId}
         consecutiveActionsSinceCombat: 0, // Tracking consecutive actions
         lastCombatAt: 0, // Timestamp of last combat
-        pendingChain: null // Pending chain event
+        pendingChain: null, // Pending chain event
+        surveyExpiresAt: null, // Timestamp when survey boost expires
+        surveyBiomeId: null // Biome where survey was performed
       },
       bases: {},
       settlements: {},
@@ -13795,7 +13798,24 @@ function ensureExplorationState(player) {
   if (player.exploration.gathering === undefined) {
     player.exploration.gathering = null;
   }
+  // Initialize survey fields if missing
+  if (player.exploration.surveyExpiresAt === undefined) {
+    player.exploration.surveyExpiresAt = null;
+  }
+  if (player.exploration.surveyBiomeId === undefined) {
+    player.exploration.surveyBiomeId = null;
+  }
   return player.exploration;
+}
+
+// Helper function to check if survey boost is active
+function isSurveyActive(exploration, currentBiomeId) {
+  if (!exploration.surveyExpiresAt || !exploration.surveyBiomeId) {
+    return false;
+  }
+  const now = Date.now();
+  // Check if survey hasn't expired and is in the same biome
+  return now < exploration.surveyExpiresAt && exploration.surveyBiomeId === currentBiomeId;
 }
 
 function getBaseRankDefinition(rank) {
@@ -14301,6 +14321,12 @@ function startExplorationAction(player, actionType, biomeId, metadata = {}, opti
     1,
     Number(options.durationMinutes ?? metadata.durationMinutes ?? getBiomeActionDuration(biomeId, actionType))
   );
+  
+  // Special case: survey takes 30 seconds (0.5 minutes)
+  if (actionType === 'survey') {
+    durationMinutes = 0.5;
+  }
+  
   // Apply skill-based exploration speed multiplier
   try {
     const skillBonuses = getSkillTreeBonuses(player);
@@ -14311,7 +14337,8 @@ function startExplorationAction(player, actionType, biomeId, metadata = {}, opti
   } catch {}
   // Apply Speed attribute bonus (1% faster per point, up to 50% reduction)
   const speedBonus = Math.min(0.5, (player.allocatedAttributes?.speed || 0) * 0.01);
-  durationMinutes = Math.max(1, Math.ceil(durationMinutes * (1 - speedBonus)));
+  durationMinutes = Math.max(0.5, Math.ceil(durationMinutes * (1 - speedBonus))); // Minimum 0.5 for survey
+  
   const now = Date.now();
   exploration.status = 'busy';
   exploration.action = {
@@ -14398,9 +14425,14 @@ function checkDiscoveryItems(player, biomeId, userId) {
 }
 
 function resolveStructureEncounter(player, structureId, message = null) {
-  const structure = STRUCTURE_LOOKUP[structureId?.toLowerCase()];
+  const normalizedId = structureId?.toLowerCase();
+  if (!normalizedId) {
+    return { text: '❌ Structure interaction failed: invalid structure ID.' };
+  }
+  
+  const structure = STRUCTURE_LOOKUP[normalizedId];
   if (!structure) {
-    return { text: 'Found an unmarked ruin but could not glean anything useful.' };
+    return { text: `❌ Found an unmarked ruin but could not glean anything useful. (Structure ID: ${normalizedId} not found)` };
   }
   
   // Handle Class Sanctum special function
@@ -14410,18 +14442,27 @@ function resolveStructureEncounter(player, structureId, message = null) {
   
   const puzzle = structure.puzzle;
   if (!puzzle) {
-    return { text: `Explored **${structure.name}** but found nothing of note.` };
+    // If no puzzle, check if structure has direct rewards
+    if (structure.reward) {
+      const rewardLines = grantRewards(player, structure.reward, message);
+      return { text: `✅ Explored **${structure.name}**! Rewards: ${rewardLines.join(', ')}` };
+    }
+    return { text: `🔍 Explored **${structure.name}** but found nothing of note.` };
   }
+  
+  // Resolve puzzle
   const focus = player.attributes?.focus || 6;
   const agility = player.attributes?.agility || 6;
   let successChance = 0.55 + focus * 0.02 + agility * 0.01 - (puzzle.difficulty || 1) * 0.05;
   successChance = Math.max(0.1, Math.min(0.95, successChance));
   const success = Math.random() < successChance;
+  
   if (success) {
-    const rewardLines = grantRewards(player, puzzle.successReward, null);
-    return { text: `🧩 Solved **${structure.name}** puzzle! Rewards: ${rewardLines.join(', ')}` };
+    const rewardLines = grantRewards(player, puzzle.successReward, message);
+    return { text: `🧩 ✅ Solved **${structure.name}** puzzle! Rewards: ${rewardLines.join(', ')}` };
   }
-  let failureText = `❌ Failed to solve **${structure.name}**.`;
+  
+  let failureText = `❌ Failed to solve **${structure.name}** puzzle.`;
   if (puzzle.failureConsequence?.damagePercent) {
     const damage = Math.floor(player.maxHp * puzzle.failureConsequence.damagePercent);
     player.hp = Math.max(1, player.hp - damage);
@@ -14490,12 +14531,46 @@ function triggerExplorationEvent(player, biome, event, message) {
       return { text: `📖 ${event.id.replace(/_/g, ' ')} — ${rewardLines.join(', ')}` };
     }
     case 'structure': {
-      startExplorationAction(player, 'structure', biome.id, { structureId: event.structure });
-      return { text: `🧩 Discovered **${STRUCTURE_LOOKUP[event.structure]?.name || event.structure}**. Use \`${PREFIX} explore resolve\` when the timer completes.` };
+      const structureId = event.structure?.toLowerCase();
+      const structure = STRUCTURE_LOOKUP[structureId];
+      if (!structure) {
+        return { text: `🧩 Discovered a structure, but it could not be identified.` };
+      }
+      
+      // Auto-unlock structure codex entry when discovered
+      registerCodexUnlock(player, 'structures', structureId);
+      
+      // Start structure interaction action
+      const userId = message?.author?.id || message?.user?.id;
+      startExplorationAction(player, 'structure', biome.id, { structureId: structureId });
+      
+      // Save player data to ensure structure action is persisted
+      if (userId) {
+        savePlayerData(userId);
+      }
+      
+      return { text: `🧩 Discovered **${structure.name || structureId}**. Use \`${PREFIX} explore resolve\` when the timer completes to interact with it.` };
     }
     case 'puzzle': {
-      startExplorationAction(player, 'puzzle', biome.id, { structureId: event.structure });
-      return { text: `🧠 Resonance puzzle detected: **${STRUCTURE_LOOKUP[event.structure]?.name || event.structure}**.` };
+      const structureId = event.structure?.toLowerCase();
+      const structure = STRUCTURE_LOOKUP[structureId];
+      if (!structure) {
+        return { text: `🧠 Resonance puzzle detected, but it could not be identified.` };
+      }
+      
+      // Auto-unlock structure codex entry when discovered
+      registerCodexUnlock(player, 'structures', structureId);
+      
+      // Start puzzle interaction action
+      const userId = message?.author?.id || message?.user?.id;
+      startExplorationAction(player, 'puzzle', biome.id, { structureId: structureId });
+      
+      // Save player data to ensure puzzle action is persisted
+      if (userId) {
+        savePlayerData(userId);
+      }
+      
+      return { text: `🧠 Resonance puzzle detected: **${structure.name || structureId}**. Use \`${PREFIX} explore resolve\` when the timer completes to solve it.` };
     }
     case 'camp': {
       const combatEntries = Array.isArray(biome?.encounters?.combat) ? biome.encounters.combat : [];
@@ -14576,6 +14651,13 @@ function resolveExplorationAction(player, message) {
     }
     exploration.travelHistory.push({ from: action.metadata?.from || exploration.currentBiome, to: action.biomeId, arrivedAt: now });
     exploration.consecutiveActionsSinceCombat = 0;
+    
+    // Clear survey boost when leaving biome (survey is biome-specific)
+    if (exploration.surveyBiomeId && exploration.surveyBiomeId !== action.biomeId) {
+      exploration.surveyExpiresAt = null;
+      exploration.surveyBiomeId = null;
+    }
+    
     responseText = `🚶 Arrived at **${biome?.name || action.biomeId}**.`;
     // Track exploration for adventure mode
     processQuestEvent(message, player, { type: 'explore', biomeId: action.biomeId, count: 1 });
@@ -14628,7 +14710,12 @@ function resolveExplorationAction(player, message) {
     const eventEntries = Array.isArray(biome?.encounters?.events) ? biome.encounters.events : null;
     const combatEntries = Array.isArray(biome?.encounters?.combat) ? biome.encounters.combat : null;
     const totalEventWeight = Object.values(EXPLORATION_EVENT_WEIGHTS).reduce((sum, value) => sum + (Number(value) || 0), 0);
-    const eventTriggerChance = Math.min(0.75, totalEventWeight > 0 ? totalEventWeight : 0.25);
+    let eventTriggerChance = Math.min(0.75, totalEventWeight > 0 ? totalEventWeight : 0.25);
+    
+    // Apply survey boost: increases gathering discovery chance from ~0.1% to ~1% (10x boost)
+    if (isSurveyActive(exploration, biome.id)) {
+      eventTriggerChance = Math.min(0.99, eventTriggerChance * 10); // 10x boost, cap at 99%
+    }
     let combatTriggered = false;
     
     // Check for discovery items first (guaranteed structure discovery)
@@ -14636,11 +14723,22 @@ function resolveExplorationAction(player, message) {
     const discoveryResult = checkDiscoveryItems(player, biome.id, userId);
     if (discoveryResult) {
       const itemData = ITEMS[discoveryResult.itemId];
-      startExplorationAction(player, 'structure', biome.id, { structureId: discoveryResult.structureId });
+      const structureId = discoveryResult.structureId?.toLowerCase();
+      
+      // Auto-unlock structure codex entry when discovered via item
+      registerCodexUnlock(player, 'structures', structureId);
+      
+      startExplorationAction(player, 'structure', biome.id, { structureId: structureId });
+      
+      // Save player data to ensure structure action is persisted
+      if (userId) {
+        savePlayerData(userId);
+      }
+      
       const itemName = itemData?.name || discoveryResult.itemId;
       extraFields.push({ 
         name: '🗺️ Discovery Item Used', 
-        value: `Used **${itemName}** to locate **${discoveryResult.structure.name}**! Use \`${PREFIX} explore resolve\` when the timer completes.`, 
+        value: `Used **${itemName}** to locate **${discoveryResult.structure.name}**! Use \`${PREFIX} explore resolve\` when the timer completes to interact with it.`, 
         inline: false 
       });
     } else if (eventEntries && eventEntries.length) {
@@ -14685,8 +14783,22 @@ function resolveExplorationAction(player, message) {
   }
   if (action.type === 'structure' || action.type === 'puzzle') {
     const structureId = action.metadata?.structureId;
+    if (!structureId) {
+      responseText = '❌ Structure interaction failed: structure ID not found.';
+      exploration.action = null;
+      exploration.status = 'idle';
+      return { text: responseText, fields: extraFields };
+    }
+    
     const outcome = resolveStructureEncounter(player, structureId, message);
     responseText = outcome.text || `Explored ${structureId}.`;
+    
+    // Save player data after structure interaction to persist rewards
+    const userId = message?.author?.id || message?.user?.id;
+    if (userId) {
+      savePlayerData(userId);
+    }
+    
     exploration.action = null;
     exploration.status = 'idle';
     if (outcome.special === 'class_sanctum') {
@@ -14786,14 +14898,30 @@ function resolveExplorationAction(player, message) {
     const discoveryResult = checkDiscoveryItems(player, biome.id, userId);
     let discoveryChance = 0.85; // Higher base chance for explore action
     
+    // Apply survey boost: makes explore action almost certain to find something (95%+)
+    if (isSurveyActive(exploration, biome.id)) {
+      discoveryChance = Math.min(0.98, discoveryChance + 0.13); // Boost to ~98% (almost certain)
+    }
+    
     // Check for discovery items that boost structure finding
     if (discoveryResult) {
       const itemData = ITEMS[discoveryResult.itemId];
-      startExplorationAction(player, 'structure', biome.id, { structureId: discoveryResult.structureId });
+      const structureId = discoveryResult.structureId?.toLowerCase();
+      
+      // Auto-unlock structure codex entry when discovered via item
+      registerCodexUnlock(player, 'structures', structureId);
+      
+      startExplorationAction(player, 'structure', biome.id, { structureId: structureId });
+      
+      // Save player data to ensure structure action is persisted
+      if (userId) {
+        savePlayerData(userId);
+      }
+      
       const itemName = itemData?.name || discoveryResult.itemId;
       extraFields.push({ 
         name: '🗺️ Discovery Item Used', 
-        value: `Used **${itemName}** to locate **${discoveryResult.structure.name}**! Use \`${PREFIX} explore resolve\` when the timer completes.`, 
+        value: `Used **${itemName}** to locate **${discoveryResult.structure.name}**! Use \`${PREFIX} explore resolve\` when the timer completes to interact with it.`, 
         inline: false 
       });
       discoveryChance = 1.0; // Guaranteed additional discovery with item
@@ -14861,9 +14989,73 @@ function resolveExplorationAction(player, message) {
     return { text: responseText, fields: extraFields };
   }
   if (action.type === 'survey') {
-    responseText = `🧭 Surveyed the surroundings of ${biome?.name || exploration.currentBiome}. Future events more likely.`;
+    const now = Date.now();
+    // Set survey boost: lasts 10 minutes (600,000 ms) in current biome
+    exploration.surveyExpiresAt = now + (10 * 60 * 1000); // 10 minutes
+    exploration.surveyBiomeId = exploration.currentBiome;
+    
+    responseText = `🧭 Surveyed the surroundings of ${biome?.name || exploration.currentBiome}. Event discovery chances increased for 10 minutes (as long as you stay in this biome).`;
+    
+    // Check for chain continuation BEFORE clearing action
+    const chainState = exploration.pendingChain;
+    if (chainState && action.metadata?.chainId && chainState.id === action.metadata.chainId) {
+      const nextIndex = (chainState.index ?? 0) + 1;
+      if (nextIndex < chainState.steps.length) {
+        chainState.index = nextIndex;
+        const nextStep = chainState.steps[nextIndex];
+        const stepBiome = nextStep.biomeId || chainState.biomeId || biome?.id || exploration.currentBiome;
+        const durationMinutes = Number(nextStep.durationMinutes ?? getBiomeActionDuration(stepBiome, nextStep.action));
+        const durationMs = startExplorationAction(
+          player,
+          nextStep.action,
+          stepBiome,
+          {
+            ...(nextStep.metadata || {}),
+            chainId: chainState.id,
+            chainStepIndex: nextIndex,
+            chainStepTotal: chainState.steps.length
+          },
+          { durationMinutes }
+        );
+        exploration.pendingChain = chainState;
+        const chainText = `➡️ Chain progress: Step ${nextIndex + 1}/${chainState.steps.length} — ${formatActionName(nextStep.action)} (${formatDuration(durationMs)}).`;
+        responseText += `\n${chainText}`;
+        extraFields.push({ name: 'Chain', value: chainText, inline: false });
+        
+        // Save player data and start progress session for next chain step
+        const userId = message?.author?.id || message?.user?.id;
+        if (userId) {
+          savePlayerData(userId);
+          const progressContext = {
+            message,
+            interaction: message?.interaction || null,
+            ephemeral: message?.ephemeral || false,
+            userId: userId
+          };
+          startExplorationProgressSession(player, progressContext, {
+            action: exploration.action,
+            emoji: '⏳',
+            visualKey: 'explore',
+            label: `${formatActionName(nextStep.action)} — ${getBiomeDefinition(stepBiome)?.name || stepBiome}`,
+            instructions: 'Chain step in progress. Results will post here.',
+            components: buildDashboardComponents()
+          });
+        }
+        return { text: responseText, fields: extraFields };
+      }
+      exploration.pendingChain = null;
+      responseText += `\n✅ Exploration chain **${chainState.id}** completed.`;
+    }
+    
     exploration.action = null;
     exploration.status = 'idle';
+    
+    // Save player data after survey
+    const userId = message?.author?.id || message?.user?.id;
+    if (userId) {
+      savePlayerData(userId);
+    }
+    
     return { text: responseText, fields: extraFields };
   }
   if (action.type === 'event') {
@@ -14896,6 +15088,26 @@ function resolveExplorationAction(player, message) {
       const chainText = `➡️ Chain progress: Step ${nextIndex + 1}/${chainState.steps.length} — ${formatActionName(nextStep.action)} (${formatDuration(durationMs)}).`;
       responseText += `\n${chainText}`;
       extraFields.push({ name: 'Chain', value: chainText, inline: false });
+      
+      // Start progress session for next chain step
+      const userId = message?.author?.id || message?.user?.id;
+      if (userId) {
+        savePlayerData(userId);
+        const progressContext = {
+          message,
+          interaction: message?.interaction || null,
+          ephemeral: message?.ephemeral || false,
+          userId: userId
+        };
+        startExplorationProgressSession(player, progressContext, {
+          action: exploration.action,
+          emoji: '⏳',
+          visualKey: 'explore',
+          label: `${formatActionName(nextStep.action)} — ${getBiomeDefinition(stepBiome)?.name || stepBiome}`,
+          instructions: 'Chain step in progress. Results will post here automatically.',
+          components: buildDashboardComponents()
+        });
+      }
       return { text: responseText, fields: extraFields };
     }
     exploration.pendingChain = null;
@@ -15042,6 +15254,35 @@ async function handleExploreCommand(message, args = []) {
       embed.addFields(result.fields.slice(0, 25));
     }
     return message.reply({ embeds: [embed] });
+  }
+
+  if (subcommand === 'survey') {
+    if (exploration.action) {
+      return message.reply('⏳ Finish or resolve your current action before starting another.');
+    }
+    exploration.pendingChain = null;
+    const durationMs = startExplorationAction(player, 'survey', exploration.currentBiome);
+    const introEmbed = new EmbedBuilder()
+      .setColor('#1ABC9C')
+      .setTitle('📊 Survey')
+      .setDescription(
+        [
+          `Location: ${biome.name || exploration.currentBiome}`,
+          `Estimated duration: ${formatDuration(durationMs)}.`,
+          'Surveying will increase event discovery chances for 10 minutes (as long as you stay in this biome).'
+        ].join('\n')
+      );
+    const styledIntro = applyVisualStyle(introEmbed, 'explore');
+    await startExplorationProgressSession(player, progressContext, {
+      action: exploration.action,
+      emoji: '📊',
+      visualKey: 'explore',
+      label: `Survey — ${biome.name || exploration.currentBiome}`,
+      instructions: 'Survey completes automatically; results will post here.',
+      prependEmbeds: [styledIntro],
+      components: buildDashboardComponents()
+    });
+    return;
   }
 
   if (subcommand === 'cancel') {
@@ -17456,6 +17697,10 @@ async function handleSlashCommand(interaction) {
       if (sub === 'explore') {
         const message = createMessageAdapterFromInteraction(interaction);
         return handleExploreCommand(message, ['explore']);
+      }
+      if (sub === 'survey') {
+        const message = createMessageAdapterFromInteraction(interaction);
+        return handleExploreCommand(message, ['survey']);
       }
       if (sub === 'activity') {
         const activityId = interaction.options.getString('activity_id', true);
