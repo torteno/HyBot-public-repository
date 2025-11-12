@@ -3097,9 +3097,17 @@ const SLASH_COMMAND_DEFINITIONS = [
       {
         type: 1,
         name: 'claim',
-        description: 'Establish a base in the selected biome.',
+        description: 'Establish a base in your current biome.',
         options: [
-          { type: 3, name: 'biome', description: 'Biome identifier', required: false, autocomplete: true }
+          { type: 3, name: 'biome', description: 'Biome identifier (must match current biome)', required: false, autocomplete: true }
+        ]
+      },
+      {
+        type: 1,
+        name: 'warp',
+        description: 'Warp to one of your bases (instant travel).',
+        options: [
+          { type: 3, name: 'biome', description: 'Biome identifier', required: true, autocomplete: true }
         ]
       },
       {
@@ -15305,9 +15313,25 @@ async function handleBaseCommand(message, args = []) {
   }
 
   if (subcommand === 'claim') {
+    // Only allow claiming in the current biome
+    const currentBiomeId = exploration.currentBiome;
+    if (!currentBiomeId) {
+      return message.reply('❌ Unable to determine your current biome. Try using `/travel` first.');
+    }
+    
     const biomeArg = args.slice(1).join(' ');
-    const biomeId = biomeArg ? resolveBiomeId(biomeArg) : exploration.currentBiome;
-    if (!biomeId) return message.reply('❌ Provide a valid biome to claim a base.');
+    // If a biome is specified, check if it matches current biome
+    if (biomeArg) {
+      const specifiedBiomeId = resolveBiomeId(biomeArg);
+      if (!specifiedBiomeId) {
+        return message.reply('❌ Unknown biome specified.');
+      }
+      if (specifiedBiomeId.toLowerCase() !== currentBiomeId.toLowerCase()) {
+        return message.reply(`❌ You can only claim a base in your current biome (**${formatBiomeName(currentBiomeId)}**). You are trying to claim in **${formatBiomeName(specifiedBiomeId)}**.`);
+      }
+    }
+    
+    const biomeId = currentBiomeId;
     const key = biomeId.toLowerCase();
     const alreadyExists = player.bases && player.bases[key];
     const base = ensureBase(player, key);
@@ -15369,10 +15393,61 @@ async function handleBaseCommand(message, args = []) {
     return sendStyledEmbed(message, embed, 'base', { components: buildBaseDetailComponents(base) });
   }
 
+  if (subcommand === 'warp') {
+    const biomeArg = args.slice(1).join(' ');
+    if (!biomeArg) {
+      return message.reply('❌ Usage: `!hy base warp <biome>` - Warp to one of your bases.');
+    }
+    const biomeId = resolveBiomeId(biomeArg);
+    if (!biomeId) {
+      return message.reply('❌ Unknown biome. Use `!hy base list` to see your bases.');
+    }
+    const biomeKey = biomeId.toLowerCase();
+    
+    // Check if player has a base in this biome
+    if (!player.bases || !player.bases[biomeKey]) {
+      return message.reply(`❌ You don't have a base in **${formatBiomeName(biomeId)}**. Use \`${PREFIX} base list\` to see your bases.`);
+    }
+    
+    // Check if already in that biome
+    if (exploration.currentBiome && exploration.currentBiome.toLowerCase() === biomeKey) {
+      return message.reply(`ℹ️ You are already in **${formatBiomeName(biomeId)}**.`);
+    }
+    
+    // Check if player is currently traveling or has an active action
+    if (exploration.action) {
+      return message.reply('⏳ Finish your current action before warping. Use `!hy explore resolve` or `!hy travel resolve` to complete it first.');
+    }
+    
+    // Warp to the base (instant travel)
+    const previousBiome = exploration.currentBiome;
+    exploration.currentBiome = biomeId;
+    exploration.targetBiome = null;
+    exploration.status = 'idle';
+    
+    if (!exploration.discoveredBiomes.includes(biomeId)) {
+      exploration.discoveredBiomes.push(biomeId);
+    }
+    
+    const now = Date.now();
+    exploration.travelHistory.push({ 
+      from: previousBiome || biomeId, 
+      to: biomeId, 
+      arrivedAt: now,
+      method: 'warp'
+    });
+    
+    savePlayerData(message.author.id);
+    
+    const biome = getBiomeDefinition(biomeId);
+    return message.reply(`✨ Warped to your base in **${biome?.name || formatBiomeName(biomeId)}**!`);
+  }
+
   const embed = buildBaseSummaryEmbed(player, exploration);
   embed.setDescription(
     `${embed.data.description || ''}\n\n` +
-    `• Claim: \`${PREFIX} base claim <biome>\`\n` +
+    `• Claim: \`${PREFIX} base claim\` (in current biome)\n` +
+    `• Warp: \`${PREFIX} base warp <biome>\`\n` +
     `• Info: \`${PREFIX} base info <biome>\`\n` +
     `• Rank Up: \`${PREFIX} base rankup <biome>\`\n` +
     `• Modules: \`${PREFIX} base modules <biome>\`\n` +
@@ -15980,6 +16055,7 @@ function buildBaseDetailComponents(base) {
   if (selectRow) rows.push(selectRow);
   const nextRank = getNextBaseRankDefinition(base.rank);
   const primaryRow = new ActionRowBuilder().addComponents(
+    new ButtonBuilder().setCustomId(`base|warp|${base.biomeId}`).setLabel('Warp Here').setStyle(ButtonStyle.Success).setEmoji('✨'),
     new ButtonBuilder().setCustomId(`base|modules|${base.biomeId}`).setLabel('Modules').setStyle(ButtonStyle.Secondary).setEmoji('🧰'),
     new ButtonBuilder().setCustomId(`base|rankup|${base.biomeId}`).setLabel('Rank Up').setStyle(ButtonStyle.Primary).setEmoji('⭐').setDisabled(!nextRank),
     new ButtonBuilder().setCustomId('dashboard|base').setLabel('All Bases').setStyle(ButtonStyle.Success).setEmoji('📜')
@@ -16520,7 +16596,25 @@ function handleSlashAutocomplete(interaction) {
       }
       case 'base': {
         const sub = interaction.options.getSubcommand();
-        if (['info', 'modules', 'claim', 'rankup', 'upgrade'].includes(sub) && focused.name === 'biome') {
+        if (['info', 'modules', 'claim', 'rankup', 'upgrade', 'warp'].includes(sub) && focused.name === 'biome') {
+          // For warp, only show biomes where player has bases
+          if (sub === 'warp') {
+            const player = getPlayer(interaction.user.id);
+            const playerBases = Object.keys(player.bases || {});
+            if (playerBases.length === 0) {
+              return respond([]);
+            }
+            const baseBiomeChoices = BIOMES.filter(biome => 
+              playerBases.includes(biome.id.toLowerCase())
+            ).map(biome => ({
+              name: `${biome.emoji || '🌍'} ${biome.name || formatBiomeName(biome.id)}`,
+              value: biome.id
+            })).filter(choice => {
+              if (!lowerFocused) return true;
+              return choice.name.toLowerCase().includes(lowerFocused) || choice.value.toLowerCase().includes(lowerFocused);
+            });
+            return respond(baseBiomeChoices);
+          }
           return respond(biomeChoices());
         }
         if (sub === 'upgrade' && focused.name === 'module') {
@@ -17531,9 +17625,43 @@ async function handleButtonInteraction(interaction) {
         }
         // Check if base actually exists before performing any action
         if (!player.bases || !player.bases[biomeId]) {
-          return interaction.reply({ ephemeral: true, content: `❌ You don't have a base in **${formatBiomeName(biomeId)}**. Use \`${PREFIX} base claim ${biomeId}\` to establish one.` });
+          return interaction.reply({ ephemeral: true, content: `❌ You don't have a base in **${formatBiomeName(biomeId)}**. Use \`${PREFIX} base claim\` in that biome to establish one.` });
         }
         const base = player.bases[biomeId];
+        if (action === 'warp') {
+          // Check if already in that biome
+          if (exploration.currentBiome && exploration.currentBiome.toLowerCase() === biomeId) {
+            return interaction.reply({ ephemeral: true, content: `ℹ️ You are already in **${formatBiomeName(biomeId)}**.` });
+          }
+          
+          // Check if player is currently traveling or has an active action
+          if (exploration.action) {
+            return interaction.reply({ ephemeral: true, content: '⏳ Finish your current action before warping. Use `/explore resolve` or `/travel resolve` to complete it first.' });
+          }
+          
+          // Warp to the base (instant travel)
+          const previousBiome = exploration.currentBiome;
+          exploration.currentBiome = biomeId;
+          exploration.targetBiome = null;
+          exploration.status = 'idle';
+          
+          if (!exploration.discoveredBiomes.includes(biomeId)) {
+            exploration.discoveredBiomes.push(biomeId);
+          }
+          
+          const now = Date.now();
+          exploration.travelHistory.push({ 
+            from: previousBiome || biomeId, 
+            to: biomeId, 
+            arrivedAt: now,
+            method: 'warp'
+          });
+          
+          savePlayerData(interaction.user.id);
+          
+          const biome = getBiomeDefinition(biomeId);
+          return interaction.reply({ ephemeral: true, content: `✨ Warped to your base in **${biome?.name || formatBiomeName(biomeId)}**!` });
+        }
         if (action === 'modules') {
           const embed = buildBaseModuleListEmbed(player, base);
           return sendStyledEmbed(interaction, embed, 'base', { components: buildBaseModulesComponents(base) });
