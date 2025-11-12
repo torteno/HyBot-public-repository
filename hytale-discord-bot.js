@@ -99,6 +99,178 @@ const GUILD_SETUP_STATUS = new Map(); // guildId -> { setupCompleted: boolean, s
 const ADMIN_USER_ID = 'tortenotorteno'; // Hardcoded admin user
 const RPG_CHANNELS_FILE = path.join(__dirname, 'rpg_channels.json');
 
+// ==================== GUILD LEVELING SYSTEM ====================
+// In-memory storage for leveling data (guildId -> Map<userId -> levelingData>)
+const GUILD_LEVELING = new Map(); // guildId -> Map(userId -> { exp, level, messages, commands })
+
+// Hytale-themed roles (9 roles, progressively more powerful)
+const LEVELING_ROLES = [
+  { level: 1, name: '🌱 Kweebec Seedling', color: 0x8B7355, expRequired: 0 },      // Brown
+  { level: 5, name: '🌿 Kweebec Sprout', color: 0x6B8E23, expRequired: 100 },      // Olive Green
+  { level: 10, name: '🍃 Kweebec Wanderer', color: 0x228B22, expRequired: 500 },   // Forest Green
+  { level: 15, name: '🌳 Kweebec Guardian', color: 0x32CD32, expRequired: 1500 },  // Lime Green
+  { level: 20, name: '⚔️ Orbis Explorer', color: 0x4169E1, expRequired: 3500 },    // Royal Blue
+  { level: 25, name: '🗡️ Orbis Warrior', color: 0x1E90FF, expRequired: 7000 },     // Dodger Blue
+  { level: 30, name: '🏰 Orbis Champion', color: 0x9370DB, expRequired: 12000 },   // Medium Purple
+  { level: 35, name: '👑 Orbis Legend', color: 0xFFD700, expRequired: 20000 },     // Gold
+  { level: 40, name: '✨ Orbis Master', color: 0xFF1493, expRequired: 35000 }      // Deep Pink
+];
+
+// EXP rewards
+const EXP_PER_MESSAGE = 5;
+const EXP_PER_COMMAND = 10;
+
+// Calculate EXP required for a level (non-linear scaling)
+function getExpForLevel(level) {
+  // Level 1 = 0, Level 2 = 50, Level 3 = 150, etc.
+  // Formula: 50 * (level - 1) * level / 2 (triangular number * 50)
+  if (level <= 1) return 0;
+  return Math.floor(50 * (level - 1) * level / 2);
+}
+
+// Calculate level from EXP
+function getLevelFromExp(exp) {
+  let level = 1;
+  while (getExpForLevel(level + 1) <= exp) {
+    level++;
+  }
+  return level;
+}
+
+// Get or create leveling data for a user in a guild
+async function getLevelingData(guildId, userId) {
+  if (!GUILD_LEVELING.has(guildId)) {
+    GUILD_LEVELING.set(guildId, new Map());
+  }
+  
+  const guildLeveling = GUILD_LEVELING.get(guildId);
+  
+  if (!guildLeveling.has(userId)) {
+    // Try to load from database
+    const dbData = await db.loadLevelingData(guildId, userId);
+    if (dbData) {
+      guildLeveling.set(userId, dbData);
+    } else {
+      // Create new leveling data
+      const newData = { exp: 0, level: 1, messages: 0, commands: 0 };
+      guildLeveling.set(userId, newData);
+      // Save to database
+      await db.saveLevelingData(guildId, userId, newData);
+    }
+  }
+  
+  return guildLeveling.get(userId);
+}
+
+// Save leveling data to database
+async function saveLevelingData(guildId, userId, levelingData) {
+  const guildLeveling = GUILD_LEVELING.get(guildId);
+  if (guildLeveling) {
+    guildLeveling.set(userId, levelingData);
+  }
+  await db.saveLevelingData(guildId, userId, levelingData);
+}
+
+// Get role for a level
+function getRoleForLevel(level) {
+  // Find the highest role the user qualifies for
+  for (let i = LEVELING_ROLES.length - 1; i >= 0; i--) {
+    if (level >= LEVELING_ROLES[i].level) {
+      return LEVELING_ROLES[i];
+    }
+  }
+  return LEVELING_ROLES[0]; // Default to first role
+}
+
+// Award EXP and check for level up
+async function awardExp(guildId, userId, expAmount, source, message) {
+  if (!guildId || !userId || !message?.guild) return;
+  
+  const levelingData = await getLevelingData(guildId, userId);
+  const oldLevel = levelingData.level;
+  
+  // Award EXP
+  levelingData.exp += expAmount;
+  if (source === 'message') {
+    levelingData.messages++;
+  } else if (source === 'command') {
+    levelingData.commands++;
+  }
+  
+  // Calculate new level
+  const newLevel = getLevelFromExp(levelingData.exp);
+  levelingData.level = newLevel;
+  
+  // Save to database
+  await saveLevelingData(guildId, userId, levelingData);
+  
+  // Check for level up
+  if (newLevel > oldLevel) {
+    await handleLevelUp(message, userId, oldLevel, newLevel, levelingData);
+  }
+}
+
+// Handle level up: assign role and send notification
+async function handleLevelUp(message, userId, oldLevel, newLevel, levelingData) {
+  try {
+    const guild = message.guild;
+    if (!guild) return;
+    
+    const channel = message.channel;
+    if (!channel) return;
+    
+    const member = await guild.members.fetch(userId).catch(() => null);
+    if (!member) return;
+    
+    const newRole = getRoleForLevel(newLevel);
+    const oldRole = getRoleForLevel(oldLevel);
+    
+    // Remove old role if different
+    if (oldRole.name !== newRole.name) {
+      // Find and remove old role
+      const oldRoleObj = guild.roles.cache.find(r => r.name === oldRole.name);
+      if (oldRoleObj && member.roles.cache.has(oldRoleObj.id)) {
+        await member.roles.remove(oldRoleObj).catch(() => {});
+      }
+    }
+    
+    // Add new role if different
+    if (oldRole.name !== newRole.name) {
+      // Check if role exists, create if not
+      let roleObj = guild.roles.cache.find(r => r.name === newRole.name);
+      if (!roleObj) {
+        roleObj = await guild.roles.create({
+          name: newRole.name,
+          color: newRole.color,
+          reason: 'Auto-created for leveling system'
+        }).catch(() => null);
+      }
+      
+      if (roleObj && !member.roles.cache.has(roleObj.id)) {
+        await member.roles.add(roleObj).catch(() => {});
+      }
+    }
+    
+    // Send level-up notification
+    const embed = new EmbedBuilder()
+      .setColor(newRole.color)
+      .setTitle('🎉 Level Up!')
+      .setDescription(
+        `**${member.user.tag}** has reached **Level ${newLevel}**!\n\n` +
+        `🏆 **New Role:** ${newRole.name}\n` +
+        `⭐ **Total EXP:** ${levelingData.exp.toLocaleString()}\n` +
+        `💬 **Messages:** ${levelingData.messages.toLocaleString()}\n` +
+        `⚡ **Commands:** ${levelingData.commands.toLocaleString()}`
+      )
+      .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
+      .setTimestamp();
+    
+    await channel.send({ embeds: [embed] }).catch(() => {});
+  } catch (error) {
+    console.error('Error handling level up:', error);
+  }
+}
+
 // Save RPG channel restrictions and guild setup status (with Supabase support)
 async function saveRPGChannels() {
   try {
@@ -5745,6 +5917,11 @@ async function executeCommand(message, command, args) {
     return message.reply(`❌ You need to start your adventure first! Use \`${PREFIX} start\` to begin.`);
   }
   
+  // Track command for leveling (only in guilds, skip setup commands)
+  if (message.guild && !isSetupCommand) {
+    await awardExp(message.guild.id, message.author.id, EXP_PER_COMMAND, 'command', message).catch(() => {});
+  }
+  
   // Track command usage for all active quests
   if (player.quests && player.quests.length > 0) {
     console.log(`[DEBUG QUEST] Calling processQuestEvent for command: "${command}"`);
@@ -6410,6 +6587,22 @@ client.on('messageCreate', async message => {
     .setFooter({ text: 'Use /start to begin your adventure!' });
   
   return message.reply({ embeds: [embed] }).catch(() => {});
+});
+
+// ==================== LEVELING MESSAGE TRACKER ====================
+// Track all messages for leveling (runs after other handlers)
+client.on('messageCreate', async message => {
+  // Skip bots
+  if (message.author.bot) return;
+  
+  // Only track messages in guilds (not DMs)
+  if (!message.guild) return;
+  
+  // Skip commands (they're tracked separately)
+  if (message.content.startsWith(PREFIX) || message.interaction) return;
+  
+  // Award EXP for message
+  await awardExp(message.guild.id, message.author.id, EXP_PER_MESSAGE, 'message', message).catch(() => {});
 });
 
 // ==================== COMMAND HANDLER ====================
@@ -17653,6 +17846,17 @@ async function handleSlashCommand(interaction) {
   const isRPGCommand = !['setup', 'addchannel', 'start', 'help', 'info'].includes(interaction.commandName);
   if (isRPGCommand && (player.tutorialStep === undefined || player.tutorialStep === null)) {
     return interaction.reply({ ephemeral: true, content: `❌ You need to start your adventure first! Use \`/start\` to begin.` });
+  }
+  
+  // Track command for leveling (only in guilds, skip setup commands)
+  if (interaction.guild && !isSetupCommand) {
+    // Create a message adapter for leveling tracking
+    const levelingMessage = {
+      guild: interaction.guild,
+      channel: interaction.channel,
+      author: interaction.user
+    };
+    await awardExp(interaction.guild.id, interaction.user.id, EXP_PER_COMMAND, 'command', levelingMessage).catch(() => {});
   }
   
   // Track command usage for all active quests (skip for setup/admin commands)

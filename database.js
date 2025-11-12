@@ -414,6 +414,115 @@ async function loadAllGuildData() {
   }
 }
 
+// ==================== GUILD LEVELING ====================
+
+// Save leveling data for a user in a guild
+async function saveLevelingData(guildId, userId, levelingData) {
+  if (!useSupabase || !supabase) {
+    return { success: false, error: 'Supabase not initialized' };
+  }
+  
+  try {
+    const { data, error } = await supabase
+      .from('guild_leveling')
+      .upsert({
+        guild_id: guildId,
+        user_id: userId,
+        exp: levelingData.exp || 0,
+        level: levelingData.level || 1,
+        messages: levelingData.messages || 0,
+        commands: levelingData.commands || 0,
+        updated_at: new Date().toISOString()
+      }, {
+        onConflict: 'guild_id,user_id'
+      });
+    
+    if (error) {
+      console.error(`❌ Error saving leveling data for ${guildId}/${userId}:`, error.message);
+      return { success: false, error: error.message };
+    }
+    
+    return { success: true, data };
+  } catch (error) {
+    console.error(`❌ Exception saving leveling data for ${guildId}/${userId}:`, error.message);
+    return { success: false, error: error.message };
+  }
+}
+
+// Load leveling data for a user in a guild
+async function loadLevelingData(guildId, userId) {
+  if (!useSupabase || !supabase) {
+    return null;
+  }
+  
+  try {
+    const { data, error } = await supabase
+      .from('guild_leveling')
+      .select('*')
+      .eq('guild_id', guildId)
+      .eq('user_id', userId)
+      .single();
+    
+    if (error) {
+      if (error.code === 'PGRST116') {
+        // No rows returned - user doesn't have leveling data yet
+        return null;
+      }
+      console.error(`❌ Error loading leveling data for ${guildId}/${userId}:`, error.message);
+      return null;
+    }
+    
+    return data ? {
+      exp: data.exp || 0,
+      level: data.level || 1,
+      messages: data.messages || 0,
+      commands: data.commands || 0
+    } : null;
+  } catch (error) {
+    console.error(`❌ Exception loading leveling data for ${guildId}/${userId}:`, error.message);
+    return null;
+  }
+}
+
+// Load all leveling data for a guild
+async function loadAllGuildLeveling(guildId) {
+  if (!useSupabase || !supabase) {
+    return new Map();
+  }
+  
+  try {
+    const { data, error } = await supabase
+      .from('guild_leveling')
+      .select('*')
+      .eq('guild_id', guildId)
+      .order('exp', { ascending: false });
+    
+    if (error) {
+      console.error(`❌ Error loading leveling data for guild ${guildId}:`, error.message);
+      return new Map();
+    }
+    
+    const levelingMap = new Map();
+    if (data && Array.isArray(data)) {
+      data.forEach(row => {
+        if (row.user_id) {
+          levelingMap.set(row.user_id, {
+            exp: row.exp || 0,
+            level: row.level || 1,
+            messages: row.messages || 0,
+            commands: row.commands || 0
+          });
+        }
+      });
+    }
+    
+    return levelingMap;
+  } catch (error) {
+    console.error(`❌ Exception loading leveling data for guild ${guildId}:`, error.message);
+    return new Map();
+  }
+}
+
 module.exports = {
   initSupabase,
   testConnection,
@@ -425,5 +534,8 @@ module.exports = {
   isSupabaseEnabled,
   saveGuildData,
   loadGuildData,
-  loadAllGuildData
+  loadAllGuildData,
+  saveLevelingData,
+  loadLevelingData,
+  loadAllGuildLeveling
 };
