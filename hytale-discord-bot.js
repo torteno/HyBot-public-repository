@@ -1770,9 +1770,12 @@ async function startGatheringSession(player, type, context = {}) {
   const sessionTotals = cloneGatheringBonuses(baseTotals);
   const equippedTool = getEquippedGatheringTool(player, type);
   applyToolBonusesToTotals(sessionTotals, equippedTool, type);
-  const speedBonus = (sessionTotals.global?.speed || 0) + (sessionTotals[type]?.speed || 0);
+  const gearSpeedBonus = (sessionTotals.global?.speed || 0) + (sessionTotals[type]?.speed || 0);
+  // Apply Speed attribute bonus (1% faster per point, up to 50% reduction)
+  const attributeSpeedBonus = Math.min(0.5, (player.allocatedAttributes?.speed || 0) * 0.01);
+  const totalSpeedBonus = Math.min(0.75, gearSpeedBonus + attributeSpeedBonus); // Cap at 75% total
   const baseSeconds = GATHERING_BASELINE_SECONDS[type] || 15;
-  const adjustedSeconds = Math.max(5, Math.round(baseSeconds * Math.max(0.25, 1 - speedBonus)));
+  const adjustedSeconds = Math.max(5, Math.round(baseSeconds * Math.max(0.25, 1 - totalSpeedBonus)));
   const durationMs = adjustedSeconds * 1000;
   const startedAt = Date.now();
   const endsAt = startedAt + durationMs;
@@ -4590,6 +4593,8 @@ function createNewPlayer() {
       tutorialStarted: false,
       achievements: { claimed: [], notified: [] },
       attributes: { power: 10, agility: 8, resilience: 8, focus: 6 },
+      essenceShards: 0, // Attribute upgrade tokens
+      allocatedAttributes: { strength: 0, speed: 0, vitality: 0 }, // Allocated attribute points
       stats: {
         kills: 0,
         deaths: 0,
@@ -4831,6 +4836,14 @@ function getPlayer(userId) {
   if (player.settings.gatherNotifications === undefined) player.settings.gatherNotifications = true;
   if (!player.tutorials) player.tutorials = {};
   if (!player.tutorials.gathering) player.tutorials.gathering = { intro: false, completionHint: false };
+  // Initialize attribute system
+  if (player.essenceShards === undefined) player.essenceShards = 0;
+  if (!player.allocatedAttributes) player.allocatedAttributes = { strength: 0, speed: 0, vitality: 0 };
+  if (player.allocatedAttributes.strength === undefined) player.allocatedAttributes.strength = 0;
+  if (player.allocatedAttributes.speed === undefined) player.allocatedAttributes.speed = 0;
+  if (player.allocatedAttributes.vitality === undefined) player.allocatedAttributes.vitality = 0;
+  // Ensure equipped has artifacts array
+  if (!Array.isArray(player.equipped.artifacts)) player.equipped.artifacts = [];
   // These functions are defined later in the file, but that's okay - they're only called at runtime
   if (typeof cleanupExpiredBuffs === 'function') cleanupExpiredBuffs(player);
   if (typeof ensureGatheringGear === 'function') ensureGatheringGear(player);
@@ -4844,16 +4857,30 @@ function xpForLevel(level) {
 function addXp(player, amount) {
   player.xp += amount;
   let leveled = false;
+  let levelsGained = 0;
   while (player.xp >= xpForLevel(player.level + 1)) {
     player.xp -= xpForLevel(player.level + 1);
     player.level++;
-    player.maxHp += 20;
+    const baseHpGain = 20;
+    player.maxHp += baseHpGain;
     player.maxMana += 10;
+    // Apply vitality bonus to maxHp (recalculate with vitality)
+    const vitalityMultiplier = 1 + (player.allocatedAttributes?.vitality || 0) * 0.01;
+    player.maxHp = Math.floor((player.maxHp - baseHpGain) * vitalityMultiplier) + baseHpGain;
     player.hp = player.maxHp;
     player.mana = player.maxMana;
     leveled = true;
+    levelsGained++;
+    
+    // Level up rewards: Essence Shards (attribute upgrade tokens)
+    // Grant 1 Essence Shard per level, with bonus shards at certain milestones
+    let shardsGained = 1;
+    if (player.level % 5 === 0) shardsGained += 1; // Bonus shard every 5 levels
+    if (player.level % 10 === 0) shardsGained += 1; // Extra bonus every 10 levels
+    
+    player.essenceShards = (player.essenceShards || 0) + shardsGained;
   }
-  return leveled;
+  return { leveled, levelsGained };
 }
 
 function getItemDamage(player) {
@@ -5012,7 +5039,8 @@ function runDungeonEncounter(player, floor) {
     result.xp = Math.max(10, Math.round(enemy.xp * (1 + modifiers.xpBonus)));
     player.coins += enemy.coins;
     player.stats.kills++;
-    result.leveled = addXp(player, result.xp);
+    const levelResult = addXp(player, result.xp);
+    result.leveled = levelResult.leveled;
     result.loot = rollMaterialDrops(player);
     const customLoot = rollCustomLoot(player, floor.lootTable);
     if (customLoot.length > 0) {
@@ -5729,6 +5757,9 @@ async function executeCommand(message, command, args) {
   else if (command === 'stats') {
     await showStats(message);
   }
+  else if (command === 'attributes' || command === 'attr') {
+    await handleAttributesCommand(message, args.slice(1));
+  }
   
   // Combat Commands
   else if (command === 'hunt' || command === 'battle') {
@@ -6377,6 +6408,9 @@ client.on('messageCreate', async message => {
     else if (command === 'stats') {
       await showStats(message);
     }
+    else if (command === 'attributes' || command === 'attr') {
+      await handleAttributesCommand(message, args.slice(1));
+    }
     
     // Combat Commands
     else if (command === 'hunt' || command === 'battle') {
@@ -6749,8 +6783,26 @@ async function showProfile(message, userId = message.author.id) {
     const item = ITEMS[player.equipped.tool];
     equipped.push(`🛠️ **Tool:** ${item?.name || player.equipped.tool}`);
   }
+  // Add spells
+  if (Array.isArray(player.spells?.equipped) && player.spells.equipped.length > 0) {
+    const spellNames = player.spells.equipped.map(spellId => {
+      const spell = SPELL_LOOKUP[spellId.toLowerCase()];
+      return spell ? `${spell.emoji || '✨'} ${spell.name || spellId}` : spellId;
+    }).join(', ');
+    equipped.push(`🔮 **Spells:** ${spellNames} (${player.spells.equipped.length}/4)`);
+  }
+  
+  // Add artifacts (if they exist in equipped)
+  if (player.equipped.artifacts && Array.isArray(player.equipped.artifacts) && player.equipped.artifacts.length > 0) {
+    const artifactNames = player.equipped.artifacts.map(artId => {
+      const item = ITEMS[artId];
+      return item?.name || artId;
+    }).join(', ');
+    equipped.push(`💎 **Artifacts:** ${artifactNames} (${player.equipped.artifacts.length})`);
+  }
+  
   if (equipped.length > 0) {
-    embed.addFields({ name: '⚔️ Equipped Gear', value: equipped.join('\n') });
+    embed.addFields({ name: '⚔️ Equipped', value: equipped.join('\n') });
   }
 
   const activeSetData = getActiveItemSetData(player);
@@ -6859,10 +6911,69 @@ async function showInventory(message, category = null) {
     if (row.components.length) components.push(row);
   }
   
+  // Build equipped section
+  const equippedSection = [];
+  if (player.equipped.weapon) {
+    const item = ITEMS[player.equipped.weapon];
+    equippedSection.push(`⚔️ **Weapon:** ${item?.name || player.equipped.weapon}`);
+  }
+  if (player.equipped.helmet) {
+    const item = ITEMS[player.equipped.helmet];
+    equippedSection.push(`⛑️ **Helmet:** ${item?.name || player.equipped.helmet}`);
+  }
+  if (player.equipped.chestplate) {
+    const item = ITEMS[player.equipped.chestplate];
+    equippedSection.push(`🛡️ **Chestplate:** ${item?.name || player.equipped.chestplate}`);
+  }
+  if (player.equipped.leggings) {
+    const item = ITEMS[player.equipped.leggings];
+    equippedSection.push(`🦵 **Leggings:** ${item?.name || player.equipped.leggings}`);
+  }
+  if (player.equipped.boots) {
+    const item = ITEMS[player.equipped.boots];
+    equippedSection.push(`👢 **Boots:** ${item?.name || player.equipped.boots}`);
+  }
+  if (Array.isArray(player.equipped.accessories) && player.equipped.accessories.length > 0) {
+    const accessoryNames = player.equipped.accessories.map(acc => {
+      const item = ITEMS[acc];
+      return item?.name || acc;
+    }).join(', ');
+    equippedSection.push(`📿 **Accessories:** ${accessoryNames} (${player.equipped.accessories.length}/3)`);
+  }
+  if (player.equipped.artifacts && Array.isArray(player.equipped.artifacts) && player.equipped.artifacts.length > 0) {
+    const artifactNames = player.equipped.artifacts.map(artId => {
+      const item = ITEMS[artId];
+      return item?.name || artId;
+    }).join(', ');
+    equippedSection.push(`💎 **Artifacts:** ${artifactNames}`);
+  }
+  if (player.equipped.tool) {
+    const item = ITEMS[player.equipped.tool];
+    equippedSection.push(`🛠️ **Tool:** ${item?.name || player.equipped.tool}`);
+  }
+  if (Array.isArray(player.spells?.equipped) && player.spells.equipped.length > 0) {
+    const spellNames = player.spells.equipped.map(spellId => {
+      const spell = SPELL_LOOKUP[spellId.toLowerCase()];
+      return spell ? `${spell.emoji || '✨'} ${spell.name || spellId}` : spellId;
+    }).join(', ');
+    equippedSection.push(`🔮 **Spells:** ${spellNames} (${player.spells.equipped.length}/4)`);
+  }
+  if (player.pets?.active) {
+    const pet = PET_LOOKUP[player.pets.active.toLowerCase()];
+    if (pet) {
+      equippedSection.push(`🐾 **Pet:** ${pet.emoji} ${pet.name}`);
+    }
+  }
+  
   const embed = new EmbedBuilder()
     .setColor('#00D4FF')
-    .setTitle(`🎒 Your Inventory${category && category !== 'all' ? ` - ${categories[category]}` : ''}`)
-    .setDescription(filteredItems.slice(0, 20).join('\n') + (filteredItems.length > 20 ? `\n\n...and ${filteredItems.length - 20} more items` : ''))
+    .setTitle(`🎒 Your Inventory${category && category !== 'all' ? ` - ${categories[category]}` : ''}`);
+  
+  if (equippedSection.length > 0) {
+    embed.addFields({ name: '⚔️ Equipped', value: equippedSection.join('\n'), inline: false });
+  }
+  
+  embed.setDescription(filteredItems.slice(0, 20).join('\n') + (filteredItems.length > 20 ? `\n\n...and ${filteredItems.length - 20} more items` : ''))
     .setFooter({ text: `⭐ = Equipped | Use ${PREFIX} equip <item> or ${PREFIX} use <item>` });
   
   return sendStyledEmbed(message, embed, 'inventory', { components });
@@ -7529,9 +7640,13 @@ async function endCombat(interaction, combatState, player, enemy, victory) {
       combatState.battleLog.push(`💚 **Bloodlust** activated! You gain ${healAmount} HP from the kill!`);
     }
     
-    const leveled = addXp(player, xpGain);
-    if (leveled) {
+    const levelResult = addXp(player, xpGain);
+    if (levelResult.leveled) {
+      const shardsGained = levelResult.levelsGained * 1 + (player.level % 5 === 0 ? levelResult.levelsGained : 0) + (player.level % 10 === 0 ? levelResult.levelsGained : 0);
       combatState.battleLog.push(`\n⭐ **LEVEL UP!** You are now level ${player.level}!`);
+      if (player.essenceShards > 0) {
+        combatState.battleLog.push(`✨ Gained Essence Shards! You now have ${player.essenceShards} shards. Use \`${PREFIX} attributes\` to allocate them.`);
+      }
     }
 
     const questEnemyId = enemy.id || enemy.slug || (enemy.name ? enemy.name.toLowerCase().replace(/\s+/g, '_') : null);
@@ -11353,8 +11468,9 @@ function buildPlayerCombatProfile(player, options = {}) {
   
   const damageType = weapon?.damageType || 'physical';
   
-  // Apply skill tree damage multiplier
-  const baseDamageMultiplier = 1 + (setBonuses.damageMultiplier || 0) + (modifiers.damageMultiplier || 0);
+  // Apply skill tree damage multiplier and Strength attribute bonus (1% damage per point)
+  const strengthBonus = (player.allocatedAttributes?.strength || 0) * 0.01;
+  const baseDamageMultiplier = 1 + (setBonuses.damageMultiplier || 0) + (modifiers.damageMultiplier || 0) + strengthBonus;
   const damageMultiplier = Math.max(0.1, baseDamageMultiplier + (skillBonuses.damageMultiplier || 0));
   
   const flatDamageReduction = Math.max(0, (modifiers.enemyDamageReduction || 0) + (setBonuses.flatDamageReduction || 0));
@@ -11371,7 +11487,9 @@ function buildPlayerCombatProfile(player, options = {}) {
     critChance: Math.max(0, critChance),
     critMultiplier,
     accuracy,
-    defense: Math.max(0, (armor?.defense || 0) + defenseBonus + manaDefense),
+    // Apply Vitality attribute bonus (1% HP and 0.5% defense per point)
+    vitalityBonus: (player.allocatedAttributes?.vitality || 0) * 0.005,
+    defense: Math.max(0, Math.floor((armor?.defense || 0) + defenseBonus + manaDefense) * (1 + (player.allocatedAttributes?.vitality || 0) * 0.005)),
     resistances,
     dodgeChance: Math.max(0, dodgeChance),
     blockChance: Math.max(0, blockChance),
@@ -11528,7 +11646,9 @@ function resolveAttack(attacker, defender) {
     damage = Math.floor(damage * (attacker.critMultiplier || 1.5));
   }
 
-  const multiplier = attacker.damageMultiplier != null ? attacker.damageMultiplier : 1;
+  // Apply Strength attribute bonus (1% damage per point)
+  const strengthBonus = (attacker.playerRef?.allocatedAttributes?.strength || 0) * 0.01;
+  const multiplier = (attacker.damageMultiplier != null ? attacker.damageMultiplier : 1) * (1 + strengthBonus);
   damage = Math.floor(damage * multiplier);
 
   const mitigation = Math.floor((defender.defense || 0) * 0.4);
@@ -13059,8 +13179,12 @@ function grantRewards(player, reward, message) {
   }
   let leveled = false;
   if (reward.xp) {
-    leveled = addXp(player, reward.xp) || leveled;
+    const levelResult = addXp(player, reward.xp);
+    leveled = levelResult.leveled || leveled;
     lines.push(`XP +${reward.xp}`);
+    if (levelResult.leveled && player.essenceShards > 0) {
+      lines.push(`✨ Essence Shards: ${player.essenceShards}`);
+    }
   }
   if (reward.reputation) {
     Object.entries(reward.reputation).forEach(([factionId, amount]) => {
@@ -13504,6 +13628,9 @@ function calculateTravelDuration(player, fromBiomeId, toBiomeId) {
   }
   const gearModifier = player.cosmetics?.titles?.equipped === 'title_duelist' ? 0.95 : 1;
   modifier *= gearModifier;
+  // Apply Speed attribute bonus (1% faster per point, up to 50% reduction)
+  const speedBonus = Math.min(0.5, (player.allocatedAttributes?.speed || 0) * 0.01);
+  modifier *= (1 - speedBonus);
   return Math.max(60_000, baseMinutes * difficulty * modifier * 60_000);
 }
 function processBaseTick(player, biomeId, now = Date.now()) {
@@ -13634,11 +13761,11 @@ function processBaseTick(player, biomeId, now = Date.now()) {
     }
 
     if (levelData.xpPerHour) {
-      const xp = Math.floor(levelData.xpPerHour * minutes / 60);
-      if (xp > 0) {
-        const leveled = addXp(player, xp);
-        rewards.push(`📘 ${moduleDef.name} granted ${xp} XP${leveled ? ' (Level Up!)' : ''}.`);
-      }
+        const xp = Math.floor(levelData.xpPerHour * minutes / 60);
+        if (xp > 0) {
+          const levelResult = addXp(player, xp);
+          rewards.push(`📘 ${moduleDef.name} granted ${xp} XP${levelResult.leveled ? ' (Level Up!)' : ''}.`);
+        }
     }
 
     if (levelData.surveyChancePerHour) {
@@ -13821,6 +13948,9 @@ function startExplorationAction(player, actionType, biomeId, metadata = {}, opti
       durationMinutes = Math.max(1, Math.ceil(durationMinutes * (1 - speed)));
     }
   } catch {}
+  // Apply Speed attribute bonus (1% faster per point, up to 50% reduction)
+  const speedBonus = Math.min(0.5, (player.allocatedAttributes?.speed || 0) * 0.01);
+  durationMinutes = Math.max(1, Math.ceil(durationMinutes * (1 - speedBonus)));
   const now = Date.now();
   exploration.status = 'busy';
   exploration.action = {
@@ -17248,6 +17378,17 @@ async function handleSlashCommand(interaction) {
       const faction = interaction.options.getString('faction');
       const message = createMessageAdapterFromInteraction(interaction);
       return handleReputationCommand(message, faction ? [faction] : []);
+    }
+    case 'attributes': {
+      const action = interaction.options.getString('action') || 'status';
+      const attribute = interaction.options.getString('attribute');
+      const amount = interaction.options.getInteger('amount');
+      const args = [action];
+      if (attribute) args.push(attribute);
+      if (amount) args.push(String(amount));
+      if (action === 'reset' && !attribute) args.push('confirm');
+      const message = createMessageAdapterFromInteraction(interaction);
+      return handleAttributesCommand(message, args);
     }
     case 'pets': {
       const action = interaction.options.getString('action') || 'list';
