@@ -4900,7 +4900,14 @@ function getItemDefense(player) {
 
 function addItemToInventory(player, itemName, amount = 1) {
   if (!ITEMS[itemName]) return false;
+  const wasFirstTime = !player.inventory[itemName] || player.inventory[itemName] === 0;
   player.inventory[itemName] = (player.inventory[itemName] || 0) + amount;
+  
+  // Auto-unlock codex entry when item is first obtained
+  if (wasFirstTime) {
+    registerCodexUnlock(player, 'items', itemName.toLowerCase());
+  }
+  
   return true;
 }
 
@@ -7653,6 +7660,9 @@ async function endCombat(interaction, combatState, player, enemy, victory) {
     if (questEnemyId) {
       const message = createMessageAdapterFromInteraction(interaction);
       processQuestEvent(message, player, { type: 'defeat', enemyId: questEnemyId, count: 1 });
+      
+      // Auto-unlock enemy codex entry when defeated
+      registerCodexUnlock(player, 'enemies', questEnemyId);
     }
 
     const lootRewards = rollMaterialDrops(player);
@@ -8076,6 +8086,11 @@ async function continueDungeon(message) {
 
     await message.channel.send(buildStyledPayload(summary, 'combat', { components: buildSystemComponents('combat') })).catch(() => {});
     processQuestEvent(message, player, { type: 'dungeon', dungeonId: game.dungeonId, count: 1 });
+    
+    // Auto-unlock dungeon codex entry when completed
+    if (game.dungeonId) {
+      registerCodexUnlock(player, 'dungeons', game.dungeonId.toLowerCase());
+    }
   } else {
     const nextFloor = game.floors[game.currentFloor];
     const environmentNote = game.environment ? `Environment: ${game.environment}` : null;
@@ -9277,13 +9292,13 @@ async function showLore(message, topic) {
     .setFooter({ text: 'Discover more lore by exploring Orbis!' });
   return sendStyledEmbed(message, embed, 'lore');
 }
-// Helper function to find where an item is located/found
-function findItemLocation(itemId) {
-  const locations = [];
+// Helper function to find item sources with detailed information (chances, biomes, etc.)
+function findItemSourcesWithChances(itemId) {
+  const sources = [];
   const normalizedId = itemId?.toLowerCase();
-  if (!normalizedId) return locations;
+  if (!normalizedId) return sources;
   
-  // Check gathering resources
+  // Check gathering resources with chances
   GATHERING_RESOURCE_BIOMES.forEach((biomeData, biomeId) => {
     const biome = BIOMES.find(b => b.id === biomeId);
     const biomeName = biome?.name || biomeId;
@@ -9292,7 +9307,18 @@ function findItemLocation(itemId) {
       if (biomeData[type]) {
         const found = biomeData[type].find(r => r.item?.toLowerCase() === normalizedId);
         if (found) {
-          locations.push(`${biomeName} (${type})`);
+          const totalWeight = biomeData[type].reduce((sum, r) => sum + (r.weight || r.chance || 0), 0);
+          const chance = totalWeight > 0 ? ((found.weight || found.chance || 0) / totalWeight * 100).toFixed(1) : '?';
+          sources.push({
+            type: 'gathering',
+            method: type,
+            biome: biomeName,
+            biomeId: biomeId,
+            chance: parseFloat(chance),
+            rarity: found.rarity || 'common',
+            min: found.min || 1,
+            max: found.max || 1
+          });
         }
       }
     });
@@ -9306,32 +9332,160 @@ function findItemLocation(itemId) {
           const found = biome.resources[type].find(r => r.item?.toLowerCase() === normalizedId);
           if (found) {
             const biomeName = biome.name || biome.id;
-            locations.push(`${biomeName} (exploration ${type})`);
+            const totalWeight = biome.resources[type].reduce((sum, r) => sum + (r.chance || r.weight || 0), 0);
+            const chance = totalWeight > 0 ? ((found.chance || found.weight || 0) / totalWeight * 100).toFixed(1) : '?';
+            sources.push({
+              type: 'exploration',
+              method: type,
+              biome: biomeName,
+              biomeId: biome.id,
+              chance: parseFloat(chance),
+              rarity: found.rarity || 'common',
+              min: found.min || found.quantityMin || 1,
+              max: found.max || found.quantityMax || 1
+            });
           }
         }
       });
     }
   });
   
-  // Check item sources
+  // Check enemy drops
+  ENEMY_LIST.forEach(enemy => {
+    if (enemy.drops) {
+      const drop = enemy.drops.find(d => (d.item || d.id)?.toLowerCase() === normalizedId);
+      if (drop) {
+        const chance = (drop.chance || drop.rate || 0) * 100;
+        sources.push({
+          type: 'enemy_drop',
+          enemy: enemy.name || enemy.id,
+          enemyId: enemy.id,
+          biome: enemy.biome,
+          chance: chance,
+          rarity: drop.rarity || enemy.rarity || 'common',
+          min: drop.min || drop.quantity || 1,
+          max: drop.max || drop.quantity || 1
+        });
+      }
+    }
+  });
+  
+  // Check item sources file
   try {
     const itemSources = require('./data/item_sources.json');
     if (itemSources[normalizedId]) {
       itemSources[normalizedId].forEach(source => {
-        if (source.includes('gathering_')) {
-          locations.push(`Gathering (${source.replace('gathering_', '')})`);
-        } else if (source.includes('exploration_')) {
-          locations.push(`Exploration (${source.replace('exploration_', '')})`);
-        } else {
-          locations.push(source.replace(/_/g, ' '));
+        if (!sources.find(s => s.type === source && s.method === source)) {
+          sources.push({
+            type: source,
+            method: source.replace(/^(gathering_|exploration_|enemy_|structure_|)/, ''),
+            chance: null,
+            rarity: 'unknown'
+          });
         }
       });
     }
   } catch (e) {
-    // File might not exist, ignore
+    // File not found, continue
   }
   
+  return sources;
+}
+
+// Helper function to find where an item is located/found (backward compatibility)
+function findItemLocation(itemId) {
+  const sources = findItemSourcesWithChances(itemId);
+  const locations = [];
+  
+  sources.forEach(source => {
+    if (source.biome) {
+      locations.push(`${source.biome} (${source.method || source.type})`);
+    } else if (source.enemy) {
+      locations.push(`Enemy: ${source.enemy}`);
+    } else {
+      locations.push(source.type.replace(/_/g, ' '));
+    }
+  });
+  
   return [...new Set(locations)]; // Remove duplicates
+}
+
+// Helper function to find what an item can be used for
+function findItemUses(itemId) {
+  const uses = [];
+  const normalizedId = itemId?.toLowerCase();
+  if (!normalizedId) return uses;
+  
+  // Find recipes that use this item as ingredient
+  Object.values(RECIPES).forEach(recipe => {
+    if (recipe.ingredients && recipe.ingredients[normalizedId]) {
+      const resultItem = ITEMS[recipe.result];
+      uses.push({
+        type: 'crafting_ingredient',
+        recipe: recipe.result,
+        recipeName: recipe.name || recipe.result,
+        quantity: recipe.ingredients[normalizedId],
+        resultItem: resultItem?.name || recipe.result,
+        level: recipe.level || 1,
+        station: recipe.station || 'forge'
+      });
+    }
+  });
+  
+  // Find recipes that create this item
+  const recipe = RECIPES[normalizedId];
+  if (recipe) {
+    uses.push({
+      type: 'craftable',
+      recipe: normalizedId,
+      recipeName: recipe.name || normalizedId,
+      level: recipe.level || 1,
+      station: recipe.station || 'forge',
+      ingredients: recipe.ingredients || {}
+    });
+  }
+  
+  // Check if item is used in brews
+  Object.values(BREW_MAP || {}).forEach(brew => {
+    if (brew.ingredients && brew.ingredients[normalizedId]) {
+      uses.push({
+        type: 'brew_ingredient',
+        brew: brew.id,
+        brewName: brew.name || brew.id,
+        quantity: brew.ingredients[normalizedId]
+      });
+    }
+  });
+  
+  // Check if item is a brew itself
+  const brew = BREW_MAP?.[normalizedId];
+  if (brew) {
+    uses.push({
+      type: 'brewable',
+      brew: normalizedId,
+      brewName: brew.name || normalizedId,
+      ingredients: brew.ingredients || {}
+    });
+  }
+  
+  // Check if item is consumable/usable
+  const item = ITEMS[normalizedId];
+  if (item) {
+    if (item.type === 'consumable' || item.heal || item.mana) {
+      uses.push({
+        type: 'consumable',
+        effect: item.heal ? `Heals ${item.heal} HP` : item.mana ? `Restores ${item.mana} Mana` : 'Consumable item'
+      });
+    }
+    if (item.type === 'weapon' || item.type === 'helmet' || item.type === 'chestplate' || item.type === 'leggings' || item.type === 'boots' || item.type === 'accessory' || item.type === 'tool') {
+      uses.push({
+        type: 'equippable',
+        slot: item.type
+      });
+    }
+  }
+  
+  return uses;
 }
 
 // Helper function to find where an enemy is found
@@ -9903,8 +10057,8 @@ async function showCodex(message, category, entryIdentifier) {
     case 'item':
     case 'items': {
       questCategory = 'items';
-      const locations = findItemLocation(entry.id);
-      const locationText = locations.length > 0 ? locations.join(', ') : 'Unknown location';
+      const sources = findItemSourcesWithChances(entry.id);
+      const uses = findItemUses(entry.id);
       
       if (isDiscovered) {
         // Show full information for discovered entries
@@ -9913,21 +10067,87 @@ async function showCodex(message, category, entryIdentifier) {
           .addFields(
             { name: 'Type', value: entry.type || 'Unknown', inline: true },
             { name: 'Rarity', value: entry.rarity || 'Unknown', inline: true },
-            { name: 'Value', value: `${entry.value || 0} coins`, inline: true },
-            { name: 'Found In', value: locationText, inline: false }
+            { name: 'Value', value: `${entry.value || 0} coins`, inline: true }
           );
+        
+        // Stats section
         const stats = [];
-        if (entry.damage) stats.push(`Damage: ${entry.damage}`);
+        if (entry.damage || entry.damageMin) {
+          if (entry.damageMin && entry.damageMax) {
+            stats.push(`Damage: ${entry.damageMin}-${entry.damageMax}`);
+          } else {
+            stats.push(`Damage: ${entry.damage || entry.damageMin || 0}`);
+          }
+        }
         if (entry.defense) stats.push(`Defense: ${entry.defense}`);
         if (entry.heal) stats.push(`Heal: ${entry.heal}`);
         if (entry.mana) stats.push(`Mana: ${entry.mana}`);
         if (entry.luck) stats.push(`Luck: ${entry.luck}`);
-        if (stats.length) embed.addFields({ name: 'Attributes', value: stats.join(' • ') });
-        if (entry.tags?.length) embed.addFields({ name: 'Tags', value: entry.tags.join(', ') });
+        if (entry.critChance) stats.push(`Crit Chance: ${(entry.critChance * 100).toFixed(1)}%`);
+        if (entry.critMultiplier) stats.push(`Crit Multiplier: ${entry.critMultiplier}x`);
+        if (entry.accuracy) stats.push(`Accuracy: ${(entry.accuracy * 100).toFixed(0)}%`);
+        if (entry.dodgeChance) stats.push(`Dodge: ${(entry.dodgeChance * 100).toFixed(1)}%`);
+        if (stats.length) embed.addFields({ name: '📊 Stats', value: stats.join(' • ') });
+        
+        // Where to obtain (with chances)
+        if (sources.length > 0) {
+          const sourceLines = [];
+          sources.forEach(source => {
+            if (source.type === 'gathering' || source.type === 'exploration') {
+              const chanceText = source.chance ? `${source.chance}%` : '?';
+              const qtyText = source.min === source.max ? `${source.min}` : `${source.min}-${source.max}`;
+              sourceLines.push(`• **${source.biome}** — ${source.method} (${chanceText} chance, ${qtyText}x, ${source.rarity})`);
+            } else if (source.type === 'enemy_drop') {
+              const chanceText = source.chance ? `${source.chance}%` : '?';
+              const qtyText = source.min === source.max ? `${source.min}` : `${source.min}-${source.max}`;
+              const biomeText = source.biome ? ` in ${source.biome}` : '';
+              sourceLines.push(`• **${source.enemy}**${biomeText} — Drop (${chanceText} chance, ${qtyText}x, ${source.rarity})`);
+            }
+          });
+          if (sourceLines.length > 0) {
+            embed.addFields({ name: '📍 Where to Obtain', value: sourceLines.slice(0, 10).join('\n') + (sourceLines.length > 10 ? `\n...and ${sourceLines.length - 10} more sources` : ''), inline: false });
+          }
+        }
+        
+        // What you can do with it
+        if (uses.length > 0) {
+          const useLines = [];
+          uses.forEach(use => {
+            if (use.type === 'craftable') {
+              const ingredientList = Object.entries(use.ingredients).map(([ing, qty]) => {
+                const ingItem = ITEMS[ing];
+                return `${ingItem?.emoji || ''} ${ingItem?.name || ing} x${qty}`;
+              }).join(', ');
+              useLines.push(`• **Craftable** — ${use.recipeName} (Lvl ${use.level}, ${use.station})\n  Requires: ${ingredientList}`);
+            } else if (use.type === 'crafting_ingredient') {
+              const resultItem = ITEMS[use.recipe];
+              useLines.push(`• **Crafting Ingredient** — Used to craft ${resultItem?.emoji || ''} ${use.resultItem} (x${use.quantity} needed, Lvl ${use.level})`);
+            } else if (use.type === 'brewable') {
+              const ingredientList = Object.entries(use.ingredients).map(([ing, qty]) => {
+                const ingItem = ITEMS[ing];
+                return `${ingItem?.emoji || ''} ${ingItem?.name || ing} x${qty}`;
+              }).join(', ');
+              useLines.push(`• **Brewable** — ${use.brewName}\n  Requires: ${ingredientList}`);
+            } else if (use.type === 'brew_ingredient') {
+              useLines.push(`• **Brew Ingredient** — Used in ${use.brewName} (x${use.quantity} needed)`);
+            } else if (use.type === 'consumable') {
+              useLines.push(`• **Consumable** — ${use.effect}`);
+            } else if (use.type === 'equippable') {
+              useLines.push(`• **Equippable** — Can be equipped in ${use.slot} slot`);
+            }
+          });
+          if (useLines.length > 0) {
+            embed.addFields({ name: '🔧 Uses', value: useLines.slice(0, 8).join('\n') + (useLines.length > 8 ? `\n...and ${useLines.length - 8} more uses` : ''), inline: false });
+          }
+        }
+        
+        if (entry.tags?.length) embed.addFields({ name: '🏷️ Tags', value: entry.tags.join(', ') });
       } else {
         // Show limited information for undiscovered entries
+        const locations = findItemLocation(entry.id);
+        const locationText = locations.length > 0 ? locations.slice(0, 3).join(', ') + (locations.length > 3 ? '...' : '') : 'Unknown location';
         embed.setTitle(`❓ ${entry.emoji || '❔'} ${entry.name || entry.id}`)
-          .setDescription('*This entry has not been discovered yet. Find it in the world to unlock full details.*')
+          .setDescription('*This entry has not been discovered yet. Obtain this item to unlock full details including stats, sources, and uses.*')
           .addFields(
             { name: 'Rarity', value: entry.rarity || 'Unknown', inline: true },
             { name: 'Found In', value: locationText, inline: false }
@@ -9948,19 +10168,50 @@ async function showCodex(message, category, entryIdentifier) {
       if (isDiscovered) {
         // Show full information for discovered entries
         embed.setTitle(`✅ ${entry.emoji || '❔'} ${entry.name || entry.id}`)
-          .setDescription(`Faction: ${entry.faction || 'Unknown'} • Biome: ${entry.biome || 'Unknown'}`)
+          .setDescription(entry.description || `Faction: ${entry.faction || 'Unknown'} • Biome: ${entry.biome || 'Unknown'}`)
           .addFields(
-            { name: 'HP', value: `${entry.hp}`, inline: true },
-            { name: 'Damage', value: `${entry.damage}`, inline: true },
-            { name: 'XP Reward', value: `${entry.xp}`, inline: true },
-            { name: 'Coins', value: `${entry.coins}`, inline: true },
-            { name: 'Found In', value: locationText, inline: false }
+            { name: 'HP', value: `${entry.hp || '?'}`, inline: true },
+            { name: 'Damage', value: `${entry.damage || '?'}`, inline: true },
+            { name: 'Defense', value: `${entry.defense || 0}`, inline: true },
+            { name: 'XP Reward', value: `${entry.xp || 0}`, inline: true },
+            { name: 'Coins', value: `${entry.coins || 0}`, inline: true },
+            { name: 'Rarity', value: entry.rarity || 'Unknown', inline: true }
           );
-        if (entry.tags?.length) embed.addFields({ name: 'Traits', value: entry.tags.join(', ') });
+        
+        if (entry.drops && entry.drops.length > 0) {
+          const dropLines = entry.drops.map(drop => {
+            const item = ITEMS[drop.item || drop.id];
+            const chance = drop.chance || drop.rate ? `${((drop.chance || drop.rate) * 100).toFixed(1)}%` : '?';
+            const qty = drop.quantity || drop.min || 1;
+            return `• ${item?.emoji || ''} ${item?.name || drop.item || drop.id} (${chance} chance, ${qty}x)`;
+          });
+          embed.addFields({ name: '💎 Drops', value: dropLines.join('\n'), inline: false });
+        }
+        
+        if (entry.abilities && entry.abilities.length > 0) {
+          const abilityLines = entry.abilities.map(ability => {
+            const desc = ability.description || ability.name || ability.id;
+            return `• **${ability.name || ability.id}** — ${desc}`;
+          });
+          embed.addFields({ name: '⚔️ Abilities', value: abilityLines.join('\n'), inline: false });
+        }
+        
+        if (entry.resistances) {
+          const resistLines = Object.entries(entry.resistances).map(([type, value]) => {
+            const percent = typeof value === 'number' ? `${(value * 100).toFixed(0)}%` : value;
+            return `${type}: ${percent}`;
+          });
+          if (resistLines.length > 0) {
+            embed.addFields({ name: '🛡️ Resistances', value: resistLines.join(' • '), inline: false });
+          }
+        }
+        
+        embed.addFields({ name: '📍 Found In', value: locationText, inline: false });
+        if (entry.tags?.length) embed.addFields({ name: '🏷️ Traits', value: entry.tags.join(', ') });
       } else {
         // Show limited information for undiscovered entries
         embed.setTitle(`❓ ${entry.emoji || '❔'} ${entry.name || entry.id}`)
-          .setDescription('*This enemy has not been encountered yet. Defeat it in combat to unlock full details.*')
+          .setDescription('*This enemy has not been encountered yet. Defeat it in combat to unlock full details including stats, drops, and abilities.*')
           .addFields(
             { name: 'Rarity', value: entry.rarity || 'Unknown', inline: true },
             { name: 'Found In', value: locationText, inline: false }
@@ -9975,18 +10226,52 @@ async function showCodex(message, category, entryIdentifier) {
     case 'faction':
     case 'factions': {
       questCategory = 'factions';
-      embed.setTitle(`🛡️ ${entry.name}`)
-        .setDescription(entry.description || 'No description available.')
-        .addFields(
-          { name: 'Alignment', value: entry.alignment || 'Unknown', inline: true },
-          { name: 'Home Biome', value: entry.homeBiome || 'Unknown', inline: true }
-        );
-      if (entry.leaders?.length) embed.addFields({ name: 'Leaders', value: entry.leaders.join(', ') });
-      if (entry.signatureItems?.length) embed.addFields({ name: 'Signature Items', value: entry.signatureItems.join(', ') });
-      if (entry.allies?.length) embed.addFields({ name: 'Allies', value: entry.allies.join(', ') });
-      if (entry.rivals?.length) embed.addFields({ name: 'Rivals', value: entry.rivals.join(', ') });
-      if (entry.traits?.length) embed.addFields({ name: 'Traits', value: entry.traits.join(', ') });
-      if (normalizedEntryId) {
+      const isDiscovered = isCodexEntryDiscovered(player, 'factions', normalizedEntryId);
+      const playerRep = player.reputation?.[normalizedEntryId] || 0;
+      
+      if (isDiscovered) {
+        embed.setTitle(`✅ 🛡️ ${entry.name}`)
+          .setDescription(entry.description || 'No description available.')
+          .addFields(
+            { name: 'Alignment', value: entry.alignment || 'Unknown', inline: true },
+            { name: 'Home Biome', value: entry.homeBiome || 'Unknown', inline: true },
+            { name: 'Your Reputation', value: `${playerRep >= 0 ? '+' : ''}${playerRep}`, inline: true }
+          );
+        
+        // Show settlements
+        const settlements = SETTLEMENT_TEMPLATES.filter(s => s.faction === entry.id);
+        if (settlements.length > 0) {
+          const settlementNames = settlements.map(s => s.name || s.id).join(', ');
+          embed.addFields({ name: '🏘️ Settlements', value: settlementNames, inline: false });
+        }
+        
+        // Show enemies
+        const factionEnemies = ENEMY_LIST.filter(e => e.faction === entry.id);
+        if (factionEnemies.length > 0) {
+          const enemyNames = factionEnemies.slice(0, 5).map(e => `${e.emoji || ''} ${e.name || e.id}`).join(', ');
+          embed.addFields({ name: '👹 Faction Enemies', value: enemyNames + (factionEnemies.length > 5 ? ` (+${factionEnemies.length - 5} more)` : ''), inline: false });
+        }
+        
+        if (entry.leaders?.length) embed.addFields({ name: '👑 Leaders', value: entry.leaders.join(', ') });
+        if (entry.signatureItems?.length) {
+          const itemNames = entry.signatureItems.map(itemId => {
+            const item = ITEMS[itemId];
+            return item ? `${item.emoji || ''} ${item.name || itemId}` : itemId;
+          }).join(', ');
+          embed.addFields({ name: '⚔️ Signature Items', value: itemNames });
+        }
+        if (entry.allies?.length) embed.addFields({ name: '🤝 Allies', value: entry.allies.join(', ') });
+        if (entry.rivals?.length) embed.addFields({ name: '⚔️ Rivals', value: entry.rivals.join(', ') });
+        if (entry.traits?.length) embed.addFields({ name: '🏷️ Traits', value: entry.traits.join(', ') });
+      } else {
+        embed.setTitle(`❓ 🛡️ ${entry.name}`)
+          .setDescription('*This faction has not been discovered yet. Interact with them through quests, contracts, or reputation to unlock full details.*')
+          .addFields(
+            { name: 'Alignment', value: entry.alignment || 'Unknown', inline: true }
+          );
+      }
+      
+      if (normalizedEntryId && !isDiscovered) {
         unlocked = registerCodexUnlock(player, 'factions', normalizedEntryId);
       }
       break;
@@ -9994,15 +10279,57 @@ async function showCodex(message, category, entryIdentifier) {
     case 'biome':
     case 'biomes': {
       questCategory = 'biomes';
-      embed.setTitle(`🌍 ${entry.name}`)
-        .setDescription(entry.description || 'No description available.')
-        .addFields(
-          { name: 'Climate', value: entry.climate || 'Unknown', inline: true },
-          { name: 'Factions', value: (entry.factions || []).join(', ') || 'None', inline: true }
-        );
-      if (entry.threats?.length) embed.addFields({ name: 'Threats', value: entry.threats.join(', ') });
-      if (entry.notableLocations?.length) embed.addFields({ name: 'Notable Locations', value: entry.notableLocations.join(', ') });
-      if (normalizedEntryId) {
+      const isDiscovered = isCodexEntryDiscovered(player, 'biomes', normalizedEntryId);
+      
+      if (isDiscovered) {
+        embed.setTitle(`✅ 🌍 ${entry.name}`)
+          .setDescription(entry.description || 'No description available.')
+          .addFields(
+            { name: 'Climate', value: entry.climate || 'Unknown', inline: true },
+            { name: 'Zone', value: entry.zone || 'Unknown', inline: true },
+            { name: 'Factions', value: (entry.factions || []).join(', ') || 'None', inline: false }
+          );
+        
+        // Show travel neighbors
+        if (entry.travel?.neighbors && entry.travel.neighbors.length > 0) {
+          const neighborNames = entry.travel.neighbors.map(n => {
+            const neighborBiome = BIOMES.find(b => b.id === n);
+            return neighborBiome?.name || n;
+          }).join(', ');
+          embed.addFields({ name: '🛣️ Neighboring Biomes', value: neighborNames, inline: false });
+        }
+        
+        // Show resources available
+        const resourceTypes = [];
+        if (entry.resources) {
+          if (entry.resources.forage || entry.resources.foraging) resourceTypes.push('Foraging');
+          if (entry.resources.mine || entry.resources.mining) resourceTypes.push('Mining');
+          if (entry.resources.scavenge || entry.resources.scavenging) resourceTypes.push('Scavenging');
+          if (entry.resources.farm || entry.resources.farming) resourceTypes.push('Farming');
+          if (entry.resources.fish || entry.resources.fishing) resourceTypes.push('Fishing');
+        }
+        if (resourceTypes.length > 0) {
+          embed.addFields({ name: '🌿 Available Activities', value: resourceTypes.join(', '), inline: false });
+        }
+        
+        if (entry.threats?.length) embed.addFields({ name: '⚠️ Threats', value: entry.threats.join(', ') });
+        if (entry.notableLocations?.length) embed.addFields({ name: '🏛️ Notable Locations', value: entry.notableLocations.join(', ') });
+        
+        // Show enemies found here
+        const enemiesHere = ENEMY_LIST.filter(e => e.biome === entry.id);
+        if (enemiesHere.length > 0) {
+          const enemyNames = enemiesHere.slice(0, 5).map(e => `${e.emoji || ''} ${e.name || e.id}`).join(', ');
+          embed.addFields({ name: '👹 Enemies Found Here', value: enemyNames + (enemiesHere.length > 5 ? ` (+${enemiesHere.length - 5} more)` : ''), inline: false });
+        }
+      } else {
+        embed.setTitle(`❓ 🌍 ${entry.name}`)
+          .setDescription('*This biome has not been discovered yet. Travel here to unlock full details including resources, enemies, and locations.*')
+          .addFields(
+            { name: 'Zone', value: entry.zone || 'Unknown', inline: true }
+          );
+      }
+      
+      if (normalizedEntryId && !isDiscovered) {
         unlocked = registerCodexUnlock(player, 'biomes', normalizedEntryId);
       }
       break;
@@ -10010,20 +10337,54 @@ async function showCodex(message, category, entryIdentifier) {
     case 'dungeon':
     case 'dungeons': {
       questCategory = 'dungeons';
-      embed.setTitle(`🏰 ${entry.name}`)
-        .setDescription(entry.environment || 'Delve into this dungeon for rare loot and challenges.')
-        .addFields(
-          { name: 'Theme', value: entry.theme || 'Unknown', inline: true },
-          { name: 'Biome', value: entry.biome || 'Unknown', inline: true },
-          { name: 'Minimum Level', value: `${entry.minLevel || 1}`, inline: true }
-        );
-      const completionItems = Array.isArray(entry.completionReward?.items) ? entry.completionReward.items : [];
-      if (completionItems.length) {
-        const lines = completionItems.map(item => `${item.item} x${item.quantity || item.amount || 1}`);
-        embed.addFields({ name: 'Completion Rewards', value: lines.join('\n') });
+      const isDiscovered = isCodexEntryDiscovered(player, 'dungeons', normalizedEntryId);
+      
+      if (isDiscovered) {
+        embed.setTitle(`✅ 🏰 ${entry.name}`)
+          .setDescription(entry.description || entry.environment || 'Delve into this dungeon for rare loot and challenges.')
+          .addFields(
+            { name: 'Theme', value: entry.theme || 'Unknown', inline: true },
+            { name: 'Biome', value: entry.biome || 'Unknown', inline: true },
+            { name: 'Minimum Level', value: `${entry.minLevel || 1}`, inline: true },
+            { name: 'Floors', value: `${entry.floors?.length || 0}`, inline: true }
+          );
+        
+        // Show floor information
+        if (entry.floors && entry.floors.length > 0) {
+          const floorInfo = entry.floors.map((floor, idx) => {
+            const enemies = floor.enemies?.length || 0;
+            const rewards = floor.rewards?.length || 0;
+            return `Floor ${idx + 1}: ${enemies} enemies, ${rewards} rewards`;
+          }).join('\n');
+          embed.addFields({ name: '📊 Floor Breakdown', value: floorInfo, inline: false });
+        }
+        
+        // Completion rewards
+        const completionItems = Array.isArray(entry.completionReward?.items) ? entry.completionReward.items : [];
+        if (completionItems.length) {
+          const lines = completionItems.map(item => {
+            const itemData = ITEMS[item.item];
+            return `${itemData?.emoji || ''} ${itemData?.name || item.item} x${item.quantity || item.amount || 1}`;
+          });
+          embed.addFields({ name: '💎 Completion Rewards', value: lines.join('\n'), inline: false });
+        }
+        
+        if (entry.completionReward?.xp) {
+          embed.addFields({ name: 'XP Reward', value: `${entry.completionReward.xp} XP`, inline: true });
+        }
+        if (entry.completionReward?.coins) {
+          embed.addFields({ name: 'Coins Reward', value: `${entry.completionReward.coins} coins`, inline: true });
+        }
+      } else {
+        embed.setTitle(`❓ 🏰 ${entry.name}`)
+          .setDescription('*This dungeon has not been discovered yet. Complete it to unlock full details including floors, enemies, and rewards.*')
+          .addFields(
+            { name: 'Theme', value: entry.theme || 'Unknown', inline: true },
+            { name: 'Minimum Level', value: `${entry.minLevel || 1}`, inline: true }
+          );
       }
-      embed.addFields({ name: 'Floors', value: `${entry.floors?.length || 0}` });
-      if (normalizedEntryId) {
+      
+      if (normalizedEntryId && !isDiscovered) {
         unlocked = registerCodexUnlock(player, 'dungeons', normalizedEntryId);
       }
       break;
@@ -10484,7 +10845,7 @@ client.once('ready', async () => {
   await loadRPGChannels();
   
   // Set up player helper functions for dungeon system (after functions are defined)
-  dungeonHandlers.setPlayerHelpers(addXp, addItemToInventory);
+  dungeonHandlers.setPlayerHelpers(addXp, addItemToInventory, registerCodexUnlock);
   
   client.user.setActivity('Hytale | !hy help', { type: 'PLAYING' });
   triggerWorldEvents();
@@ -14218,6 +14579,12 @@ function resolveExplorationAction(player, message) {
     responseText = `🚶 Arrived at **${biome?.name || action.biomeId}**.`;
     // Track exploration for adventure mode
     processQuestEvent(message, player, { type: 'explore', biomeId: action.biomeId, count: 1 });
+    
+    // Auto-unlock biome codex entry when traveled to
+    if (action.biomeId) {
+      registerCodexUnlock(player, 'biomes', action.biomeId.toLowerCase());
+    }
+    
     checkCosmeticUnlocks(message, player);
     exploration.action = null;
     exploration.status = 'idle';

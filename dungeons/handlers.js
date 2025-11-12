@@ -7,10 +7,12 @@ const queueModule = require('./index');
 // Helper functions for player data manipulation (will be passed from main bot)
 let addXpToPlayer = null;
 let addItemToPlayer = null;
+let registerCodexUnlock = null;
 
-function setPlayerHelpers(addXpFunc, addItemFunc) {
+function setPlayerHelpers(addXpFunc, addItemFunc, registerCodexUnlockFunc) {
   addXpToPlayer = addXpFunc;
   addItemToPlayer = addItemFunc;
+  registerCodexUnlock = registerCodexUnlockFunc;
 }
 
 // Handle dungeon button interactions
@@ -775,6 +777,11 @@ async function handleDungeonComplete(interaction, run, getPlayerFunc) {
         // Update stats
         actualPlayer.stats = actualPlayer.stats || {};
         actualPlayer.stats.dungeonsCleared = (actualPlayer.stats.dungeonsCleared || 0) + 1;
+        
+        // Auto-unlock dungeon codex entry when completed
+        if (run.dungeonId && registerCodexUnlock) {
+          registerCodexUnlock(actualPlayer, 'dungeons', run.dungeonId.toLowerCase());
+        }
       }
     }
     
