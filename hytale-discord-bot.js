@@ -15138,7 +15138,12 @@ async function handleBaseCommand(message, args = []) {
     const biomeArg = args.slice(1).join(' ');
     const biomeId = biomeArg ? resolveBiomeId(biomeArg) : exploration.currentBiome;
     if (!biomeId) return message.reply('❌ Unknown biome. Try `!hy base info <biome>`.');
-    const base = ensureBase(player, biomeId.toLowerCase());
+    const biomeKey = biomeId.toLowerCase();
+    // Check if base actually exists before showing info
+    if (!player.bases || !player.bases[biomeKey]) {
+      return message.reply(`❌ You don't have a base in **${formatBiomeName(biomeId)}**. Use \`${PREFIX} base claim ${biomeId}\` to establish one.`);
+    }
+    const base = player.bases[biomeKey];
     const embed = buildBaseDetailEmbed(player, base);
     return sendStyledEmbed(message, embed, 'base', { components: buildBaseDetailComponents(base) });
   }
@@ -16649,12 +16654,15 @@ async function handleSlashCommand(interaction) {
           const embed = buildExplorationStatusEmbed(player, biome, exploration);
           console.log(`[DEBUG EXPLORE] Embed built successfully`);
           console.log(`[DEBUG EXPLORE] Building components...`);
-          const components = [
+          // Combine all components and limit to 5 rows (Discord's maximum)
+          const allComponents = [
             ...buildExplorationActionComponents(interaction.user.id, exploration, biome),
             ...buildGatheringActionComponents(interaction.user.id, exploration),
             ...buildDashboardComponents()
           ];
-          console.log(`[DEBUG EXPLORE] Components built: ${components.length} rows`);
+          // Limit to 5 rows maximum (Discord allows max 5 action rows)
+          const components = allComponents.slice(0, 5);
+          console.log(`[DEBUG EXPLORE] Components built: ${components.length} rows (limited from ${allComponents.length})`);
           console.log(`[DEBUG EXPLORE] Sending reply...`);
           const result = await interaction.reply({ embeds: [embed], components });
           console.log(`[DEBUG EXPLORE] Reply sent successfully`);
@@ -17111,6 +17119,12 @@ async function handleSelectMenuInteraction(interaction) {
         return interaction.reply({ ephemeral: true, content: '❌ Quest not found.' });
       }
       
+      // Get player's quest progress
+      const player = getPlayer(interaction.user.id);
+      const progress = player.questProgress?.[quest.id];
+      const isActive = player.quests?.includes(quest.id);
+      const isCompleted = player.completedQuests?.includes(quest.id);
+      
       const embed = new EmbedBuilder()
         .setColor('#9B59B6')
         .setTitle(`📜 ${quest.name}`)
@@ -17118,16 +17132,25 @@ async function handleSelectMenuInteraction(interaction) {
         .addFields(
           { name: 'Level Requirement', value: `${quest.req?.level || 1}`, inline: true },
           { name: 'Faction', value: quest.faction || 'Neutral', inline: true },
-          { name: 'Region', value: quest.region || 'Unknown', inline: true }
+          { name: 'Region', value: quest.region || 'Unknown', inline: true },
+          { name: 'Status', value: isCompleted ? '✅ Completed' : isActive ? '⏳ Active' : '🔒 Not Started', inline: true }
         );
       
-      // Detailed objectives with location hints
+      // Detailed objectives with progress numbers and location hints
       const objectiveDetails = quest.objectives.map((obj, idx) => {
-        let detail = `${idx + 1}. ${obj.description || formatObjectiveLabel(obj)}`;
+        const currentProgress = progress?.objectives?.[idx] || 0;
+        const required = obj.quantity || 1;
+        const completed = currentProgress >= required;
+        const statusIcon = completed ? '✅' : isActive ? '⏳' : '❌';
         
-        // Add location hints
+        // Build objective description with progress
+        let detail = `${statusIcon} **${idx + 1}.** `;
+        
+        // Add specific numbers based on objective type
         if (obj.type === 'gather') {
           const item = ITEMS[obj.item?.toLowerCase()];
+          const itemName = item?.name || obj.item || 'item';
+          detail += `Collect **${required} ${itemName}** (${currentProgress}/${required})`;
           if (item) {
             // Find biomes where this item can be gathered
             const biomes = [];
@@ -17147,6 +17170,8 @@ async function handleSelectMenuInteraction(interaction) {
           }
         } else if (obj.type === 'defeat') {
           const enemy = ENEMY_MAP[obj.enemy?.toLowerCase()];
+          const enemyName = enemy?.name || obj.enemy || 'enemy';
+          detail += `Defeat **${required} ${enemyName}** (${currentProgress}/${required})`;
           if (enemy) {
             const biomes = [];
             EXPLORATION_BIOMES.forEach(biome => {
@@ -17159,18 +17184,27 @@ async function handleSelectMenuInteraction(interaction) {
               detail += `\n   📍 Found in: ${[...new Set(biomes)].slice(0, 3).join(', ')}`;
             }
           }
+        } else if (obj.type === 'command') {
+          const commandName = obj.target || 'command';
+          detail += `Use **/${commandName}** command (${currentProgress}/${required})`;
         } else if (obj.type === 'explore') {
           const biome = BIOME_LOOKUP[obj.target?.toLowerCase()];
+          const biomeName = biome?.name || obj.target || 'biome';
+          detail += `Explore **${biomeName}** (${currentProgress}/${required})`;
           if (biome) {
             detail += `\n   📍 Location: ${biome.name}`;
           }
+        } else {
+          // Fallback for other objective types
+          detail += `${obj.description || formatObjectiveLabel(obj)} (${currentProgress}/${required})`;
         }
         
         return detail;
       });
       
       if (objectiveDetails.length > 0) {
-        embed.addFields({ name: 'Objectives', value: objectiveDetails.join('\n\n'), inline: false });
+        // Use addQuestField to handle field length limits (1024 chars per field)
+        addQuestField(embed, '📋 Objectives', objectiveDetails);
       }
       
       // Rewards
@@ -17273,11 +17307,14 @@ async function handleButtonInteraction(interaction) {
               return interaction.reply({ ephemeral: true, content: '❌ Unable to determine your current biome. Try using `/explore` first.' });
             }
             const embed = buildExplorationStatusEmbed(player, biome, exploration);
-            const components = [
+            // Combine all components and limit to 5 rows (Discord's maximum)
+            const allComponents = [
               ...buildExplorationActionComponents(interaction.user.id, exploration, biome),
               ...buildGatheringActionComponents(interaction.user.id, exploration),
               ...buildDashboardComponents()
             ];
+            // Limit to 5 rows maximum (Discord allows max 5 action rows)
+            const components = allComponents.slice(0, 5);
             return interaction.reply({ ephemeral: true, embeds: [embed], components });
           } catch (error) {
             console.error('Error handling dashboard explore button:', error);
@@ -17303,7 +17340,11 @@ async function handleButtonInteraction(interaction) {
         if (!biomeId) {
           return interaction.reply({ ephemeral: true, content: '❌ Unable to resolve biome for that base.' });
         }
-        const base = ensureBase(player, biomeId);
+        // Check if base actually exists before performing any action
+        if (!player.bases || !player.bases[biomeId]) {
+          return interaction.reply({ ephemeral: true, content: `❌ You don't have a base in **${formatBiomeName(biomeId)}**. Use \`${PREFIX} base claim ${biomeId}\` to establish one.` });
+        }
+        const base = player.bases[biomeId];
         if (action === 'modules') {
           const embed = buildBaseModuleListEmbed(player, base);
           return sendStyledEmbed(interaction, embed, 'base', { components: buildBaseModulesComponents(base) });
