@@ -14719,56 +14719,93 @@ function buildExplorationStatusEmbed(player, biome, exploration) {
   }
 
   // Build detailed explanation of exploration actions
+  // Split into multiple fields if needed (Discord limit is 1024 chars per field)
   const actions = getAvailableActionTypes(biome);
   if (actions.length) {
-    const actionDescriptions = [];
+    const primaryActions = ['forage', 'mine', 'scavenge', 'survey'];
+    const primaryDescriptions = [];
+    const otherDescriptions = [];
     
     actions.forEach(action => {
       const duration = formatMinutes(getBiomeActionDuration(biome.id, action));
       let description = '';
       
-      switch (action) {
-        case 'forage':
-          description = `**🌿 Forage** (${duration})\n` +
-            `Search for plants, herbs, and natural materials in this biome. You'll gather 1-3 different resource types based on what's available here.\n` +
-            `**Can discover:** Settlement locations, structures, camps, rare encounters (25-75% chance)\n` +
-            `**Best for:** Finding crafting materials, quest items, and triggering exploration events`;
-          break;
-          
-        case 'mine':
-          description = `**⛏️ Mine** (${duration})\n` +
-            `Extract ores, crystals, and minerals from the terrain. Better gathering gear increases your yields significantly!\n` +
-            `**Can discover:** Settlement locations, structures, camps, rare encounters (25-75% chance)\n` +
-            `**Best for:** Obtaining materials for weapon/armor crafting and triggering exploration events`;
-          break;
-          
-        case 'scavenge':
-          description = `**🔍 Scavenge** (${duration})\n` +
-            `Search abandoned sites, ruins, and hidden caches for useful items and materials. Sometimes you'll find rare equipment!\n` +
-            `**Can discover:** Settlement locations, structures, camps, rare encounters (25-75% chance)\n` +
-            `**Best for:** Finding quest items, equipment, and triggering exploration events without combat`;
-          break;
-          
-        case 'survey':
-          description = `**📊 Survey** (${duration})\n` +
-            `Study the area to map out points of interest. This increases the chance of future events in this biome.\n` +
-            `**Effect:** Improves event discovery rates for subsequent exploration activities\n` +
-            `**Best for:** Preparing for settlement discovery and finding hidden structures`;
-          break;
-          
-        default:
-          description = `**${formatActionName(action)}** (${duration})\n` +
-            `Perform this exploration activity to gather resources and discover points of interest.`;
+      if (primaryActions.includes(action)) {
+        // Detailed descriptions for primary actions
+        switch (action) {
+          case 'forage':
+            description = `**🌿 Forage** (${duration}) — Search for plants and natural materials. Can discover settlements, structures, camps (25-75% chance). Best for crafting materials and quest items.`;
+            break;
+          case 'mine':
+            description = `**⛏️ Mine** (${duration}) — Extract ores and crystals. Better gear = more yields! Can discover settlements, structures, camps (25-75% chance). Best for weapon/armor crafting.`;
+            break;
+          case 'scavenge':
+            description = `**🔍 Scavenge** (${duration}) — Search ruins and caches for items. May find rare equipment! Can discover settlements, structures, camps (25-75% chance). Best for quest items.`;
+            break;
+          case 'survey':
+            description = `**📊 Survey** (${duration}) — Map the area to increase future event discovery chances. Use before other actions for better results!`;
+            break;
+        }
+        if (description) primaryDescriptions.push(description);
+      } else {
+        // Simple descriptions for other actions
+        description = `**${formatActionName(action)}** (${duration}) — Exploration activity`;
+        otherDescriptions.push(description);
       }
-      
-      actionDescriptions.push(description);
     });
     
-    embed.addFields({ 
-      name: '🗺️ Exploration Actions', 
-      value: actionDescriptions.join('\n\n'), 
-      inline: false 
-    });
+    // Add primary actions field (most important)
+    if (primaryDescriptions.length > 0) {
+      const primaryText = primaryDescriptions.join('\n');
+      if (primaryText.length > 1024) {
+        // Split if too long
+        const chunks = [];
+        let currentChunk = '';
+        primaryDescriptions.forEach((desc, index) => {
+          const addition = index === 0 ? desc : `\n${desc}`;
+          if ((currentChunk + addition).length > 1024) {
+            if (currentChunk) chunks.push(currentChunk);
+            currentChunk = desc;
+          } else {
+            currentChunk = currentChunk ? `${currentChunk}\n${desc}` : desc;
+          }
+        });
+        if (currentChunk) chunks.push(currentChunk);
+        
+        chunks.forEach((chunk, index) => {
+          embed.addFields({ 
+            name: index === 0 ? '🗺️ Exploration Actions' : '🗺️ Exploration Actions (cont.)', 
+            value: chunk, 
+            inline: false 
+          });
+        });
+      } else {
+        embed.addFields({ 
+          name: '🗺️ Exploration Actions', 
+          value: primaryText, 
+          inline: false 
+        });
+      }
+    }
+    
+    // Add other actions if any (simplified)
+    if (otherDescriptions.length > 0) {
+      const otherText = otherDescriptions.join('\n');
+      if (otherText.length > 1024) {
+        const truncated = otherText.substring(0, 1021) + '...';
+        embed.addFields({ 
+          name: '📋 Other Actions', 
+          value: truncated, 
+          inline: false 
+        });
+      } else {
+        embed.addFields({ 
+          name: '📋 Other Actions', 
+          value: otherText, 
+          inline: false 
+        });
+      }
+    }
   }
 
   if (Array.isArray(biome.activities) && biome.activities.length) {
