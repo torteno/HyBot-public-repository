@@ -182,6 +182,51 @@ function getRoleForLevel(level) {
   return LEVELING_ROLES[0]; // Default to first role
 }
 
+// Create all leveling roles for a guild
+async function createAllLevelingRoles(guild) {
+  if (!guild) return { created: 0, existing: 0, errors: [] };
+  
+  let created = 0;
+  let existing = 0;
+  const errors = [];
+  
+  for (const roleDef of LEVELING_ROLES) {
+    try {
+      // Check if role already exists
+      let roleObj = guild.roles.cache.find(r => r.name === roleDef.name);
+      if (!roleObj) {
+        // Create the role
+        roleObj = await guild.roles.create({
+          name: roleDef.name,
+          color: roleDef.color,
+          reason: 'Auto-created for leveling system',
+          mentionable: false,
+          hoist: false
+        });
+        created++;
+        console.log(`✅ Created role "${roleDef.name}" in guild "${guild.name}"`);
+      } else {
+        existing++;
+        // Update color if it's different (optional - in case colors were changed)
+        if (roleObj.color !== roleDef.color) {
+          try {
+            await roleObj.setColor(roleDef.color, 'Updating leveling role color');
+            console.log(`🔄 Updated color for role "${roleDef.name}" in guild "${guild.name}"`);
+          } catch (colorError) {
+            // Non-critical, just log
+            console.warn(`⚠️  Could not update color for role "${roleDef.name}":`, colorError.message);
+          }
+        }
+      }
+    } catch (error) {
+      errors.push({ role: roleDef.name, error: error.message });
+      console.error(`❌ Failed to create/check role "${roleDef.name}" in guild "${guild.name}":`, error.message);
+    }
+  }
+  
+  return { created, existing, errors };
+}
+
 // Award EXP and check for level up
 async function awardExp(guildId, userId, expAmount, source, message) {
   if (!guildId || !userId || !message?.guild) return;
@@ -3519,7 +3564,8 @@ const LEGACY_SLASH_COMMANDS = [
     ]},
     { type: 1, name: 'levelingleaderboard', description: 'View the server leveling leaderboard.', options: [
       { type: 4, name: 'limit', description: 'Number of users to show (default: 10, max: 25)', required: false }
-    ]}
+    ]},
+    { type: 1, name: 'createlevelingroles', description: 'Create all leveling roles for this server.', options: []}
   ]},
   { name: 'codex', description: 'Browse the Orbis codex.', options: [
     {
@@ -21009,6 +21055,51 @@ async function handleAdminCommand(interaction) {
           .setTimestamp();
         
         return interaction.reply({ ephemeral: true, embeds: [embed] });
+      }
+      case 'createlevelingroles': {
+        if (!interaction.guild) {
+          return interaction.reply({ ephemeral: true, content: '❌ This command can only be used in a server.' });
+        }
+        
+        // Check if bot has permission to manage roles
+        const botMember = await interaction.guild.members.fetch(interaction.client.user.id).catch(() => null);
+        if (!botMember || !botMember.permissions.has('ManageRoles')) {
+          return interaction.reply({ ephemeral: true, content: '❌ The bot needs the "Manage Roles" permission to create leveling roles. Please grant this permission and try again.' });
+        }
+        
+        // Check if bot's role is high enough to assign roles
+        const botRole = botMember.roles.highest;
+        if (botRole.position <= 0) {
+          return interaction.reply({ ephemeral: true, content: '❌ The bot\'s role must be positioned above the roles it needs to create. Please move the bot\'s role higher in the role hierarchy.' });
+        }
+        
+        await interaction.deferReply({ ephemeral: true });
+        
+        const result = await createAllLevelingRoles(interaction.guild);
+        
+        const embed = new EmbedBuilder()
+          .setColor(result.errors.length > 0 ? '#FFA500' : '#2ECC71')
+          .setTitle('🎭 Leveling Roles Creation')
+          .setDescription(
+            `**Created:** ${result.created} new roles\n` +
+            `**Existing:** ${result.existing} roles already existed\n` +
+            (result.errors.length > 0 ? `\n**Errors:** ${result.errors.length} role(s) failed to create` : '')
+          );
+        
+        if (result.errors.length > 0) {
+          const errorList = result.errors.map(e => `• ${e.role}: ${e.error}`).join('\n');
+          embed.addFields({ name: 'Failed Roles', value: errorList.substring(0, 1024) || 'Unknown errors' });
+        }
+        
+        if (result.created > 0 || result.existing > 0) {
+          const roleList = LEVELING_ROLES.map(r => {
+            const exists = interaction.guild.roles.cache.find(role => role.name === r.name);
+            return `${exists ? '✅' : '❌'} ${r.name} (Level ${r.level})`;
+          }).join('\n');
+          embed.addFields({ name: 'All Leveling Roles', value: roleList.substring(0, 1024) });
+        }
+        
+        return interaction.editReply({ embeds: [embed] });
       }
       default:
         return interaction.reply({ ephemeral: true, content: '❌ Unknown admin subcommand.' });
