@@ -2983,6 +2983,7 @@ const SLASH_COMMAND_DEFINITIONS = [
     options: [
       { type: 1, name: 'status', description: 'View your exploration status.' },
       { type: 1, name: 'resolve', description: 'Resolve the active exploration action.' },
+      { type: 1, name: 'explore', description: 'Search the biome thoroughly for discoveries (higher discovery chances, may encounter enemies).' },
       {
         type: 1,
         name: 'activity',
@@ -14065,8 +14066,9 @@ function resolveExplorationAction(player, message) {
   const biome = getBiomeDefinition(action.biomeId || exploration.currentBiome);
   let responseText = '';
   const extraFields = [];
-  exploration.action = null;
-  exploration.status = 'idle';
+  // Don't clear action yet - some actions may extend themselves (like explore with encounters)
+  // exploration.action = null;
+  // exploration.status = 'idle';
   if (action.type === 'travel') {
     exploration.currentBiome = action.biomeId;
     exploration.targetBiome = null;
@@ -14079,6 +14081,8 @@ function resolveExplorationAction(player, message) {
     // Track exploration for adventure mode
     processQuestEvent(message, player, { type: 'explore', biomeId: action.biomeId, count: 1 });
     checkCosmeticUnlocks(message, player);
+    exploration.action = null;
+    exploration.status = 'idle';
     return { text: responseText, fields: extraFields };
   }
   if (action.type === 'forage' || action.type === 'mine' || action.type === 'scavenge') {
@@ -14170,24 +14174,197 @@ function resolveExplorationAction(player, message) {
       exploration.consecutiveActionsSinceCombat = (exploration.consecutiveActionsSinceCombat || 0) + 1;
     }
     checkCosmeticUnlocks(message, player);
+    exploration.action = null;
+    exploration.status = 'idle';
     return { text: responseText, fields: extraFields };
   }
   if (action.type === 'structure' || action.type === 'puzzle') {
     const structureId = action.metadata?.structureId;
     const outcome = resolveStructureEncounter(player, structureId, message);
     responseText = outcome.text || `Explored ${structureId}.`;
+    exploration.action = null;
+    exploration.status = 'idle';
     if (outcome.special === 'class_sanctum') {
       // Class Sanctum requires special handling - return immediately
       return { text: responseText, fields: extraFields, special: 'class_sanctum', canChoose: outcome.canChoose, canUpgrade: outcome.canUpgrade, upgrade: outcome.upgrade };
     }
     return { text: responseText, fields: extraFields };
   }
+  if (action.type === 'explore') {
+    // Exploration action with enemy encounters and higher discovery chances
+    responseText = `🔍 Completed exploring ${biome?.name || exploration.currentBiome}.`;
+    
+    // Check if encounters were already processed
+    const encountersProcessed = action.metadata?.encountersProcessed;
+    
+    if (!encountersProcessed) {
+      // First resolution - check for encounters during exploration
+      // Determine how many encounters might happen (0-3, weighted toward 0-1, sometimes none)
+      const encounterRoll = Math.random();
+      let numEncounters = 0;
+      if (encounterRoll < 0.45) numEncounters = 0; // 45% chance no encounters
+      else if (encounterRoll < 0.75) numEncounters = 1; // 30% chance 1 encounter
+      else if (encounterRoll < 0.90) numEncounters = 2; // 15% chance 2 encounters
+      else numEncounters = 3; // 10% chance 3 encounters
+      
+      const combatEntries = Array.isArray(biome?.encounters?.combat) ? biome.encounters.combat : [];
+      const encounterResults = [];
+      
+      // Resolve all encounters immediately (they happened during exploration)
+      for (let i = 0; i < numEncounters; i++) {
+        if (combatEntries.length > 0) {
+          const encounter = weightedChoice(combatEntries, 'chance');
+          if (encounter) {
+            const combatOutcome = resolveExplorationCombat(player, encounter.enemy);
+            encounterResults.push({
+              enemy: encounter.enemy,
+              outcome: combatOutcome,
+              stage: i + 1
+            });
+          }
+        }
+      }
+      
+      // Store that encounters were processed and extend action if encounters occurred
+      if (encounterResults.length > 0) {
+        // Extend action by 2 minutes per encounter to simulate "pausing"
+        const pauseMinutes = encounterResults.length * 2;
+        const newEndTime = now + (pauseMinutes * 60_000);
+        exploration.action.endsAt = newEndTime;
+        exploration.action.metadata = {
+          ...(action.metadata || {}),
+          encounters: encounterResults,
+          encountersProcessed: true,
+          pauseMinutes
+        };
+        exploration.status = 'busy';
+        // Save player data after extending action
+        savePlayerData(message?.author?.id || message?.user?.id);
+        
+        // Show encounter results
+        encounterResults.forEach((enc, idx) => {
+          extraFields.push({ 
+            name: `⚔️ Encounter ${enc.stage}${encounterResults.length > 1 ? ` (${enc.stage}/${encounterResults.length})` : ''}`, 
+            value: enc.outcome.description, 
+            inline: false 
+          });
+        });
+        
+        extraFields.push({ 
+          name: '⏸️ Exploration Paused', 
+          value: `You encountered ${encounterResults.length} enemy${encounterResults.length > 1 ? 'ies' : ''} during exploration. The exploration timer has been extended by ${pauseMinutes} minute${pauseMinutes > 1 ? 's' : ''} to account for combat. The exploration will continue automatically after the pause.`, 
+          inline: false 
+        });
+        
+        // Don't clear the action - it's extended due to encounters
+        // The action will resolve again automatically after the extended time
+        exploration.action = exploration.action;
+        exploration.status = 'busy';
+        return { text: responseText, fields: extraFields };
+      } else {
+        // No encounters, mark as processed and continue to discovery
+        action.metadata = {
+          ...(action.metadata || {}),
+          encounters: [],
+          encountersProcessed: true
+        };
+      }
+    }
+    
+    // Encounters processed (or none occurred), proceed with discovery
+    // Higher discovery chances for explore action
+    const eventEntries = Array.isArray(biome?.encounters?.events) ? biome.encounters.events : [];
+    
+    // Base discovery chance is much higher (85% vs 75% for other actions)
+    // Discovery items increase this further
+    const userId = message?.author?.id || message?.user?.id;
+    const discoveryResult = checkDiscoveryItems(player, biome.id, userId);
+    let discoveryChance = 0.85; // Higher base chance for explore action
+    
+    // Check for discovery items that boost structure finding
+    if (discoveryResult) {
+      const itemData = ITEMS[discoveryResult.itemId];
+      startExplorationAction(player, 'structure', biome.id, { structureId: discoveryResult.structureId });
+      const itemName = itemData?.name || discoveryResult.itemId;
+      extraFields.push({ 
+        name: '🗺️ Discovery Item Used', 
+        value: `Used **${itemName}** to locate **${discoveryResult.structure.name}**! Use \`${PREFIX} explore resolve\` when the timer completes.`, 
+        inline: false 
+      });
+      discoveryChance = 1.0; // Guaranteed additional discovery with item
+    }
+    
+    // Check for multiple discovery opportunities (structures, settlements, pets, etc.)
+    const discoveries = [];
+    const discoveryAttempts = 3; // Try up to 3 discovery rolls for explore action
+    
+    for (let i = 0; i < discoveryAttempts; i++) {
+      if (eventEntries.length > 0 && Math.random() < discoveryChance) {
+        // Filter available events (structures, settlements, pets, etc.)
+        const availableEvents = eventEntries.filter(event => {
+          if (event.type === 'structure' || event.type === 'rare_unique') {
+            const structure = STRUCTURE_LOOKUP[event.structure?.toLowerCase()];
+            if (structure?.requiresItem) {
+              return player.inventory && player.inventory[structure.requiresItem] > 0;
+            }
+            return true;
+          }
+          // Include settlements, pets, camps, story events, etc.
+          return true;
+        });
+        
+        if (availableEvents.length > 0) {
+          const event = weightedChoice(availableEvents, 'chance');
+          if (event) {
+            const eventOutcome = triggerExplorationEvent(player, biome, event, message);
+            if (eventOutcome?.text && !discoveries.some(d => d === eventOutcome.text)) {
+              discoveries.push(eventOutcome.text);
+            }
+          }
+        }
+      }
+      // Reduce chance for subsequent discoveries (but still higher than normal)
+      discoveryChance *= 0.65;
+    }
+    
+    // Add discovery results
+    if (discoveries.length > 0) {
+      discoveries.forEach((discovery, idx) => {
+        extraFields.push({ 
+          name: idx === 0 ? '✨ Discoveries' : `✨ Discovery ${idx + 1}`, 
+          value: discovery, 
+          inline: false 
+        });
+      });
+    } else if (!discoveryResult) {
+      // No discoveries found (rare with high discovery chance)
+      extraFields.push({ 
+        name: '🔍 Exploration Results', 
+        value: 'You searched the area thoroughly but found nothing of particular interest this time.', 
+        inline: false 
+      });
+    }
+    
+    // Track exploration
+    processQuestEvent(message, player, { type: 'explore', biomeId: biome.id, count: 1 });
+    exploration.consecutiveActionsSinceCombat = (exploration.consecutiveActionsSinceCombat || 0) + 1;
+    checkCosmeticUnlocks(message, player);
+    
+    // Clear the action
+    exploration.action = null;
+    exploration.status = 'idle';
+    return { text: responseText, fields: extraFields };
+  }
   if (action.type === 'survey') {
     responseText = `🧭 Surveyed the surroundings of ${biome?.name || exploration.currentBiome}. Future events more likely.`;
+    exploration.action = null;
+    exploration.status = 'idle';
     return { text: responseText, fields: extraFields };
   }
   if (action.type === 'event') {
     responseText = action.metadata?.text || 'Exploration event resolved.';
+    exploration.action = null;
+    exploration.status = 'idle';
     return { text: responseText, fields: extraFields };
   }
   const chainState = exploration.pendingChain;
@@ -14218,6 +14395,11 @@ function resolveExplorationAction(player, message) {
     }
     exploration.pendingChain = null;
     responseText += `\n✅ Exploration chain **${chainState.id}** completed.`;
+  }
+  // Clear action if not already cleared
+  if (exploration.action && exploration.action === action) {
+    exploration.action = null;
+    exploration.status = 'idle';
   }
   return { text: responseText || 'Exploration action completed.', fields: extraFields };
 }
@@ -14722,7 +14904,7 @@ function buildExplorationStatusEmbed(player, biome, exploration) {
   // Split into multiple fields if needed (Discord limit is 1024 chars per field)
   const actions = getAvailableActionTypes(biome);
   if (actions.length) {
-    const primaryActions = ['forage', 'mine', 'scavenge', 'survey'];
+    const primaryActions = ['forage', 'mine', 'scavenge', 'survey', 'explore'];
     const primaryDescriptions = [];
     const otherDescriptions = [];
     
@@ -14744,6 +14926,9 @@ function buildExplorationStatusEmbed(player, biome, exploration) {
             break;
           case 'survey':
             description = `**📊 Survey** (${duration}) — Map the area to increase future event discovery chances. Use before other actions for better results!`;
+            break;
+          case 'explore':
+            description = `**🔍 Explore** (${duration}) — Search the biome thoroughly for discoveries. Higher chance to find structures, settlements, pets, and more! May encounter enemies that pause progress.`;
             break;
         }
         if (description) primaryDescriptions.push(description);
@@ -16677,6 +16862,10 @@ async function handleSlashCommand(interaction) {
         const message = createMessageAdapterFromInteraction(interaction);
         return handleExploreCommand(message, ['resolve']);
       }
+      if (sub === 'explore') {
+        const message = createMessageAdapterFromInteraction(interaction);
+        return handleExploreCommand(message, ['explore']);
+      }
       if (sub === 'activity') {
         const activityId = interaction.options.getString('activity_id', true);
         const message = createMessageAdapterFromInteraction(interaction);
@@ -17267,7 +17456,7 @@ async function handleButtonInteraction(interaction) {
         const actionType = action?.toLowerCase();
         const message = createMessageAdapterFromInteraction(interaction, { ephemeral: true });
         
-        if (actionType === 'forage' || actionType === 'mine' || actionType === 'scavenge' || actionType === 'survey') {
+        if (actionType === 'forage' || actionType === 'mine' || actionType === 'scavenge' || actionType === 'survey' || actionType === 'explore') {
           return handleExploreCommand(message, [actionType]);
         }
         if (actionType === 'activities') {

@@ -15,7 +15,8 @@
       "farming": 10,
       "survey": 5,
       "artifact_run": 12,
-      "boss_hunt": 18
+      "boss_hunt": 18,
+      "explore": 10
     },
     "suddenCombat": {
       "baseChance": 0.12,
