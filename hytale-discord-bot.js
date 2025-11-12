@@ -227,6 +227,53 @@ async function createAllLevelingRoles(guild) {
   return { created, existing, errors };
 }
 
+// Ensure user has their current level role assigned
+async function ensureUserHasRole(guild, userId, level) {
+  if (!guild || !userId) return false;
+  
+  try {
+    const member = await guild.members.fetch(userId).catch(() => null);
+    if (!member) return false;
+    
+    const role = getRoleForLevel(level);
+    
+    // Check if role exists, create if not
+    let roleObj = guild.roles.cache.find(r => r.name === role.name);
+    if (!roleObj) {
+      roleObj = await guild.roles.create({
+        name: role.name,
+        color: role.color,
+        reason: 'Auto-created for leveling system',
+        mentionable: false,
+        hoist: false
+      }).catch(() => null);
+      if (!roleObj) return false;
+    }
+    
+    // Check if user already has this role
+    if (member.roles.cache.has(roleObj.id)) {
+      return true; // Already has the role
+    }
+    
+    // Remove any other leveling roles first
+    for (const roleDef of LEVELING_ROLES) {
+      if (roleDef.name !== role.name) {
+        const otherRoleObj = guild.roles.cache.find(r => r.name === roleDef.name);
+        if (otherRoleObj && member.roles.cache.has(otherRoleObj.id)) {
+          await member.roles.remove(otherRoleObj).catch(() => {});
+        }
+      }
+    }
+    
+    // Add the correct role
+    await member.roles.add(roleObj).catch(() => {});
+    return true;
+  } catch (error) {
+    console.error(`Error ensuring role for user ${userId}:`, error);
+    return false;
+  }
+}
+
 // Award EXP and check for level up
 async function awardExp(guildId, userId, expAmount, source, message) {
   if (!guildId || !userId || !message?.guild) return;
@@ -249,6 +296,9 @@ async function awardExp(guildId, userId, expAmount, source, message) {
   // Save to database
   await saveLevelingData(guildId, userId, levelingData);
   
+  // Ensure user has their role (even if no level up, in case they didn't have it before)
+  await ensureUserHasRole(message.guild, userId, newLevel).catch(() => {});
+  
   // Check for level up
   if (newLevel > oldLevel) {
     await handleLevelUp(message, userId, oldLevel, newLevel, levelingData);
@@ -270,31 +320,8 @@ async function handleLevelUp(message, userId, oldLevel, newLevel, levelingData) 
     const newRole = getRoleForLevel(newLevel);
     const oldRole = getRoleForLevel(oldLevel);
     
-    // Remove old role if different
-    if (oldRole.name !== newRole.name) {
-      // Find and remove old role
-      const oldRoleObj = guild.roles.cache.find(r => r.name === oldRole.name);
-      if (oldRoleObj && member.roles.cache.has(oldRoleObj.id)) {
-        await member.roles.remove(oldRoleObj).catch(() => {});
-      }
-    }
-    
-    // Add new role if different
-    if (oldRole.name !== newRole.name) {
-      // Check if role exists, create if not
-      let roleObj = guild.roles.cache.find(r => r.name === newRole.name);
-      if (!roleObj) {
-        roleObj = await guild.roles.create({
-          name: newRole.name,
-          color: newRole.color,
-          reason: 'Auto-created for leveling system'
-        }).catch(() => null);
-      }
-      
-      if (roleObj && !member.roles.cache.has(roleObj.id)) {
-        await member.roles.add(roleObj).catch(() => {});
-      }
-    }
+    // Ensure user has the new role (this will also remove old roles)
+    await ensureUserHasRole(guild, userId, newLevel);
     
     // Send level-up notification
     const embed = new EmbedBuilder()
@@ -18387,6 +18414,9 @@ async function handleSlashCommand(interaction) {
       } else {
         // Status action
         const levelingData = await getLevelingData(interaction.guild.id, interaction.user.id);
+        // Ensure user has their role
+        await ensureUserHasRole(interaction.guild, interaction.user.id, levelingData.level).catch(() => {});
+        
         const role = getRoleForLevel(levelingData.level);
         const expForNextLevel = getExpForLevel(levelingData.level + 1);
         const expNeeded = expForNextLevel - levelingData.exp;
@@ -20856,6 +20886,9 @@ async function handleAdminCommand(interaction) {
           return interaction.reply({ ephemeral: true, content: '❌ This command can only be used in a server.' });
         }
         const levelingData = await getLevelingData(interaction.guild.id, targetUser.id);
+        // Ensure user has their role
+        await ensureUserHasRole(interaction.guild, targetUser.id, levelingData.level).catch(() => {});
+        
         const role = getRoleForLevel(levelingData.level);
         const expForNextLevel = getExpForLevel(levelingData.level + 1);
         const expNeeded = expForNextLevel - levelingData.exp;
@@ -20907,37 +20940,8 @@ async function handleAdminCommand(interaction) {
         
         await saveLevelingData(interaction.guild.id, targetUser.id, levelingData);
         
-        // Update role if level changed
-        if (calculatedLevel !== oldLevel) {
-          const member = await interaction.guild.members.fetch(targetUser.id).catch(() => null);
-          if (member) {
-            const newRole = getRoleForLevel(calculatedLevel);
-            const oldRole = getRoleForLevel(oldLevel);
-            
-            // Remove old role
-            if (oldRole.name !== newRole.name) {
-              const oldRoleObj = interaction.guild.roles.cache.find(r => r.name === oldRole.name);
-              if (oldRoleObj && member.roles.cache.has(oldRoleObj.id)) {
-                await member.roles.remove(oldRoleObj).catch(() => {});
-              }
-            }
-            
-            // Add new role
-            if (oldRole.name !== newRole.name) {
-              let roleObj = interaction.guild.roles.cache.find(r => r.name === newRole.name);
-              if (!roleObj) {
-                roleObj = await interaction.guild.roles.create({
-                  name: newRole.name,
-                  color: newRole.color,
-                  reason: 'Auto-created for leveling system'
-                }).catch(() => null);
-              }
-              if (roleObj && !member.roles.cache.has(roleObj.id)) {
-                await member.roles.add(roleObj).catch(() => {});
-              }
-            }
-          }
-        }
+        // Ensure user has the correct role
+        await ensureUserHasRole(interaction.guild, targetUser.id, calculatedLevel).catch(() => {});
         
         return interaction.reply({ ephemeral: true, content: `✅ Set ${targetUser.username}'s server leveling: Level ${calculatedLevel}, ${levelingData.exp.toLocaleString()} EXP (was Level ${oldLevel}, ${oldExp.toLocaleString()} EXP)` });
       }
@@ -20960,37 +20964,8 @@ async function handleAdminCommand(interaction) {
         
         await saveLevelingData(interaction.guild.id, targetUser.id, levelingData);
         
-        // Handle level up if needed
-        if (newLevel > oldLevel) {
-          const member = await interaction.guild.members.fetch(targetUser.id).catch(() => null);
-          if (member) {
-            const newRole = getRoleForLevel(newLevel);
-            const oldRole = getRoleForLevel(oldLevel);
-            
-            // Remove old role
-            if (oldRole.name !== newRole.name) {
-              const oldRoleObj = interaction.guild.roles.cache.find(r => r.name === oldRole.name);
-              if (oldRoleObj && member.roles.cache.has(oldRoleObj.id)) {
-                await member.roles.remove(oldRoleObj).catch(() => {});
-              }
-            }
-            
-            // Add new role
-            if (oldRole.name !== newRole.name) {
-              let roleObj = interaction.guild.roles.cache.find(r => r.name === newRole.name);
-              if (!roleObj) {
-                roleObj = await interaction.guild.roles.create({
-                  name: newRole.name,
-                  color: newRole.color,
-                  reason: 'Auto-created for leveling system'
-                }).catch(() => null);
-              }
-              if (roleObj && !member.roles.cache.has(roleObj.id)) {
-                await member.roles.add(roleObj).catch(() => {});
-              }
-            }
-          }
-        }
+        // Ensure user has the correct role
+        await ensureUserHasRole(interaction.guild, targetUser.id, newLevel).catch(() => {});
         
         const levelUpText = newLevel > oldLevel ? ` (Leveled up from ${oldLevel} to ${newLevel}!)` : '';
         return interaction.reply({ ephemeral: true, content: `✅ Gave ${amount.toLocaleString()} EXP to ${targetUser.username}. New total: ${levelingData.exp.toLocaleString()} EXP (Level ${newLevel})${levelUpText}` });
