@@ -3481,6 +3481,24 @@ const LEGACY_SLASH_COMMANDS = [
     ]},
     { type: 1, name: 'viewplayer', description: 'View detailed player data.', options: [
       { type: 6, name: 'user', description: 'Target player', required: true }
+    ]},
+    { type: 1, name: 'viewleveling', description: 'View a user\'s server leveling stats.', options: [
+      { type: 6, name: 'user', description: 'Target player', required: true }
+    ]},
+    { type: 1, name: 'setleveling', description: 'Set a user\'s server level and EXP.', options: [
+      { type: 6, name: 'user', description: 'Target player', required: true },
+      { type: 4, name: 'level', description: 'Level to set', required: true },
+      { type: 4, name: 'exp', description: 'EXP to set', required: false }
+    ]},
+    { type: 1, name: 'givelevelingexp', description: 'Give EXP to a user for server leveling.', options: [
+      { type: 6, name: 'user', description: 'Target player', required: true },
+      { type: 4, name: 'amount', description: 'Amount of EXP', required: true }
+    ]},
+    { type: 1, name: 'resetserverleveling', description: 'Reset a user\'s server leveling data.', options: [
+      { type: 6, name: 'user', description: 'Target player', required: true }
+    ]},
+    { type: 1, name: 'levelingleaderboard', description: 'View the server leveling leaderboard.', options: [
+      { type: 4, name: 'limit', description: 'Number of users to show (default: 10, max: 25)', required: false }
     ]}
   ]},
   { name: 'codex', description: 'Browse the Orbis codex.', options: [
@@ -20689,6 +20707,220 @@ async function handleAdminCommand(interaction) {
             { name: 'Settlements', value: String(Object.keys(targetPlayer.settlements || {}).length), inline: true }
           )
           .setFooter({ text: `User ID: ${targetUser.id}` });
+        return interaction.reply({ ephemeral: true, embeds: [embed] });
+      }
+      case 'viewleveling': {
+        if (!interaction.guild) {
+          return interaction.reply({ ephemeral: true, content: '❌ This command can only be used in a server.' });
+        }
+        const levelingData = await getLevelingData(interaction.guild.id, targetUser.id);
+        const role = getRoleForLevel(levelingData.level);
+        const expForNextLevel = getExpForLevel(levelingData.level + 1);
+        const expNeeded = expForNextLevel - levelingData.exp;
+        
+        const embed = new EmbedBuilder()
+          .setColor(role.color)
+          .setTitle(`📊 Server Leveling: ${targetUser.username}`)
+          .setThumbnail(targetUser.displayAvatarURL({ dynamic: true }))
+          .addFields(
+            { name: 'Level', value: String(levelingData.level), inline: true },
+            { name: 'Current Role', value: role.name, inline: true },
+            { name: 'Total EXP', value: levelingData.exp.toLocaleString(), inline: true },
+            { name: 'EXP to Next Level', value: expNeeded > 0 ? expNeeded.toLocaleString() : 'Max Level', inline: true },
+            { name: 'Messages', value: levelingData.messages.toLocaleString(), inline: true },
+            { name: 'Commands', value: levelingData.commands.toLocaleString(), inline: true }
+          )
+          .setFooter({ text: `User ID: ${targetUser.id}` });
+        return interaction.reply({ ephemeral: true, embeds: [embed] });
+      }
+      case 'setleveling': {
+        if (!interaction.guild) {
+          return interaction.reply({ ephemeral: true, content: '❌ This command can only be used in a server.' });
+        }
+        const level = interaction.options.getInteger('level', true);
+        const exp = interaction.options.getInteger('exp');
+        
+        if (level < 1 || level > 100) {
+          return interaction.reply({ ephemeral: true, content: '❌ Level must be between 1 and 100.' });
+        }
+        
+        const levelingData = await getLevelingData(interaction.guild.id, targetUser.id);
+        const oldLevel = levelingData.level;
+        const oldExp = levelingData.exp;
+        
+        levelingData.level = level;
+        if (exp !== null && exp !== undefined) {
+          if (exp < 0) {
+            return interaction.reply({ ephemeral: true, content: '❌ EXP cannot be negative.' });
+          }
+          levelingData.exp = exp;
+        } else {
+          // Set EXP to minimum for this level
+          levelingData.exp = getExpForLevel(level);
+        }
+        
+        // Recalculate level from EXP to ensure consistency
+        const calculatedLevel = getLevelFromExp(levelingData.exp);
+        levelingData.level = calculatedLevel;
+        
+        await saveLevelingData(interaction.guild.id, targetUser.id, levelingData);
+        
+        // Update role if level changed
+        if (calculatedLevel !== oldLevel) {
+          const member = await interaction.guild.members.fetch(targetUser.id).catch(() => null);
+          if (member) {
+            const newRole = getRoleForLevel(calculatedLevel);
+            const oldRole = getRoleForLevel(oldLevel);
+            
+            // Remove old role
+            if (oldRole.name !== newRole.name) {
+              const oldRoleObj = interaction.guild.roles.cache.find(r => r.name === oldRole.name);
+              if (oldRoleObj && member.roles.cache.has(oldRoleObj.id)) {
+                await member.roles.remove(oldRoleObj).catch(() => {});
+              }
+            }
+            
+            // Add new role
+            if (oldRole.name !== newRole.name) {
+              let roleObj = interaction.guild.roles.cache.find(r => r.name === newRole.name);
+              if (!roleObj) {
+                roleObj = await interaction.guild.roles.create({
+                  name: newRole.name,
+                  color: newRole.color,
+                  reason: 'Auto-created for leveling system'
+                }).catch(() => null);
+              }
+              if (roleObj && !member.roles.cache.has(roleObj.id)) {
+                await member.roles.add(roleObj).catch(() => {});
+              }
+            }
+          }
+        }
+        
+        return interaction.reply({ ephemeral: true, content: `✅ Set ${targetUser.username}'s server leveling: Level ${calculatedLevel}, ${levelingData.exp.toLocaleString()} EXP (was Level ${oldLevel}, ${oldExp.toLocaleString()} EXP)` });
+      }
+      case 'givelevelingexp': {
+        if (!interaction.guild) {
+          return interaction.reply({ ephemeral: true, content: '❌ This command can only be used in a server.' });
+        }
+        const amount = interaction.options.getInteger('amount', true);
+        
+        if (amount < 0) {
+          return interaction.reply({ ephemeral: true, content: '❌ Amount cannot be negative.' });
+        }
+        
+        const levelingData = await getLevelingData(interaction.guild.id, targetUser.id);
+        const oldLevel = levelingData.level;
+        
+        levelingData.exp += amount;
+        const newLevel = getLevelFromExp(levelingData.exp);
+        levelingData.level = newLevel;
+        
+        await saveLevelingData(interaction.guild.id, targetUser.id, levelingData);
+        
+        // Handle level up if needed
+        if (newLevel > oldLevel) {
+          const member = await interaction.guild.members.fetch(targetUser.id).catch(() => null);
+          if (member) {
+            const newRole = getRoleForLevel(newLevel);
+            const oldRole = getRoleForLevel(oldLevel);
+            
+            // Remove old role
+            if (oldRole.name !== newRole.name) {
+              const oldRoleObj = interaction.guild.roles.cache.find(r => r.name === oldRole.name);
+              if (oldRoleObj && member.roles.cache.has(oldRoleObj.id)) {
+                await member.roles.remove(oldRoleObj).catch(() => {});
+              }
+            }
+            
+            // Add new role
+            if (oldRole.name !== newRole.name) {
+              let roleObj = interaction.guild.roles.cache.find(r => r.name === newRole.name);
+              if (!roleObj) {
+                roleObj = await interaction.guild.roles.create({
+                  name: newRole.name,
+                  color: newRole.color,
+                  reason: 'Auto-created for leveling system'
+                }).catch(() => null);
+              }
+              if (roleObj && !member.roles.cache.has(roleObj.id)) {
+                await member.roles.add(roleObj).catch(() => {});
+              }
+            }
+          }
+        }
+        
+        const levelUpText = newLevel > oldLevel ? ` (Leveled up from ${oldLevel} to ${newLevel}!)` : '';
+        return interaction.reply({ ephemeral: true, content: `✅ Gave ${amount.toLocaleString()} EXP to ${targetUser.username}. New total: ${levelingData.exp.toLocaleString()} EXP (Level ${newLevel})${levelUpText}` });
+      }
+      case 'resetserverleveling': {
+        if (!interaction.guild) {
+          return interaction.reply({ ephemeral: true, content: '❌ This command can only be used in a server.' });
+        }
+        const levelingData = await getLevelingData(interaction.guild.id, targetUser.id);
+        const oldLevel = levelingData.level;
+        const oldExp = levelingData.exp;
+        
+        // Reset to level 1, 0 EXP
+        levelingData.level = 1;
+        levelingData.exp = 0;
+        levelingData.messages = 0;
+        levelingData.commands = 0;
+        
+        await saveLevelingData(interaction.guild.id, targetUser.id, levelingData);
+        
+        // Remove all leveling roles
+        const member = await interaction.guild.members.fetch(targetUser.id).catch(() => null);
+        if (member) {
+          for (const roleDef of LEVELING_ROLES) {
+            const roleObj = interaction.guild.roles.cache.find(r => r.name === roleDef.name);
+            if (roleObj && member.roles.cache.has(roleObj.id)) {
+              await member.roles.remove(roleObj).catch(() => {});
+            }
+          }
+        }
+        
+        return interaction.reply({ ephemeral: true, content: `✅ Reset ${targetUser.username}'s server leveling data. (Was Level ${oldLevel}, ${oldExp.toLocaleString()} EXP)` });
+      }
+      case 'levelingleaderboard': {
+        if (!interaction.guild) {
+          return interaction.reply({ ephemeral: true, content: '❌ This command can only be used in a server.' });
+        }
+        const limit = Math.min(Math.max(interaction.options.getInteger('limit') || 10, 1), 25);
+        
+        const allLeveling = await db.loadAllGuildLeveling(interaction.guild.id);
+        if (!allLeveling || allLeveling.size === 0) {
+          return interaction.reply({ ephemeral: true, content: '❌ No leveling data found for this server.' });
+        }
+        
+        // Convert to array and sort by EXP
+        const sorted = Array.from(allLeveling.entries())
+          .map(([userId, data]) => ({ userId, ...data }))
+          .sort((a, b) => b.exp - a.exp)
+          .slice(0, limit);
+        
+        // Fetch user info
+        const leaderboardLines = [];
+        for (let i = 0; i < sorted.length; i++) {
+          const entry = sorted[i];
+          try {
+            const user = await interaction.client.users.fetch(entry.userId).catch(() => null);
+            const username = user ? user.username : `Unknown (${entry.userId})`;
+            const role = getRoleForLevel(entry.level);
+            const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i + 1}.`;
+            leaderboardLines.push(`${medal} **${username}** - Level ${entry.level} (${role.name}) - ${entry.exp.toLocaleString()} EXP`);
+          } catch (error) {
+            leaderboardLines.push(`${i + 1}. Unknown User - Level ${entry.level} - ${entry.exp.toLocaleString()} EXP`);
+          }
+        }
+        
+        const embed = new EmbedBuilder()
+          .setColor('#FFD700')
+          .setTitle('🏆 Server Leveling Leaderboard')
+          .setDescription(leaderboardLines.join('\n') || 'No data available')
+          .setFooter({ text: `Showing top ${sorted.length} users` })
+          .setTimestamp();
+        
         return interaction.reply({ ephemeral: true, embeds: [embed] });
       }
       default:

@@ -1,6 +1,12 @@
 -- Supabase Database Schema for Guild Leveling System
 -- Run this SQL in your Supabase SQL Editor to create the necessary table
 --
+-- ⚠️ SAFETY NOTE: This SQL is completely safe to run!
+-- - It only CREATES a new table (doesn't delete or modify existing data)
+-- - Uses "IF NOT EXISTS" clauses to prevent overwriting
+-- - DROP statements only affect the new table's policies/triggers (safe)
+-- - Will NOT delete or modify any existing tables or data
+--
 -- This schema stores server-level leveling data for Discord users:
 -- - EXP gained from messages and commands
 -- - Current level
