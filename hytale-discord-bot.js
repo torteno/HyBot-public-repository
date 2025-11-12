@@ -6321,12 +6321,21 @@ async function handleSetupCommand(message) {
   
   await saveRPGChannels(); // Save to Supabase/disk
   
+  // Try to create leveling roles (non-blocking, will fail silently if no permissions)
+  createAllLevelingRoles(message.guild).then(result => {
+    if (result.created > 0) {
+      console.log(`✅ Created ${result.created} leveling roles during setup for guild "${message.guild.name}"`);
+    }
+  }).catch(() => {
+    // Silently fail - roles will be created on-demand when users level up
+  });
+  
   const embed = new EmbedBuilder()
     .setColor('#2ECC71')
     .setTitle('✅ Bot Setup Complete!')
     .setDescription(`This channel is now configured for RPG commands. Players can use \`${PREFIX} start\` to begin their adventure!`)
     .addFields(
-      { name: 'Next Steps', value: `• Players should use \`${PREFIX} start\` to begin\n• Use \`${PREFIX} addchannel\` in other channels to add more RPG channels\n• Only RPG commands are restricted to these channels`, inline: false }
+      { name: 'Next Steps', value: `• Players should use \`${PREFIX} start\` to begin\n• Use \`${PREFIX} addchannel\` in other channels to add more RPG channels\n• Only RPG commands are restricted to these channels\n• Leveling roles will be created automatically when needed (or use \`/admin createlevelingroles\`)`, inline: false }
     );
   
   return message.reply({ embeds: [embed] });
