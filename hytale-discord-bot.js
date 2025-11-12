@@ -3390,6 +3390,26 @@ const LEGACY_SLASH_COMMANDS = [
     ]
   },
   { name: 'stats', description: 'Show your combat statistics.' },
+  { name: 'attributes', description: 'Manage your attributes (Strength, Speed, Vitality).', options: [
+    { type: 3, name: 'action', description: 'Action to perform', required: false, choices: [
+      { name: 'Status', value: 'status' },
+      { name: 'Allocate', value: 'allocate' },
+      { name: 'Reset', value: 'reset' }
+    ]},
+    { type: 3, name: 'attribute', description: 'Attribute to allocate to (for allocate action)', required: false, choices: [
+      { name: 'Strength', value: 'strength' },
+      { name: 'Speed', value: 'speed' },
+      { name: 'Vitality', value: 'vitality' }
+    ]},
+    { type: 4, name: 'amount', description: 'Amount to allocate (for allocate action)', required: false }
+  ]},
+  { name: 'leveling', description: 'View your server leveling stats and leaderboard.', options: [
+    { type: 3, name: 'action', description: 'What to view', required: false, choices: [
+      { name: 'Status', value: 'status' },
+      { name: 'Leaderboard', value: 'leaderboard' }
+    ]},
+    { type: 4, name: 'limit', description: 'Number of users to show in leaderboard (default: 10, max: 25)', required: false }
+  ]},
   { name: 'hunt', description: 'Start a battle against a random enemy.' },
   { name: 'raid', description: 'Start a raid encounter.' },
   { name: 'heal', description: 'Restore HP and Mana for a coin fee.' },
@@ -18265,6 +18285,73 @@ async function handleSlashCommand(interaction) {
       if (action === 'reset' && !attribute) args.push('confirm');
       const message = createMessageAdapterFromInteraction(interaction);
       return handleAttributesCommand(message, args);
+    }
+    case 'leveling': {
+      if (!interaction.guild) {
+        return interaction.reply({ ephemeral: true, content: '❌ This command can only be used in a server.' });
+      }
+      const action = interaction.options.getString('action') || 'status';
+      const limit = interaction.options.getInteger('limit');
+      
+      if (action === 'leaderboard') {
+        const actualLimit = Math.min(Math.max(limit || 10, 1), 25);
+        const allLeveling = await db.loadAllGuildLeveling(interaction.guild.id);
+        if (!allLeveling || allLeveling.size === 0) {
+          return interaction.reply({ ephemeral: true, content: '❌ No leveling data found for this server.' });
+        }
+        
+        // Convert to array and sort by EXP
+        const sorted = Array.from(allLeveling.entries())
+          .map(([userId, data]) => ({ userId, ...data }))
+          .sort((a, b) => b.exp - a.exp)
+          .slice(0, actualLimit);
+        
+        // Fetch user info
+        const leaderboardLines = [];
+        for (let i = 0; i < sorted.length; i++) {
+          const entry = sorted[i];
+          try {
+            const user = await interaction.client.users.fetch(entry.userId).catch(() => null);
+            const username = user ? user.username : `Unknown (${entry.userId})`;
+            const role = getRoleForLevel(entry.level);
+            const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i + 1}.`;
+            leaderboardLines.push(`${medal} **${username}** - Level ${entry.level} (${role.name}) - ${entry.exp.toLocaleString()} EXP`);
+          } catch (error) {
+            leaderboardLines.push(`${i + 1}. Unknown User - Level ${entry.level} - ${entry.exp.toLocaleString()} EXP`);
+          }
+        }
+        
+        const embed = new EmbedBuilder()
+          .setColor('#FFD700')
+          .setTitle('🏆 Server Leveling Leaderboard')
+          .setDescription(leaderboardLines.join('\n') || 'No data available')
+          .setFooter({ text: `Showing top ${sorted.length} users` })
+          .setTimestamp();
+        
+        return interaction.reply({ embeds: [embed] });
+      } else {
+        // Status action
+        const levelingData = await getLevelingData(interaction.guild.id, interaction.user.id);
+        const role = getRoleForLevel(levelingData.level);
+        const expForNextLevel = getExpForLevel(levelingData.level + 1);
+        const expNeeded = expForNextLevel - levelingData.exp;
+        
+        const embed = new EmbedBuilder()
+          .setColor(role.color)
+          .setTitle(`📊 Your Server Leveling Stats`)
+          .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
+          .addFields(
+            { name: 'Level', value: String(levelingData.level), inline: true },
+            { name: 'Current Role', value: role.name, inline: true },
+            { name: 'Total EXP', value: levelingData.exp.toLocaleString(), inline: true },
+            { name: 'EXP to Next Level', value: expNeeded > 0 ? expNeeded.toLocaleString() : 'Max Level', inline: true },
+            { name: 'Messages', value: levelingData.messages.toLocaleString(), inline: true },
+            { name: 'Commands', value: levelingData.commands.toLocaleString(), inline: true }
+          )
+          .setFooter({ text: `Use /leveling leaderboard to see the top players!` });
+        
+        return interaction.reply({ embeds: [embed] });
+      }
     }
     case 'pets': {
       const action = interaction.options.getString('action') || 'list';
