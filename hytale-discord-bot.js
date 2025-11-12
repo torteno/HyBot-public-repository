@@ -5739,8 +5739,9 @@ async function executeCommand(message, command, args) {
   const player = getPlayer(message.author.id);
   
   // Block RPG commands for players who haven't started
+  // Check tutorialStep instead of tutorialStarted since tutorialStarted can be auto-set by quest system
   const isSetupCommand = ['setup', 'addchannel', 'start', 'help', 'info'].includes(command);
-  if (!isSetupCommand && !player.tutorialStarted) {
+  if (!isSetupCommand && (player.tutorialStep === undefined || player.tutorialStep === null)) {
     return message.reply(`❌ You need to start your adventure first! Use \`${PREFIX} start\` to begin.`);
   }
   
@@ -6110,8 +6111,9 @@ async function handleAddChannelCommand(message) {
 async function handleStartCommand(message) {
   const player = getPlayer(message.author.id);
   
-  // Check if player has already started - only allow /start once
-  if (player.tutorialStarted) {
+  // Check if player has already completed the tutorial steps
+  // Allow /start if tutorialStep is undefined/null (even if tutorialStarted is true from auto-quest)
+  if (player.tutorialStep !== undefined && player.tutorialStep !== null) {
     return message.reply('✅ You have already started your adventure! Use `/tutorial` to review the basics or continue playing.');
   }
   
@@ -6370,6 +6372,45 @@ function createMessageAdapterFromMessage(message) {
     ephemeral: false
   };
 }
+
+// ==================== NON-COMMAND MESSAGE HANDLER (RPG CHANNELS) ====================
+// Handle non-command messages in RPG channels for players who haven't started
+client.on('messageCreate', async message => {
+  // Skip bots and commands (let command handler deal with those)
+  if (message.author.bot || message.content.startsWith(PREFIX)) return;
+  
+  // Only handle messages in guilds (not DMs)
+  if (!message.guild) return;
+  
+  const guildId = message.guild.id;
+  const channelId = message.channel.id;
+  
+  // Check if this is an RPG channel
+  const allowedChannels = RPG_CHANNELS.get(guildId);
+  if (!allowedChannels || allowedChannels.size === 0) return; // No RPG channels configured, skip
+  if (!allowedChannels.has(channelId)) return; // Not an RPG channel, skip
+  
+  // Check if player hasn't started
+  const player = getPlayer(message.author.id);
+  if (player.tutorialStep !== undefined && player.tutorialStep !== null) return; // Player has started, skip
+  
+  // Send kweebec roleplay message
+  const kweebecMessages = [
+    `*A small Kweebec peeks out from behind a tree, their leaf-like features rustling gently.*\n\n"Greetings, traveler! I am **Mentor Aldric**. You seem new to these lands. To begin your adventure in Orbis, please use \`/start\` to receive your first guidance!"`,
+    `*A friendly Kweebec approaches you, carrying a small satchel.*\n\n"Hello there! I'm **Mentor Aldric**, and I'd be happy to help you begin your journey. Simply type \`/start\` to get started with your adventure!"`,
+    `*A curious Kweebec emerges from the undergrowth, their eyes bright with curiosity.*\n\n"Ah, a new face! Welcome to Orbis, traveler. I am **Mentor Aldric**. To start your adventure and learn the ways of this world, please use the \`/start\` command!"`,
+    `*A gentle Kweebec waves at you from a nearby clearing.*\n\n"Greetings! I am **Mentor Aldric**, and I'm here to guide newcomers like yourself. Type \`/start\` to begin your journey through Orbis!"`
+  ];
+  
+  const randomMessage = kweebecMessages[Math.floor(Math.random() * kweebecMessages.length)];
+  
+  const embed = new EmbedBuilder()
+    .setColor('#2ECC71')
+    .setDescription(randomMessage)
+    .setFooter({ text: 'Use /start to begin your adventure!' });
+  
+  return message.reply({ embeds: [embed] }).catch(() => {});
+});
 
 // ==================== COMMAND HANDLER ====================
 client.on('messageCreate', async message => {
@@ -17608,8 +17649,9 @@ async function handleSlashCommand(interaction) {
   const exploration = ensureExplorationState(player);
   
   // Block RPG commands for players who haven't started
+  // Check tutorialStep instead of tutorialStarted since tutorialStarted can be auto-set by quest system
   const isRPGCommand = !['setup', 'addchannel', 'start', 'help', 'info'].includes(interaction.commandName);
-  if (isRPGCommand && !player.tutorialStarted) {
+  if (isRPGCommand && (player.tutorialStep === undefined || player.tutorialStep === null)) {
     return interaction.reply({ ephemeral: true, content: `❌ You need to start your adventure first! Use \`/start\` to begin.` });
   }
   
