@@ -32,9 +32,12 @@ CREATE INDEX IF NOT EXISTS idx_player_data_updated_at ON player_data(updated_at 
 -- Enable Row Level Security (RLS) - Optional but recommended for security
 ALTER TABLE player_data ENABLE ROW LEVEL SECURITY;
 
--- Create a policy that allows all operations for service role
--- Note: This assumes you're using the service role key in your bot
--- If using anon key, you'll need to create appropriate policies
+-- Drop existing policy if it exists (to avoid conflicts)
+DROP POLICY IF EXISTS "Allow all operations for service role" ON player_data;
+
+-- Create a policy that allows all operations
+-- Note: If using SERVICE_ROLE key, RLS is bypassed anyway, so this policy doesn't matter
+-- If using ANON key, this policy allows all operations (not recommended for production)
 CREATE POLICY "Allow all operations for service role"
   ON player_data
   FOR ALL
@@ -116,7 +119,11 @@ CREATE INDEX IF NOT EXISTS idx_guild_data_updated_at ON guild_data(updated_at DE
 -- Enable Row Level Security (RLS)
 ALTER TABLE guild_data ENABLE ROW LEVEL SECURITY;
 
--- Create a policy that allows all operations for service role
+-- Drop existing policy if it exists (to avoid conflicts)
+DROP POLICY IF EXISTS "Allow all operations for service role on guild_data" ON guild_data;
+
+-- Create a policy that allows all operations
+-- Note: If using SERVICE_ROLE key, RLS is bypassed anyway, so this policy doesn't matter
 CREATE POLICY "Allow all operations for service role on guild_data"
   ON guild_data
   FOR ALL

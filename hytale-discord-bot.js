@@ -56,8 +56,8 @@ console.log('📦 Loading database module...');
 const db = require('./database');
 console.log('✅ Database module loaded');
 
-// Initialize Supabase on startup
-console.log('🔌 Initializing Supabase connection...');
+// Initialize Supabase early (before bot starts)
+// This will check for credentials and initialize the client
 db.initSupabase();
 
 console.log('📦 Loading dungeon modules...');
@@ -616,6 +616,12 @@ async function savePlayerData(userId) {
       }
       // If Supabase save failed, fall back to file system
       console.warn(`⚠️  Supabase save failed for ${userId}, falling back to file system`);
+      if (result.error) {
+        console.warn(`   Error details: ${result.error}`);
+      }
+      if (result.errorDetails) {
+        console.warn(`   Full error:`, result.errorDetails);
+      }
     }
     
     // Fallback to file system
@@ -5924,11 +5930,14 @@ async function executeCommand(message, command, args) {
       const exploration = ensureExplorationState(player);
       const biome = getBiomeDefinition(exploration.currentBiome);
       const embed = buildExplorationStatusEmbed(player, biome, exploration);
-      const components = [
+      // Combine all components and limit to 5 rows (Discord's maximum)
+      const allComponents = [
         ...buildExplorationActionComponents(message.author.id, exploration, biome),
         ...buildGatheringActionComponents(message.author.id, exploration),
         ...buildDashboardComponents()
       ];
+      // Limit to 5 rows maximum (Discord allows max 5 action rows)
+      const components = allComponents.slice(0, 5);
       return sendStyledEmbed(message, embed, 'explore', { components });
     }
     await handleExploreCommand(message, args);
@@ -10330,13 +10339,19 @@ client.once('ready', async () => {
   console.log(`✅ Hytale Bot is online as ${client.user.tag}!`);
   console.log(`📊 Serving ${client.guilds.cache.size} servers`);
   
-  // Initialize and test Supabase connection
-  if (db.isSupabaseEnabled()) {
-    const connectionOk = await db.testConnection();
-    if (!connectionOk) {
-      console.warn('⚠️  Supabase connection test failed. Falling back to file-based storage.');
-    }
-  }
+          // Test Supabase connection (already initialized above)
+          if (db.isSupabaseEnabled()) {
+            console.log('🧪 Testing Supabase connection...');
+            const connectionOk = await db.testConnection();
+            if (!connectionOk) {
+              console.warn('⚠️  Supabase connection test failed. Falling back to file-based storage.');
+              console.warn('💡 Check the error messages above for details on what\'s wrong.');
+            } else {
+              console.log('✅ Supabase connection verified and ready!');
+            }
+          } else {
+            console.log('ℹ️  Supabase is not enabled. Using file-based storage.');
+          }
   
   // Load all player data from Supabase or disk on startup
   await loadAllPlayerData();
@@ -14291,12 +14306,15 @@ async function handleExploreCommand(message, args = []) {
       const embed = buildExplorationStatusEmbed(player, biome, exploration);
       console.log(`[DEBUG EXPLORE] Embed built successfully`);
       
-      const components = [
+      // Combine all components and limit to 5 rows (Discord's maximum)
+      const allComponents = [
         ...buildExplorationActionComponents(message.author.id, exploration, biome),
         ...buildGatheringActionComponents(message.author.id, exploration),
         ...buildDashboardComponents()
       ];
-      console.log(`[DEBUG EXPLORE] Components built: ${components.length} rows`);
+      // Limit to 5 rows maximum
+      const components = allComponents.slice(0, 5);
+      console.log(`[DEBUG EXPLORE] Components built: ${components.length} rows (limited from ${allComponents.length})`);
       
       const result = await sendStyledEmbed(message, embed, 'explore', { components });
       console.log(`[DEBUG EXPLORE] Status sent successfully`);
@@ -14490,10 +14508,13 @@ async function handleGatherCommand(message, args = []) {
       value: summarizeBiomeGatheringResources(biome),
       inline: false
     });
-    const components = [
+    // Combine all components and limit to 5 rows (Discord's maximum)
+    const allComponents = [
       ...buildGatheringActionComponents(message.author.id, exploration),
       ...buildDashboardComponents()
     ];
+    // Limit to 5 rows maximum (Discord allows max 5 action rows)
+    const components = allComponents.slice(0, 5);
     return sendStyledEmbed(message, embed, 'gather', { components });
   }
 
@@ -14501,10 +14522,13 @@ async function handleGatherCommand(message, args = []) {
     const actionType = (args[1] || '').toLowerCase();
     if (!actionType || actionType === 'status' || actionType === 'info') {
       const embed = buildGatheringGearEmbed(player);
-      const components = [
+      // Combine all components and limit to 5 rows (Discord's maximum)
+      const allComponents = [
         ...buildGatheringActionComponents(message.author.id, exploration),
         ...buildDashboardComponents()
       ];
+      // Limit to 5 rows maximum (Discord allows max 5 action rows)
+      const components = allComponents.slice(0, 5);
       return sendStyledEmbed(message, embed, 'gather', { components });
     }
     if (actionType === 'upgrade') {
@@ -14694,14 +14718,71 @@ function buildExplorationStatusEmbed(player, biome, exploration) {
     embed.addFields({ name: 'Neighbors', value: neighbors, inline: false });
   }
 
+  // Build detailed explanation of exploration actions
   const actions = getAvailableActionTypes(biome);
   if (actions.length) {
-    embed.addFields({ name: 'Available Actions', value: actions.map(action => `• ${formatActionName(action)} (${formatMinutes(getBiomeActionDuration(biome.id, action))})`).join('\n'), inline: false });
+    const actionDescriptions = [];
+    
+    actions.forEach(action => {
+      const duration = formatMinutes(getBiomeActionDuration(biome.id, action));
+      let description = '';
+      
+      switch (action) {
+        case 'forage':
+          description = `**🌿 Forage** (${duration})\n` +
+            `Search for plants, herbs, and natural materials in this biome. You'll gather 1-3 different resource types based on what's available here.\n` +
+            `**Can discover:** Settlement locations, structures, camps, rare encounters (25-75% chance)\n` +
+            `**Best for:** Finding crafting materials, quest items, and triggering exploration events`;
+          break;
+          
+        case 'mine':
+          description = `**⛏️ Mine** (${duration})\n` +
+            `Extract ores, crystals, and minerals from the terrain. Better gathering gear increases your yields significantly!\n` +
+            `**Can discover:** Settlement locations, structures, camps, rare encounters (25-75% chance)\n` +
+            `**Best for:** Obtaining materials for weapon/armor crafting and triggering exploration events`;
+          break;
+          
+        case 'scavenge':
+          description = `**🔍 Scavenge** (${duration})\n` +
+            `Search abandoned sites, ruins, and hidden caches for useful items and materials. Sometimes you'll find rare equipment!\n` +
+            `**Can discover:** Settlement locations, structures, camps, rare encounters (25-75% chance)\n` +
+            `**Best for:** Finding quest items, equipment, and triggering exploration events without combat`;
+          break;
+          
+        case 'survey':
+          description = `**📊 Survey** (${duration})\n` +
+            `Study the area to map out points of interest. This increases the chance of future events in this biome.\n` +
+            `**Effect:** Improves event discovery rates for subsequent exploration activities\n` +
+            `**Best for:** Preparing for settlement discovery and finding hidden structures`;
+          break;
+          
+        default:
+          description = `**${formatActionName(action)}** (${duration})\n` +
+            `Perform this exploration activity to gather resources and discover points of interest.`;
+      }
+      
+      actionDescriptions.push(description);
+    });
+    
+    embed.addFields({ 
+      name: '🗺️ Exploration Actions', 
+      value: actionDescriptions.join('\n\n'), 
+      inline: false 
+    });
   }
 
   if (Array.isArray(biome.activities) && biome.activities.length) {
-    const highlights = biome.activities.slice(0, 3).map(activity => `• ${activity.name || formatActionName(activity.id || activity.type)} (${formatMinutes(activity.durationMinutes ?? getBiomeActionDuration(biome.id, activity.type))})`);
-    embed.addFields({ name: 'Signature Activities', value: highlights.join('\n'), inline: false });
+    const activityDescriptions = biome.activities.slice(0, 3).map(activity => {
+      const name = activity.name || formatActionName(activity.id || activity.type);
+      const duration = formatMinutes(activity.durationMinutes ?? getBiomeActionDuration(biome.id, activity.type));
+      const description = activity.description || 'Unique biome-specific activity with special rewards.';
+      return `**${name}** (${duration})\n${description}`;
+    });
+    embed.addFields({ 
+      name: '🎯 Signature Activities', 
+      value: activityDescriptions.join('\n\n') + (biome.activities.length > 3 ? `\n\n*Use \`${PREFIX} explore activities\` to see all ${biome.activities.length} activities*` : ''), 
+      inline: false 
+    });
   }
 
   const materialHighlights = getBiomeMaterialHighlights(biome);
@@ -14720,19 +14801,22 @@ function buildExplorationStatusEmbed(player, biome, exploration) {
 
   const gatheringSummary = buildGatheringGearSummary(player);
   if (gatheringSummary) {
-    embed.addFields({ name: 'Gathering Gear', value: gatheringSummary, inline: false });
+    embed.addFields({ name: '🛠️ Gathering Gear', value: gatheringSummary, inline: false });
   }
 
-  // Add exploration discovery tips
+  // Add exploration discovery tips - simplified since we now have detailed action descriptions
   const discoveryTips = [
-    '💡 **Zones & Progression**: Orbis is divided into zones! You start in Zone 1. Unlock Zone 2 by reaching level 15 and completing Adventure Mode Chapter 1.',
-    '💡 **Zone Access**: You cannot travel to biomes in locked zones. Check `/adventure` to see your zone unlock progress.',
-    '💡 **Discovering Settlements**: Do exploration activities (forage, mine, scavenge, or biome activities) to trigger random events. One event type is settlement discovery!',
-    '💡 **Event Discovery**: After completing activities, there\'s a chance (25-75%) to trigger random events including settlements, structures, camps, and rare encounters.',
-    '💡 **Survey Action**: Use `/explore survey` to increase the chance of future events in this biome.',
-    '💡 **Biome Activities**: Check `/explore activities` for unique activities that may have better discovery rates.'
+    '💡 **Event Discovery**: Every exploration action (forage, mine, scavenge) has a **25-75% chance** to trigger random events after completion, including:',
+    '   • **Settlement Discoveries** - Find new settlements to manage and develop',
+    '   • **Structures** - Discover ruins, puzzles, and points of interest',
+    '   • **Camps** - Encounter enemy camps with loot and reputation rewards',
+    '   • **Rare Encounters** - Unique events with special rewards',
+    '',
+    '💡 **Survey First**: Use `/explore survey` before other actions to **increase event discovery chances** in this biome!',
+    '💡 **Biome Activities**: Check `/explore activities` for unique biome-specific activities with special rewards.',
+    '💡 **Zone Progression**: Unlock new zones by reaching level 15 and completing Adventure Mode Chapter 1. Check `/adventure` for progress.'
   ];
-  embed.addFields({ name: '🔍 Discovery Information', value: discoveryTips.join('\n\n'), inline: false });
+  embed.addFields({ name: '💡 How Exploration Works', value: discoveryTips.join('\n'), inline: false });
 
   // Show settlement count if player has any
   const settlementCount = Object.keys(player.settlements || {}).length;
@@ -16789,12 +16873,15 @@ async function handleSlashCommand(interaction) {
         console.log(`[DEBUG EXPLORE] Embed built successfully`);
         
         console.log(`[DEBUG EXPLORE] Building components...`);
-        const components = [
+        // Combine all components and limit to 5 rows (Discord's maximum)
+        const allComponents = [
           ...buildExplorationActionComponents(interaction.user.id, exploration, biome),
           ...buildGatheringActionComponents(interaction.user.id, exploration),
           ...buildDashboardComponents()
         ];
-        console.log(`[DEBUG EXPLORE] Components built: ${components.length} rows`);
+        // Limit to 5 rows maximum (Discord allows max 5 action rows)
+        const components = allComponents.slice(0, 5);
+        console.log(`[DEBUG EXPLORE] Components built: ${components.length} rows (limited from ${allComponents.length})`);
         
         console.log(`[DEBUG EXPLORE] Sending reply...`);
         const result = await interaction.reply({ ephemeral: true, embeds: [embed], components });

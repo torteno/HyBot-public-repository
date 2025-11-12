@@ -22,8 +22,15 @@ This guide will help you set up Supabase as the data storage solution for your D
 ## Step 2: Get Your Supabase Credentials
 
 1. In your Supabase project dashboard, go to **Settings** → **API**
-2. You'll find two important values:
+2. You'll find these important values:
+
+### Project URL (SUPABASE_URL)
    - **Project URL**: This is your `SUPABASE_URL`
+   - **Format**: `https://bvefifufanahnjnbkjhb.supabase.co`
+   - ⚠️ **Important**: Use the HTTPS URL, NOT the PostgreSQL connection string!
+   - The connection string looks like: `postgresql://postgres:[PASSWORD]@db...` - **Don't use this!**
+
+### API Keys
    - **anon/public key**: This is your `SUPABASE_ANON_KEY`
    - **service_role key**: This is your `SUPABASE_SERVICE_ROLE_KEY` (keep this secret!)
 
@@ -60,9 +67,15 @@ Create or update your `.env` file in the bot's root directory:
 
 ```env
 DISCORD_TOKEN=your_discord_bot_token
-SUPABASE_URL=https://your-project-id.supabase.co
+SUPABASE_URL=https://bvefifufanahnjnbkjhb.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 ```
+
+**⚠️ Important Notes:**
+- `SUPABASE_URL` must be the HTTPS URL (starts with `https://`)
+- Do NOT use the PostgreSQL connection string (starts with `postgresql://`)
+- The URL should look like: `https://bvefifufanahnjnbkjhb.supabase.co`
+- Get it from: Settings → API → Project URL (not Connection string)
 
 **OR** if using the anon key:
 

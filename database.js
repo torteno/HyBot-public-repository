@@ -10,23 +10,69 @@ let useSupabase = false;
 // Initialize Supabase connection
 function initSupabase() {
   const supabaseUrl = process.env.SUPABASE_URL;
-  const supabaseKey = process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
+  // Prefer service role key over anon key (service role bypasses RLS)
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
+  const keyType = process.env.SUPABASE_SERVICE_ROLE_KEY ? 'SERVICE_ROLE' : (process.env.SUPABASE_ANON_KEY ? 'ANON' : 'NONE');
+  
+  console.log('🔌 Initializing Supabase...');
+  console.log(`   URL: ${supabaseUrl ? '✅ Set' : '❌ Not set'}`);
+  console.log(`   Key: ${keyType} ${supabaseKey ? '(✅ Set)' : '(❌ Not set)'}`);
   
   if (!supabaseUrl || !supabaseKey) {
     console.log('⚠️  Supabase credentials not found. Using file-based storage as fallback.');
-    console.log('💡 To use Supabase, set SUPABASE_URL and SUPABASE_ANON_KEY (or SUPABASE_SERVICE_ROLE_KEY) in your environment variables.');
+    console.log('💡 To use Supabase, set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in your environment variables.');
+    console.log('💡 Get your credentials from: https://supabase.com/dashboard/project/bvefifufanahnjnbkjhb/settings/api');
     useSupabase = false;
     return false;
+  }
+  
+  // Validate URL format
+  if (supabaseUrl.startsWith('postgresql://') || supabaseUrl.startsWith('postgres://')) {
+    console.error('❌ ERROR: You are using a PostgreSQL connection string, but the bot needs the Supabase HTTPS API URL!');
+    console.error(`   Current URL: ${supabaseUrl.substring(0, 50)}... (PostgreSQL connection string)`);
+    console.error(`   ❌ Wrong: postgresql://postgres:[PASSWORD]@db.bvefifufanahnjnbkjhb.supabase.co:5432/postgres`);
+    console.error(`   ✅ Correct: https://bvefifufanahnjnbkjhb.supabase.co`);
+    console.error('');
+    console.error('💡 How to fix:');
+    console.error('   1. Go to: https://supabase.com/dashboard/project/bvefifufanahnjnbkjhb/settings/api');
+    console.error('   2. Copy the "Project URL" (not the connection string)');
+    console.error('   3. It should look like: https://bvefifufanahnjnbkjhb.supabase.co');
+    console.error('   4. Set this as SUPABASE_URL in Railway');
+    console.error('');
+    console.error('📝 Note: The PostgreSQL connection string is for direct database connections.');
+    console.error('   The bot uses the Supabase JavaScript client, which needs the HTTPS API URL.');
+    useSupabase = false;
+    return false;
+  }
+  
+  if (!supabaseUrl.startsWith('https://') || !supabaseUrl.includes('supabase.co')) {
+    console.error('❌ ERROR: SUPABASE_URL must be an HTTPS URL ending with .supabase.co');
+    console.error(`   Current URL: ${supabaseUrl}`);
+    console.error(`   Expected format: https://bvefifufanahnjnbkjhb.supabase.co`);
+    console.error('');
+    console.error('💡 Get the correct URL from:');
+    console.error('   https://supabase.com/dashboard/project/bvefifufanahnjnbkjhb/settings/api');
+    console.error('   Copy the "Project URL" field');
+    useSupabase = false;
+    return false;
+  }
+  
+  if (keyType === 'ANON') {
+    console.warn('⚠️  Warning: Using ANON key. Make sure RLS policies allow access, or use SERVICE_ROLE key.');
   }
   
   try {
     // Use service role key if available (for server-side operations), otherwise use anon key
     supabase = createClient(supabaseUrl, supabaseKey);
     useSupabase = true;
-    console.log('✅ Supabase client initialized successfully');
+    console.log(`✅ Supabase client initialized successfully (using ${keyType} key)`);
     return true;
   } catch (error) {
-    console.error('❌ Error initializing Supabase:', error.message);
+    console.error('❌ Error initializing Supabase:', {
+      message: error.message || 'No error message',
+      stack: error.stack || 'No stack trace',
+      error: error
+    });
     useSupabase = false;
     return false;
   }
@@ -50,26 +96,47 @@ async function testConnection() {
       .limit(1);
     
     if (playerError && guildError) {
-      console.error('❌ Supabase connection test failed:', playerError.message);
+      console.error('❌ Supabase connection test failed');
+      console.error('Player data error:', {
+        message: playerError.message || 'No error message',
+        code: playerError.code || 'No error code',
+        details: playerError.details || 'No error details',
+        hint: playerError.hint || 'No error hint'
+      });
       console.error('💡 Make sure you have:');
       console.error('   1. Created the player_data and guild_data tables in your Supabase database');
-      console.error('   2. Run the SQL schema from supabase_schema.sql');
-      console.error('   3. Set proper RLS policies if using anon key');
+      console.error('   2. Run the SQL schema from supabase_schema.sql in Supabase SQL Editor');
+      console.error('   3. Set proper RLS policies (or use service role key)');
+      console.error('   4. Check your SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are correct');
       return false;
     }
     
     // Log warnings for missing tables but don't fail if at least one works
     if (playerError) {
-      console.warn('⚠️  player_data table not found. Run the SQL schema to create it.');
+      console.warn('⚠️  player_data table error:', {
+        message: playerError.message || 'No error message',
+        code: playerError.code || 'No error code',
+        hint: playerError.hint || 'No error hint'
+      });
+      console.warn('💡 Run the SQL schema from supabase_schema.sql to create the table');
     }
     if (guildError) {
-      console.warn('⚠️  guild_data table not found. Run the SQL schema to create it.');
+      console.warn('⚠️  guild_data table error:', {
+        message: guildError.message || 'No error message',
+        code: guildError.code || 'No error code'
+      });
     }
     
-    console.log('✅ Supabase connection test successful');
-    return true;
+    if (!playerError) {
+      console.log('✅ Supabase connection test successful - player_data table accessible');
+    }
+    return !playerError; // Return true only if player_data table is accessible
   } catch (error) {
-    console.error('❌ Error testing Supabase connection:', error.message);
+    console.error('❌ Error testing Supabase connection:', {
+      message: error.message || 'No error message',
+      stack: error.stack || 'No stack trace',
+      error: error
+    });
     return false;
   }
 }
@@ -81,6 +148,14 @@ async function savePlayerData(userId, playerData) {
   }
   
   try {
+    // Calculate data size for debugging
+    const dataSize = JSON.stringify(playerData).length;
+    const dataSizeKB = (dataSize / 1024).toFixed(2);
+    
+    if (dataSize > 1024 * 1024) {
+      console.warn(`⚠️  Large player data for ${userId}: ${dataSizeKB} KB (may cause issues)`);
+    }
+    
     const { data, error } = await supabase
       .from('player_data')
       .upsert({
@@ -92,14 +167,43 @@ async function savePlayerData(userId, playerData) {
       });
     
     if (error) {
-      console.error(`❌ Error saving player data for ${userId}:`, error.message);
-      return { success: false, error: error.message };
+      // Log full error details for debugging
+      console.error(`❌ Error saving player data for ${userId}:`, {
+        message: error.message || 'No error message',
+        details: error.details || 'No error details',
+        hint: error.hint || 'No error hint',
+        code: error.code || 'No error code',
+        error: error
+      });
+      
+      // Provide helpful error messages
+      let errorMessage = error.message || 'Unknown error';
+      if (error.code === 'PGRST301') {
+        errorMessage = 'Table does not exist. Run the SQL schema from supabase_schema.sql';
+      } else if (error.code === '42501') {
+        errorMessage = 'Permission denied. Check RLS policies or use service role key';
+      } else if (error.code === '23505') {
+        errorMessage = 'Duplicate key violation (this should not happen with upsert)';
+      } else if (error.message && error.message.includes('row-level security')) {
+        errorMessage = 'Row-level security policy violation. Check RLS policies';
+      } else if (error.message && error.message.includes('does not exist')) {
+        errorMessage = 'Table does not exist. Run the SQL schema from supabase_schema.sql';
+      }
+      
+      return { success: false, error: errorMessage, errorDetails: error };
     }
     
+    console.log(`✅ Successfully saved player data for ${userId} (${dataSizeKB} KB)`);
     return { success: true, data };
   } catch (error) {
-    console.error(`❌ Exception saving player data for ${userId}:`, error.message);
-    return { success: false, error: error.message };
+    // Log full exception details
+    console.error(`❌ Exception saving player data for ${userId}:`, {
+      message: error.message || 'No error message',
+      stack: error.stack || 'No stack trace',
+      error: error
+    });
+    
+    return { success: false, error: error.message || 'Unknown exception', errorDetails: error };
   }
 }
 
