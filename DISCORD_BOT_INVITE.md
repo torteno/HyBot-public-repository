@@ -84,9 +84,9 @@ Replace `YOUR_BOT_CLIENT_ID` with your bot's Client ID (found in the OAuth2 sect
    - Don't select any user-related scopes
    - The URL should be for **bot installation**, not user authorization
 
-2. **Role Hierarchy**: Make sure the bot's role is positioned **above** any roles it needs to manage. The bot needs to be able to create and assign roles, so its role must be higher in the server's role hierarchy.
+4. **Role Hierarchy**: Make sure the bot's role is positioned **above** any roles it needs to manage. The bot needs to be able to create and assign roles, so its role must be higher in the server's role hierarchy.
 
-3. **Permissions**: The bot will work with fewer permissions, but some features (like role management) won't work without the "Manage Roles" permission.
+5. **Permissions**: The bot will work with fewer permissions, but some features (like role management) won't work without the "Manage Roles" permission.
 
 ## Quick Invite URL Template
 
