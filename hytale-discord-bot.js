@@ -41,6 +41,9 @@ const {
   ButtonBuilder,
   ButtonStyle,
   StringSelectMenuBuilder,
+  ModalBuilder,
+  TextInputBuilder,
+  TextInputStyle,
   MessageFlags
 } = require('discord.js');
 console.log('✅ Discord.js loaded');
@@ -102,6 +105,16 @@ const RPG_CHANNELS_FILE = path.join(__dirname, 'rpg_channels.json');
 // ==================== GUILD LEVELING SYSTEM ====================
 // In-memory storage for leveling data (guildId -> Map<userId -> levelingData>)
 const GUILD_LEVELING = new Map(); // guildId -> Map(userId -> { exp, level, messages, commands })
+
+// ==================== DAILY HYTALE RECAP SYSTEM ====================
+// Daily recap configuration (guildId -> { recapChannelId, cheerChannelId })
+const DAILY_RECAP_CONFIG = new Map(); // guildId -> { recapChannelId, cheerChannelId }
+// Daily recap submissions (guildId -> Map<userId -> { submission, timestamp, messageId }>)
+const DAILY_RECAP_SUBMISSIONS = new Map(); // guildId -> Map(userId -> { submission, timestamp, messageId })
+// User submission cooldowns (guildId -> Map<userId -> lastSubmissionTime>)
+const DAILY_RECAP_COOLDOWNS = new Map(); // guildId -> Map(userId -> lastSubmissionTime)
+// Posted submissions (to track cheers) (messageId -> { guildId, userId, postMessageId, cheers: Set<userId> })
+const DAILY_RECAP_POSTS = new Map(); // messageId -> { guildId, userId, postMessageId, cheers: Set<userId> }
 
 // Hytale-themed roles (9 roles, progressively more powerful)
 const LEVELING_ROLES = [
@@ -425,6 +438,43 @@ async function loadRPGChannels() {
     }
   } catch (error) {
     console.error('❌ Error loading RPG channels:', error);
+  }
+}
+
+// Load daily recap configuration from Supabase
+async function loadDailyRecapConfig() {
+  try {
+    if (db.isSupabaseEnabled()) {
+      const guildDataMap = await db.loadAllGuildData();
+      if (guildDataMap && guildDataMap.size > 0) {
+        let loadedCount = 0;
+        guildDataMap.forEach((guildData, guildId) => {
+          if (guildData.dailyRecap) {
+            DAILY_RECAP_CONFIG.set(guildId, guildData.dailyRecap);
+            loadedCount++;
+          }
+        });
+        if (loadedCount > 0) {
+          console.log(`✅ Loaded ${loadedCount} daily recap configurations from Supabase`);
+        }
+      }
+    }
+  } catch (error) {
+    console.error('❌ Error loading daily recap configuration:', error);
+  }
+}
+
+// Save daily recap configuration
+async function saveDailyRecapConfig(guildId) {
+  try {
+    const config = DAILY_RECAP_CONFIG.get(guildId);
+    if (!config) return;
+    
+    if (db.isSupabaseEnabled()) {
+      await db.saveDailyRecapConfig(guildId, config);
+    }
+  } catch (error) {
+    console.error(`❌ Error saving daily recap config for ${guildId}:`, error);
   }
 }
 
@@ -3628,6 +3678,10 @@ const LEGACY_SLASH_COMMANDS = [
   { name: 'adventurechoice', description: 'Make a choice in Adventure Mode.', options: [{ type: 3, name: 'choice', description: 'Choice identifier', required: true }] },
   { name: 'setup', description: 'Set up the bot in this channel for RPG commands. (Admin only)' },
   { name: 'addchannel', description: 'Add this channel to RPG command channels. (Admin only)' },
+  { name: 'setupDailyRecap', description: 'Set up this channel for daily Hytale recap submissions. (Admin only)' },
+  { name: 'setupCheerChannel', description: 'Set up this channel for daily recap cheers. (Admin only)' },
+  { name: 'reviewSubmissions', description: 'Review all daily recap submissions. (Admin only)' },
+  { name: 'submitRecap', description: 'Submit your daily Hytale recap response.' },
   { name: 'start', description: 'Start your adventure in Orbis! (For new players)' },
   { name: 'pets', description: 'View and manage your pets.', options: [{ type: 3, name: 'action', description: 'Action to perform', required: false, choices: [{ name: 'List', value: 'list' }, { name: 'Stable', value: 'stable' }] }] },
   { name: 'activatepet', description: 'Activate a pet from your collection.', options: [{ type: 3, name: 'pet', description: 'Pet identifier', required: true }] },
@@ -6405,6 +6459,494 @@ async function handleAddChannelCommand(message) {
   return message.reply(`✅ Added this channel to RPG command channels! Players can now use RPG commands here.`);
 }
 
+// ==================== DAILY HYTALE RECAP SYSTEM ====================
+async function handleSetupDailyRecapCommand(message) {
+  const isAdmin = message.member?.permissions.has('Administrator') || message.author.username === ADMIN_USER_ID;
+  if (!isAdmin) {
+    return message.reply('❌ Only administrators can set up the daily recap channel.');
+  }
+  
+  if (!message.guild) {
+    return message.reply('❌ This command can only be used in a server.');
+  }
+  
+  const guildId = message.guild.id;
+  const channelId = message.channel.id;
+  
+  // Set up daily recap channel
+  if (!DAILY_RECAP_CONFIG.has(guildId)) {
+    DAILY_RECAP_CONFIG.set(guildId, { recapChannelId: channelId, cheerChannelId: null });
+  } else {
+    const config = DAILY_RECAP_CONFIG.get(guildId);
+    config.recapChannelId = channelId;
+    DAILY_RECAP_CONFIG.set(guildId, config);
+  }
+  
+  await saveDailyRecapConfig(guildId);
+  
+  // Try to create dailyHytaleUpdates role
+  const roleName = '📢 Daily Hytale Updates';
+  let role = message.guild.roles.cache.find(r => r.name === roleName);
+  if (!role) {
+    try {
+      role = await message.guild.roles.create({
+        name: roleName,
+        color: 0x3498DB,
+        reason: 'Auto-created for daily Hytale updates',
+        mentionable: true,
+        hoist: false
+      });
+      console.log(`✅ Created role "${roleName}" in guild "${message.guild.name}"`);
+    } catch (error) {
+      console.error(`❌ Failed to create role "${roleName}":`, error.message);
+    }
+  }
+  
+  // Initialize submission storage if needed
+  if (!DAILY_RECAP_SUBMISSIONS.has(guildId)) {
+    DAILY_RECAP_SUBMISSIONS.set(guildId, new Map());
+  }
+  if (!DAILY_RECAP_COOLDOWNS.has(guildId)) {
+    DAILY_RECAP_COOLDOWNS.set(guildId, new Map());
+  }
+  
+  const embed = new EmbedBuilder()
+    .setColor('#2ECC71')
+    .setTitle('✅ Daily Recap Channel Setup Complete!')
+    .setDescription(
+      `This channel is now configured for daily Hytale recap submissions.\n\n` +
+      `**How it works:**\n` +
+      `• Only admins can post normally in this channel\n` +
+      `• Members can use \`/submitRecap\` to submit their daily recap\n` +
+      `• Admins can use \`/reviewSubmissions\` to review and post submissions\n` +
+      `• Use \`/setupCheerChannel\` to set up the cheer channel\n\n` +
+      `**Next Steps:**\n` +
+      `• Set up the cheer channel with \`/setupCheerChannel\`\n` +
+      `• Members can now submit their daily recaps!`
+    );
+  
+  return message.reply({ embeds: [embed] });
+}
+
+async function handleSetupCheerChannelCommand(message) {
+  const isAdmin = message.member?.permissions.has('Administrator') || message.author.username === ADMIN_USER_ID;
+  if (!isAdmin) {
+    return message.reply('❌ Only administrators can set up the cheer channel.');
+  }
+  
+  if (!message.guild) {
+    return message.reply('❌ This command can only be used in a server.');
+  }
+  
+  const guildId = message.guild.id;
+  const channelId = message.channel.id;
+  
+  // Check if recap channel is set up
+  if (!DAILY_RECAP_CONFIG.has(guildId) || !DAILY_RECAP_CONFIG.get(guildId).recapChannelId) {
+    return message.reply('❌ Please set up the daily recap channel first using `/setupDailyRecap` in the recap channel.');
+  }
+  
+  // Set up cheer channel
+  const config = DAILY_RECAP_CONFIG.get(guildId);
+  config.cheerChannelId = channelId;
+  DAILY_RECAP_CONFIG.set(guildId, config);
+  
+  await saveDailyRecapConfig(guildId);
+  
+  const embed = new EmbedBuilder()
+    .setColor('#2ECC71')
+    .setTitle('✅ Cheer Channel Setup Complete!')
+    .setDescription(
+      `This channel is now configured for daily recap cheers.\n\n` +
+      `**How it works:**\n` +
+      `• When users cheer a posted recap, notifications will appear here\n` +
+      `• Each user can cheer once per post\n` +
+      `• Cheers help highlight the best recaps!`
+    );
+  
+  return message.reply({ embeds: [embed] });
+}
+
+// Handle submit recap command (opens modal)
+async function handleSubmitRecapCommand(interaction) {
+  if (!interaction.guild) {
+    return interaction.reply({ ephemeral: true, content: '❌ This command can only be used in a server.' });
+  }
+  
+  const guildId = interaction.guild.id;
+  const userId = interaction.user.id;
+  
+  // Check if recap channel is set up
+  const config = DAILY_RECAP_CONFIG.get(guildId);
+  if (!config || !config.recapChannelId) {
+    return interaction.reply({ ephemeral: true, content: '❌ Daily recap is not set up for this server. Ask an admin to set it up using `/setupDailyRecap`.' });
+  }
+  
+  // Check cooldown (12 hours)
+  const cooldowns = DAILY_RECAP_COOLDOWNS.get(guildId) || new Map();
+  const lastSubmission = cooldowns.get(userId);
+  if (lastSubmission) {
+    const hoursSinceSubmission = (Date.now() - lastSubmission) / (1000 * 60 * 60);
+    if (hoursSinceSubmission < 12) {
+      const hoursRemaining = (12 - hoursSinceSubmission).toFixed(1);
+      return interaction.reply({ ephemeral: true, content: `❌ You can only submit a recap once every 12 hours. Please wait ${hoursRemaining} more hours.` });
+    }
+  }
+  
+  // Create modal for submission
+  const modal = new ModalBuilder()
+    .setCustomId('daily_recap_submit')
+    .setTitle('Submit Daily Hytale Recap');
+  
+  const recapInput = new TextInputBuilder()
+    .setCustomId('recap_content')
+    .setLabel('Your Daily Hytale Recap')
+    .setStyle(TextInputStyle.Paragraph)
+    .setPlaceholder('Share what happened in Hytale today...')
+    .setRequired(true)
+    .setMaxLength(2000);
+  
+  const firstActionRow = new ActionRowBuilder().addComponents(recapInput);
+  modal.addComponents(firstActionRow);
+  
+  return interaction.showModal(modal);
+}
+
+// Handle review submissions command (admin only)
+async function handleReviewSubmissionsCommand(interaction) {
+  const isAdmin = interaction.member?.permissions.has('Administrator') || interaction.user.username === ADMIN_USER_ID;
+  if (!isAdmin) {
+    return interaction.reply({ ephemeral: true, content: '❌ Only administrators can review submissions.' });
+  }
+  
+  if (!interaction.guild) {
+    return interaction.reply({ ephemeral: true, content: '❌ This command can only be used in a server.' });
+  }
+  
+  const guildId = interaction.guild.id;
+  
+  // Check if recap channel is set up
+  const config = DAILY_RECAP_CONFIG.get(guildId);
+  if (!config || !config.recapChannelId) {
+    return interaction.reply({ ephemeral: true, content: '❌ Daily recap is not set up for this server. Use `/setupDailyRecap` to set it up.' });
+  }
+  
+  // Get all submissions
+  const submissions = DAILY_RECAP_SUBMISSIONS.get(guildId);
+  if (!submissions || submissions.size === 0) {
+    return interaction.reply({ ephemeral: true, content: '❌ No submissions to review. Members can submit using `/submitRecap`.' });
+  }
+  
+  // Create dropdown menu with submissions
+  const options = [];
+  for (const [userId, submissionData] of submissions.entries()) {
+    try {
+      const user = await interaction.client.users.fetch(userId).catch(() => null);
+      const username = user ? user.username : `User ${userId}`;
+      const preview = submissionData.submission.substring(0, 50) + (submissionData.submission.length > 50 ? '...' : '');
+      options.push({
+        label: username,
+        description: preview,
+        value: userId
+      });
+    } catch (error) {
+      console.error(`Error fetching user ${userId}:`, error);
+    }
+  }
+  
+  if (options.length === 0) {
+    return interaction.reply({ ephemeral: true, content: '❌ No valid submissions to review.' });
+  }
+  
+  // Limit to 25 options (Discord limit)
+  const limitedOptions = options.slice(0, 25);
+  
+  const selectMenu = new StringSelectMenuBuilder()
+    .setCustomId('daily_recap_review')
+    .setPlaceholder('Select a submission to review...')
+    .addOptions(limitedOptions);
+  
+  const row = new ActionRowBuilder().addComponents(selectMenu);
+  
+  const embed = new EmbedBuilder()
+    .setColor('#3498DB')
+    .setTitle('📋 Review Daily Recap Submissions')
+    .setDescription(`Found **${submissions.size}** submission(s). Select one to review and post.`)
+    .setFooter({ text: 'Select a submission from the dropdown below' });
+  
+  return interaction.reply({ embeds: [embed], components: [row], ephemeral: true });
+}
+
+// Handle daily recap post button (admin only)
+async function handleDailyRecapPost(interaction, userId) {
+  const isAdmin = interaction.member?.permissions.has('Administrator') || interaction.user.username === ADMIN_USER_ID;
+  if (!isAdmin) {
+    return interaction.reply({ ephemeral: true, content: '❌ Only administrators can post submissions.' });
+  }
+  
+  if (!interaction.guild) {
+    return interaction.reply({ ephemeral: true, content: '❌ This command can only be used in a server.' });
+  }
+  
+  const guildId = interaction.guild.id;
+  
+  // Get submission
+  const submissions = DAILY_RECAP_SUBMISSIONS.get(guildId);
+  if (!submissions || !submissions.has(userId)) {
+    return interaction.reply({ ephemeral: true, content: '❌ Submission not found.' });
+  }
+  
+  const submissionData = submissions.get(userId);
+  const config = DAILY_RECAP_CONFIG.get(guildId);
+  if (!config || !config.recapChannelId) {
+    return interaction.reply({ ephemeral: true, content: '❌ Daily recap channel is not set up.' });
+  }
+  
+  // Get recap channel
+  const recapChannel = await interaction.guild.channels.fetch(config.recapChannelId).catch(() => null);
+  if (!recapChannel) {
+    return interaction.reply({ ephemeral: true, content: '❌ Recap channel not found.' });
+  }
+  
+  // Get user
+  const user = await interaction.client.users.fetch(userId).catch(() => null);
+  if (!user) {
+    return interaction.reply({ ephemeral: true, content: '❌ User not found.' });
+  }
+  
+  // Create post embed
+  const postEmbed = new EmbedBuilder()
+    .setColor('#3498DB')
+    .setTitle('📰 Daily Hytale Recap')
+    .setDescription(submissionData.submission)
+    .setAuthor({ name: user.username, iconURL: user.displayAvatarURL({ dynamic: true }) })
+    .setFooter({ text: 'Daily Hytale Updates' })
+    .setTimestamp();
+  
+  // Create buttons (Cheer, Subscribe)
+  const cheerButton = new ButtonBuilder()
+    .setCustomId(`daily_recap|cheer|${userId}`)
+    .setLabel('Cheer')
+    .setStyle(ButtonStyle.Primary)
+    .setEmoji('👏');
+  
+  const subscribeButton = new ButtonBuilder()
+    .setCustomId('daily_recap|subscribe')
+    .setLabel('Subscribe to Updates')
+    .setStyle(ButtonStyle.Secondary)
+    .setEmoji('🔔');
+  
+  const row = new ActionRowBuilder().addComponents(cheerButton, subscribeButton);
+  
+  // Post to recap channel
+  const postMessage = await recapChannel.send({ 
+    embeds: [postEmbed], 
+    components: [row],
+    content: config.roleId ? `<@&${config.roleId}>` : undefined
+  }).catch(() => null);
+  
+  if (!postMessage) {
+    return interaction.reply({ ephemeral: true, content: '❌ Failed to post to recap channel. Check bot permissions.' });
+  }
+  
+  // Track post
+  DAILY_RECAP_POSTS.set(postMessage.id, {
+    guildId: guildId,
+    userId: userId,
+    postMessageId: postMessage.id,
+    cheers: new Set()
+  });
+  
+  // Award XP and role to submitter
+  const EXP_REWARD = 500; // Large XP reward for posting
+  const message = { guild: interaction.guild, channel: recapChannel, author: user };
+  await awardExp(guildId, userId, EXP_REWARD, 'command', message).catch(() => {});
+  
+  // Grant unique Hytale-themed role
+  const uniqueRoleName = '📰 Daily Recap Writer';
+  let uniqueRole = interaction.guild.roles.cache.find(r => r.name === uniqueRoleName);
+  if (!uniqueRole) {
+    try {
+      uniqueRole = await interaction.guild.roles.create({
+        name: uniqueRoleName,
+        color: 0x3498DB,
+        reason: 'Auto-created for daily recap writers',
+        mentionable: false,
+        hoist: false
+      });
+    } catch (error) {
+      console.error(`Failed to create role "${uniqueRoleName}":`, error);
+    }
+  }
+  
+  if (uniqueRole) {
+    const member = await interaction.guild.members.fetch(userId).catch(() => null);
+    if (member && !member.roles.cache.has(uniqueRole.id)) {
+      await member.roles.add(uniqueRole).catch(() => {});
+    }
+  }
+  
+  // Clear all submissions after posting
+  submissions.clear();
+  
+  // Update interaction (if it's from a button click, update; otherwise reply)
+  if (interaction.isButton() && !interaction.replied && !interaction.deferred) {
+    await interaction.update({ 
+      embeds: [new EmbedBuilder()
+        .setColor('#2ECC71')
+        .setTitle('✅ Submission Posted!')
+        .setDescription(`The submission has been posted to the recap channel and the submitter has been rewarded.`)
+      ], 
+      components: [] 
+    }).catch(() => {
+      // If update fails, try replying
+      return interaction.reply({ ephemeral: true, content: `✅ Posted submission to ${recapChannel}! The submitter has been rewarded ${EXP_REWARD} XP and the ${uniqueRoleName} role.` });
+    });
+    
+    return interaction.followUp({ ephemeral: true, content: `✅ Posted submission to ${recapChannel}! The submitter has been rewarded ${EXP_REWARD} XP and the ${uniqueRoleName} role.` });
+  } else {
+    // If called from a different context, just reply
+    return interaction.reply({ ephemeral: true, content: `✅ Posted submission to ${recapChannel}! The submitter has been rewarded ${EXP_REWARD} XP and the ${uniqueRoleName} role.` });
+  }
+}
+
+// Handle daily recap cheer button
+async function handleDailyRecapCheer(interaction, userId) {
+  if (!interaction.guild) {
+    return interaction.reply({ ephemeral: true, content: '❌ This can only be used in a server.' });
+  }
+  
+  const guildId = interaction.guild.id;
+  const postMessageId = interaction.message.id;
+  const cheererId = interaction.user.id;
+  
+  // Get post data
+  const postData = DAILY_RECAP_POSTS.get(postMessageId);
+  if (!postData) {
+    return interaction.reply({ ephemeral: true, content: '❌ Post not found.' });
+  }
+  
+  // Check if user already cheered
+  if (postData.cheers.has(cheererId)) {
+    return interaction.reply({ ephemeral: true, content: '❌ You have already cheered this post!' });
+  }
+  
+  // Add cheer
+  postData.cheers.add(cheererId);
+  
+  // Get config
+  const config = DAILY_RECAP_CONFIG.get(guildId);
+  if (!config || !config.cheerChannelId) {
+    return interaction.reply({ ephemeral: true, content: '✅ You cheered this post! (Cheer channel not set up)' });
+  }
+  
+  // Post to cheer channel
+  const cheerChannel = await interaction.guild.channels.fetch(config.cheerChannelId).catch(() => null);
+  if (cheerChannel) {
+    const cheerer = interaction.user;
+    const cheeredEmbed = new EmbedBuilder()
+      .setColor('#F1C40F')
+      .setDescription(`👏 **${cheerer.username}** cheered for the latest daily recap post!`)
+      .setTimestamp();
+    
+    await cheerChannel.send({ embeds: [cheeredEmbed] }).catch(() => {});
+  }
+  
+  // Update button to show cheers count (keep enabled for other users)
+  const cheerCount = postData.cheers.size;
+  const cheerButton = new ButtonBuilder()
+    .setCustomId(`daily_recap|cheer|${userId}`)
+    .setLabel(`Cheer (${cheerCount})`)
+    .setStyle(ButtonStyle.Primary)
+    .setEmoji('👏');
+  
+  // Rebuild subscribe button from message
+  const originalComponents = interaction.message.components;
+  let subscribeButton = null;
+  if (originalComponents && originalComponents[0]) {
+    const subscribeComponent = originalComponents[0].components.find(c => c.customId === 'daily_recap|subscribe');
+    if (subscribeComponent) {
+      subscribeButton = ButtonBuilder.from(subscribeComponent);
+    }
+  }
+  if (!subscribeButton) {
+    subscribeButton = new ButtonBuilder()
+      .setCustomId('daily_recap|subscribe')
+      .setLabel('Subscribe to Updates')
+      .setStyle(ButtonStyle.Secondary)
+      .setEmoji('🔔');
+  }
+  
+  const row = new ActionRowBuilder().addComponents(cheerButton, subscribeButton);
+  
+  await interaction.update({ components: [row] }).catch(() => {});
+  
+  return interaction.followUp({ ephemeral: true, content: '✅ You cheered for this post! Thank you for your support!' });
+}
+
+// Handle daily recap subscribe button
+async function handleDailyRecapSubscribe(interaction) {
+  if (!interaction.guild) {
+    return interaction.reply({ ephemeral: true, content: '❌ This can only be used in a server.' });
+  }
+  
+  const guildId = interaction.guild.id;
+  const userId = interaction.user.id;
+  
+  // Get config
+  const config = DAILY_RECAP_CONFIG.get(guildId);
+  if (!config) {
+    return interaction.reply({ ephemeral: true, content: '❌ Daily recap is not set up for this server.' });
+  }
+  
+  // Get or create role
+  const roleName = '📢 Daily Hytale Updates';
+  let role = interaction.guild.roles.cache.find(r => r.name === roleName);
+  if (!role) {
+    try {
+      role = await interaction.guild.roles.create({
+        name: roleName,
+        color: 0x3498DB,
+        reason: 'Auto-created for daily Hytale updates',
+        mentionable: true,
+        hoist: false
+      });
+      // Store role ID in config
+      config.roleId = role.id;
+      DAILY_RECAP_CONFIG.set(guildId, config);
+      await saveDailyRecapConfig(guildId);
+    } catch (error) {
+      console.error(`Failed to create role "${roleName}":`, error);
+      return interaction.reply({ ephemeral: true, content: '❌ Failed to create subscription role. Check bot permissions.' });
+    }
+  } else {
+    // Store role ID if not already stored
+    if (!config.roleId) {
+      config.roleId = role.id;
+      DAILY_RECAP_CONFIG.set(guildId, config);
+      await saveDailyRecapConfig(guildId);
+    }
+  }
+  
+  // Toggle role
+  const member = await interaction.guild.members.fetch(userId).catch(() => null);
+  if (!member) {
+    return interaction.reply({ ephemeral: true, content: '❌ Member not found.' });
+  }
+  
+  const hasRole = member.roles.cache.has(role.id);
+  
+  if (hasRole) {
+    // Remove role
+    await member.roles.remove(role).catch(() => {});
+    return interaction.reply({ ephemeral: true, content: '✅ You have unsubscribed from daily Hytale updates. You will no longer be pinged when new posts are made.' });
+  } else {
+    // Add role
+    await member.roles.add(role).catch(() => {});
+    return interaction.reply({ ephemeral: true, content: '✅ You have subscribed to daily Hytale updates! You will be pinged when new posts are made.' });
+  }
+}
+
 async function handleStartCommand(message) {
   const player = getPlayer(message.author.id);
   
@@ -6681,6 +7223,28 @@ client.on('messageCreate', async message => {
   
   const guildId = message.guild.id;
   const channelId = message.channel.id;
+  
+  // Check if this is a daily recap channel - restrict to admins only
+  const recapConfig = DAILY_RECAP_CONFIG.get(guildId);
+  if (recapConfig && recapConfig.recapChannelId === channelId) {
+    // This is a recap channel - only allow admins to post
+    const isAdmin = message.member?.permissions.has('Administrator') || message.author.username === ADMIN_USER_ID;
+    if (!isAdmin) {
+      // Delete non-admin messages and send a helpful message
+      await message.delete().catch(() => {});
+      const helpMessage = await message.channel.send({
+        content: `👋 Hey ${message.author}! This channel is for daily Hytale recaps only. Use \`/submitRecap\` to submit your recap for review. Only admins can post directly in this channel.`
+      }).catch(() => null);
+      
+      // Delete help message after 5 seconds
+      if (helpMessage) {
+        setTimeout(() => {
+          helpMessage.delete().catch(() => {});
+        }, 5000);
+      }
+      return;
+    }
+  }
   
   // Check if this is an RPG channel
   const allowedChannels = RPG_CHANNELS.get(guildId);
@@ -11256,6 +11820,9 @@ client.once('ready', async () => {
   // Load RPG channel restrictions and guild setup status from Supabase or disk on startup
   await loadRPGChannels();
   
+  // Load daily recap configuration from Supabase on startup
+  await loadDailyRecapConfig();
+  
   // Set up player helper functions for dungeon system (after functions are defined)
   dungeonHandlers.setPlayerHelpers(addXp, addItemToInventory, registerCodexUnlock);
   
@@ -11272,6 +11839,7 @@ client.once('ready', async () => {
 client.on('interactionCreate', interaction => {
   if (interaction.isAutocomplete()) return handleSlashAutocomplete(interaction);
   if (interaction.isChatInputCommand()) return handleSlashCommand(interaction);
+  if (interaction.isModalSubmit()) return handleModalSubmit(interaction);
   if (interaction.isStringSelectMenu()) return handleSelectMenuInteraction(interaction);
   if (interaction.isButton()) return handleButtonInteraction(interaction);
   return null;
@@ -18592,6 +19160,20 @@ async function handleSlashCommand(interaction) {
       const message = createMessageAdapterFromInteraction(interaction);
       return handleStartCommand(message);
     }
+    case 'setupdailyrecap': {
+      const message = createMessageAdapterFromInteraction(interaction);
+      return handleSetupDailyRecapCommand(message);
+    }
+    case 'setupcheerchannel': {
+      const message = createMessageAdapterFromInteraction(interaction);
+      return handleSetupCheerChannelCommand(message);
+    }
+    case 'submitrecap': {
+      return handleSubmitRecapCommand(interaction);
+    }
+    case 'reviewsubmissions': {
+      return handleReviewSubmissionsCommand(interaction);
+    }
     case 'admin': {
       return handleAdminCommand(interaction);
     }
@@ -18600,12 +19182,99 @@ async function handleSlashCommand(interaction) {
   }
   return interaction.reply({ content: '⚠️ Command not implemented yet.', ephemeral: true });
 }
+
+// Handle modal submissions
+async function handleModalSubmit(interaction) {
+  if (interaction.customId === 'daily_recap_submit') {
+    const guildId = interaction.guild.id;
+    const userId = interaction.user.id;
+    const submission = interaction.fields.getTextInputValue('recap_content');
+    
+    // Check if recap channel is set up
+    const config = DAILY_RECAP_CONFIG.get(guildId);
+    if (!config || !config.recapChannelId) {
+      return interaction.reply({ ephemeral: true, content: '❌ Daily recap is not set up for this server.' });
+    }
+    
+    // Check cooldown (12 hours)
+    const cooldowns = DAILY_RECAP_COOLDOWNS.get(guildId) || new Map();
+    const lastSubmission = cooldowns.get(userId);
+    if (lastSubmission) {
+      const hoursSinceSubmission = (Date.now() - lastSubmission) / (1000 * 60 * 60);
+      if (hoursSinceSubmission < 12) {
+        const hoursRemaining = (12 - hoursSinceSubmission).toFixed(1);
+        return interaction.reply({ ephemeral: true, content: `❌ You can only submit a recap once every 12 hours. Please wait ${hoursRemaining} more hours.` });
+      }
+    }
+    
+    // Store submission
+    if (!DAILY_RECAP_SUBMISSIONS.has(guildId)) {
+      DAILY_RECAP_SUBMISSIONS.set(guildId, new Map());
+    }
+    const submissions = DAILY_RECAP_SUBMISSIONS.get(guildId);
+    submissions.set(userId, {
+      submission: submission,
+      timestamp: Date.now(),
+      messageId: null
+    });
+    
+    // Update cooldown
+    if (!DAILY_RECAP_COOLDOWNS.has(guildId)) {
+      DAILY_RECAP_COOLDOWNS.set(guildId, new Map());
+    }
+    const cooldownMap = DAILY_RECAP_COOLDOWNS.get(guildId);
+    cooldownMap.set(userId, Date.now());
+    
+    return interaction.reply({ ephemeral: true, content: '✅ Your daily recap submission has been received! Admins will review it and may post it to the channel.' });
+  }
+}
+
 async function handleSelectMenuInteraction(interaction) {
   const [scope, context] = interaction.customId.split('|');
   const player = getPlayer(interaction.user.id);
   const exploration = ensureExplorationState(player);
 
   try {
+    // Handle daily recap review dropdown
+    if (interaction.customId === 'daily_recap_review') {
+      const isAdmin = interaction.member?.permissions.has('Administrator') || interaction.user.username === ADMIN_USER_ID;
+      if (!isAdmin) {
+        return interaction.reply({ ephemeral: true, content: '❌ Only administrators can review submissions.' });
+      }
+      
+      const guildId = interaction.guild.id;
+      const userId = interaction.values[0];
+      
+      // Get submission
+      const submissions = DAILY_RECAP_SUBMISSIONS.get(guildId);
+      if (!submissions || !submissions.has(userId)) {
+        return interaction.reply({ ephemeral: true, content: '❌ Submission not found.' });
+      }
+      
+      const submissionData = submissions.get(userId);
+      const user = await interaction.client.users.fetch(userId).catch(() => null);
+      const username = user ? user.username : `User ${userId}`;
+      
+      // Create embed with submission
+      const embed = new EmbedBuilder()
+        .setColor('#3498DB')
+        .setTitle('📋 Daily Recap Submission Review')
+        .setDescription(submissionData.submission)
+        .setAuthor({ name: username, iconURL: user?.displayAvatarURL({ dynamic: true }) })
+        .setFooter({ text: 'Review this submission and click "Post" to publish it to the channel' })
+        .setTimestamp(submissionData.timestamp);
+      
+      // Create Post button
+      const postButton = new ButtonBuilder()
+        .setCustomId(`daily_recap|post|${userId}`)
+        .setLabel('Post')
+        .setStyle(ButtonStyle.Success);
+      
+      const row = new ActionRowBuilder().addComponents(postButton);
+      
+      return interaction.reply({ embeds: [embed], components: [row], ephemeral: true });
+    }
+    
     if (scope === 'base-upgrade') {
       const biomeId = context || exploration.currentBiome;
       const moduleId = interaction.values?.[0];
@@ -18771,6 +19440,17 @@ async function handleButtonInteraction(interaction) {
   const biome = getBiomeDefinition(exploration.currentBiome);
 
   try {
+    // Handle daily recap buttons
+    if (scope === 'daily_recap') {
+      if (action === 'post') {
+        return handleDailyRecapPost(interaction, rest[0]);
+      } else if (action === 'cheer') {
+        return handleDailyRecapCheer(interaction, rest[0]);
+      } else if (action === 'subscribe') {
+        return handleDailyRecapSubscribe(interaction);
+      }
+    }
+    
     switch ((scope || '').toLowerCase()) {
       case 'command': {
         const commandName = action?.toLowerCase();

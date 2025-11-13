@@ -523,6 +523,44 @@ async function loadAllGuildLeveling(guildId) {
   }
 }
 
+// Save daily recap configuration
+async function saveDailyRecapConfig(guildId, config) {
+  if (!useSupabase || !supabase) {
+    return { success: false, error: 'Supabase not initialized' };
+  }
+  
+  try {
+    // Load existing guild data
+    const existingData = await loadGuildData(guildId);
+    const guildData = existingData || { allowedChannels: [], setupCompleted: false };
+    
+    // Update daily recap config
+    guildData.dailyRecap = config;
+    
+    // Save updated guild data
+    const result = await saveGuildData(guildId, guildData);
+    return result;
+  } catch (error) {
+    console.error(`❌ Error saving daily recap config for ${guildId}:`, error.message);
+    return { success: false, error: error.message };
+  }
+}
+
+// Load daily recap configuration
+async function loadDailyRecapConfig(guildId) {
+  if (!useSupabase || !supabase) {
+    return null;
+  }
+  
+  try {
+    const guildData = await loadGuildData(guildId);
+    return guildData?.dailyRecap || null;
+  } catch (error) {
+    console.error(`❌ Error loading daily recap config for ${guildId}:`, error.message);
+    return null;
+  }
+}
+
 module.exports = {
   initSupabase,
   testConnection,
@@ -537,5 +575,7 @@ module.exports = {
   loadAllGuildData,
   saveLevelingData,
   loadLevelingData,
-  loadAllGuildLeveling
+  loadAllGuildLeveling,
+  saveDailyRecapConfig,
+  loadDailyRecapConfig
 };
