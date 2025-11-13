@@ -4101,11 +4101,6 @@ const SIMPLE_SLASH_EXECUTORS = {
   },
   eventstatus: () => ({ command: 'eventstatus', args: [] }),
   participate: interaction => ({ command: 'participate', args: [interaction.options.getString('event', true)] }),
-  setuptweets: interaction => {
-    const channel = interaction.options.getChannel('channel');
-    return { command: 'setuptweets', args: [], overrides: channel ? { channel } : {} };
-  },
-  checktweets: () => ({ command: 'checktweets', args: [] }),
   reset: interaction => {
     const user = interaction.options.getUser('user', true);
     return { command: 'reset', args: [user.id] };
@@ -6324,13 +6319,7 @@ async function executeCommand(message, command, args) {
     await participateInEvent(message, args[0]);
   }
   
-  // Tweet Tracker Commands
-  else if (command === 'setuptweets') {
-    return message.reply('⚠️ This command has been updated! Please use the slash command `/setuptweets` instead.');
-  }
-  else if (command === 'checktweets') {
-    return message.reply('⚠️ This command has been updated! Please use the slash command `/checktweets` instead.');
-  }
+  // Tweet Tracker Commands - now slash-only, no prefix version
   
   // Admin & PvP Commands
   else if (command === 'reset') {
@@ -7656,13 +7645,7 @@ client.on('messageCreate', async message => {
       await participateInEvent(message, args[0]);
     }
     
-    // Tweet Tracker Commands
-    else if (command === 'setuptweets') {
-      return message.reply('⚠️ This command has been updated! Please use the slash command `/setuptweets` instead.');
-    }
-    else if (command === 'checktweets') {
-      return message.reply('⚠️ This command has been updated! Please use the slash command `/checktweets` instead.');
-    }
+    // Tweet Tracker Commands - now slash-only, no prefix version
     
     // Admin Commands
     else if (command === 'reset') {
@@ -19016,7 +18999,14 @@ async function handleSlashCommand(interaction) {
     }
   }
 
-  if (!['dashboard', 'explore', 'travel', 'base', 'settlement', 'hy', 'setup', 'addchannel', 'start', 'codex'].includes(interaction.commandName)) {
+  // Check if command should use legacy executor (but skip commands that have dedicated handlers)
+  const commandsWithDedicatedHandlers = [
+    'dashboard', 'explore', 'travel', 'base', 'settlement', 'hy', 'setup', 'addchannel', 'start', 'codex',
+    'setuptweets', 'addtwitteraccount', 'removetwitteraccount', 'listtwitteraccounts', 'checktweets',
+    'setupdailyrecap', 'setupcheerchannel', 'reviewsubmissions', 'submitrecap', 'leveling', 'attributes', 'admin'
+  ];
+  
+  if (!commandsWithDedicatedHandlers.includes(interaction.commandName)) {
     const executor = SIMPLE_SLASH_EXECUTORS[interaction.commandName];
     if (executor) {
       const result = executor(interaction) || {};
