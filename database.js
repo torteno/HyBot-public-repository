@@ -561,6 +561,44 @@ async function loadDailyRecapConfig(guildId) {
   }
 }
 
+// Save Twitter monitoring configuration
+async function saveTwitterMonitoringConfig(guildId, config) {
+  if (!useSupabase || !supabase) {
+    return { success: false, error: 'Supabase not initialized' };
+  }
+  
+  try {
+    // Load existing guild data
+    const existingData = await loadGuildData(guildId);
+    const guildData = existingData || { allowedChannels: [], setupCompleted: false };
+    
+    // Update Twitter monitoring config
+    guildData.twitterMonitoring = config;
+    
+    // Save updated guild data
+    const result = await saveGuildData(guildId, guildData);
+    return result;
+  } catch (error) {
+    console.error(`❌ Error saving Twitter monitoring config for ${guildId}:`, error.message);
+    return { success: false, error: error.message };
+  }
+}
+
+// Load Twitter monitoring configuration
+async function loadTwitterMonitoringConfig(guildId) {
+  if (!useSupabase || !supabase) {
+    return null;
+  }
+  
+  try {
+    const guildData = await loadGuildData(guildId);
+    return guildData?.twitterMonitoring || null;
+  } catch (error) {
+    console.error(`❌ Error loading Twitter monitoring config for ${guildId}:`, error.message);
+    return null;
+  }
+}
+
 module.exports = {
   initSupabase,
   testConnection,
@@ -577,5 +615,7 @@ module.exports = {
   loadLevelingData,
   loadAllGuildLeveling,
   saveDailyRecapConfig,
-  loadDailyRecapConfig
+  loadDailyRecapConfig,
+  saveTwitterMonitoringConfig,
+  loadTwitterMonitoringConfig
 };

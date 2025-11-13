@@ -86,7 +86,11 @@ const PREFIX = '!hy';
 // ==================== DATA STORAGE ====================
 const playerData = new Map(); // userId -> player data
 const activeGames = new Map(); // channelId -> game data
-const lastTweetId = new Map(); // guildId -> last tweet ID
+const lastTweetId = new Map(); // guildId -> last tweet ID (legacy, kept for compatibility)
+
+// ==================== TWITTER MONITORING SYSTEM ====================
+// Twitter monitoring configuration (guildId -> { channelId, roleId, accounts: Map<username -> lastTweetId> })
+const TWITTER_MONITORING_CONFIG = new Map(); // guildId -> { channelId, roleId, accounts: Map }
 
 const DATA_DIR = path.join(__dirname, 'data');
 const PLAYER_DATA_DIR = path.join(__dirname, 'player_data');
@@ -475,6 +479,60 @@ async function saveDailyRecapConfig(guildId) {
     }
   } catch (error) {
     console.error(`❌ Error saving daily recap config for ${guildId}:`, error);
+  }
+}
+
+// Load Twitter monitoring configuration from Supabase
+async function loadTwitterMonitoringConfig() {
+  try {
+    if (db.isSupabaseEnabled()) {
+      const guildDataMap = await db.loadAllGuildData();
+      if (guildDataMap && guildDataMap.size > 0) {
+        let loadedCount = 0;
+        guildDataMap.forEach((guildData, guildId) => {
+          if (guildData.twitterMonitoring) {
+            const config = guildData.twitterMonitoring;
+            // Convert accounts array back to Map
+            if (config.accounts && Array.isArray(config.accounts)) {
+              const accountsMap = new Map();
+              config.accounts.forEach(([username, lastTweetId]) => {
+                accountsMap.set(username, lastTweetId);
+              });
+              config.accounts = accountsMap;
+            } else if (!config.accounts) {
+              config.accounts = new Map();
+            }
+            TWITTER_MONITORING_CONFIG.set(guildId, config);
+            loadedCount++;
+          }
+        });
+        if (loadedCount > 0) {
+          console.log(`✅ Loaded ${loadedCount} Twitter monitoring configurations from Supabase`);
+        }
+      }
+    }
+  } catch (error) {
+    console.error('❌ Error loading Twitter monitoring configuration:', error);
+  }
+}
+
+// Save Twitter monitoring configuration
+async function saveTwitterMonitoringConfig(guildId) {
+  try {
+    const config = TWITTER_MONITORING_CONFIG.get(guildId);
+    if (!config) return;
+    
+    // Convert accounts Map to array for JSON storage
+    const configToSave = {
+      ...config,
+      accounts: Array.from(config.accounts.entries())
+    };
+    
+    if (db.isSupabaseEnabled()) {
+      await db.saveTwitterMonitoringConfig(guildId, configToSave);
+    }
+  } catch (error) {
+    console.error(`❌ Error saving Twitter monitoring config for ${guildId}:`, error);
   }
 }
 
@@ -3664,8 +3722,11 @@ const LEGACY_SLASH_COMMANDS = [
   { name: 'eventsub', description: 'Subscribe the current channel to world events.', options: [{ type: 3, name: 'event', description: 'Event identifier or "off"', required: false }] },
   { name: 'eventstatus', description: 'Show the active world event.' },
   { name: 'participate', description: 'Participate in the active event.', options: [{ type: 3, name: 'event', description: 'Event identifier', required: true }] },
-  { name: 'setuptweets', description: 'Configure tweet tracking for this channel.', options: [{ type: 7, name: 'channel', description: 'Channel for tweet tracking', required: false }] },
-  { name: 'checktweets', description: 'Fetch the latest Hytale tweets.' },
+  { name: 'setuptweets', description: 'Set up Twitter monitoring for this channel with role selection. (Admin only)' },
+  { name: 'addtwitteraccount', description: 'Add a Twitter account to monitor. (Admin only)', options: [{ type: 3, name: 'username', description: 'Twitter username (without @)', required: true }] },
+  { name: 'removetwitteraccount', description: 'Remove a Twitter account from monitoring. (Admin only)', options: [{ type: 3, name: 'username', description: 'Twitter username (without @)', required: true }] },
+  { name: 'listtwitteraccounts', description: 'List all monitored Twitter accounts. (Admin only)' },
+  { name: 'checktweets', description: 'Manually check for new tweets from monitored accounts. (Admin only)' },
   { name: 'reset', description: 'Reset a player profile.', options: [{ type: 6, name: 'user', description: 'Player to reset', required: true }] },
   { name: 'addcoins', description: 'Grant coins to a player.', options: [{ type: 6, name: 'user', description: 'Player to reward', required: true }, { type: 4, name: 'amount', description: 'Amount of coins', required: true }] },
   { name: 'duel', description: 'Challenge another player to a duel.', options: [{ type: 6, name: 'user', description: 'Opponent', required: true }, { type: 4, name: 'wager', description: 'Optional wager', required: false }] },
@@ -6265,13 +6326,10 @@ async function executeCommand(message, command, args) {
   
   // Tweet Tracker Commands
   else if (command === 'setuptweets') {
-    if (!message.member?.permissions?.has?.('Administrator')) {
-      return message.reply('❌ You need Administrator permissions to set up tweet tracking!');
-    }
-    await setupTweetTracker(message);
+    return message.reply('⚠️ This command has been updated! Please use the slash command `/setuptweets` instead.');
   }
   else if (command === 'checktweets') {
-    await checkTweets(message, true);
+    return message.reply('⚠️ This command has been updated! Please use the slash command `/checktweets` instead.');
   }
   
   // Admin & PvP Commands
@@ -7591,13 +7649,10 @@ client.on('messageCreate', async message => {
     
     // Tweet Tracker Commands
     else if (command === 'setuptweets') {
-      if (!message.member.permissions.has('Administrator')) {
-        return message.reply('❌ You need Administrator permissions to set up tweet tracking!');
-      }
-      await setupTweetTracker(message);
+      return message.reply('⚠️ This command has been updated! Please use the slash command `/setuptweets` instead.');
     }
     else if (command === 'checktweets') {
-      await checkTweets(message, true);
+      return message.reply('⚠️ This command has been updated! Please use the slash command `/checktweets` instead.');
     }
     
     // Admin Commands
@@ -11691,85 +11746,391 @@ async function showReputation(message, factionIdentifier) {
   return sendStyledEmbed(message, embed, 'reputation');
 }
 
-// ==================== TWEET TRACKER ====================
-async function setupTweetTracker(message) {
-  message.reply('✅ Tweet tracker channel set! I\'ll post Hytale tweets here. Checking every 10 minutes.');
-  
-  // Store the channel ID for this guild
-  lastTweetId.set(message.guild.id, { channelId: message.channel.id, lastId: null });
+// ==================== ENHANCED TWITTER MONITORING SYSTEM ====================
+// Get Twitter Bearer Token from environment
+function getTwitterBearerToken() {
+  return process.env.TWITTER_BEARER_TOKEN;
 }
-async function checkTweets(message, manual = false) {
+
+// Get Twitter user ID from username
+async function getTwitterUserId(username) {
+  const bearerToken = getTwitterBearerToken();
+  if (!bearerToken) {
+    throw new Error('TWITTER_BEARER_TOKEN not configured');
+  }
+  
   try {
-    // Note: This is a simplified version. In production, you'd use Twitter API v2
-    // For demonstration, this shows the structure
-    
-    const response = await axios.get('https://api.twitter.com/2/tweets/search/recent', {
-      params: {
-        query: 'from:Hytale',
-        max_results: 5,
-        'tweet.fields': 'created_at,text'
-      },
+    const response = await axios.get(`https://api.twitter.com/2/users/by/username/${username}`, {
       headers: {
-        'Authorization': 'Bearer YOUR_TWITTER_BEARER_TOKEN' // Users need to add their token
+        'Authorization': `Bearer ${bearerToken}`
       }
-    }).catch(() => null);
+    });
     
-    if (!response || !response.data) {
-      if (manual) {
-        return message.reply('❌ Unable to fetch tweets. Make sure the bot has a valid Twitter API token configured.');
-      }
-      return;
+    if (response.data && response.data.data) {
+      return response.data.data.id;
     }
-    
-    const tweets = response.data.data;
-    if (!tweets || tweets.length === 0) {
-      if (manual) return message.reply('No recent tweets found.');
-      return;
-    }
-    
-    const guildData = lastTweetId.get(message.guild.id);
-    const latestTweet = tweets[0];
-    
-    if (guildData && latestTweet.id !== guildData.lastId) {
-      const channel = await client.channels.fetch(guildData.channelId);
-      
-      const embed = new EmbedBuilder()
-        .setColor('#1DA1F2')
-        .setTitle('🐦 New Hytale Tweet!')
-        .setDescription(latestTweet.text)
-        .setURL(`https://twitter.com/Hytale/status/${latestTweet.id}`)
-        .setTimestamp(new Date(latestTweet.created_at))
-        .setFooter({ text: 'Hytale (@Hytale) on Twitter' });
-      
-      const payload = buildStyledPayload(embed, 'info');
-      payload.content = '@everyone New Hytale tweet!';
-      channel.send(payload).catch(() => {});
-      
-      guildData.lastId = latestTweet.id;
-    }
-    
-    if (manual) {
-      const embed = new EmbedBuilder()
-        .setColor('#1DA1F2')
-        .setTitle('🐦 Latest Hytale Tweet')
-        .setDescription(latestTweet.text)
-        .setURL(`https://twitter.com/Hytale/status/${latestTweet.id}`)
-        .setTimestamp(new Date(latestTweet.created_at));
-      
-      return sendStyledEmbed(message, embed, 'info');
-    }
+    return null;
   } catch (error) {
-    console.error('Tweet fetch error:', error);
+    console.error(`Error fetching Twitter user ID for ${username}:`, error.response?.data || error.message);
+    return null;
+  }
+}
+
+// Get latest tweets from a Twitter user
+async function getLatestTweets(userId, sinceId = null) {
+  const bearerToken = getTwitterBearerToken();
+  if (!bearerToken) {
+    throw new Error('TWITTER_BEARER_TOKEN not configured');
+  }
+  
+  try {
+    const params = {
+      max_results: 5,
+      'tweet.fields': 'created_at,text,author_id',
+      'user.fields': 'username,name'
+    };
+    
+    if (sinceId) {
+      params.since_id = sinceId;
+    }
+    
+    const response = await axios.get(`https://api.twitter.com/2/users/${userId}/tweets`, {
+      params,
+      headers: {
+        'Authorization': `Bearer ${bearerToken}`
+      }
+    });
+    
+    if (response.data && response.data.data) {
+      return response.data.data;
+    }
+    return [];
+  } catch (error) {
+    console.error(`Error fetching tweets for user ${userId}:`, error.response?.data || error.message);
+    return [];
+  }
+}
+
+// Setup Twitter monitoring with role selection
+async function handleSetupTweetsCommand(interaction) {
+  const isAdmin = interaction.member?.permissions.has('Administrator') || interaction.user.username === ADMIN_USER_ID;
+  if (!isAdmin) {
+    return interaction.reply({ ephemeral: true, content: '❌ Only administrators can set up Twitter monitoring.' });
+  }
+  
+  if (!interaction.guild) {
+    return interaction.reply({ ephemeral: true, content: '❌ This command can only be used in a server.' });
+  }
+  
+  const guildId = interaction.guild.id;
+  const channelId = interaction.channel.id;
+  
+  // Check if Twitter Bearer Token is configured
+  if (!getTwitterBearerToken()) {
+    return interaction.reply({ 
+      ephemeral: true, 
+      content: '❌ Twitter API is not configured. Please set `TWITTER_BEARER_TOKEN` in your environment variables.\n\nSee `TWITTER_API_SETUP.md` for instructions.' 
+    });
+  }
+  
+  // Get all roles in the guild
+  const roles = interaction.guild.roles.cache
+    .filter(role => role.id !== interaction.guild.id) // Exclude @everyone
+    .sort((a, b) => b.position - a.position)
+    .map(role => ({
+      label: role.name.length > 100 ? role.name.substring(0, 97) + '...' : role.name,
+      value: role.id,
+      description: `Ping ${role.name} when tweets are posted`
+    }))
+    .slice(0, 25); // Discord limit
+  
+  if (roles.length === 0) {
+    return interaction.reply({ ephemeral: true, content: '❌ No roles found in this server. Create a role first, then set up Twitter monitoring.' });
+  }
+  
+  // Create dropdown menu for role selection
+  const selectMenu = new StringSelectMenuBuilder()
+    .setCustomId('twitter_setup_role')
+    .setPlaceholder('Select a role to ping for new tweets...')
+    .addOptions(roles);
+  
+  const row = new ActionRowBuilder().addComponents(selectMenu);
+  
+  const embed = new EmbedBuilder()
+    .setColor('#1DA1F2')
+    .setTitle('🐦 Twitter Monitoring Setup')
+    .setDescription(
+      `This channel will receive tweets from monitored Twitter accounts.\n\n` +
+      `**Select a role to ping when new tweets are posted:**\n` +
+      `• Choose a role from the dropdown below\n` +
+      `• After setup, use \`/addtwitteraccount\` to add Twitter accounts to monitor\n` +
+      `• The bot will check for new tweets every 10 minutes`
+    );
+  
+  return interaction.reply({ embeds: [embed], components: [row], ephemeral: true });
+}
+
+// Handle role selection for Twitter setup
+async function handleTwitterSetupRoleSelect(interaction) {
+  const isAdmin = interaction.member?.permissions.has('Administrator') || interaction.user.username === ADMIN_USER_ID;
+  if (!isAdmin) {
+    return interaction.reply({ ephemeral: true, content: '❌ Only administrators can set up Twitter monitoring.' });
+  }
+  
+  const guildId = interaction.guild.id;
+  const channelId = interaction.channel.id;
+  const roleId = interaction.values[0];
+  
+  // Initialize or update Twitter monitoring config
+  if (!TWITTER_MONITORING_CONFIG.has(guildId)) {
+    TWITTER_MONITORING_CONFIG.set(guildId, {
+      channelId: channelId,
+      roleId: roleId,
+      accounts: new Map()
+    });
+  } else {
+    const config = TWITTER_MONITORING_CONFIG.get(guildId);
+    config.channelId = channelId;
+    config.roleId = roleId;
+    TWITTER_MONITORING_CONFIG.set(guildId, config);
+  }
+  
+  await saveTwitterMonitoringConfig(guildId);
+  
+  const role = interaction.guild.roles.cache.get(roleId);
+  const embed = new EmbedBuilder()
+    .setColor('#1DA1F2')
+    .setTitle('✅ Twitter Monitoring Setup Complete!')
+    .setDescription(
+      `Twitter monitoring has been configured for this channel.\n\n` +
+      `**Configuration:**\n` +
+      `• Channel: <#${channelId}>\n` +
+      `• Ping Role: ${role ? `<@&${roleId}>` : 'Unknown role'}\n\n` +
+      `**Next Steps:**\n` +
+      `• Use \`/addtwitteraccount <username>\` to add Twitter accounts to monitor\n` +
+      `• Use \`/listtwitteraccounts\` to see all monitored accounts\n` +
+      `• The bot will automatically check for new tweets every 10 minutes`
+    );
+  
+  return interaction.update({ embeds: [embed], components: [] });
+}
+
+// Add Twitter account to monitor
+async function handleAddTwitterAccountCommand(interaction) {
+  const isAdmin = interaction.member?.permissions.has('Administrator') || interaction.user.username === ADMIN_USER_ID;
+  if (!isAdmin) {
+    return interaction.reply({ ephemeral: true, content: '❌ Only administrators can add Twitter accounts.' });
+  }
+  
+  if (!interaction.guild) {
+    return interaction.reply({ ephemeral: true, content: '❌ This command can only be used in a server.' });
+  }
+  
+  const guildId = interaction.guild.id;
+  let username = interaction.options.getString('username', true).trim().replace('@', '');
+  
+  // Check if Twitter monitoring is set up
+  const config = TWITTER_MONITORING_CONFIG.get(guildId);
+  if (!config) {
+    return interaction.reply({ ephemeral: true, content: '❌ Twitter monitoring is not set up. Use `/setuptweets` first.' });
+  }
+  
+  // Check if Twitter Bearer Token is configured
+  if (!getTwitterBearerToken()) {
+    return interaction.reply({ ephemeral: true, content: '❌ Twitter API is not configured. Please set `TWITTER_BEARER_TOKEN` in your environment variables.' });
+  }
+  
+  // Check if account is already being monitored
+  if (config.accounts.has(username.toLowerCase())) {
+    return interaction.reply({ ephemeral: true, content: `❌ @${username} is already being monitored.` });
+  }
+  
+  await interaction.deferReply({ ephemeral: true });
+  
+  // Get Twitter user ID
+  const userId = await getTwitterUserId(username);
+  if (!userId) {
+    return interaction.editReply({ content: `❌ Could not find Twitter user @${username}. Make sure the username is correct.` });
+  }
+  
+  // Get latest tweet to set as the starting point
+  const tweets = await getLatestTweets(userId);
+  const lastTweetId = tweets.length > 0 ? tweets[0].id : null;
+  
+  // Add account to monitoring
+  config.accounts.set(username.toLowerCase(), { userId, lastTweetId, username });
+  TWITTER_MONITORING_CONFIG.set(guildId, config);
+  await saveTwitterMonitoringConfig(guildId);
+  
+  const embed = new EmbedBuilder()
+    .setColor('#1DA1F2')
+    .setTitle('✅ Twitter Account Added!')
+    .setDescription(
+      `@${username} has been added to the monitoring list.\n\n` +
+      `The bot will now check for new tweets from this account every 10 minutes and post them to <#${config.channelId}>.`
+    );
+  
+  return interaction.editReply({ embeds: [embed] });
+}
+
+// Remove Twitter account from monitoring
+async function handleRemoveTwitterAccountCommand(interaction) {
+  const isAdmin = interaction.member?.permissions.has('Administrator') || interaction.user.username === ADMIN_USER_ID;
+  if (!isAdmin) {
+    return interaction.reply({ ephemeral: true, content: '❌ Only administrators can remove Twitter accounts.' });
+  }
+  
+  if (!interaction.guild) {
+    return interaction.reply({ ephemeral: true, content: '❌ This command can only be used in a server.' });
+  }
+  
+  const guildId = interaction.guild.id;
+  let username = interaction.options.getString('username', true).trim().replace('@', '');
+  
+  // Check if Twitter monitoring is set up
+  const config = TWITTER_MONITORING_CONFIG.get(guildId);
+  if (!config) {
+    return interaction.reply({ ephemeral: true, content: '❌ Twitter monitoring is not set up.' });
+  }
+  
+  // Check if account is being monitored
+  if (!config.accounts.has(username.toLowerCase())) {
+    return interaction.reply({ ephemeral: true, content: `❌ @${username} is not being monitored.` });
+  }
+  
+  // Remove account from monitoring
+  config.accounts.delete(username.toLowerCase());
+  TWITTER_MONITORING_CONFIG.set(guildId, config);
+  await saveTwitterMonitoringConfig(guildId);
+  
+  return interaction.reply({ ephemeral: true, content: `✅ @${username} has been removed from the monitoring list.` });
+}
+
+// List all monitored Twitter accounts
+async function handleListTwitterAccountsCommand(interaction) {
+  const isAdmin = interaction.member?.permissions.has('Administrator') || interaction.user.username === ADMIN_USER_ID;
+  if (!isAdmin) {
+    return interaction.reply({ ephemeral: true, content: '❌ Only administrators can view monitored accounts.' });
+  }
+  
+  if (!interaction.guild) {
+    return interaction.reply({ ephemeral: true, content: '❌ This command can only be used in a server.' });
+  }
+  
+  const guildId = interaction.guild.id;
+  
+  // Check if Twitter monitoring is set up
+  const config = TWITTER_MONITORING_CONFIG.get(guildId);
+  if (!config) {
+    return interaction.reply({ ephemeral: true, content: '❌ Twitter monitoring is not set up. Use `/setuptweets` first.' });
+  }
+  
+  const accounts = Array.from(config.accounts.values());
+  
+  if (accounts.length === 0) {
+    return interaction.reply({ 
+      ephemeral: true, 
+      content: '❌ No Twitter accounts are being monitored. Use `/addtwitteraccount <username>` to add accounts.' 
+    });
+  }
+  
+  const accountList = accounts.map(acc => `• @${acc.username}`).join('\n');
+  const role = interaction.guild.roles.cache.get(config.roleId);
+  
+  const embed = new EmbedBuilder()
+    .setColor('#1DA1F2')
+    .setTitle('🐦 Monitored Twitter Accounts')
+    .setDescription(
+      `**Channel:** <#${config.channelId}>\n` +
+      `**Ping Role:** ${role ? `<@&${config.roleId}>` : 'Unknown role'}\n\n` +
+      `**Monitored Accounts (${accounts.length}):**\n${accountList}`
+    );
+  
+  return interaction.reply({ embeds: [embed], ephemeral: true });
+}
+
+// Check for new tweets (manual or automatic)
+async function handleCheckTweetsCommand(interaction) {
+  const isAdmin = interaction.member?.permissions.has('Administrator') || interaction.user.username === ADMIN_USER_ID;
+  if (!isAdmin) {
+    return interaction.reply({ ephemeral: true, content: '❌ Only administrators can manually check tweets.' });
+  }
+  
+  if (!interaction.guild) {
+    return interaction.reply({ ephemeral: true, content: '❌ This command can only be used in a server.' });
+  }
+  
+  await interaction.deferReply({ ephemeral: true });
+  
+  const guildId = interaction.guild.id;
+  await checkAllTwitterAccounts(guildId, true);
+  
+  return interaction.editReply({ content: '✅ Checked for new tweets from all monitored accounts.' });
+}
+
+// Check all Twitter accounts for a guild
+async function checkAllTwitterAccounts(guildId, manual = false) {
+  const config = TWITTER_MONITORING_CONFIG.get(guildId);
+  if (!config || config.accounts.size === 0) {
+    return;
+  }
+  
+  // Check if Twitter Bearer Token is configured
+  if (!getTwitterBearerToken()) {
     if (manual) {
-      message.reply('❌ Error fetching tweets. Check console for details.');
+      console.error('TWITTER_BEARER_TOKEN not configured');
+    }
+    return;
+  }
+  
+  const channel = await client.channels.fetch(config.channelId).catch(() => null);
+  if (!channel) {
+    console.error(`Twitter monitoring channel not found for guild ${guildId}`);
+    return;
+  }
+  
+  const role = config.roleId ? `<@&${config.roleId}>` : '';
+  
+  // Check each account
+  for (const [username, accountData] of config.accounts.entries()) {
+    try {
+      const tweets = await getLatestTweets(accountData.userId, accountData.lastTweetId);
+      
+      if (tweets.length > 0) {
+        // Process tweets in reverse order (oldest first)
+        const sortedTweets = tweets.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+        
+        for (const tweet of sortedTweets) {
+          const embed = new EmbedBuilder()
+            .setColor('#1DA1F2')
+            .setTitle(`🐦 New Tweet from @${accountData.username}`)
+            .setDescription(tweet.text)
+            .setURL(`https://twitter.com/${accountData.username}/status/${tweet.id}`)
+            .setTimestamp(new Date(tweet.created_at))
+            .setFooter({ text: `${accountData.username} on Twitter/X` });
+          
+          const content = role ? `${role} New tweet from @${accountData.username}!` : `New tweet from @${accountData.username}!`;
+          
+          await channel.send({ content, embeds: [embed] }).catch(() => {});
+          
+          // Update last tweet ID
+          accountData.lastTweetId = tweet.id;
+        }
+        
+        // Save updated config
+        await saveTwitterMonitoringConfig(guildId);
+      }
+    } catch (error) {
+      console.error(`Error checking tweets for @${accountData.username}:`, error);
     }
   }
 }
-// Check tweets every 10 minutes
+
+// Check tweets every 10 minutes for all guilds
 cron.schedule('*/10 * * * *', () => {
-  for (const [guildId, data] of lastTweetId) {
-    client.guilds.fetch(guildId).then(guild => {
-      checkTweets({ guild }, false);
+  for (const [guildId] of TWITTER_MONITORING_CONFIG) {
+    checkAllTwitterAccounts(guildId, false).catch(error => {
+      console.error(`Error checking tweets for guild ${guildId}:`, error);
     });
   }
 });
@@ -11822,6 +12183,9 @@ client.once('ready', async () => {
   
   // Load daily recap configuration from Supabase on startup
   await loadDailyRecapConfig();
+  
+  // Load Twitter monitoring configuration from Supabase on startup
+  await loadTwitterMonitoringConfig();
   
   // Set up player helper functions for dungeon system (after functions are defined)
   dungeonHandlers.setPlayerHelpers(addXp, addItemToInventory, registerCodexUnlock);
@@ -19116,13 +19480,19 @@ async function handleSlashCommand(interaction) {
       return handleParticipateCommand(message, [eventId]);
     }
     case 'setuptweets': {
-      const channel = interaction.options.getChannel('channel');
-      const message = createMessageAdapterFromInteraction(interaction);
-      return handleSetupTweetsCommand(message, [], channel ? { channel } : {});
+      return handleSetupTweetsCommand(interaction);
+    }
+    case 'addtwitteraccount': {
+      return handleAddTwitterAccountCommand(interaction);
+    }
+    case 'removetwitteraccount': {
+      return handleRemoveTwitterAccountCommand(interaction);
+    }
+    case 'listtwitteraccounts': {
+      return handleListTwitterAccountsCommand(interaction);
     }
     case 'checktweets': {
-      const message = createMessageAdapterFromInteraction(interaction);
-      return handleCheckTweetsCommand(message);
+      return handleCheckTweetsCommand(interaction);
     }
     case 'reset': {
       const user = interaction.options.getUser('user', true);
@@ -19246,6 +19616,11 @@ async function handleSelectMenuInteraction(interaction) {
   const exploration = ensureExplorationState(player);
 
   try {
+    // Handle Twitter setup role selection
+    if (interaction.customId === 'twitter_setup_role') {
+      return handleTwitterSetupRoleSelect(interaction);
+    }
+    
     // Handle daily recap review dropdown
     if (interaction.customId === 'daily_recap_review') {
       const isAdmin = interaction.member?.permissions.has('Administrator') || interaction.user.username === ADMIN_USER_ID;
