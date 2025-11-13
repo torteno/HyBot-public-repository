@@ -4,6 +4,10 @@
 
 For Twitter/X API v2, you need a **Bearer Token** for read-only operations (which is what we need for monitoring tweets).
 
+### ⚠️ Important: You DON'T Need Redirect URIs!
+
+If you see options for "Redirect URIs" or "Callback URLs" when setting up Twitter API, **you can skip those**. Redirect URIs are only needed for OAuth user authentication flows. We're using a simple Bearer Token which doesn't require any redirect URIs.
+
 ### Option 1: Bearer Token (Recommended - Easiest)
 
 1. Go to [Twitter Developer Portal](https://developer.twitter.com/en/portal/dashboard)
@@ -14,6 +18,8 @@ For Twitter/X API v2, you need a **Bearer Token** for read-only operations (whic
 
 **This is the ONLY key you need for read-only tweet monitoring!**
 
+**Note:** If you see "Redirect URI" or "Callback URL" fields during setup, you can leave them blank or use a placeholder like `http://localhost` - they won't be used for Bearer Token authentication.
+
 ### Option 2: OAuth 1.0a (More Complex - Not Needed)
 
 If you need write access, you would need:
@@ -21,8 +27,9 @@ If you need write access, you would need:
 - API Secret Key  
 - Access Token
 - Access Token Secret
+- Redirect URI (only needed for OAuth flows)
 
-**But for this bot, you only need the Bearer Token (Option 1).**
+**But for this bot, you only need the Bearer Token (Option 1) - no redirect URI needed!**
 
 ## Environment Variables
 
