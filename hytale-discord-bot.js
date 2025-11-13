@@ -3678,10 +3678,10 @@ const LEGACY_SLASH_COMMANDS = [
   { name: 'adventurechoice', description: 'Make a choice in Adventure Mode.', options: [{ type: 3, name: 'choice', description: 'Choice identifier', required: true }] },
   { name: 'setup', description: 'Set up the bot in this channel for RPG commands. (Admin only)' },
   { name: 'addchannel', description: 'Add this channel to RPG command channels. (Admin only)' },
-  { name: 'setupDailyRecap', description: 'Set up this channel for daily Hytale recap submissions. (Admin only)' },
-  { name: 'setupCheerChannel', description: 'Set up this channel for daily recap cheers. (Admin only)' },
-  { name: 'reviewSubmissions', description: 'Review all daily recap submissions. (Admin only)' },
-  { name: 'submitRecap', description: 'Submit your daily Hytale recap response.' },
+  { name: 'setupdailyrecap', description: 'Set up this channel for daily Hytale recap submissions. (Admin only)' },
+  { name: 'setupcheerchannel', description: 'Set up this channel for daily recap cheers. (Admin only)' },
+  { name: 'reviewsubmissions', description: 'Review all daily recap submissions. (Admin only)' },
+  { name: 'submitrecap', description: 'Submit your daily Hytale recap response.' },
   { name: 'start', description: 'Start your adventure in Orbis! (For new players)' },
   { name: 'pets', description: 'View and manage your pets.', options: [{ type: 3, name: 'action', description: 'Action to perform', required: false, choices: [{ name: 'List', value: 'list' }, { name: 'Stable', value: 'stable' }] }] },
   { name: 'activatepet', description: 'Activate a pet from your collection.', options: [{ type: 3, name: 'pet', description: 'Pet identifier', required: true }] },
@@ -11832,10 +11832,10 @@ client.once('ready', async () => {
   // Debug: Log all command names
   console.log(`📋 Total commands to register: ${SLASH_COMMAND_DEFINITIONS.length}`);
   const dailyRecapCommands = SLASH_COMMAND_DEFINITIONS.filter(cmd => 
-    cmd.name === 'setupDailyRecap' || 
-    cmd.name === 'setupCheerChannel' || 
-    cmd.name === 'reviewSubmissions' || 
-    cmd.name === 'submitRecap'
+    cmd.name === 'setupdailyrecap' || 
+    cmd.name === 'setupcheerchannel' || 
+    cmd.name === 'reviewsubmissions' || 
+    cmd.name === 'submitrecap'
   );
   console.log(`📋 Daily recap commands found: ${dailyRecapCommands.length}`, dailyRecapCommands.map(c => c.name));
   
