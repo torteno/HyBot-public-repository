@@ -57,15 +57,25 @@ The bot needs the following permissions (permission integer: **268445760**):
 - Selected user scopes instead of bot scopes
 - Trying to use the OAuth2 URL for user authentication instead of bot installation
 
-### Option 2: Manual URL Construction
+### Option 2: Manual URL Construction (Recommended if URL Generator Fails)
 
-You can also construct the URL manually:
+If the URL Generator is giving you errors, you can construct the URL manually:
 
 ```
 https://discord.com/api/oauth2/authorize?client_id=YOUR_BOT_CLIENT_ID&permissions=268445760&scope=bot%20applications.commands
 ```
 
-Replace `YOUR_BOT_CLIENT_ID` with your bot's Client ID (found in the OAuth2 section of the Developer Portal).
+**How to find your Client ID:**
+1. Go to **OAuth2** → **General** section
+2. Copy the **Client ID** (it's a long number, like `123456789012345678`)
+3. Replace `YOUR_BOT_CLIENT_ID` in the URL above with this number
+4. Open the URL in your browser
+
+**Example:**
+If your Client ID is `123456789012345678`, your URL would be:
+```
+https://discord.com/api/oauth2/authorize?client_id=123456789012345678&permissions=268445760&scope=bot%20applications.commands
+```
 
 **Permission Integer Breakdown:**
 - `268445760` = Send Messages + Embed Links + Read Message History + Use Slash Commands + Manage Roles + Add Reactions + Use External Emojis + View Channels + Read Messages
@@ -78,11 +88,23 @@ Replace `YOUR_BOT_CLIENT_ID` with your bot's Client ID (found in the OAuth2 sect
    - ✅ **Use**: `bot` and `applications.commands` (for bot installation)
    - ❌ **Don't Use**: `identify`, `email`, `guilds`, `connections` (these are for user OAuth, not bot installation)
 
-3. **If You See "Invalid Scopes" Error**:
+3. **If You See "Invalid Scopes" Error** (even with only `bot` and `applications.commands`):
+   
+   **First, verify your bot is properly set up:**
+   - Go to **Bot** section (left sidebar) in the Developer Portal
+   - Make sure "Public Bot" is enabled (toggle should be ON)
+   - Make sure "Requires OAuth2 Code Grant" is **OFF** (this can cause issues)
+   - Make sure "Message Content Intent" is enabled if your bot reads messages
+   - Make sure "Server Members Intent" is enabled if your bot needs member info
+   
+   **Then try these fixes:**
    - Make sure you're using the **URL Generator** (not the General OAuth2 section)
    - Only select `bot` and `applications.commands` scopes
    - Don't select any user-related scopes
    - The URL should be for **bot installation**, not user authorization
+   - **Try the manual URL method** (Option 2 below) - sometimes this works when the URL Generator has issues
+   - Clear your browser cache and try again
+   - Make sure you're using the **Client ID** (not Application ID or Bot Token)
 
 4. **Role Hierarchy**: Make sure the bot's role is positioned **above** any roles it needs to manage. The bot needs to be able to create and assign roles, so its role must be higher in the server's role hierarchy.
 
