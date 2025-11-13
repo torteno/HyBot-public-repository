@@ -34,10 +34,12 @@ The bot needs the following permissions (permission integer: **268445760**):
 1. Go to [Discord Developer Portal](https://discord.com/developers/applications)
 2. Select your bot application
 3. Go to **OAuth2** → **URL Generator**
-4. Under **SCOPES**, select:
-   - ✅ `bot`
-   - ✅ `applications.commands`
-5. Under **BOT PERMISSIONS**, select:
+4. **IMPORTANT**: Make sure you're in the **URL Generator** section, NOT the "General" OAuth2 section
+5. Under **SCOPES**, select:
+   - ✅ `bot` (this is for bot installation, NOT user OAuth)
+   - ✅ `applications.commands` (for slash commands)
+6. **DO NOT** select any user-related scopes like `identify`, `email`, `guilds`, etc. - those are for user OAuth flows
+7. Under **BOT PERMISSIONS** (this section appears after selecting `bot` scope), select:
    - ✅ Send Messages
    - ✅ Embed Links
    - ✅ Read Message History
@@ -47,8 +49,13 @@ The bot needs the following permissions (permission integer: **268445760**):
    - ✅ Use External Emojis
    - ✅ View Channels
    - ✅ Read Messages/View Channel
-6. Copy the generated URL at the bottom
-7. Open the URL in your browser to invite the bot
+8. Copy the generated URL at the bottom
+9. Open the URL in your browser to invite the bot
+
+**⚠️ Common Mistake**: If you see "invalid scopes used for user installation", you're likely:
+- In the wrong OAuth2 section (use URL Generator, not General)
+- Selected user scopes instead of bot scopes
+- Trying to use the OAuth2 URL for user authentication instead of bot installation
 
 ### Option 2: Manual URL Construction
 
@@ -66,6 +73,16 @@ Replace `YOUR_BOT_CLIENT_ID` with your bot's Client ID (found in the OAuth2 sect
 ## Important Notes
 
 1. **No Redirect URI Needed**: You don't need to set up a redirect URI for bot invites. Redirect URIs are only for OAuth2 user authentication flows (like web dashboards), not for bot invites.
+
+2. **Bot Scopes vs User Scopes**: 
+   - ✅ **Use**: `bot` and `applications.commands` (for bot installation)
+   - ❌ **Don't Use**: `identify`, `email`, `guilds`, `connections` (these are for user OAuth, not bot installation)
+
+3. **If You See "Invalid Scopes" Error**:
+   - Make sure you're using the **URL Generator** (not the General OAuth2 section)
+   - Only select `bot` and `applications.commands` scopes
+   - Don't select any user-related scopes
+   - The URL should be for **bot installation**, not user authorization
 
 2. **Role Hierarchy**: Make sure the bot's role is positioned **above** any roles it needs to manage. The bot needs to be able to create and assign roles, so its role must be higher in the server's role hierarchy.
 
