@@ -3722,7 +3722,7 @@ const LEGACY_SLASH_COMMANDS = [
   { name: 'eventsub', description: 'Subscribe the current channel to world events.', options: [{ type: 3, name: 'event', description: 'Event identifier or "off"', required: false }] },
   { name: 'eventstatus', description: 'Show the active world event.' },
   { name: 'participate', description: 'Participate in the active event.', options: [{ type: 3, name: 'event', description: 'Event identifier', required: true }] },
-  { name: 'setuptweets', description: 'Set up Twitter monitoring for this channel with role selection. (Admin only)' },
+  { name: 'setuptweets', description: 'Set up Twitter monitoring for this channel with role selection. (Admin only)', options: [{ type: 8, name: 'role', description: 'Role to ping for new tweets (optional - use dropdown if not specified)', required: false }] },
   { name: 'addtwitteraccount', description: 'Add a Twitter account to monitor. (Admin only)', options: [{ type: 3, name: 'username', description: 'Twitter username (without @)', required: true }] },
   { name: 'removetwitteraccount', description: 'Remove a Twitter account from monitoring. (Admin only)', options: [{ type: 3, name: 'username', description: 'Twitter username (without @)', required: true }] },
   { name: 'listtwitteraccounts', description: 'List all monitored Twitter accounts. (Admin only)' },
@@ -11825,6 +11825,48 @@ async function handleSetupTweetsCommand(interaction) {
     });
   }
   
+  // Check if a role was provided as a parameter
+  const providedRole = interaction.options.getRole('role');
+  
+  if (providedRole) {
+    // Role was provided directly - set it up immediately
+    const roleId = providedRole.id;
+    
+    // Initialize or update Twitter monitoring config
+    if (!TWITTER_MONITORING_CONFIG.has(guildId)) {
+      TWITTER_MONITORING_CONFIG.set(guildId, {
+        channelId: channelId,
+        roleId: roleId,
+        accounts: new Map()
+      });
+    } else {
+      const config = TWITTER_MONITORING_CONFIG.get(guildId);
+      config.channelId = channelId;
+      config.roleId = roleId;
+      TWITTER_MONITORING_CONFIG.set(guildId, config);
+    }
+    
+    await saveTwitterMonitoringConfig(guildId);
+    
+    const embed = new EmbedBuilder()
+      .setColor('#1DA1F2')
+      .setTitle('✅ Twitter Monitoring Setup Complete!')
+      .setDescription(
+        `Twitter monitoring has been configured for this channel.\n\n` +
+        `**Configuration:**\n` +
+        `• Channel: <#${channelId}>\n` +
+        `• Ping Role: <@&${roleId}>\n\n` +
+        `**Next Steps:**\n` +
+        `• Use \`/addtwitteraccount <username>\` to add Twitter accounts to monitor\n` +
+        `• Use \`/listtwitteraccounts\` to see all monitored accounts\n` +
+        `• The bot will automatically check for new tweets every 10 minutes\n\n` +
+        `**To change the role later:** Run \`/setuptweets role:<role>\` or \`/setuptweets\` without a role to use the dropdown.`
+      );
+    
+    return interaction.reply({ embeds: [embed], ephemeral: true });
+  }
+  
+  // No role provided - show dropdown menu
   // Get all roles in the guild
   const roles = interaction.guild.roles.cache
     .filter(role => role.id !== interaction.guild.id) // Exclude @everyone
@@ -11840,6 +11882,12 @@ async function handleSetupTweetsCommand(interaction) {
     return interaction.reply({ ephemeral: true, content: '❌ No roles found in this server. Create a role first, then set up Twitter monitoring.' });
   }
   
+  // Check if there's existing config
+  const existingConfig = TWITTER_MONITORING_CONFIG.get(guildId);
+  const currentRoleMention = existingConfig && existingConfig.roleId 
+    ? `<@&${existingConfig.roleId}>` 
+    : 'None';
+  
   // Create dropdown menu for role selection
   const selectMenu = new StringSelectMenuBuilder()
     .setCustomId('twitter_setup_role')
@@ -11853,8 +11901,10 @@ async function handleSetupTweetsCommand(interaction) {
     .setTitle('🐦 Twitter Monitoring Setup')
     .setDescription(
       `This channel will receive tweets from monitored Twitter accounts.\n\n` +
+      (existingConfig ? `**Current Role:** ${currentRoleMention}\n\n` : '') +
       `**Select a role to ping when new tweets are posted:**\n` +
       `• Choose a role from the dropdown below\n` +
+      `• **Or** specify a role directly: \`/setuptweets role:<role>\` (useful if the role isn't in the dropdown)\n` +
       `• After setup, use \`/addtwitteraccount\` to add Twitter accounts to monitor\n` +
       `• The bot will check for new tweets every 10 minutes`
     );
