@@ -8926,12 +8926,67 @@ async function showAchievements(message) {
     }
   });
   
-  if (unlocked.length) embed.addFields({ name: 'Unlocked', value: unlocked.join('\n') });
-  if (locked.length) embed.addFields({ name: 'Locked', value: locked.join('\n') });
+  // Split achievements into chunks to avoid Discord's 1024 character limit per field
+  const MAX_FIELD_LENGTH = 1024;
+  
+  // Helper function to split array into chunks that fit in a field
+  function splitIntoFields(items, fieldName) {
+    if (!items || items.length === 0) return [];
+    
+    const fields = [];
+    let currentField = [];
+    let currentLength = 0;
+    
+    for (const item of items) {
+      const itemLength = item.length + 1; // +1 for newline
+      
+      if (currentLength + itemLength > MAX_FIELD_LENGTH && currentField.length > 0) {
+        // Save current field and start new one
+        const fieldNumber = fields.length + 1;
+        fields.push({ 
+          name: fields.length === 0 ? fieldName : `${fieldName} (${fieldNumber})`, 
+          value: currentField.join('\n'), 
+          inline: false 
+        });
+        currentField = [item];
+        currentLength = itemLength;
+      } else {
+        currentField.push(item);
+        currentLength += itemLength;
+      }
+    }
+    
+    // Add remaining items
+    if (currentField.length > 0) {
+      const fieldNumber = fields.length + 1;
+      fields.push({ 
+        name: fields.length === 0 ? fieldName : `${fieldName} (${fieldNumber})`, 
+        value: currentField.join('\n'), 
+        inline: false 
+      });
+    }
+    
+    return fields;
+  }
+  
+  // Add unlocked achievements (split into multiple fields if needed)
+  if (unlocked.length > 0) {
+    const unlockedFields = splitIntoFields(unlocked, 'Unlocked');
+    unlockedFields.forEach(field => embed.addFields(field));
+  }
+  
+  // Add locked achievements (split into multiple fields if needed)
+  if (locked.length > 0) {
+    const lockedFields = splitIntoFields(locked, 'Locked');
+    lockedFields.forEach(field => embed.addFields(field));
+  }
   
   if (!unlocked.length && !locked.length) {
     embed.setDescription('No achievements found. Start adventuring!');
+  } else {
+    embed.setDescription(`**${unlocked.length} unlocked** • **${locked.length} locked**\n\nComplete challenges to unlock powerful rewards!`);
   }
+  
   return sendStyledEmbed(message, embed, 'achievements');
 }
 function applyAchievementReward(player, reward) {
@@ -14514,7 +14569,8 @@ function processBaseTick(player, biomeId, now = Date.now()) {
     }
   });
 
-  handleBaseIncidents(player, base, minutes, biome, rewards);
+  // Handle base incidents (placeholder for future implementation)
+  // handleBaseIncidents(player, base, minutes, biome, rewards);
   recalcBaseBonuses(base);
   recalcPlayerBaseBonuses(player);
   checkCosmeticUnlocks(null, player);
