@@ -16,7 +16,7 @@
       "survey": 5,
       "artifact_run": 12,
       "boss_hunt": 18,
-      "explore": 10
+      "explore": 5
     },
     "suddenCombat": {
       "baseChance": 0.12,

@@ -16005,13 +16005,21 @@ function triggerExplorationEvent(player, biome, event, message) {
         const discoveredPet = weightedChoice(biomePets, 'rarity');
         if (discoveredPet && addPetToPlayer(player, discoveredPet.id)) {
           const pet = PET_LOOKUP[discoveredPet.id.toLowerCase()];
-          return { text: `🐾 You discovered and befriended ${pet.emoji} **${pet.name}**! Use \`${PREFIX} activatepet ${pet.id}\` to activate it.` };
+          // Automatically activate the pet when discovered
+          if (player.pets) {
+            player.pets.active = discoveredPet.id;
+          }
+          return { text: `🐾 You discovered and befriended ${pet.emoji} **${pet.name}**! It has been automatically activated.` };
         }
         return { text: '🐾 You found signs of a creature, but it was too fast to catch.' };
       }
       if (addPetToPlayer(player, petId)) {
         const pet = PET_LOOKUP[petId.toLowerCase()];
-        return { text: `🐾 You discovered and befriended ${pet.emoji} **${pet.name}**! Use \`${PREFIX} activatepet ${pet.id}\` to activate it.` };
+        // Automatically activate the pet when discovered
+        if (player.pets) {
+          player.pets.active = petId;
+        }
+        return { text: `🐾 You discovered and befriended ${pet.emoji} **${pet.name}**! It has been automatically activated.` };
       }
       return { text: '🐾 You found signs of a creature, but it was too fast to catch.' };
     }
@@ -16378,9 +16386,78 @@ function resolveExplorationAction(player, message) {
     exploration.consecutiveActionsSinceCombat = (exploration.consecutiveActionsSinceCombat || 0) + 1;
     checkCosmeticUnlocks(message, player);
     
-    // Clear the action
-    exploration.action = null;
-    exploration.status = 'idle';
+    // Check if a structure/puzzle action was set during exploration (from discoveries)
+    // If so, preserve it instead of clearing the action
+    const hasStructureAction = exploration.action && (exploration.action.type === 'structure' || exploration.action.type === 'puzzle');
+    const hasChainAction = exploration.pendingChain && action.metadata?.chainId;
+    
+    // Handle chain continuation for explore actions
+    if (hasChainAction) {
+      const chainState = exploration.pendingChain;
+      const nextIndex = (chainState.index ?? 0) + 1;
+      if (nextIndex < chainState.steps.length) {
+        // Continue chain - don't clear action yet, let chain handler do it
+        // But first, clear the explore action so chain can start
+        const oldAction = exploration.action;
+        exploration.action = null;
+        
+        chainState.index = nextIndex;
+        const nextStep = chainState.steps[nextIndex];
+        const stepBiome = nextStep.biomeId || chainState.biomeId || biome?.id || exploration.currentBiome;
+        const durationMinutes = Number(nextStep.durationMinutes ?? getBiomeActionDuration(stepBiome, nextStep.action));
+        const durationMs = startExplorationAction(
+          player,
+          nextStep.action,
+          stepBiome,
+          {
+            ...(nextStep.metadata || {}),
+            chainId: chainState.id,
+            chainStepIndex: nextIndex,
+            chainStepTotal: chainState.steps.length
+          },
+          { durationMinutes }
+        );
+        exploration.pendingChain = chainState;
+        const chainText = `➡️ Chain progress: Step ${nextIndex + 1}/${chainState.steps.length} — ${formatActionName(nextStep.action)} (${formatDuration(durationMs)}).`;
+        responseText += `\n${chainText}`;
+        extraFields.push({ name: 'Chain', value: chainText, inline: false });
+        
+        // Start progress session for next chain step
+        const userId = message?.author?.id || message?.user?.id;
+        if (userId) {
+          savePlayerData(userId);
+          const progressContext = {
+            message,
+            interaction: message?.interaction || null,
+            ephemeral: message?.ephemeral || false,
+            userId: userId
+          };
+          startExplorationProgressSession(player, progressContext, {
+            action: exploration.action,
+            emoji: '⏳',
+            visualKey: 'explore',
+            label: `${formatActionName(nextStep.action)} — ${getBiomeDefinition(stepBiome)?.name || stepBiome}`,
+            instructions: 'Chain step in progress. Results will post here automatically.',
+            components: buildDashboardComponents()
+          });
+        }
+        return { text: responseText, fields: extraFields };
+      } else {
+        // Chain completed
+        exploration.pendingChain = null;
+        responseText += `\n✅ Exploration chain **${chainState.id}** completed.`;
+      }
+    }
+    
+    // Only clear the action if there's no structure/puzzle to resolve
+    if (!hasStructureAction) {
+      exploration.action = null;
+      exploration.status = 'idle';
+    } else {
+      // Keep the structure/puzzle action active for resolution
+      exploration.status = 'busy';
+    }
+    
     return { text: responseText, fields: extraFields };
   }
   if (action.type === 'survey') {
@@ -16459,8 +16536,10 @@ function resolveExplorationAction(player, message) {
     exploration.status = 'idle';
     return { text: responseText, fields: extraFields };
   }
+  // Check for chain continuation - this must happen after action-specific handling
+  // but before clearing the action if there's a chain to continue
   const chainState = exploration.pendingChain;
-  if (chainState && action.metadata?.chainId && chainState.id === action.metadata.chainId) {
+  if (chainState && action && action.metadata?.chainId && chainState.id === action.metadata.chainId) {
     const nextIndex = (chainState.index ?? 0) + 1;
     if (nextIndex < chainState.steps.length) {
       chainState.index = nextIndex;
@@ -16503,10 +16582,17 @@ function resolveExplorationAction(player, message) {
           components: buildDashboardComponents()
         });
       }
+      // Don't clear action here - the new chain step action is now active
       return { text: responseText, fields: extraFields };
     }
+    // Chain completed
     exploration.pendingChain = null;
     responseText += `\n✅ Exploration chain **${chainState.id}** completed.`;
+    // Clear action only if no structure/puzzle action was set
+    if (!exploration.action || (exploration.action.type !== 'structure' && exploration.action.type !== 'puzzle')) {
+      exploration.action = null;
+      exploration.status = 'idle';
+    }
   }
   // Clear action if not already cleared
   if (exploration.action && exploration.action === action) {
