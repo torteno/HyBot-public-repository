@@ -11828,6 +11828,17 @@ client.once('ready', async () => {
   
   client.user.setActivity('Hytale | !hy help', { type: 'PLAYING' });
   triggerWorldEvents();
+  
+  // Debug: Log all command names
+  console.log(`📋 Total commands to register: ${SLASH_COMMAND_DEFINITIONS.length}`);
+  const dailyRecapCommands = SLASH_COMMAND_DEFINITIONS.filter(cmd => 
+    cmd.name === 'setupDailyRecap' || 
+    cmd.name === 'setupCheerChannel' || 
+    cmd.name === 'reviewSubmissions' || 
+    cmd.name === 'submitRecap'
+  );
+  console.log(`📋 Daily recap commands found: ${dailyRecapCommands.length}`, dailyRecapCommands.map(c => c.name));
+  
   await registerSlashCommands(client);
   try {
     await runStartupSelfTest();
