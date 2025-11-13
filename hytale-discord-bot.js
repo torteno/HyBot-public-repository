@@ -7354,12 +7354,21 @@ client.on('messageCreate', async message => {
   const args = message.content.slice(PREFIX.length).trim().split(/ +/);
   const command = args.shift().toLowerCase();
 
-  // Channel restriction check for RPG commands (skip for setup/admin commands)
+  // Channel restriction check for RPG commands (skip for setup/admin/non-RPG commands)
   const isAdmin = message.member?.permissions.has('Administrator') || message.author.username === ADMIN_USER_ID;
-  const isSetupCommand = ['setup', 'addchannel', 'start'].includes(command);
   
-  // Always allow setup commands and DMs
-  if (!isSetupCommand && message.guild) {
+  // List of non-RPG commands that should work in any channel
+  const nonRPGCommands = [
+    'setup', 'addchannel', 'start', 'help', 'info',
+    'setupdailyrecap', 'setupcheerchannel', 'reviewsubmissions', 'submitrecap',
+    'leveling', 'attributes',
+    'setuptweets', 'addtwitteraccount', 'removetwitteraccount', 'listtwitteraccounts', 'checktweets',
+    'admin'
+  ];
+  const isNonRPGCommand = nonRPGCommands.includes(command);
+  
+  // Always allow non-RPG commands and DMs
+  if (!isNonRPGCommand && message.guild) {
     const guildId = message.guild.id;
     const channelId = message.channel.id;
     
@@ -18937,12 +18946,21 @@ async function handleShopCommand(message, args) {
 
 
 async function handleSlashCommand(interaction) {
-  // Channel restriction check for RPG commands (skip for setup/admin commands)
+  // Channel restriction check for RPG commands (skip for setup/admin/non-RPG commands)
   const isAdmin = interaction.member?.permissions.has('Administrator') || interaction.user.username === ADMIN_USER_ID;
-  const isSetupCommand = ['setup', 'addchannel', 'start'].includes(interaction.commandName);
   
-  // Always allow setup commands and DMs
-  if (!isSetupCommand && interaction.guild) {
+  // List of non-RPG commands that should work in any channel
+  const nonRPGCommands = [
+    'setup', 'addchannel', 'start', 'help', 'info',
+    'setupdailyrecap', 'setupcheerchannel', 'reviewsubmissions', 'submitrecap',
+    'leveling', 'attributes',
+    'setuptweets', 'addtwitteraccount', 'removetwitteraccount', 'listtwitteraccounts', 'checktweets',
+    'admin'
+  ];
+  const isNonRPGCommand = nonRPGCommands.includes(interaction.commandName);
+  
+  // Always allow non-RPG commands and DMs
+  if (!isNonRPGCommand && interaction.guild) {
     const guildId = interaction.guild.id;
     const channelId = interaction.channel.id;
     
@@ -18962,13 +18980,13 @@ async function handleSlashCommand(interaction) {
   
   // Block RPG commands for players who haven't started
   // Check tutorialStep instead of tutorialStarted since tutorialStarted can be auto-set by quest system
-  const isRPGCommand = !['setup', 'addchannel', 'start', 'help', 'info'].includes(interaction.commandName);
+  const isRPGCommand = !nonRPGCommands.includes(interaction.commandName);
   if (isRPGCommand && (player.tutorialStep === undefined || player.tutorialStep === null)) {
     return interaction.reply({ ephemeral: true, content: `❌ You need to start your adventure first! Use \`/start\` to begin.` });
   }
   
-  // Track command for leveling (only in guilds, skip setup commands)
-  if (interaction.guild && !isSetupCommand) {
+  // Track command for leveling (only in guilds, skip setup/non-RPG commands)
+  if (interaction.guild && !isNonRPGCommand) {
     // Create a message adapter for leveling tracking
     const levelingMessage = {
       guild: interaction.guild,
@@ -18978,8 +18996,8 @@ async function handleSlashCommand(interaction) {
     await awardExp(interaction.guild.id, interaction.user.id, EXP_PER_COMMAND, 'command', levelingMessage).catch(() => {});
   }
   
-  // Track command usage for all active quests (skip for setup/admin commands)
-  if (!isSetupCommand && player.quests && player.quests.length > 0) {
+  // Track command usage for all active quests (skip for setup/non-RPG commands)
+  if (!isNonRPGCommand && player.quests && player.quests.length > 0) {
     const message = createMessageAdapterFromInteraction(interaction);
     console.log(`[DEBUG QUEST] Calling processQuestEvent for slash command: "${interaction.commandName}"`);
     processQuestEvent(message, player, { type: 'command', command: interaction.commandName, count: 1 });
